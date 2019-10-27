@@ -24,19 +24,14 @@ app.get("/opencc/:id", async (req, res) => {
     });
 })
 
-app.get("/ytcat/:query", async (req, res) => {
-    let data = await ytcat(req.params.query)
+app.get("/ytcat", async (req, res) => {
+    let data = await ytcat(req.query.q)
     res.send({
         'status': true,
         'data': data
     });
 })
 
-
-sam()
-async function sam() {
-    console.log();
-}
 
 
 app.listen(process.env.PORT, () => {
