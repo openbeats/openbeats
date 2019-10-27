@@ -3,6 +3,7 @@ import middleware from './config/middleware';
 import dbconfig from './config/db';
 import express from 'express';
 import copycat from './core/copycat'
+import ytcat from './core/ytsearchcat'
 
 const app = express();
 
@@ -22,6 +23,21 @@ app.get("/opencc/:id", async (req, res) => {
         'link': ccLink
     });
 })
+
+app.get("/ytcat/:query", async (req, res) => {
+    let data = await ytcat(req.params.query)
+    res.send({
+        'status': true,
+        'data': data
+    });
+})
+
+
+sam()
+async function sam() {
+    console.log();
+}
+
 
 app.listen(process.env.PORT, () => {
     console.log("openbeats server up and running on port :", process.env.PORT);
