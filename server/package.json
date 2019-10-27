@@ -4,7 +4,7 @@
   "description": "openbeats server",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon --exec babel-node index.js"
+    "start": "nodemon index.js"
   },
   "keywords": [
     "openbeats"
@@ -12,17 +12,19 @@
   "author": "ThayalanGR",
   "license": "ISC",
   "devDependencies": {
-    "@babel/core": "^7.6.4",
-    "@babel/node": "^7.6.3",
-    "@babel/preset-env": "^7.6.3",
     "nodemon": "^1.19.4"
   },
   "dependencies": {
+    "babel-polyfill": "^6.26.0",
+    "babel-preset-env": "^1.7.0",
+    "babel-preset-stage-0": "^6.24.1",
+    "babel-register": "^6.26.0",
     "cors": "^2.8.5",
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
     "form-data": "^2.5.1",
     "install": "^0.13.0",
+    "jsdom": "^15.2.0",
     "mongoose": "^5.7.7",
     "morgan": "^1.9.1",
     "node-fetch": "^2.6.0"
