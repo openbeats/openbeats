@@ -170,8 +170,6 @@ header {
 
 main {
   width: 100vw;
-  padding-left: 50px;
-  padding-right: 50px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -227,6 +225,34 @@ main {
 
 .search-icon:hover {
   opacity: 0.8;
+}
+
+/* suggestion keyword holder */
+.suggestion-keyword-holder {
+  z-index: 1;
+  position: absolute;
+  top: 45px;
+  left: 0;
+  width: 36em;
+  height: auto;
+  background: white;
+  box-shadow: 0 0 5px 1px gray;
+  border-radius: 5px;
+  font-size: 20px;
+  letter-spacing: 5px;
+}
+
+.suggested-keyword {
+  opacity: 0.8;
+  border-bottom: 1px solid rgba(37, 37, 37, 0.1);
+  padding-top: 5px;
+  padding-left: 10px;
+  padding-right: 10px;
+  padding-bottom: 5px;
+}
+.suggested-keyword:hover {
+  background: #f3f3f3;
+  cursor: pointer;
 }
 
 .dummy-music-holder {
@@ -286,17 +312,20 @@ footer {
 
 /* search result nodes container */
 .search-result-container {
-  width: 80%;
-  height: 150px;
-  margin-top: 30px;
-  /* background: rebeccapurple; */
+  width: 100%;
+  padding-left: 40px;
+  padding-right: 40px;
+  max-height: 32em;
+  overflow-y: auto;
+  overflow-x: hidden;
+  margin-top: 20px;
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
 }
 
 .result-node {
-  margin: 20px;
+  margin: 15px;
   display: flex;
   width: 20em;
   height: 6em;
@@ -327,6 +356,7 @@ footer {
   color: black;
   opacity: 0.8;
   margin-top: 2px;
+  text-align: left;
 }
 
 .result-node-attributes {
