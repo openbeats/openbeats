@@ -8,4 +8,161 @@
 
 body {
   font-family: "Roboto", sans-serif;
+  background: white;
+  position: relative;
+  height: 100vh;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+header {
+  width: 100vw;
+  overflow: hidden;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 20px;
+  padding-left: 50px;
+  padding-right: 50px;
+  padding-bottom: 20px;
+  box-sizing: border-box;
+}
+
+.logo {
+  font-size: 35px;
+  font-weight: bold;
+}
+
+.logo::before {
+  content: "Open";
+  color: #ff7373;
+}
+.logo::after {
+  content: "Beats";
+  color: #0a0a0a;
+}
+
+.player-wrapper {
+  width: 65%;
+  border-radius: 50px;
+  background: #ff7373;
+  height: 70px;
+  box-sizing: border-box;
+}
+
+main {
+  width: 100vw;
+  padding-left: 50px;
+  padding-right: 50px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  box-sizing: border-box;
+}
+
+.main-search {
+  margin-top: 50px;
+  position: relative;
+}
+
+.search-input {
+  border-left: 0;
+  border-top: 0;
+  border-right: 0;
+  border-bottom: 1px solid rgba(red, green, blue, 0.5);
+  width: 30em;
+  font-size: 24px;
+  letter-spacing: 5px;
+  caret-color: rgba(255, 103, 103, 0.4);
+  line-height: 1px;
+  padding-bottom: 6px;
+  padding-left: 5px;
+}
+
+.search-input:focus {
+  outline: none;
+  border-bottom: rgba(255, 103, 103, 0.5);
+  border-bottom-style: ridge;
+}
+
+.search-input::placeholder {
+  color: black;
+  opacity: 0.3;
+}
+
+.search-icon {
+  color: #ff7373;
+  font-size: 20px;
+  position: absolute;
+  right: 0;
+  margin-right: 8px;
+  margin-top: 5px;
+  text-decoration: none;
+  border: none;
+  background: none;
+  cursor: pointer;
+}
+
+.search-icon:focus {
+  outline: none;
+}
+
+.search-icon:hover {
+  opacity: 0.8;
+}
+
+.dummy-music-holder {
+  margin-top: 130px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  opacity: 0.9;
+}
+
+.music-icon {
+  width: 120px;
+}
+
+.music-icon-para {
+  font-size: 35px;
+  color: #ff7373;
+  margin-top: 40px;
+}
+
+footer {
+  position: absolute;
+  bottom: 0;
+  width: 100vw;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 40px;
+  box-sizing: border-box;
+  padding-right: 30px;
+  padding-left: 30px;
+}
+
+.copyrights {
+  font-size: 12px;
+  color: #ff7373;
+}
+
+.footer-right {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  font-size: 15px;
+}
+
+.about-us {
+  /* text-decoration: none; */
+  color: #ff7373;
+}
+.android-color {
+  margin-left: 20px;
+  color: #34b90c;
+  font-size: 25px;
 }
