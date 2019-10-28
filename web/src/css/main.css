@@ -49,6 +49,123 @@ header {
   background: #ff7373;
   height: 70px;
   box-sizing: border-box;
+  position: relative;
+}
+
+.music-thumb {
+  position: absolute;
+  top: 4px;
+  left: 5px;
+  box-sizing: border-box;
+  height: 88%;
+  width: 60px;
+  border-radius: 50%;
+  background: #f3f3f3;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.music-title {
+  position: absolute;
+  top: 10px;
+  left: 80px;
+  font-size: 14px;
+  color: white;
+  font-weight: bold;
+}
+
+/* =========== == = = == == ==============progress section ==============  =  ====   == = == = = = == =*/
+.progress-bar {
+  position: absolute;
+  top: 33px;
+  width: 52em;
+  left: 82px;
+  height: 5px;
+  overflow-y: hidden;
+  cursor: pointer;
+  border-radius: 5px;
+  -webkit-appearance: none;
+}
+
+.progress-bar::-webkit-slider-runnable-track {
+  background: #f3f3f3;
+}
+
+.progress-bar:focus {
+  outline: none;
+}
+
+.progress-bar::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #f3f3f3;
+  box-shadow: -100vw 0 0 100vw rgba(93, 94, 93, 0.7);
+}
+
+.progress-bar::-webkit-slider-thumb:hover {
+  background: white;
+}
+
+/* =========== == = = == == ==============progress section ==============  =  ====   == = == = = = == =*/
+
+.music-playpause-holder {
+  position: absolute;
+  top: 45px;
+  left: 82px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1;
+}
+
+.play-icon {
+  color: white;
+  font-size: 14px;
+}
+
+.volume-icon {
+  margin-left: 15px;
+  font-size: 14px;
+}
+
+.volume-progress {
+  color: white;
+  margin-left: 5px;
+  display: none;
+}
+
+.volume-icon:hover .volume-progress {
+  display: inline-block;
+}
+
+.music-duration {
+  margin-left: 15px;
+  font-size: 12px;
+  color: #f3f3f3;
+}
+
+.music-download {
+  position: absolute;
+  right: 78px;
+  top: 12px;
+  padding: 10px;
+}
+
+.music-download > img {
+  width: 23px;
+}
+.music-playlist {
+  position: absolute;
+  right: 18px;
+  top: 15px;
+  padding: 10px;
+}
+
+.music-playlist > img {
+  width: 25px;
 }
 
 main {
@@ -122,7 +239,7 @@ main {
 }
 
 .music-icon {
-  width: 120px;
+  width: 100px;
 }
 
 .music-icon-para {
@@ -140,8 +257,8 @@ footer {
   align-items: center;
   height: 40px;
   box-sizing: border-box;
-  padding-right: 30px;
-  padding-left: 30px;
+  padding-right: 50px;
+  padding-left: 50px;
 }
 
 .copyrights {
@@ -165,4 +282,101 @@ footer {
   margin-left: 20px;
   color: #34b90c;
   font-size: 25px;
+}
+
+/* search result nodes container */
+.search-result-container {
+  width: 80%;
+  height: 150px;
+  margin-top: 30px;
+  /* background: rebeccapurple; */
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+}
+
+.result-node {
+  margin: 20px;
+  display: flex;
+  width: 20em;
+  height: 6em;
+  box-sizing: border-box;
+  display: flex;
+  position: relative;
+  justify-content: space-between;
+}
+
+.result-node-thumb > img {
+  height: 100%;
+  width: 95px;
+  border-radius: 50%;
+}
+
+.result-node-desc {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 100%;
+  padding: 10px;
+}
+
+.result-node-title {
+  max-height: 40px;
+  overflow: hidden;
+  font-size: 18px;
+  color: black;
+  opacity: 0.8;
+  margin-top: 2px;
+}
+
+.result-node-attributes {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.result-node-duration {
+  font-size: 14px;
+  color: black;
+  opacity: 0.6;
+}
+
+.result-node-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 50%;
+}
+
+.action-image-size {
+  height: 16px;
+}
+
+/* search result nodes container */
+
+/* commons */
+
+.font-weight-bold {
+  font-weight: bold;
+}
+
+.text-white {
+  color: white;
+}
+
+.text-light-white {
+  color: #f3f3f3;
+}
+
+.text-base-color {
+  color: #ff7373;
+}
+
+.cursor-pointer {
+  cursor: pointer;
+}
+
+.cursor-pointer:hover {
+  opacity: 0.8;
 }
