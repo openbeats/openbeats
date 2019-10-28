@@ -1,8 +1,51 @@
 import React, { Component } from 'react'
 import "./css/main.css";
-import { musicNote, playlist, download, play, playlistadd, downloadOrange } from './images'
-
+import { musicNote, playlist, download, } from './images'
+// play, playlistadd, downloadOrange
 export default class App extends Component {
+
+  constructor(props) {
+    super(props);
+    this.state = {
+      searchText: "",
+    }
+  }
+
+  componentDidMount() {
+
+
+  }
+
+
+  async getKeywordSuggestion(e) {
+    this.setState({ searchText: e.target.value })
+    const url = `https://clients1.google.com/complete/search?client=youtube&hl=en&gl=in&sugexp=brcmjc%2Cbrueb%3D1%2Cbruesk%3D1%2Cuimd%3D1%2Cbrmlmo%3Dyt%252Fen%253Aus%253Ayt_en_us_loc%252Cyt%252Fja%253A%253Ayt_cjk_loc%252Cyt%252Fko%253A%253Ayt_cjk_loc%252Cyt%252Fzh-TW%253A%253Ayt_cjk_loc%252Cyt%252Fzh-CN%253A%253Ayt_cjk_loc%252Cyt%252Fdefault%253A%253Ayt_i18n_loc%2Ccfro%3D1%2Cbrueb%3D1&gs_rn=64&gs_ri=youtube&tok=rSSsBe5Xjbc6evDhnFq1Ew&ds=yt&cp=2&gs_id=8&q=${e.target.value}&callback=google.sbox.p50&gs_gbg=jGJ7J1BaQuU5YRqac`;
+
+    if (e.target.value.length > 0) {
+      await fetch(url)
+        .then(res => res.text())
+        .then(res => {
+          console.log(res);
+          let tmp = res.replace("google.sbox.p50 && google.sbox.p50(", "");
+          tmp = tmp.replace(")", "");
+          console.log(tmp);
+          let temp = JSON.parse(tmp)[1]
+          console.log(temp);
+          
+        })
+        .catch(e => console.error(e))
+    }
+
+
+  }
+
+  fetchResults() {
+
+
+
+  }
+
+
   render() {
     return (
       <div>
@@ -41,8 +84,10 @@ export default class App extends Component {
         </header>
         <main>
           <div className="main-search">
-            <input type="text" className="search-input" placeholder="Search Your Music Here!" />
-            <button className="search-icon"><i className="fas fa-search"></i></button>
+            <form action="" onSubmit={(e) => { e.preventDefault(); this.fetchResults(); }}>
+              <input type="text" value={this.state.searchText} onChange={(e) => { this.getKeywordSuggestion(e) }} className="search-input" placeholder="Search Your Music Here!" />
+              <button className="search-icon" type="submit"><i className="fas fa-search"></i></button>
+            </form>
           </div>
           <div className="dummy-music-holder">
             <img className="music-icon" src={musicNote} alt="" />
