@@ -3,30 +3,58 @@ import { JSDOM } from 'jsdom';
 
 export default async (queryString) => {
     let searchResults = [];
-    const domGrab1 = "yt-lockup-video";
+    const baseQuery = "yt-lockup-video";
+    const removables = [
+        "yt-lockup-channel",
+        "feed-item-container"
+    ]
     let query = queryString.trim().replace(/ /g, "+");
     const searchLink = `https://www.youtube.com/results?search_query=${query}`
     console.log(searchLink)
     await fetch(searchLink)
         .then(async res => await res.text())
         .then(res => {
+
             let response = res.trim()
             let dom = new JSDOM(response);
-            let targetNodes = dom.window.document.getElementsByClassName(domGrab1);
+
+            for (let i = 0; i < removables.length; i++) {
+                if (dom.window.document.getElementsByClassName(removables[i]).length > 0) {
+                    dom.window.document.getElementsByClassName(removables[i])[0].remove()
+                }
+            }
+
+            let targetNodes = dom.window.document.getElementsByClassName(baseQuery);
+
+
             for (let i = 0; i < targetNodes.length; i++) {
-                let srcThumb = targetNodes[i].childNodes[0].childNodes[0].childNodes[0].childNodes[0].childNodes[0].childNodes[1].getAttribute("src");
-                let thumb = targetNodes[i].childNodes[0].childNodes[0].childNodes[0].childNodes[0].childNodes[0].childNodes[1].getAttribute("data-thumb");
+                let srcThumb = targetNodes[i].getElementsByClassName("yt-thumb-simple")[0].getElementsByTagName("img")[0].src;
+                let thumb = targetNodes[i].getElementsByClassName("yt-thumb-simple")[0].getElementsByTagName("img")[0].getAttribute("data-thumb");
+                let duration = targetNodes[i].getElementsByClassName("yt-thumb-simple")[0].textContent.replace("\\\n\g", "").trim()
                 if (thumb == null) {
                     thumb = srcThumb
                 }
+                let title = targetNodes[i].getElementsByClassName("yt-uix-tile-link")[0].textContent;
+                let videoId = targetNodes[i].getElementsByClassName("yt-uix-tile-link")[0].href.replace("/watch?v=", "");
+                let channelName = targetNodes[i].getElementsByClassName("yt-lockup-byline")[0].getElementsByTagName("a")[0].textContent;
+                let channelId = targetNodes[i].getElementsByClassName("yt-lockup-byline")[0].getElementsByTagName("a")[0].href;
+                let uploadedOn = targetNodes[i].getElementsByClassName("yt-lockup-meta-info")[0].getElementsByTagName("li")[0].textContent.trim();
+                let views = targetNodes[i].getElementsByClassName("yt-lockup-meta-info")[0].getElementsByTagName("li")[1].textContent.trim();
+                let description = ""
+
+                if (targetNodes[i].getElementsByClassName("yt-lockup-description").length > 0)
+                    description = targetNodes[i].getElementsByClassName("yt-lockup-description")[0].textContent.trim();
+
                 let temp = {
-                    "title": targetNodes[i].childNodes[0].childNodes[1].childNodes[0].childNodes[0].textContent,
+                    "title": title,
                     "thumbnail": thumb,
-                    "duration": targetNodes[i].childNodes[0].childNodes[0].childNodes[0].textContent.replace("\\\n\g", "").trim(),
-                    "videoId": targetNodes[i].childNodes[0].childNodes[1].childNodes[0].childNodes[0].getAttribute("href").replace("/watch?v=", ""),
-                    "channelName": targetNodes[i].childNodes[0].childNodes[1].childNodes[1].childNodes[0].textContent,
-                    "uploadedOn": targetNodes[i].childNodes[0].childNodes[1].childNodes[2].childNodes[0].childNodes[0].textContent,
-                    "views": targetNodes[i].childNodes[0].childNodes[1].childNodes[2].childNodes[0].childNodes[1].textContent
+                    "duration": duration,
+                    "videoId": videoId,
+                    "channelName": channelName,
+                    "channelId": channelId,
+                    "uploadedOn": uploadedOn,
+                    "views": views,
+                    "description": description
                 };
                 searchResults.push(temp)
             }
