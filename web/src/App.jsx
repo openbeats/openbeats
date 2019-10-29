@@ -1,6 +1,6 @@
 import React, { Component, Fragment } from 'react'
 import "./css/main.css";
-import { musicNote, playlist, play, playlistadd, downloadOrange } from './images'
+import { musicNote, playlist, play, playlistadd, downloadOrange, musicDummy } from './images'
 
 import { variables } from "./config"
 export default class App extends Component {
@@ -16,16 +16,24 @@ export default class App extends Component {
       currentAudioData: {
         channelName: null,
         duration: "0:00",
-        thumbnail: "https://img.freepik.com/free-vector/broken-frosted-glass-realistic-icon_1284-12125.jpg?size=338&ext=jpg",
-        title: "Search for Music",
+        thumbnail: musicDummy,
+        title: "Stream Unlimited Music for Free! @ OpenBeats",
         uploadedOn: null,
         videoId: null,
         views: null,
       },
       currentAudioLink: null,
       playerTimerListener: null,
-      isMusicPlaying: false
+      isMusicPlaying: false,
+      currentProgress: 0,
+      currentTimeText: '00:00',
+      playerVolume: 0.5,
+      isMuted: false,
+      playerEndListener: null
     }
+
+    this.playerTimeUpdater = this.playerTimeUpdater.bind(this)
+    this.seekAudio = this.seekAudio.bind(this)
   }
 
   async componentDidMount() {
@@ -74,7 +82,14 @@ export default class App extends Component {
 
   async initPlayer(audioData) {
     const url = `${variables.baseUrl}/opencc/${audioData.videoId.trim()}`
-
+    if (this.state.currentAudioLink) {
+      const player = document.getElementById("music-player");
+      if (this.state.playerTimerListener) {
+        player.removeEventListener("timeupdate", this.state.playerTimerListener);
+        await this.setState({ playerTimerListener: null });
+      }
+      this.setState({ currentAudioLink: null })
+    }
     await fetch(url)
       .then(res => res.json())
       .then(async res => {
@@ -90,54 +105,102 @@ export default class App extends Component {
     const player = document.getElementById("music-player");
     if (this.state.playerTimerListener) {
       player.removeEventListener("timeupdate", this.state.playerTimerListener);
-      this.setState({ playerTimerListener: null });
+      await this.setState({ playerTimerListener: null });
     }
     await player.play()
-    let listener = player.addEventListener("timeupdate", this.playerTimeUpdater);
-    this.setState({ playerTimerListener: listener, isMusicPlaying: true });
+    let timerListener = player.addEventListener("timeupdate", this.playerTimeUpdater);
+    let endListener = player.addEventListener("ended", this.playerEndHandler);
+    await this.setState({ playerTimerListener: timerListener, playerEndListener: endListener, isMusicPlaying: true });
   }
 
-  playerTimeUpdater(e) {
+  async playerTimeUpdater(e) {
     let currentTime = e.target.currentTime;
     let duration = e.target.duration;
-    const progressRef = document.getElementById("player-progress-bar");
-    progressRef.value = currentTime * (100 / duration)
+    var curmins = Math.floor(currentTime / 60);
+    var cursecs = Math.floor(currentTime - curmins * 60);
+    var durmins = Math.floor(duration / 60);
+    var dursecs = Math.floor(duration - durmins * 60);
+    if (cursecs < 10) { cursecs = "0" + cursecs; }
+    if (dursecs < 10) { dursecs = "0" + dursecs; }
+    if (curmins < 10) { curmins = "0" + curmins; }
+    if (durmins < 10) { durmins = "0" + durmins; }
+    await this.setState({ currentProgress: currentTime * (100 / duration), currentTimeText: curmins + ":" + cursecs })
   }
 
   async playPauseToggle() {
-    const player = document.getElementById("music-player");
-    if (this.state.isMusicPlaying) {
-      await player.pause()
-      await this.setState({ isMusicPlaying: false })
+    if (this.state.currentAudioLink) {
+      const player = document.getElementById("music-player");
+      if (this.state.isMusicPlaying) {
+        await player.pause()
+        await this.setState({ isMusicPlaying: false })
+      } else {
+        await player.play()
+        await this.setState({ isMusicPlaying: true })
+      }
     } else {
-      await player.play()
-      await this.setState({ isMusicPlaying: true })
+      console.log("Your playlist is Empty! \n Please add songs to playlist to play!");
+
     }
   }
 
+  async seekAudio(e) {
+    if (this.state.currentAudioLink) {
+      const playerRef = document.getElementById("music-player");
+      playerRef.currentTime = playerRef.duration * (e.target.value / 100)
+      await this.setState({ currentProgress: playerRef.duration * (e.target.value / 100) })
+    } else {
+      console.log("Please add Music to your playlist to play!");
+    }
+  }
 
+  async muteToggle() {
+    if (this.state.currentAudioLink) {
+      const playerRef = document.getElementById("music-player");
+      playerRef.muted = !playerRef.muted
+      if (playerRef.muted) {
+        await this.setState({ isMuted: true, playerVolume: 0 })
+      } else {
+        await this.setState({ isMuted: false, playerVolume: playerRef.volume })
+      }
+    } else {
+      if (this.state.isMuted)
+        await this.setState({ isMuted: this.state.isMuted ? false : true, playerVolume: 0.5 })
+      else
+        await this.setState({ isMuted: this.state.isMuted ? false : true, playerVolume: 0 })
+    }
+  }
+
+  async updateVolume(e) {
+    if (this.state.currentAudioLink) {
+      const playerRef = document.getElementById("music-player");
+      playerRef.volume = e.target.value
+    }
+    await this.setState({ playerVolume: e.target.value });
+  }
 
   render() {
     return (
       <Fragment >
         <header>
-          <div className="logo cursor-pointer"></div>
+          <a className="logo cursor-pointer t-none" href={window.location.href}><span></span></a>
           <div className="player-wrapper">
             {
-              this.state.currentAudioLink &&
-              <audio id="music-player">
-                <source src={this.state.currentAudioLink} type="audio/mpeg" />
-              </audio>
+              this.state.currentAudioLink ?
+                <audio id="music-player">
+                  <source src={this.state.currentAudioLink} type="audio/mpeg" />
+                </audio> : null
             }
             <img className="music-thumb" src={this.state.currentAudioData.thumbnail} alt="" />
             <div className="music-title">
               {this.state.currentAudioData.title}
             </div>
-            <input className="progress-bar" min="0" max="100" step="1" type="range" name="" id="player-progress-bar" />
+            <input onChange={async (e) => {
+              await this.seekAudio(e)
+            }} className="progress-bar" min="0" max="100" value={this.state.currentProgress} step="1" type="range" name="" id="player-progress-bar" />
 
             <div className="music-playpause-holder">
-              <span className="cursor-pointer" onClick={() => {
-                this.playPauseToggle()
+              <span className="cursor-pointer" onClick={async () => {
+                await this.playPauseToggle()
               }}>
                 {this.state.isMusicPlaying ?
                   <i className="fas fa-pause play-icon cursor-pointer"></i> :
@@ -145,11 +208,17 @@ export default class App extends Component {
                 }
               </span>
               <span className="volume-icon cursor-pointer">
-                <i className="fas fa-volume-up"></i>
-                <span className="volume-progress">--------</span>
+                {this.state.isMuted ?
+                  <span onClick={async (e) => { await this.muteToggle() }}><i className="fas fa-volume-mute"></i></span>
+                  :
+                  <span onClick={async (e) => { await this.muteToggle() }}><i className="fas fa-volume-up"></i></span>
+                }
+                <input onChange={async (e) => {
+                  await this.updateVolume(e);
+                }} type="range" className="volume-progress" step="0.1" min="0" max="1" value={this.state.playerVolume} />
               </span>
               <span className="music-duration">
-                <span id="current-time">0:00</span>
+                <span id="current-time">{this.state.currentTimeText}</span>
                 <span className="font-weight-bold text-black">&nbsp;  |  &nbsp;</span>
                 <span >{this.state.currentAudioData.duration}</span>
               </span>
@@ -180,36 +249,34 @@ export default class App extends Component {
             }
           </div>
           {this.state.searchResults.length > 0 ?
-            <div className="search-whole-wrapper">
 
-              <div className="search-result-container">
+            <div className="search-result-container">
 
-                {this.state.searchResults.map((item, key) => (
+              {this.state.searchResults.map((item, key) => (
 
-                  <div className="result-node" key={key}>
-                    <div className="result-node-thumb">
-                      <img src={item.thumbnail} alt="" />
+                <div className="result-node" key={key}>
+                  <div className="result-node-thumb">
+                    <img src={item.thumbnail} alt="" />
+                  </div>
+                  <div className="result-node-desc">
+                    <div className="result-node-title">
+                      {item.title}
                     </div>
-                    <div className="result-node-desc">
-                      <div className="result-node-title">
-                        {item.title}
+                    <div className="result-node-attributes">
+                      <div className="result-node-duration">
+                        {item.duration}
                       </div>
-                      <div className="result-node-attributes">
-                        <div className="result-node-duration">
-                          {item.duration}
-                        </div>
-                        <div className="result-node-actions">
-                          <img onClick={(e) => {
-                            this.initPlayer(item)
-                          }} className="action-image-size cursor-pointer" src={play} alt="" />
-                          <img className="action-image-size cursor-pointer" src={downloadOrange} alt="" />
-                          <img className="action-image-size cursor-pointer" src={playlistadd} alt="" />
-                        </div>
+                      <div className="result-node-actions">
+                        <img onClick={(e) => {
+                          this.initPlayer(item)
+                        }} className="action-image-size cursor-pointer" src={play} alt="" />
+                        <img className="action-image-size cursor-pointer" src={downloadOrange} alt="" />
+                        <img className="action-image-size cursor-pointer" src={playlistadd} alt="" />
                       </div>
                     </div>
                   </div>
-                ))}
-              </div>
+                </div>
+              ))}
             </div>
             :
             <div className="dummy-music-holder">
