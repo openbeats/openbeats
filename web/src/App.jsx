@@ -23,17 +23,16 @@ export default class App extends Component {
         views: null,
       },
       currentAudioLink: null,
-      playerTimerListener: null,
       isMusicPlaying: false,
       currentProgress: 0,
       currentTimeText: '00:00',
       playerVolume: 0.5,
       isMuted: false,
-      playerEndListener: null
     }
 
     this.playerTimeUpdater = this.playerTimeUpdater.bind(this)
     this.seekAudio = this.seekAudio.bind(this)
+    this.playerEndHandler = this.playerEndHandler.bind(this)
   }
 
   async componentDidMount() {
@@ -65,12 +64,9 @@ export default class App extends Component {
   async fetchResults() {
     this.setState({ keywordSuggestions: [] })
     const url = `${variables.baseUrl}/ytcat?q=${this.state.searchText}`
-    console.log(url);
-
     await fetch(url)
       .then(res => res.json())
       .then(res => {
-        console.log(res);
         if (res.status) {
           this.setState({
             searchResults: res.data
@@ -82,14 +78,6 @@ export default class App extends Component {
 
   async initPlayer(audioData) {
     const url = `${variables.baseUrl}/opencc/${audioData.videoId.trim()}`
-    if (this.state.currentAudioLink) {
-      const player = document.getElementById("music-player");
-      if (this.state.playerTimerListener) {
-        player.removeEventListener("timeupdate", this.state.playerTimerListener);
-        await this.setState({ playerTimerListener: null });
-      }
-      this.setState({ currentAudioLink: null })
-    }
     await fetch(url)
       .then(res => res.json())
       .then(async res => {
@@ -103,14 +91,9 @@ export default class App extends Component {
 
   async startPlayer() {
     const player = document.getElementById("music-player");
-    if (this.state.playerTimerListener) {
-      player.removeEventListener("timeupdate", this.state.playerTimerListener);
-      await this.setState({ playerTimerListener: null });
-    }
+    await player.load();
     await player.play()
-    let timerListener = player.addEventListener("timeupdate", this.playerTimeUpdater);
-    let endListener = player.addEventListener("ended", this.playerEndHandler);
-    await this.setState({ playerTimerListener: timerListener, playerEndListener: endListener, isMusicPlaying: true });
+    await this.setState({ isMusicPlaying: true });
   }
 
   async playerTimeUpdater(e) {
@@ -178,25 +161,44 @@ export default class App extends Component {
     await this.setState({ playerVolume: e.target.value });
   }
 
+  async playerEndHandler(e) {
+    await this.setState({
+      currentAudioLink: null,
+      currentProgress: 0,
+      currentAudioData: {
+        channelName: null,
+        duration: "0:00",
+        thumbnail: musicDummy,
+        title: "Stream Unlimited Music for Free! @ OpenBeats",
+        uploadedOn: null,
+        videoId: null,
+        views: null,
+      },
+      isMusicPlaying: false,
+      currentTimeText: '00:00',
+    })
+
+  }
+
   render() {
     return (
       <Fragment >
         <header>
           <a className="logo cursor-pointer t-none" href={window.location.href}><span></span></a>
           <div className="player-wrapper">
-            {
-              this.state.currentAudioLink ?
-                <audio id="music-player">
-                  <source src={this.state.currentAudioLink} type="audio/mpeg" />
-                </audio> : null
-            }
+            <audio id="music-player"
+              onEnded={async (e) => await this.playerEndHandler(e)}
+              onTimeUpdate={async (e) => await this.playerTimeUpdater(e)}
+            >
+              <source src={this.state.currentAudioLink} type="audio/mpeg" />
+            </audio>
             <img className="music-thumb" src={this.state.currentAudioData.thumbnail} alt="" />
             <div className="music-title">
               {this.state.currentAudioData.title}
             </div>
             <input onChange={async (e) => {
               await this.seekAudio(e)
-            }} className="progress-bar" min="0" max="100" value={this.state.currentProgress} step="1" type="range" name="" id="player-progress-bar" />
+            }} className="progress-bar" min="0" max="100" value={isNaN(this.state.currentProgress) ? 0 : this.state.currentProgress} step="1" type="range" id="player-progress-bar" />
 
             <div className="music-playpause-holder">
               <span className="cursor-pointer" onClick={async () => {
