@@ -1,6 +1,6 @@
 import 'dotenv/config';
 import middleware from './config/middleware';
-import dbconfig from './config/db';
+// import dbconfig from './config/db';
 import express from 'express';
 import copycat from './core/copycat'
 import ytcat from './core/ytsearchcat'
@@ -8,7 +8,7 @@ import ytcat from './core/ytsearchcat'
 const app = express();
 
 middleware(app);
-dbconfig();
+// dbconfig();
 
 
 app.get("/", (req, res) => {
