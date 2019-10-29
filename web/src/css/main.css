@@ -30,8 +30,10 @@ header {
 }
 
 .logo {
-  font-size: 35px;
+  font-size: 40px;
+  letter-spacing: 10px;
   font-weight: bold;
+  margin-top: -8px;
 }
 
 .logo::before {
@@ -111,6 +113,36 @@ header {
 .progress-bar::-webkit-slider-thumb:hover {
   background: #f3f3f3;
 }
+.volume-progress {
+  color: #ff7373;
+  margin-left: 5px;
+  display: none;
+  height: 5px;
+  overflow: hidden;
+  width: 100px;
+  border-radius: 5px;
+  -webkit-appearance: none;
+}
+
+.volume-progress::-webkit-slider-runnable-track {
+  background: rgba(180, 179, 179, 0.5);
+}
+
+.volume-progress:focus {
+  outline: none;
+}
+
+.volume-progress::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: white;
+  box-shadow: -100vw 0 0 100vw #ff7373;
+}
+.volume-progress::-webkit-slider-thumb:hover {
+  background: #f3f3f3;
+}
 
 /* =========== == = = == == ==============progress section ==============  =  ====   == = == = = = == =*/
 
@@ -133,12 +165,9 @@ header {
   color: gray;
   margin-left: 15px;
   font-size: 15px;
-}
-
-.volume-progress {
-  color: #ff7373;
-  margin-left: 5px;
-  display: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .volume-icon:hover .volume-progress {
@@ -317,14 +346,8 @@ footer {
 }
 
 /* search result nodes container */
-.search-whole-wrapper {
-  width: 100%;
-  height: auto;
-  display: flex;
-  justify-content: center;
-}
-
 .search-result-container {
+  width: 100%;
   padding-left: 40px;
   padding-right: 40px;
   max-height: 32em;
@@ -335,6 +358,7 @@ footer {
   flex-direction: row;
   flex-wrap: wrap;
   align-items: center;
+  justify-content: center;
 }
 
 .result-node {
