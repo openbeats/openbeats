@@ -1,6 +1,6 @@
 import React, { Component, Fragment } from 'react'
 import "./css/main.css";
-import { musicNote, playlist, download, play, playlistadd, downloadOrange } from './images'
+import { musicNote, playlist, play, playlistadd, downloadOrange } from './images'
 
 import { variables } from "./config"
 export default class App extends Component {
@@ -12,12 +12,23 @@ export default class App extends Component {
       keywordSuggestions: [],
       searchResults: [],
       isSearchProcessing: false,
-      listener: null
+      listener: null,
+      currentAudioData: {
+        channelName: null,
+        duration: "0:00",
+        thumbnail: "https://img.freepik.com/free-vector/broken-frosted-glass-realistic-icon_1284-12125.jpg?size=338&ext=jpg",
+        title: "Search for Music",
+        uploadedOn: null,
+        videoId: null,
+        views: null,
+      },
+      currentAudioLink: null,
+      playerTimerListener: null,
+      isMusicPlaying: false
     }
   }
 
-  componentDidMount() {
-
+  async componentDidMount() {
   }
 
 
@@ -61,38 +72,91 @@ export default class App extends Component {
       .catch(err => console.error(err));
   }
 
+  async initPlayer(audioData) {
+    const url = `${variables.baseUrl}/opencc/${audioData.videoId.trim()}`
+
+    await fetch(url)
+      .then(res => res.json())
+      .then(async res => {
+        if (res.status) {
+          await this.setState({ currentAudioData: audioData, currentAudioLink: res.link });
+          await this.startPlayer()
+        }
+      })
+      .catch(err => console.error(err))
+  }
+
+  async startPlayer() {
+    const player = document.getElementById("music-player");
+    if (this.state.playerTimerListener) {
+      player.removeEventListener("timeupdate", this.state.playerTimerListener);
+      this.setState({ playerTimerListener: null });
+    }
+    await player.play()
+    let listener = player.addEventListener("timeupdate", this.playerTimeUpdater);
+    this.setState({ playerTimerListener: listener, isMusicPlaying: true });
+  }
+
+  playerTimeUpdater(e) {
+    let currentTime = e.target.currentTime;
+    let duration = e.target.duration;
+    const progressRef = document.getElementById("player-progress-bar");
+    progressRef.value = currentTime * (100 / duration)
+  }
+
+  async playPauseToggle() {
+    const player = document.getElementById("music-player");
+    if (this.state.isMusicPlaying) {
+      await player.pause()
+      await this.setState({ isMusicPlaying: false })
+    } else {
+      await player.play()
+      await this.setState({ isMusicPlaying: true })
+    }
+  }
+
+
 
   render() {
     return (
       <Fragment >
         <header>
-          <div className="logo"></div>
+          <div className="logo cursor-pointer"></div>
           <div className="player-wrapper">
-            <audio id="music-player">
-              <source src={"http://www.noiseaddicts.com/samples_1w72b820/2543.mp3"} type="audio/mpeg" />
-            </audio>
-            <img className="music-thumb" src={"https://img.freepik.com/free-vector/broken-frosted-glass-realistic-icon_1284-12125.jpg?size=338&ext=jpg"} alt="" />
+            {
+              this.state.currentAudioLink &&
+              <audio id="music-player">
+                <source src={this.state.currentAudioLink} type="audio/mpeg" />
+              </audio>
+            }
+            <img className="music-thumb" src={this.state.currentAudioData.thumbnail} alt="" />
             <div className="music-title">
-              Ennavale Adi Ennavale..
+              {this.state.currentAudioData.title}
             </div>
-            <input className="progress-bar" min="0" max="1" step="0.05" type="range" name="" id="" />
+            <input className="progress-bar" min="0" max="100" step="1" type="range" name="" id="player-progress-bar" />
 
             <div className="music-playpause-holder">
-              <i className="fas fa-play play-icon cursor-pointer"></i>
-              {/* <i className="fas fa-pause play-icon cursor-pointer"></i> */}
+              <span className="cursor-pointer" onClick={() => {
+                this.playPauseToggle()
+              }}>
+                {this.state.isMusicPlaying ?
+                  <i className="fas fa-pause play-icon cursor-pointer"></i> :
+                  <i className="fas fa-play play-icon cursor-pointer"></i>
+                }
+              </span>
               <span className="volume-icon cursor-pointer">
-                <i className="fas fa-volume-up text-white"></i>
+                <i className="fas fa-volume-up"></i>
                 <span className="volume-progress">--------</span>
               </span>
               <span className="music-duration">
-                <span >2.40</span>
-                <span className="font-weight-bold text-white">&nbsp;  |  &nbsp;</span>
-                <span >4.00</span>
+                <span id="current-time">0:00</span>
+                <span className="font-weight-bold text-black">&nbsp;  |  &nbsp;</span>
+                <span >{this.state.currentAudioData.duration}</span>
               </span>
             </div>
-            <div className="music-download cursor-pointer">
-              <img src={download} alt="" />
-            </div>
+            <a href={this.state.currentAudioLink} className="music-download cursor-pointer t-none">
+              <img src={downloadOrange} alt="" />
+            </a>
             <div className="music-playlist cursor-pointer">
               <img src={playlist} alt="" />
             </div>
@@ -116,31 +180,36 @@ export default class App extends Component {
             }
           </div>
           {this.state.searchResults.length > 0 ?
-            <div className="search-result-container">
+            <div className="search-whole-wrapper">
 
-              {this.state.searchResults.map((item, key) => (
+              <div className="search-result-container">
 
-                <div className="result-node" key={key}>
-                  <div className="result-node-thumb">
-                    <img src={item.thumbnail} alt="" />
-                  </div>
-                  <div className="result-node-desc">
-                    <div className="result-node-title">
-                      {item.title}
+                {this.state.searchResults.map((item, key) => (
+
+                  <div className="result-node" key={key}>
+                    <div className="result-node-thumb">
+                      <img src={item.thumbnail} alt="" />
                     </div>
-                    <div className="result-node-attributes">
-                      <div className="result-node-duration">
-                        {item.duration}
+                    <div className="result-node-desc">
+                      <div className="result-node-title">
+                        {item.title}
                       </div>
-                      <div className="result-node-actions">
-                        <img value={item.videoId} className="action-image-size cursor-pointer" src={play} alt="" />
-                        <img value={item.videoId} className="action-image-size cursor-pointer" src={downloadOrange} alt="" />
-                        <img value={item.videoId} className="action-image-size cursor-pointer" src={playlistadd} alt="" />
+                      <div className="result-node-attributes">
+                        <div className="result-node-duration">
+                          {item.duration}
+                        </div>
+                        <div className="result-node-actions">
+                          <img onClick={(e) => {
+                            this.initPlayer(item)
+                          }} className="action-image-size cursor-pointer" src={play} alt="" />
+                          <img className="action-image-size cursor-pointer" src={downloadOrange} alt="" />
+                          <img className="action-image-size cursor-pointer" src={playlistadd} alt="" />
+                        </div>
                       </div>
                     </div>
                   </div>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
             :
             <div className="dummy-music-holder">
