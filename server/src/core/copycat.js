@@ -1,5 +1,7 @@
 import fetch from 'node-fetch';
 import FormData from 'form-data';
+import { JSDOM } from 'jsdom';
+
 
 export default async (vidLink) => {
     let outputLink = null;
@@ -20,6 +22,8 @@ export default async (vidLink) => {
             let data = res.result.split(" ");
             let _id = data[data.indexOf("_id:") + 1];
             let v_id = data[data.indexOf("v_id:") + 1];
+            console.log(_id, v_id);
+
             _id = _id.replace("'", "")
             _id = _id.replace("'", "")
             _id = _id.replace(",", "")
@@ -35,6 +39,7 @@ export default async (vidLink) => {
             fd.append("ftype", 'mp3');
             fd.append("fquality", '128');
 
+
             await fetch(convertLink,
                 {
                     method: 'post',
@@ -42,12 +47,11 @@ export default async (vidLink) => {
                 })
                 .then(res => res.json())
                 .then(res => {
-                    let temp = res.result;
-                    temp = temp.replace("\\r", "");
-                    temp = temp.replace("\\n", "");
-                    temp = temp.replace("\\", "");
-                    temp = temp.split("\"");
-                    outputLink = temp[temp.indexOf(`>\r\n    <a href=`) + 1]
+                    let dom = new JSDOM(res.result.trim());
+                    let targetNode = dom.window.document.getElementsByClassName("btn-file");
+                    if (targetNode.length > 0) {
+                        outputLink = targetNode[0].getAttribute("href");
+                    }
                 })
         })
         .catch(err => console.log(err))
