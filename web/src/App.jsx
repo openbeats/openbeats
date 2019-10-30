@@ -1,8 +1,10 @@
 import React, { Component, Fragment } from 'react'
 import "./css/main.css";
-import { musicNote, playlist, play, playlistadd, downloadOrange, musicDummy } from './images'
+import { musicNote, playlist, play, playlistadd, downloadOrange, musicDummy } from './images';
+import { variables } from "./config";
+import { toast } from 'react-toastify';
+import Loader from 'react-loader-spinner'
 
-import { variables } from "./config"
 export default class App extends Component {
 
   constructor(props) {
@@ -17,7 +19,7 @@ export default class App extends Component {
         channelName: null,
         duration: "0:00",
         thumbnail: musicDummy,
-        title: "Stream Unlimited Music for Free! @ OpenBeats",
+        title: "Stream or Download Unlimited Music for Free ! @ OpenBeats",
         uploadedOn: null,
         videoId: null,
         views: null,
@@ -28,27 +30,28 @@ export default class App extends Component {
       currentTimeText: '00:00',
       playerVolume: 0.5,
       isMuted: false,
+      heartBeat: null,
+      isSearching: false
     }
 
-    this.playerTimeUpdater = this.playerTimeUpdater.bind(this)
-    this.seekAudio = this.seekAudio.bind(this)
-    this.playerEndHandler = this.playerEndHandler.bind(this)
+    this.playerTimeUpdater = this.playerTimeUpdater.bind(this);
+    this.seekAudio = this.seekAudio.bind(this);
+    this.playerEndHandler = this.playerEndHandler.bind(this);
+    this.playPauseToggle = this.playPauseToggle.bind(this);
+    this.beatNotice = 0;
   }
 
   async componentDidMount() {
   }
 
-
   async getKeywordSuggestion(e) {
     this.setState({ searchText: e.target.value })
-    const url = `https://clients1.google.com/complete/search?client=youtube&hl=en&gl=in&sugexp=brcmjc%2Cbrueb%3D1%2Cbruesk%3D1%2Cuimd%3D1%2Cbrmlmo%3Dyt%252Fen%253Aus%253Ayt_en_us_loc%252Cyt%252Fja%253A%253Ayt_cjk_loc%252Cyt%252Fko%253A%253Ayt_cjk_loc%252Cyt%252Fzh-TW%253A%253Ayt_cjk_loc%252Cyt%252Fzh-CN%253A%253Ayt_cjk_loc%252Cyt%252Fdefault%253A%253Ayt_i18n_loc%2Ccfro%3D1%2Cbrueb%3D1&gs_rn=64&gs_ri=youtube&tok=rSSsBe5Xjbc6evDhnFq1Ew&ds=yt&cp=2&gs_id=8&q=${e.target.value}&callback=google.sbox.p50&gs_gbg=jGJ7J1BaQuU5YRqac`;
+    const url = `${variables.baseUrl}/suggester?k=${e.target.value}`;
     if (e.target.value.length > 0) {
       await fetch(url)
-        .then(res => res.text())
+        .then(res => res.json())
         .then(res => {
-          let tmp = res.replace("google.sbox.p50 && google.sbox.p50(", "");
-          tmp = tmp.replace(")", "");
-          let temp = JSON.parse(tmp)[1]
+          let temp = res.data
           let listener = document.addEventListener("click", function () {
             if (listener != null) {
               document.removeEventListener(this.state.listenter)
@@ -62,37 +65,64 @@ export default class App extends Component {
   }
 
   async fetchResults() {
-    this.setState({ keywordSuggestions: [] })
+    await this.setState({ keywordSuggestions: [], isSearching: true })
     const url = `${variables.baseUrl}/ytcat?q=${this.state.searchText}`
     await fetch(url)
       .then(res => res.json())
-      .then(res => {
+      .then(async res => {
         if (res.status) {
-          this.setState({
-            searchResults: res.data
+          await this.setState({
+            searchResults: res.data,
+            isSearching: false,
+            keywordSuggestions: []
           })
+
         }
       })
       .catch(err => console.error(err));
   }
 
   async initPlayer(audioData) {
-    const url = `${variables.baseUrl}/opencc/${audioData.videoId.trim()}`
-    await fetch(url)
-      .then(res => res.json())
-      .then(async res => {
-        if (res.status) {
-          await this.setState({ currentAudioData: audioData, currentAudioLink: res.link });
-          await this.startPlayer()
-        }
-      })
-      .catch(err => console.error(err))
+    if (this.beatNotice < 3) {
+
+      this.beatNotice += 1;
+
+      const player = document.getElementById("music-player");
+      await this.playerEndHandler();
+
+      const url = `${variables.baseUrl}/opencc/${audioData.videoId.trim()}`
+      await fetch(url)
+        .then(res => res.json())
+        .then(async res => {
+          if (res.status) {
+
+            let heartBeatTimer = setTimeout(async function () {
+              if (!(player.currentTime > 0) && !this.state.isMusicPlaying) {
+                await this.initPlayer(audioData);
+              } else {
+                this.beatNotice = 0;
+              }
+            }.bind(this), 5000);
+
+            await this.setState({ currentAudioData: audioData, currentAudioLink: res.link, heartBeat: heartBeatTimer });
+            await this.startPlayer()
+
+          }
+        })
+        .catch(err => console.error(err))
+    } else {
+      this.beatNotice = 0;
+      await this.playerEndHandler()
+      toast("Music You are looking for is not available right now! try alternate music!")
+    }
   }
 
   async startPlayer() {
     const player = document.getElementById("music-player");
+    const source = document.getElementById("audio-source");
+    source.src = this.state.currentAudioLink
     await player.load();
-    await player.play()
+    await player.play();
     await this.setState({ isMusicPlaying: true });
   }
 
@@ -121,8 +151,7 @@ export default class App extends Component {
         await this.setState({ isMusicPlaying: true })
       }
     } else {
-      console.log("Your playlist is Empty! \n Please add songs to playlist to play!");
-
+      this.warnUser()
     }
   }
 
@@ -132,8 +161,12 @@ export default class App extends Component {
       playerRef.currentTime = playerRef.duration * (e.target.value / 100)
       await this.setState({ currentProgress: playerRef.duration * (e.target.value / 100) })
     } else {
-      console.log("Please add Music to your playlist to play!");
+      this.warnUser()
     }
+  }
+
+  async warnUser() {
+    toast("Please Search and Add Music \n to your playlist to play !")
   }
 
   async muteToggle() {
@@ -161,7 +194,16 @@ export default class App extends Component {
     await this.setState({ playerVolume: e.target.value });
   }
 
-  async playerEndHandler(e) {
+  async playerEndHandler() {
+    const player = document.getElementById("music-player");
+    const source = document.getElementById("audio-source");
+    player.pause()
+    player.currentTime = 0;
+    source.src = ""
+    if (this.state.heartBeat) {
+      clearTimeout(this.state.heartBeat)
+      await this.setState({ heartBeat: null })
+    }
     await this.setState({
       currentAudioLink: null,
       currentProgress: 0,
@@ -169,7 +211,7 @@ export default class App extends Component {
         channelName: null,
         duration: "0:00",
         thumbnail: musicDummy,
-        title: "Stream Unlimited Music for Free! @ OpenBeats",
+        title: "Stream or Download Unlimited Music for Free! @ OpenBeats",
         uploadedOn: null,
         videoId: null,
         views: null,
@@ -177,7 +219,10 @@ export default class App extends Component {
       isMusicPlaying: false,
       currentTimeText: '00:00',
     })
+  }
 
+  async featureNotify() {
+    toast("We Appreciate Your Interest! This Feature is Under Development!");
   }
 
   render() {
@@ -185,54 +230,89 @@ export default class App extends Component {
       <Fragment >
         <header>
           <a className="logo cursor-pointer t-none" href={window.location.href}><span></span></a>
+
           <div className="player-wrapper">
+
             <audio id="music-player"
-              onEnded={async (e) => await this.playerEndHandler(e)}
+              onEnded={async (e) => await this.playerEndHandler()}
               onTimeUpdate={async (e) => await this.playerTimeUpdater(e)}
             >
-              <source src={this.state.currentAudioLink} type="audio/mpeg" />
+              <source src="" type="audio/mpeg" id="audio-source" />
             </audio>
-            <img className="music-thumb" src={this.state.currentAudioData.thumbnail} alt="" />
-            <div className="music-title">
-              {this.state.currentAudioData.title}
-            </div>
-            <input onChange={async (e) => {
-              await this.seekAudio(e)
-            }} className="progress-bar" min="0" max="100" value={isNaN(this.state.currentProgress) ? 0 : this.state.currentProgress} step="1" type="range" id="player-progress-bar" />
 
-            <div className="music-playpause-holder">
-              <span className="cursor-pointer" onClick={async () => {
-                await this.playPauseToggle()
-              }}>
-                {this.state.isMusicPlaying ?
-                  <i className="fas fa-pause play-icon cursor-pointer"></i> :
-                  <i className="fas fa-play play-icon cursor-pointer"></i>
-                }
-              </span>
-              <span className="volume-icon cursor-pointer">
-                {this.state.isMuted ?
-                  <span onClick={async (e) => { await this.muteToggle() }}><i className="fas fa-volume-mute"></i></span>
-                  :
-                  <span onClick={async (e) => { await this.muteToggle() }}><i className="fas fa-volume-up"></i></span>
-                }
-                <input onChange={async (e) => {
-                  await this.updateVolume(e);
-                }} type="range" className="volume-progress" step="0.1" min="0" max="1" value={this.state.playerVolume} />
-              </span>
-              <span className="music-duration">
-                <span id="current-time">{this.state.currentTimeText}</span>
-                <span className="font-weight-bold text-black">&nbsp;  |  &nbsp;</span>
-                <span >{this.state.currentAudioData.duration}</span>
-              </span>
+            <img className="music-thumb" src={this.state.currentAudioData.thumbnail} alt="" />
+
+            <div className="music-center-core">
+
+              <div className="music-title">
+                {this.state.currentAudioData.title}
+              </div>
+
+              <input
+                onChange={async (e) => { await this.seekAudio(e) }}
+                className="progress-bar"
+                min="0"
+                max="100"
+                value={isNaN(this.state.currentProgress) ? 0 : this.state.currentProgress}
+                step="1"
+                type="range"
+                id="player-progress-bar"
+              />
+
+              <div className="music-playpause-holder">
+                <span className="cursor-pointer" onClick={async () => {
+                  await this.playPauseToggle()
+                }}>
+                  {this.state.isMusicPlaying ?
+                    <i className="fas fa-pause play-icon cursor-pointer"></i> :
+                    <i className="fas fa-play play-icon cursor-pointer"></i>
+                  }
+                </span>
+                <span className="volume-icon cursor-pointer">
+                  {this.state.isMuted ?
+                    <span onClick={async (e) => { await this.muteToggle() }}><i className="fas fa-volume-mute"></i></span>
+                    :
+                    <span onClick={async (e) => { await this.muteToggle() }}><i className="fas fa-volume-up"></i></span>
+                  }
+                  <input onChange={async (e) => {
+                    await this.updateVolume(e);
+                  }} type="range" className="volume-progress" step="0.1" min="0" max="1" value={this.state.playerVolume} />
+                </span>
+                <span className="music-duration">
+                  <span id="current-time">{this.state.currentTimeText}</span>
+                  <span className="font-weight-bold text-black">&nbsp;  |  &nbsp;</span>
+                  <span >{this.state.currentAudioData.duration}</span>
+                </span>
+              </div>
+
             </div>
-            <a href={this.state.currentAudioLink} className="music-download cursor-pointer t-none">
-              <img src={downloadOrange} alt="" />
-            </a>
-            <div className="music-playlist cursor-pointer">
-              <img src={playlist} alt="" />
+
+            <div className="music-player-tail">
+
+              <a
+                onClick={
+                  (e) => {
+                    if (!this.state.currentAudioLink) {
+                      toast("Please Search for Music to Download or Play !")
+                    }
+                  }
+                }
+                href={this.state.currentAudioLink} className="music-download cursor-pointer t-none">
+                <img src={downloadOrange} alt="" />
+              </a>
+
+              <div onClick={
+                () => {
+                  this.featureNotify()
+                }
+              } className="music-playlist cursor-pointer">
+                <img src={playlist} alt="" />
+              </div>
+
             </div>
           </div>
         </header>
+
         <main>
           <div className="main-search">
             <form action="" onSubmit={(e) => { e.preventDefault(); this.fetchResults(); }}>
@@ -250,41 +330,58 @@ export default class App extends Component {
               </div>
             }
           </div>
-          {this.state.searchResults.length > 0 ?
+          {
+            !this.state.isSearching ?
+              this.state.searchResults.length > 0 ?
+                <div className="search-result-container">
+                  {this.state.searchResults.map((item, key) => (
 
-            <div className="search-result-container">
-
-              {this.state.searchResults.map((item, key) => (
-
-                <div className="result-node" key={key}>
-                  <div className="result-node-thumb">
-                    <img src={item.thumbnail} alt="" />
-                  </div>
-                  <div className="result-node-desc">
-                    <div className="result-node-title">
-                      {item.title}
-                    </div>
-                    <div className="result-node-attributes">
-                      <div className="result-node-duration">
-                        {item.duration}
+                    <div className="result-node" key={key}>
+                      <div className="result-node-thumb">
+                        <img src={item.thumbnail} alt="" />
                       </div>
-                      <div className="result-node-actions">
-                        <img onClick={(e) => {
-                          this.initPlayer(item)
-                        }} className="action-image-size cursor-pointer" src={play} alt="" />
-                        <img className="action-image-size cursor-pointer" src={downloadOrange} alt="" />
-                        <img className="action-image-size cursor-pointer" src={playlistadd} alt="" />
+                      <div className="result-node-desc">
+                        <div className="result-node-title">
+                          {item.title}
+                        </div>
+                        <div className="result-node-attributes">
+                          <div className="result-node-duration">
+                            {item.duration}
+                          </div>
+                          <div className="result-node-actions">
+                            <img onClick={(e) => {
+                              this.initPlayer(item)
+                            }} className="action-image-size cursor-pointer" src={play} alt="" />
+                            <img onClick={
+                              () => {
+                                this.featureNotify()
+                              }
+                            } className="action-image-size cursor-pointer" src={downloadOrange} alt="" />
+                            <img onClick={
+                              () => {
+                                this.featureNotify()
+                              }
+                            } className="action-image-size cursor-pointer" src={playlistadd} alt="" />
+                          </div>
+                        </div>
                       </div>
                     </div>
-                  </div>
+                  ))}
                 </div>
-              ))}
-            </div>
-            :
-            <div className="dummy-music-holder">
-              <img className={`music-icon ${this.state.isSearchProcessing ? 'preload-custom-1' : ''}`} src={musicNote} alt="" />
-              <p className="music-icon-para">Your Music Appears Here!</p>
-            </div>
+                :
+                <div className="dummy-music-holder">
+                  <img className={`music-icon ${this.state.isSearchProcessing ? 'preload-custom-1' : ''}`} src={musicNote} alt="" />
+                  <p className="music-icon-para">Your Music Appears Here!</p>
+                </div>
+              :
+              <div className="search-preloader">
+                <Loader
+                  type="ThreeDots"
+                  color="#ff7373"
+                  height={80}
+                  width={80}
+                />
+              </div>
           }
         </main>
         <footer>
@@ -292,12 +389,21 @@ export default class App extends Component {
             © 2019 OpenBeats.in | All Rights Reserved.
           </div>
           <div className="footer-right">
-            <a className="about-us" href="http://localhost:2000/">About Us</a>
-            <a href="http://localhost:2000/"><i className="fab fa-android android-color"></i></a>
+            <span onClick={
+              () => {
+                this.featureNotify()
+              }
+            } className="about-us cursor-pointer">About Us</span>
+            <span onClick={
+              () => {
+                this.featureNotify()
+              }
+            }><i className="fab fa-android android-color cursor-pointer"></i></span>
           </div>
 
         </footer>
       </Fragment>
     )
   }
+
 }

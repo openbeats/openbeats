@@ -38,10 +38,20 @@ export default async (queryString) => {
                 let videoId = targetNodes[i].getElementsByClassName("yt-uix-tile-link")[0].href.replace("/watch?v=", "");
                 let channelName = targetNodes[i].getElementsByClassName("yt-lockup-byline")[0].getElementsByTagName("a")[0].textContent;
                 let channelId = targetNodes[i].getElementsByClassName("yt-lockup-byline")[0].getElementsByTagName("a")[0].href;
-                let uploadedOn = targetNodes[i].getElementsByClassName("yt-lockup-meta-info")[0].getElementsByTagName("li")[0].textContent.trim();
-                let views = targetNodes[i].getElementsByClassName("yt-lockup-meta-info")[0].getElementsByTagName("li")[1].textContent.trim();
+                let uploadedOn = ""
+                let views = "";
+                if (targetNodes[i].getElementsByClassName("yt-lockup-meta-info")[0].getElementsByTagName("li").length == 2) {
+                    uploadedOn = targetNodes[i].getElementsByClassName("yt-lockup-meta-info")[0].getElementsByTagName("li")[0].textContent.trim();
+                    views = targetNodes[i].getElementsByClassName("yt-lockup-meta-info")[0].getElementsByTagName("li")[1].textContent.trim();
+                } else if (targetNodes[i].getElementsByClassName("yt-lockup-meta-info")[0].getElementsByTagName("li").length == 1) {
+                    let temp = targetNodes[i].getElementsByClassName("yt-lockup-meta-info")[0].getElementsByTagName("li")[0].textContent.trim();
+                    if (temp.includes("views")) {
+                        views = temp;
+                    } else {
+                        uploadedOn = temp;
+                    }
+                }
                 let description = ""
-
                 if (targetNodes[i].getElementsByClassName("yt-lockup-description").length > 0)
                     description = targetNodes[i].getElementsByClassName("yt-lockup-description")[0].textContent.trim();
 
