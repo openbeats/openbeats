@@ -40,28 +40,34 @@ header {
   content: "Open";
   color: #ff7373;
 }
+
 .logo::after {
   content: "Beats";
   color: #0a0a0a;
 }
 
+/* player container */
+
 .player-wrapper {
   width: 60%;
-  border-radius: 50px;
-  background: #ffffff;
   height: 72px;
-  box-sizing: border-box;
   position: relative;
+  box-sizing: border-box;
+  background: #ffffff;
+  border-radius: 50px;
   box-shadow: 0 0 20px 0 rgba(253, 79, 79, 0.3);
+  display: grid;
+  grid-template-columns: 9% auto 13%;
+  align-items: center;
+  column-gap: 5px;
 }
 
+/* player-head */
 .music-thumb {
-  position: absolute;
-  top: 5px;
-  left: 7px;
-  box-sizing: border-box;
   height: 88%;
   width: 60px;
+  margin-left: 7px;
+  box-sizing: border-box;
   border-radius: 50%;
   background: #f3f3f3;
   display: flex;
@@ -70,22 +76,23 @@ header {
   align-items: center;
 }
 
+/* player-center */
+.music-center-core {
+  display: grid;
+  grid-template-rows: auto auto auto;
+  row-gap: 8px;
+}
+
 .music-title {
-  position: absolute;
-  top: 10px;
-  left: 82px;
   font-size: 14px;
   font-weight: bold;
   color: #ff7373;
-  /* opacity: 0.6; */
+  width: 100%;
+  overflow: hidden;
 }
 
-/* =========== == = = == == ==============progress section ==============  =  ====   == = == = = = == =*/
 .progress-bar {
-  position: absolute;
-  top: 34px;
-  width: 47em;
-  left: 82px;
+  width: 100%;
   height: 5px;
   overflow-y: hidden;
   cursor: pointer;
@@ -113,6 +120,7 @@ header {
 .progress-bar::-webkit-slider-thumb:hover {
   background: #f3f3f3;
 }
+
 .volume-progress {
   color: #ff7373;
   margin-left: 5px;
@@ -140,20 +148,15 @@ header {
   background: white;
   box-shadow: -100vw 0 0 100vw #ff7373;
 }
+
 .volume-progress::-webkit-slider-thumb:hover {
   background: #f3f3f3;
 }
 
-/* =========== == = = == == ==============progress section ==============  =  ====   == = == = = = == =*/
-
 .music-playpause-holder {
-  position: absolute;
-  top: 47px;
-  left: 83px;
   display: flex;
-  justify-content: center;
+  justify-content: flex-start;
   align-items: center;
-  z-index: 1;
 }
 
 .play-icon {
@@ -180,29 +183,27 @@ header {
   color: #ff7373;
 }
 
-.music-download {
-  position: absolute;
-  right: 82px;
-  top: 12px;
-  padding: 10px;
+/* music player tail */
+.music-player-tail {
+  display: grid;
+  grid-template-columns: auto auto;
+  align-items: center;
+  padding-left: 15px;
 }
 
 .music-download > img {
   width: 22px;
   opacity: 0.8;
 }
-.music-playlist {
-  position: absolute;
-  right: 20px;
-  top: 15px;
-  padding: 10px;
-}
 
 .music-playlist > img {
   width: 22px;
   opacity: 0.8;
+  margin-top: 5px;
 }
+/* end of player styling */
 
+/* main container styling */
 main {
   width: 100vw;
   display: flex;
@@ -221,8 +222,8 @@ main {
   border-top: 0;
   border-right: 0;
   border-bottom: 1px solid rgba(red, green, blue, 0.5);
-  width: 30em;
-  font-size: 24px;
+  width: 45rem;
+  font-size: 20px;
   letter-spacing: 5px;
   caret-color: rgba(255, 103, 103, 0.4);
   line-height: 1px;
@@ -247,7 +248,7 @@ main {
   position: absolute;
   right: 0;
   margin-right: 8px;
-  margin-top: 5px;
+  margin-top: 2px;
   text-decoration: none;
   border: none;
   background: none;
@@ -285,6 +286,7 @@ main {
   padding-right: 10px;
   padding-bottom: 5px;
 }
+
 .suggested-keyword:hover {
   background: #f3f3f3;
   cursor: pointer;
@@ -339,6 +341,7 @@ footer {
   /* text-decoration: none; */
   color: #ff7373;
 }
+
 .android-color {
   margin-left: 20px;
   color: #34b90c;
@@ -361,6 +364,10 @@ footer {
   justify-content: center;
 }
 
+.search-preloader{
+  margin-top: 14%;
+}
+
 .result-node {
   margin: 15px;
   display: flex;
@@ -370,6 +377,7 @@ footer {
   display: flex;
   position: relative;
   justify-content: space-between;
+  overflow: hidden;
 }
 
 .result-node-thumb > img {
@@ -384,7 +392,9 @@ footer {
   justify-content: space-between;
   height: 100%;
   width: 100%;
+  box-sizing: border-box;
   padding: 10px;
+  word-break: break-all;
 }
 
 .result-node-title {
@@ -422,6 +432,7 @@ footer {
 }
 
 /* search result nodes container */
+
 
 /* commons */
 

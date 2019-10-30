@@ -22,8 +22,6 @@ export default async (vidLink) => {
             let data = res.result.split(" ");
             let _id = data[data.indexOf("_id:") + 1];
             let v_id = data[data.indexOf("v_id:") + 1];
-            console.log(_id, v_id);
-
             _id = _id.replace("'", "")
             _id = _id.replace("'", "")
             _id = _id.replace(",", "")
@@ -31,14 +29,12 @@ export default async (vidLink) => {
             v_id = v_id.replace("'", "")
             v_id = v_id.replace(",", "")
             let fd = new FormData();
-
             fd.append("type", 'youtube');
             fd.append("_id", _id);
             fd.append("v_id", v_id);
             fd.append("ajax", '1');
             fd.append("ftype", 'mp3');
             fd.append("fquality", '128');
-
 
             await fetch(convertLink,
                 {

@@ -2,9 +2,7 @@ import 'dotenv/config';
 import middleware from './config/middleware';
 // import dbconfig from './config/db';
 import express from 'express';
-import copycat from './core/copycat'
-import ytcat from './core/ytsearchcat'
-
+import { ytcat, copycat, suggestbeat } from './core'
 const app = express();
 
 middleware(app);
@@ -26,6 +24,14 @@ app.get("/opencc/:id", async (req, res) => {
 
 app.get("/ytcat", async (req, res) => {
     let data = await ytcat(req.query.q)
+    res.send({
+        'status': true,
+        'data': data
+    });
+})
+
+app.get("/suggester", async (req, res) => {
+    let data = await suggestbeat(req.query.k)
     res.send({
         'status': true,
         'data': data
