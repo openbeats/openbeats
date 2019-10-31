@@ -36,6 +36,9 @@ export default async (queryString) => {
                 }
                 let title = targetNodes[i].getElementsByClassName("yt-uix-tile-link")[0].textContent;
                 let videoId = targetNodes[i].getElementsByClassName("yt-uix-tile-link")[0].href.replace("/watch?v=", "");
+                if (videoId.includes("googleadservices")) {
+                    continue;
+                }
                 let channelName = targetNodes[i].getElementsByClassName("yt-lockup-byline")[0].getElementsByTagName("a")[0].textContent;
                 let channelId = targetNodes[i].getElementsByClassName("yt-lockup-byline")[0].getElementsByTagName("a")[0].href;
                 let uploadedOn = ""
@@ -51,6 +54,8 @@ export default async (queryString) => {
                         uploadedOn = temp;
                     }
                 }
+
+
                 let description = ""
                 if (targetNodes[i].getElementsByClassName("yt-lockup-description").length > 0)
                     description = targetNodes[i].getElementsByClassName("yt-lockup-description")[0].textContent.trim();

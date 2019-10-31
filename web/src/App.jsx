@@ -65,13 +65,13 @@ export default class App extends Component {
   }
 
   async fetchResults() {
-    await this.setState({ keywordSuggestions: [], isSearching: true })
+    this.setState({ keywordSuggestions: [], isSearching: true })
     const url = `${variables.baseUrl}/ytcat?q=${this.state.searchText}`
     await fetch(url)
       .then(res => res.json())
       .then(async res => {
         if (res.status) {
-          await this.setState({
+          this.setState({
             searchResults: res.data,
             isSearching: false,
             keywordSuggestions: []
@@ -84,35 +84,32 @@ export default class App extends Component {
 
   async initPlayer(audioData) {
     if (this.beatNotice < 3) {
-
       this.beatNotice += 1;
-
       const player = document.getElementById("music-player");
       await this.playerEndHandler();
-
+      this.setState({ currentAudioData: audioData, isAudioBuffering: true })
       const url = `${variables.baseUrl}/opencc/${audioData.videoId.trim()}`
       await fetch(url)
         .then(res => res.json())
         .then(async res => {
           if (res.status) {
-
             let heartBeatTimer = setTimeout(async function () {
               if (!(player.currentTime > 0) && !this.state.isMusicPlaying) {
                 await this.initPlayer(audioData);
               } else {
+                this.setState({ isAudioBuffering: false })
                 this.beatNotice = 0;
               }
             }.bind(this), 5000);
-
-            await this.setState({ currentAudioData: audioData, currentAudioLink: res.link, heartBeat: heartBeatTimer });
+            this.setState({ currentAudioData: audioData, currentAudioLink: res.link, heartBeat: heartBeatTimer });
             await this.startPlayer()
-
           }
         })
         .catch(err => console.error(err))
     } else {
       this.beatNotice = 0;
       await this.playerEndHandler()
+      this.setState({ isAudioBuffering: false })
       toast("Music You are looking for is not available right now! try alternate music!")
     }
   }
@@ -123,7 +120,7 @@ export default class App extends Component {
     source.src = this.state.currentAudioLink
     await player.load();
     await player.play();
-    await this.setState({ isMusicPlaying: true });
+    this.setState({ isMusicPlaying: true });
   }
 
   async playerTimeUpdater(e) {
@@ -137,7 +134,7 @@ export default class App extends Component {
     if (dursecs < 10) { dursecs = "0" + dursecs; }
     if (curmins < 10) { curmins = "0" + curmins; }
     if (durmins < 10) { durmins = "0" + durmins; }
-    await this.setState({ currentProgress: currentTime * (100 / duration), currentTimeText: curmins + ":" + cursecs })
+    this.setState({ currentProgress: currentTime * (100 / duration), currentTimeText: curmins + ":" + cursecs })
   }
 
   async playPauseToggle() {
@@ -145,10 +142,10 @@ export default class App extends Component {
       const player = document.getElementById("music-player");
       if (this.state.isMusicPlaying) {
         await player.pause()
-        await this.setState({ isMusicPlaying: false })
+        this.setState({ isMusicPlaying: false })
       } else {
         await player.play()
-        await this.setState({ isMusicPlaying: true })
+        this.setState({ isMusicPlaying: true })
       }
     } else {
       this.warnUser()
@@ -159,7 +156,7 @@ export default class App extends Component {
     if (this.state.currentAudioLink) {
       const playerRef = document.getElementById("music-player");
       playerRef.currentTime = playerRef.duration * (e.target.value / 100)
-      await this.setState({ currentProgress: playerRef.duration * (e.target.value / 100) })
+      this.setState({ currentProgress: playerRef.duration * (e.target.value / 100) })
     } else {
       this.warnUser()
     }
@@ -174,15 +171,15 @@ export default class App extends Component {
       const playerRef = document.getElementById("music-player");
       playerRef.muted = !playerRef.muted
       if (playerRef.muted) {
-        await this.setState({ isMuted: true, playerVolume: 0 })
+        this.setState({ isMuted: true, playerVolume: 0 })
       } else {
-        await this.setState({ isMuted: false, playerVolume: playerRef.volume })
+        this.setState({ isMuted: false, playerVolume: playerRef.volume })
       }
     } else {
       if (this.state.isMuted)
-        await this.setState({ isMuted: this.state.isMuted ? false : true, playerVolume: 0.5 })
+        this.setState({ isMuted: this.state.isMuted ? false : true, playerVolume: 0.5 })
       else
-        await this.setState({ isMuted: this.state.isMuted ? false : true, playerVolume: 0 })
+        this.setState({ isMuted: this.state.isMuted ? false : true, playerVolume: 0 })
     }
   }
 
@@ -191,7 +188,7 @@ export default class App extends Component {
       const playerRef = document.getElementById("music-player");
       playerRef.volume = e.target.value
     }
-    await this.setState({ playerVolume: e.target.value });
+    this.setState({ playerVolume: e.target.value });
   }
 
   async playerEndHandler() {
@@ -202,9 +199,9 @@ export default class App extends Component {
     source.src = ""
     if (this.state.heartBeat) {
       clearTimeout(this.state.heartBeat)
-      await this.setState({ heartBeat: null })
+      this.setState({ heartBeat: null })
     }
-    await this.setState({
+    this.setState({
       currentAudioLink: null,
       currentProgress: 0,
       currentAudioData: {
@@ -225,6 +222,11 @@ export default class App extends Component {
     toast("We Appreciate Your Interest! This Feature is Under Development!");
   }
 
+  async isMusicPlaying() {
+    this.setState({ isAudioBuffering: false });
+    return true;
+  }
+
   render() {
     return (
       <Fragment >
@@ -240,7 +242,7 @@ export default class App extends Component {
               <source src="" type="audio/mpeg" id="audio-source" />
             </audio>
 
-            <img className="music-thumb" src={this.state.currentAudioData.thumbnail} alt="" />
+            <img className={`music-thumb ${this.state.isAudioBuffering ? 'shake-me' : ''}`} src={this.state.currentAudioData.thumbnail} alt="" />
 
             <div className="music-center-core">
 
@@ -264,6 +266,7 @@ export default class App extends Component {
                   await this.playPauseToggle()
                 }}>
                   {this.state.isMusicPlaying ?
+                    this.isMusicPlaying() &&
                     <i className="fas fa-pause play-icon cursor-pointer"></i> :
                     <i className="fas fa-play play-icon cursor-pointer"></i>
                   }
@@ -323,7 +326,7 @@ export default class App extends Component {
               <div className="suggestion-keyword-holder">
                 {this.state.keywordSuggestions.map((item, key) => (
                   <div onClick={async (e) => {
-                    await this.setState({ searchText: item[0], keywordSuggestions: [] });
+                    this.setState({ searchText: item[0], keywordSuggestions: [] });
                     this.fetchResults();
                   }} key={key} className="suggested-keyword" >{item[0]}</div>
                 ))}
@@ -349,8 +352,9 @@ export default class App extends Component {
                             {item.duration}
                           </div>
                           <div className="result-node-actions">
-                            <img onClick={(e) => {
-                              this.initPlayer(item)
+                            <img onClick={async (e) => {
+                              this.beatNotice = 0
+                              await this.initPlayer(item)
                             }} className="action-image-size cursor-pointer" src={play} alt="" />
                             <img onClick={
                               () => {
