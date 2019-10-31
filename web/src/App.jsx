@@ -120,7 +120,7 @@ export default class App extends Component {
     source.src = this.state.currentAudioLink
     await player.load();
     await player.play();
-    this.setState({ isMusicPlaying: true });
+    this.setState({ isMusicPlaying: true, isAudioBuffering: false });
   }
 
   async playerTimeUpdater(e) {
@@ -222,11 +222,6 @@ export default class App extends Component {
     toast("We Appreciate Your Interest! This Feature is Under Development!");
   }
 
-  async isMusicPlaying() {
-    this.setState({ isAudioBuffering: false });
-    return true;
-  }
-
   render() {
     return (
       <Fragment >
@@ -266,7 +261,6 @@ export default class App extends Component {
                   await this.playPauseToggle()
                 }}>
                   {this.state.isMusicPlaying ?
-                    this.isMusicPlaying() &&
                     <i className="fas fa-pause play-icon cursor-pointer"></i> :
                     <i className="fas fa-play play-icon cursor-pointer"></i>
                   }
