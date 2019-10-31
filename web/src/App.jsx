@@ -1,9 +1,10 @@
 import React, { Component, Fragment } from 'react'
 import "./css/main.css";
-import { musicNote, playlist, play, playlistadd, downloadOrange, musicDummy } from './images';
+import "./css/common.css";
+import { musicDummy } from './images';
 import { variables } from "./config";
 import { toast } from 'react-toastify';
-import Loader from 'react-loader-spinner'
+import { Player, Header, Search, Result } from "./components"
 
 export default class App extends Component {
 
@@ -39,6 +40,10 @@ export default class App extends Component {
     this.playerEndHandler = this.playerEndHandler.bind(this);
     this.playPauseToggle = this.playPauseToggle.bind(this);
     this.beatNotice = 0;
+    this.muteToggle = this.muteToggle.bind(this)
+    this.updateVolume = this.updateVolume.bind(this)
+    this.getKeywordSuggestion = this.getKeywordSuggestion.bind(this)
+    this.fetchResults = this.fetchResults.bind(this);
   }
 
   async componentDidMount() {
@@ -64,8 +69,8 @@ export default class App extends Component {
     }
   }
 
-  async fetchResults() {
-    this.setState({ keywordSuggestions: [], isSearching: true })
+  async fetchResults(item) {
+    this.setState({ searchText: item, keywordSuggestions: [], isSearching: true });
     const url = `${variables.baseUrl}/ytcat?q=${this.state.searchText}`
     await fetch(url)
       .then(res => res.json())
@@ -76,7 +81,6 @@ export default class App extends Component {
             isSearching: false,
             keywordSuggestions: []
           })
-
         }
       })
       .catch(err => console.error(err));
@@ -157,13 +161,7 @@ export default class App extends Component {
       const playerRef = document.getElementById("music-player");
       playerRef.currentTime = playerRef.duration * (e.target.value / 100)
       this.setState({ currentProgress: playerRef.duration * (e.target.value / 100) })
-    } else {
-      this.warnUser()
     }
-  }
-
-  async warnUser() {
-    toast("Please Search and Add Music \n to your playlist to play !")
   }
 
   async muteToggle() {
@@ -219,189 +217,58 @@ export default class App extends Component {
   }
 
   async featureNotify() {
+    toast.dismiss()
     toast("We Appreciate Your Interest! This Feature is Under Development!");
+  }
+
+  async warnUser() {
+    toast.dismiss()
+    toast("Please Search and Add Music \n to your playlist to play !")
   }
 
   render() {
     return (
       <Fragment >
-        <header>
-          <a className="logo cursor-pointer t-none" href={window.location.href}><span></span></a>
+        <Player
+          state={this.state}
+          seekAudio={this.seekAudio}
+          featureNotify={this.featureNotify}
+          playerEndHandler={this.playerEndHandler}
+          updateVolume={this.updateVolume}
+          muteToggle={this.muteToggle}
+          warnUser={this.warnUser}
+          playPauseToggle={this.playPauseToggle}
+          initPlayer={this.initPlayer}
+          playerTimeUpdater={this.playerTimeUpdater}
+        />
 
-          <div className="player-wrapper">
+        <Header
+          state={this.state}
+          featureNotify={this.featureNotify}
+        />
 
-            <audio id="music-player"
-              onEnded={async (e) => await this.playerEndHandler()}
-              onTimeUpdate={async (e) => await this.playerTimeUpdater(e)}
-            >
-              <source src="" type="audio/mpeg" id="audio-source" />
-            </audio>
 
-            <img className={`music-thumb ${this.state.isAudioBuffering ? 'shake-me' : ''}`} src={this.state.currentAudioData.thumbnail} alt="" />
+        <Search
+          state={this.state}
+          fetchResults={this.fetchResults}
+          getKeywordSuggestion={this.getKeywordSuggestion}
+        />
 
-            <div className="music-center-core">
+        <Result
+          state={this.state}
 
-              <div className="music-title">
-                {this.state.currentAudioData.title}
-              </div>
 
-              <input
-                onChange={async (e) => { await this.seekAudio(e) }}
-                className="progress-bar"
-                min="0"
-                max="100"
-                value={isNaN(this.state.currentProgress) ? 0 : this.state.currentProgress}
-                step="1"
-                type="range"
-                id="player-progress-bar"
-              />
+        />
 
-              <div className="music-playpause-holder">
-                <span className="cursor-pointer" onClick={async () => {
-                  await this.playPauseToggle()
-                }}>
-                  {this.state.isMusicPlaying ?
-                    <i className="fas fa-pause play-icon cursor-pointer"></i> :
-                    <i className="fas fa-play play-icon cursor-pointer"></i>
-                  }
-                </span>
-                <span className="volume-icon cursor-pointer">
-                  {this.state.isMuted ?
-                    <span onClick={async (e) => { await this.muteToggle() }}><i className="fas fa-volume-mute"></i></span>
-                    :
-                    <span onClick={async (e) => { await this.muteToggle() }}><i className="fas fa-volume-up"></i></span>
-                  }
-                  <input onChange={async (e) => {
-                    await this.updateVolume(e);
-                  }} type="range" className="volume-progress" step="0.1" min="0" max="1" value={this.state.playerVolume} />
-                </span>
-                <span className="music-duration">
-                  <span id="current-time">{this.state.currentTimeText}</span>
-                  <span className="font-weight-bold text-black">&nbsp;  |  &nbsp;</span>
-                  <span >{this.state.currentAudioData.duration}</span>
-                </span>
-              </div>
 
-            </div>
 
-            <div className="music-player-tail">
 
-              <a
-                onClick={
-                  (e) => {
-                    if (!this.state.currentAudioLink) {
-                      toast("Please Search for Music to Download or Play !")
-                    }
-                  }
-                }
-                href={this.state.currentAudioLink} className="music-download cursor-pointer t-none">
-                <img src={downloadOrange} alt="" />
-              </a>
-
-              <div onClick={
-                () => {
-                  this.featureNotify()
-                }
-              } className="music-playlist cursor-pointer">
-                <img src={playlist} alt="" />
-              </div>
-
-            </div>
-          </div>
-        </header>
-
-        <main>
-          <div className="main-search">
-            <form action="" onSubmit={(e) => { e.preventDefault(); this.fetchResults(); }}>
-              <input type="text" value={this.state.searchText} onChange={(e) => { this.getKeywordSuggestion(e) }} className="search-input" placeholder="Search Your Music Here!" />
-              <button className="search-icon" type="submit"><i className="fas fa-search"></i></button>
-            </form>
-            {this.state.keywordSuggestions.length > 0 &&
-              <div className="suggestion-keyword-holder">
-                {this.state.keywordSuggestions.map((item, key) => (
-                  <div onClick={async (e) => {
-                    this.setState({ searchText: item[0], keywordSuggestions: [] });
-                    this.fetchResults();
-                  }} key={key} className="suggested-keyword" >{item[0]}</div>
-                ))}
-              </div>
-            }
-          </div>
-          {
-            !this.state.isSearching ?
-              this.state.searchResults.length > 0 ?
-                <div className="search-result-container">
-                  {this.state.searchResults.map((item, key) => (
-
-                    <div className="result-node" key={key}>
-                      <div className="result-node-thumb">
-                        <img src={item.thumbnail} alt="" />
-                      </div>
-                      <div className="result-node-desc">
-                        <div className="result-node-title">
-                          {item.title}
-                        </div>
-                        <div className="result-node-attributes">
-                          <div className="result-node-duration">
-                            {item.duration}
-                          </div>
-                          <div className="result-node-actions">
-                            <img onClick={async (e) => {
-                              this.beatNotice = 0
-                              await this.initPlayer(item)
-                            }} className="action-image-size cursor-pointer" src={play} alt="" />
-                            <img onClick={
-                              () => {
-                                this.featureNotify()
-                              }
-                            } className="action-image-size cursor-pointer" src={downloadOrange} alt="" />
-                            <img onClick={
-                              () => {
-                                this.featureNotify()
-                              }
-                            } className="action-image-size cursor-pointer" src={playlistadd} alt="" />
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-                :
-                <div className="dummy-music-holder">
-                  <img className={`music-icon ${this.state.isSearchProcessing ? 'preload-custom-1' : ''}`} src={musicNote} alt="" />
-                  <p className="music-icon-para">Your Music Appears Here!</p>
-                </div>
-              :
-              <div className="search-preloader">
-                <Loader
-                  type="ThreeDots"
-                  color="#ff7373"
-                  height={80}
-                  width={80}
-                />
-              </div>
-          }
-        </main>
-        <footer>
-          <div className="copyrights">
-            © 2019 OpenBeats.in | All Rights Reserved.
-          </div>
-          <div className="footer-right">
-            <span onClick={
-              () => {
-                this.featureNotify()
-              }
-            } className="about-us cursor-pointer">About Us</span>
-            <span onClick={
-              () => {
-                this.featureNotify()
-              }
-            }><i className="fab fa-android android-color cursor-pointer"></i></span>
-          </div>
-
-        </footer>
       </Fragment>
     )
   }
 
 }
+
+// <div className="copyrights">
+//   © 2019 OpenBeats.in | All Rights Reserved.
+// </div>
