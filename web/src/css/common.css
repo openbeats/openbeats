@@ -32,8 +32,13 @@
 }
 
 .copyrights {
-  font-size: 12px;
+  font-size: 10px;
   color: #ff7373;
+  position: absolute;
+  bottom: 5px;
+  z-index: 11;
+  width: 100vw;
+  text-align: center;
 }
 
 /* animations */

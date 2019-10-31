@@ -44,6 +44,8 @@ export default class App extends Component {
     this.updateVolume = this.updateVolume.bind(this)
     this.getKeywordSuggestion = this.getKeywordSuggestion.bind(this)
     this.fetchResults = this.fetchResults.bind(this);
+    this.resetBeatNotice = this.resetBeatNotice.bind(this);
+    this.initPlayer = this.initPlayer.bind(this);
   }
 
   async componentDidMount() {
@@ -160,7 +162,6 @@ export default class App extends Component {
     if (this.state.currentAudioLink) {
       const playerRef = document.getElementById("music-player");
       playerRef.currentTime = playerRef.duration * (e.target.value / 100)
-      this.setState({ currentProgress: playerRef.duration * (e.target.value / 100) })
     }
   }
 
@@ -226,6 +227,10 @@ export default class App extends Component {
     toast("Please Search and Add Music \n to your playlist to play !")
   }
 
+  async resetBeatNotice() {
+    this.beatNotice = 0
+  }
+
   render() {
     return (
       <Fragment >
@@ -256,19 +261,17 @@ export default class App extends Component {
 
         <Result
           state={this.state}
-
-
+          resetBeatNotice={this.resetBeatNotice}
+          featureNotify={this.featureNotify}
+          initPlayer={this.initPlayer}
         />
 
-
-
+        <div className="copyrights">
+          © 2019 OpenBeats.in | All Rights Reserved.
+        </div>
 
       </Fragment>
     )
   }
 
 }
-
-// <div className="copyrights">
-//   © 2019 OpenBeats.in | All Rights Reserved.
-// </div>
