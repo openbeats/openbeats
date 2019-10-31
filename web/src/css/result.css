@@ -1,0 +1,111 @@
+/* dummy-music-holder */
+.dummy-music-holder {
+  margin-top: 140px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  opacity: 0.9;
+}
+
+.music-icon {
+  width: 75px;
+}
+
+.music-icon-para {
+  font-size: 30px;
+  color: black;
+  margin-top: 40px;
+  opacity: 0.5;
+}
+
+/* preloader */
+.search-preloader {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 14%;
+}
+
+/* search result nodes container */
+.search-result-container {
+  width: 100%;
+  box-sizing: border-box;
+  padding-left: 40px;
+  padding-right: 40px;
+  max-height: 70vh;
+  padding-bottom: 50px;
+  margin-bottom: 80px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  margin-top: 20px;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+}
+
+.result-node {
+  margin: 15px;
+  display: flex;
+  width: 20em;
+  height: 6em;
+  box-sizing: border-box;
+  display: flex;
+  position: relative;
+  justify-content: space-between;
+  overflow: hidden;
+}
+
+.result-node-thumb > img {
+  height: 100%;
+  width: 95px;
+  border-radius: 50%;
+}
+
+.result-node-desc {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 100%;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 10px;
+  word-break: break-all;
+}
+
+.result-node-title {
+  max-height: 40px;
+  overflow: hidden;
+  font-size: 16px;
+  color: black;
+  opacity: 0.8;
+  margin-top: 2px;
+  text-align: left;
+}
+
+.result-node-attributes {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.result-node-duration {
+  font-size: 14px;
+  color: black;
+  opacity: 0.6;
+}
+
+.result-node-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 50%;
+}
+
+.action-image-size {
+  height: 16px;
+}
