@@ -7,10 +7,6 @@ import { toast } from 'react-toastify';
 
 
 export default class Player extends Component {
-    componentDidMount() {
-
-    }
-
 
     render() {
         return (

@@ -35,11 +35,12 @@
   padding-left: 40px;
   padding-right: 40px;
   max-height: 70vh;
-  padding-bottom: 50px;
   margin-bottom: 80px;
   overflow-y: auto;
   overflow-x: hidden;
-  margin-top: 20px;
+  padding-top: 20px;
+  padding-bottom: 20px;
+  margin-top: 15px;
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;

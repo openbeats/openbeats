@@ -26,7 +26,7 @@ export default class Result extends Component {
                                         </div>
                                         <div className="result-node-actions">
                                             <img onClick={async (e) => {
-                                                this.props.beatNotice = 0
+                                                this.props.resetBeatNotice()
                                                 await this.props.initPlayer(item)
                                             }} className="action-image-size cursor-pointer" src={play} alt="" />
                                             <img onClick={
