@@ -3,39 +3,30 @@ import FormData from 'form-data';
 import { JSDOM } from 'jsdom';
 
 
-export default async (vidLink) => {
+export default async (id, quality) => {
+    let link = `https://www.youtube.com/watch?v=${id}`
     let outputLink = null;
-    const analyzeLink = "https://mate09.y2mate.com/analyze/ajax";
-    const convertLink = "https://mate09.y2mate.com/convert";
+    const analyzeLink = "https://www.youtubeconverter.io/convert-mp3";
+    const convertLink = "https://www.youtubeconverter.io/convert/index";
     let formData = new FormData();
-    let testUrl = vidLink;
-    formData.append("url", testUrl);
-    formData.append("ajax", '1');
-
+    formData.append("url", link);
     await fetch(analyzeLink,
         {
             method: 'post',
             body: formData,
         })
-        .then(res => res.json())
+        .then(res => res.text())
         .then(async res => {
-            let data = res.result.split(" ");
-            let _id = data[data.indexOf("_id:") + 1];
-            let v_id = data[data.indexOf("v_id:") + 1];
-            _id = _id.replace("'", "")
-            _id = _id.replace("'", "")
-            _id = _id.replace(",", "")
-            v_id = v_id.replace("'", "")
-            v_id = v_id.replace("'", "")
-            v_id = v_id.replace(",", "")
+            let data = res.split("_id:'");
+            let _id = data[1].substr(0, 24);
+            let v_id = id;
             let fd = new FormData();
             fd.append("type", 'youtube');
             fd.append("_id", _id);
             fd.append("v_id", v_id);
             fd.append("ajax", '1');
             fd.append("ftype", 'mp3');
-            fd.append("fquality", '128');
-
+            fd.append("fquality", quality);
             await fetch(convertLink,
                 {
                     method: 'post',
