@@ -161,6 +161,13 @@
 }
 /* end of player styling */
 
+.display-hidden {
+  opacity: 0.5;
+  pointer-events: none;
+  cursor: default;
+  
+}
+
 @media only screen and (max-width: 800px) {
   .player-wrapper {
     grid-template-columns: 70% auto;
