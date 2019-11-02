@@ -71,12 +71,12 @@ export default class Player extends Component {
                     <a
                         onClick={
                             (e) => {
-                                if (!this.props.state.currentAudioLink) {
+                                if (!this.props.state.currentDownloadLink) {
                                     toast("Please Search for Music to Download or Play !")
                                 }
                             }
                         }
-                        href={this.props.state.currentAudioLink} className="music-download cursor-pointer t-none">
+                        href={this.props.state.currentDownloadLink} className="music-download cursor-pointer t-none">
                         <img src={downloadOrange} alt="" />
                     </a>
 

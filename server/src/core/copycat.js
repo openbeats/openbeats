@@ -3,7 +3,7 @@ import FormData from 'form-data';
 import { JSDOM } from 'jsdom';
 
 
-export default async (id, quality) => {
+export default async (id, quality, force) => {
     let outputLink = null;
     let link = `https://www.youtube.com/watch?v=${id}`
     const analyzeLink = "https://www.youtubeconverter.io/convert-mp3";
@@ -18,7 +18,7 @@ export default async (id, quality) => {
         .then(res => res.text())
         .then(async res => {
 
-            if (quality == '128') {
+            if (!force && quality == '128') {
                 let dom = new JSDOM(res.trim());
                 let targetNode = dom.window.document.getElementsByClassName("btn-file");
                 if (targetNode.length > 0) {

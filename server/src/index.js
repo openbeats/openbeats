@@ -15,10 +15,14 @@ app.get("/", (req, res) => {
 
 app.get("/opencc/:id", async (req, res) => {
     let defaultQuality = '128';
+    let force = false;
+    if (req.query.q) {
+        force = true
+    }
     if (req.query.q && req.query.q == '128' || req.query.q == '320')
         defaultQuality = req.query.q;
 
-    let ccLink = await copycat(req.params.id, defaultQuality);
+    let ccLink = await copycat(req.params.id, defaultQuality, force);
     res.send({
         'status': true,
         'link': ccLink
