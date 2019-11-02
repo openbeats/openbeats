@@ -67,7 +67,6 @@ export default class Player extends Component {
                 </div>
 
                 <div className="music-player-tail">
-
                     <a
                         onClick={
                             (e) => {
@@ -76,7 +75,7 @@ export default class Player extends Component {
                                 }
                             }
                         }
-                        href={this.props.state.currentDownloadLink} className="music-download cursor-pointer t-none">
+                        href={this.props.state.currentDownloadLink} className={`music-download cursor-pointer t-none ${!this.props.state.currentDownloadLink ? 'display-hidden' : ''}`}>
                         <img src={downloadOrange} alt="" />
                     </a>
 

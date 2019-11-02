@@ -126,7 +126,10 @@ export default class App extends Component {
     await fetch(`${variables.baseUrl}/opencc/${id}?q='128`)
       .then(res => res.json())
       .then(res => {
-        this.setState({ currentDownloadLink: res.link })
+        if (res.link)
+          this.setState({ currentDownloadLink: res.link })
+        else
+          this.getcurrentDownloadLink(id)
       })
       .catch(err => console.error(err))
   }
@@ -214,6 +217,7 @@ export default class App extends Component {
     }
     this.setState({
       currentAudioLink: null,
+      currentDownloadLink: null,
       currentProgress: 0,
       currentAudioData: {
         channelName: null,
