@@ -14,8 +14,11 @@ app.get("/", (req, res) => {
 })
 
 app.get("/opencc/:id", async (req, res) => {
-    let link = `https://www.youtube.com/watch?v=${req.params.id}`
-    let ccLink = await copycat(link)
+    let defaultQuality = '128';
+    if (req.query.q && req.query.q == '128' || req.query.q == '320')
+        defaultQuality = req.query.q;
+
+    let ccLink = await copycat(req.params.id, defaultQuality);
     res.send({
         'status': true,
         'link': ccLink
