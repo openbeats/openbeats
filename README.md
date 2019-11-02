@@ -1,2 +1,2 @@
 # openbeats
-OpenBeats is a open source Music streamer.
+OpenBeats is an open source Music streamer.

@@ -55,6 +55,9 @@ export default async (queryString) => {
                     }
                 }
 
+                if (views.length == 0) {
+                    continue
+                }
 
                 let description = ""
                 if (targetNodes[i].getElementsByClassName("yt-lockup-description").length > 0)
