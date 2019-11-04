@@ -15,7 +15,8 @@ export default class Player extends Component {
                     onEnded={async (e) => await this.props.playerEndHandler()}
                     onTimeUpdate={async (e) => await this.props.playerTimeUpdater(e)}
                 >
-                    <source src="" type="audio/mpeg" id="audio-source" />
+                    <source src="" id="audio-source-1" />
+                    <source src="" id="audio-source-2" />
                 </audio>
 
                 <img className={`music-thumb ${this.props.state.isAudioBuffering ? 'shake-me' : ''}`} src={this.props.state.currentAudioData.thumbnail} alt="" />

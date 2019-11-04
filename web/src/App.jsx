@@ -26,12 +26,12 @@ export default class App extends Component {
         views: null,
       },
       currentAudioLink: null,
+      fallBackLink: null,
       isMusicPlaying: false,
       currentProgress: 0,
       currentTimeText: '00:00',
       playerVolume: 0.5,
       isMuted: false,
-      heartBeat: null,
       isSearching: false
     }
 
@@ -39,7 +39,6 @@ export default class App extends Component {
     this.seekAudio = this.seekAudio.bind(this);
     this.playerEndHandler = this.playerEndHandler.bind(this);
     this.playPauseToggle = this.playPauseToggle.bind(this);
-    this.beatNotice = 0;
     this.muteToggle = this.muteToggle.bind(this)
     this.updateVolume = this.updateVolume.bind(this)
     this.getKeywordSuggestion = this.getKeywordSuggestion.bind(this)
@@ -49,6 +48,8 @@ export default class App extends Component {
   }
 
   async componentDidMount() {
+    const playerRef = document.getElementById("music-player");
+    playerRef.volume = this.state.playerVolume
   }
 
   async getKeywordSuggestion(e) {
@@ -89,43 +90,30 @@ export default class App extends Component {
   }
 
   async initPlayer(audioData) {
-    if (this.beatNotice < 3) {
-      this.beatNotice += 1;
-      // const player = document.getElementById("music-player");
-      await this.playerEndHandler();
-      this.setState({ currentAudioData: audioData, isAudioBuffering: true })
-      const url = `${variables.baseUrl}/opencc/${audioData.videoId.trim()}`
-      // await fetch(url)
-      //   .then(res => res.json())
-      //   .then(async res => {
-      //     if (res.status) {
-      //       let heartBeatTimer = setTimeout(async function () {
-      //         if (!(player.currentTime > 0) && !this.state.isMusicPlaying) {
-      //           await this.initPlayer(audioData);
-      //         } else {
-      //           this.setState({ isAudioBuffering: false })
-      //           this.beatNotice = 0;
-      //         }
-      //       }.bind(this), 5000);
-      //       // this.setState({ currentAudioData: audioData, currentAudioLink: res.link, heartBeat: heartBeatTimer });
-      //       await this.startPlayer()
-      //     }
-      //   })
-      //   .catch(err => console.error(err))
-      this.setState({ currentAudioData: audioData, currentAudioLink: url });
-      await this.startPlayer()
-    } else {
-      this.beatNotice = 0;
-      await this.playerEndHandler()
-      this.setState({ isAudioBuffering: false })
-      toast("Music You are looking for is not available right now! try alternate music!")
-    }
+    await this.playerEndHandler();
+    this.setState({ currentAudioData: audioData, isAudioBuffering: true })
+    const mainUrl = `${variables.baseUrl}/opencc/${audioData.videoId.trim()}`
+    const fallbackUrl = `${variables.baseUrl}/fallback/${audioData.videoId.trim()}`
+    await fetch(mainUrl)
+      .then(res => res.json())
+      .then(async res => {
+        if (res.status) {
+          this.setState({ currentAudioData: audioData, currentAudioLink: res.link, fallBackLink: fallbackUrl });
+          await this.startPlayer()
+        } else {
+          this.setState({ currentAudioData: audioData, currentAudioLink: res.link, fallBackLink: fallbackUrl });
+          await this.startPlayer()
+        }
+      })
+      .catch(err => console.error(err))
   }
 
   async startPlayer() {
     const player = document.getElementById("music-player");
-    const source = document.getElementById("audio-source");
-    source.src = this.state.currentAudioLink
+    const source1 = document.getElementById("audio-source-1");
+    const source2 = document.getElementById("audio-source-2");
+    source1.src = this.state.currentAudioLink
+    source2.src = this.state.fallBackLink
     await player.load();
     await player.play();
     this.setState({ isMusicPlaying: true, isAudioBuffering: false });
@@ -194,16 +182,15 @@ export default class App extends Component {
 
   async playerEndHandler() {
     const player = document.getElementById("music-player");
-    const source = document.getElementById("audio-source");
+    const source1 = document.getElementById("audio-source-1");
+    const source2 = document.getElementById("audio-source-2");
     player.pause()
     player.currentTime = 0;
-    source.src = ""
-    if (this.state.heartBeat) {
-      clearTimeout(this.state.heartBeat)
-      this.setState({ heartBeat: null })
-    }
+    source1.src = ""
+    source2.src = ""
     this.setState({
       currentAudioLink: null,
+      fallBackLink: null,
       currentDownloadLink: null,
       currentProgress: 0,
       currentAudioData: {
@@ -235,8 +222,11 @@ export default class App extends Component {
   }
 
   render() {
+
     return (
+
       <Fragment >
+
         <Player
           state={this.state}
           seekAudio={this.seekAudio}
