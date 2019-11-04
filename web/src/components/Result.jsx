@@ -30,7 +30,8 @@ export default class Result extends Component {
                                                 this.props.resetBeatNotice()
                                                 await this.props.initPlayer(item)
                                             }} className="action-image-size cursor-pointer" src={play} alt="" />
-                                            <a className="t-none cursor-pointer" href={`${variables.baseUrl}/downcc/${item.videoId}`}>
+                                            <a download
+                                                className="t-none cursor-pointer" href={`${variables.baseUrl}/downcc/${item.videoId}`}>
                                                 <img className="action-image-size " src={downloadOrange} alt="" />
                                             </a>
                                             <img onClick={

@@ -75,6 +75,7 @@ export default class Player extends Component {
                                 toast("Please Select Music to play or Download!")
                             }
                         }}
+                        download
                         rel="noopener noreferrer"
                         href={`${variables.baseUrl}/downcc/${this.props.state.currentAudioData.videoId}`}
                         className={`music-download cursor-pointer t-none`}>
