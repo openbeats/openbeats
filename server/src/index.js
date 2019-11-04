@@ -32,7 +32,7 @@ app.get("/opencc/:id", async (req, res) => {
         let sourceUrl = reqFormat[0].url
         res.send({
             status: true,
-            link: sourceUrl.substring(0, 20)
+            link: sourceUrl
         })
     });
 })
