@@ -91,27 +91,29 @@ export default class App extends Component {
   async initPlayer(audioData) {
     if (this.beatNotice < 3) {
       this.beatNotice += 1;
-      const player = document.getElementById("music-player");
+      // const player = document.getElementById("music-player");
       await this.playerEndHandler();
       this.setState({ currentAudioData: audioData, isAudioBuffering: true })
       const url = `${variables.baseUrl}/opencc/${audioData.videoId.trim()}`
-      await fetch(url)
-        .then(res => res.json())
-        .then(async res => {
-          if (res.status) {
-            let heartBeatTimer = setTimeout(async function () {
-              if (!(player.currentTime > 0) && !this.state.isMusicPlaying) {
-                await this.initPlayer(audioData);
-              } else {
-                this.setState({ isAudioBuffering: false })
-                this.beatNotice = 0;
-              }
-            }.bind(this), 5000);
-            this.setState({ currentAudioData: audioData, currentAudioLink: res.link, heartBeat: heartBeatTimer });
-            await this.startPlayer()
-          }
-        })
-        .catch(err => console.error(err))
+      // await fetch(url)
+      //   .then(res => res.json())
+      //   .then(async res => {
+      //     if (res.status) {
+      //       let heartBeatTimer = setTimeout(async function () {
+      //         if (!(player.currentTime > 0) && !this.state.isMusicPlaying) {
+      //           await this.initPlayer(audioData);
+      //         } else {
+      //           this.setState({ isAudioBuffering: false })
+      //           this.beatNotice = 0;
+      //         }
+      //       }.bind(this), 5000);
+      //       // this.setState({ currentAudioData: audioData, currentAudioLink: res.link, heartBeat: heartBeatTimer });
+      //       await this.startPlayer()
+      //     }
+      //   })
+      //   .catch(err => console.error(err))
+      this.setState({ currentAudioData: audioData, currentAudioLink: url });
+      await this.startPlayer()
     } else {
       this.beatNotice = 0;
       await this.playerEndHandler()
