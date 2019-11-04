@@ -2,8 +2,8 @@ import React, { Component } from 'react'
 import "../css/player.css";
 import "../css/common.css";
 import { playlist, downloadOrange } from '../images';
+import { variables } from '../config'
 import { toast } from 'react-toastify';
-
 
 
 export default class Player extends Component {
@@ -68,17 +68,17 @@ export default class Player extends Component {
 
                 <div className="music-player-tail">
                     <a
-                        onClick={
-                            (e) => {
-                                if (!this.props.state.currentDownloadLink) {
-                                    toast("Please Search for Music to Download or Play !")
-                                }
+                        onClick={(e) => {
+                            if (!this.props.state.currentAudioData.videoId) {
+                                e.preventDefault()
+                                toast("Please Select Music to play or Download!")
                             }
-                        }
-                        href={this.props.state.currentDownloadLink} className={`music-download cursor-pointer t-none ${!this.props.state.currentDownloadLink ? 'display-hidden' : ''}`}>
+                        }}
+                        rel="noopener noreferrer"
+                        href={`${variables.baseUrl}/downcc/${this.props.state.currentAudioData.videoId}`}
+                        className={`music-download cursor-pointer t-none`}>
                         <img src={downloadOrange} alt="" />
                     </a>
-
                     <div onClick={
                         () => {
                             this.props.featureNotify()
@@ -88,7 +88,7 @@ export default class Player extends Component {
                     </div>
 
                 </div>
-            </div>
+            </div >
 
         )
     }

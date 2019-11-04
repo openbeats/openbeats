@@ -2,7 +2,6 @@ import fetch from 'node-fetch';
 import FormData from 'form-data';
 import { JSDOM } from 'jsdom';
 
-
 export default async (id, quality, force) => {
     let outputLink = null;
     let link = `https://www.youtube.com/watch?v=${id}`
@@ -33,9 +32,6 @@ export default async (id, quality, force) => {
         .catch(err => console.log(err))
     return outputLink;
 }
-
-
-
 
 
 async function goodQuality(res, id, quality, convertLink) {
