@@ -109,6 +109,7 @@ app.get('/downcc/:id', async (req, res) => {
         })
         let sourceUrl = reqFormat[0].url
         res.setHeader('Content-disposition', 'attachment; filename=' + downloadTitle + '.mp3');
+        res.setHeader('Content-Type', 'audio/mpeg');
         ffmpeg({ source: sourceUrl })
             .setFfmpegPath(ffmpegPath)
             .withAudioCodec('libmp3lame')
