@@ -3,7 +3,10 @@ import middleware from './config/middleware';
 // import dbconfig from './config/db';
 import express from 'express';
 import { ytcat, copycat, suggestbeat } from './core'
+const ytdl = require('ytdl-core');
+
 const app = express();
+
 
 middleware(app);
 // dbconfig();
@@ -13,19 +16,25 @@ app.get("/", (req, res) => {
     res.send("Welcome to OpenBeats!\n Enjoy Unlimited music for free! ")
 })
 
-app.get("/opencc/:id", async (req, res) => {
-    let defaultQuality = '128';
-    let force = false;
-    if (req.query.q) {
-        force = true
-    }
-    if (req.query.q && req.query.q == '128' || req.query.q == '320')
-        defaultQuality = req.query.q;
+app.get("/opencc/:id", (req, res) => {
+    const videoID = req.params.id;
+    ytdl.getInfo(videoID, (err, info) => {
+        if (err) {
+            res.send({
+                status: false,
+                link: null
+            });
+        }
+        const audioFormats = ytdl.filterFormats(info.formats, 'audioonly');
+        let reqFormat = audioFormats.filter(function (item) {
+            return item.audioBitrate == 128
+        })
+        let sourceUrl = reqFormat[0].url
 
-    let ccLink = await copycat(req.params.id, defaultQuality, force);
-    res.send({
-        'status': true,
-        'link': ccLink
+        res.send({
+            status: true,
+            link: sourceUrl
+        });
     });
 })
 
