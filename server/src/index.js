@@ -108,8 +108,10 @@ app.get('/downcc/:id', async (req, res) => {
             return item.audioBitrate == 128
         })
         let sourceUrl = reqFormat[0].url
+        let contentLenght = reqFormat[0].clen
         res.setHeader('Content-disposition', 'attachment; filename=' + downloadTitle + '.mp3');
         res.setHeader('Content-Type', 'audio/mpeg');
+        res.setHeader('Content-Length', contentLenght);
         ffmpeg({ source: sourceUrl })
             .setFfmpegPath(ffmpegPath)
             .withAudioCodec('libmp3lame')
