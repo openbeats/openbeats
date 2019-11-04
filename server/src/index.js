@@ -3,7 +3,12 @@ import middleware from './config/middleware';
 // import dbconfig from './config/db';
 import express from 'express';
 import { ytcat, copycat, suggestbeat } from './core'
+const ytdl = require('ytdl-core');
+const ffmpegPath = require('@ffmpeg-installer/ffmpeg').path;
+const ffmpeg = require('fluent-ffmpeg');
+
 const app = express();
+
 
 middleware(app);
 // dbconfig();
@@ -28,6 +33,36 @@ app.get("/opencc/:id", async (req, res) => {
         'link': ccLink
     });
 })
+
+app.get('/downcc/:id', (req, res) => {
+    const videoID = req.params.id;
+    ytdl.getInfo(videoID, (err, info) => {
+        if (err) {
+            res.status(404).send({
+                status: false,
+                message: "content not available"
+            })
+        }
+        let downloadTitle = `${info.title.trim().replace(" ", '')}@openbeats`
+        const audioFormats = ytdl.filterFormats(info.formats, 'audioonly');
+        let reqFormat = audioFormats.filter(function (item) {
+            return item.audioBitrate == 128
+        })
+        let sourceUrl = reqFormat[0].url
+        res.setHeader('Content-disposition', 'attachment; filename=' + downloadTitle + '.mp3');
+        ffmpeg({ source: sourceUrl })
+            .setFfmpegPath(ffmpegPath)
+            .withAudioCodec('libmp3lame')
+            .audioBitrate("128k")
+            .toFormat('mp3')
+            .on('error', (err) => {
+                console.log(err.message);
+            })
+            .pipe(res, {
+                end: true
+            });
+    });
+});
 
 app.get("/ytcat", async (req, res) => {
     let data = await ytcat(req.query.q)
