@@ -10,15 +10,34 @@ const http = require('https');
 // import dbconfig from './config/db';
 // dbconfig();
 
-
 middleware(app);
-
 
 app.get("/", (req, res) => {
     res.send("Welcome to OpenBeats!\n Enjoy Unlimited music for free! ")
 })
 
 app.get("/opencc/:id", async (req, res) => {
+    const videoID = req.params.id;
+    ytdl.getInfo(videoID, (err, info) => {
+        if (err) {
+            res.send({
+                status: false,
+                link: null
+            })
+        }
+        const audioFormats = ytdl.filterFormats(info.formats, 'audioonly');
+        let reqFormat = audioFormats.filter(function (item) {
+            return item.audioBitrate == 128
+        })
+        let sourceUrl = reqFormat[0].url
+        res.send({
+            status: true,
+            link: sourceUrl.substring(0, 20)
+        })
+    });
+})
+
+app.get("/fallback/:id", async (req, res) => {
     const videoID = req.params.id;
     ytdl.getInfo(videoID, (err, info) => {
         if (err) {
