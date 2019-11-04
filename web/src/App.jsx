@@ -26,7 +26,6 @@ export default class App extends Component {
         views: null,
       },
       currentAudioLink: null,
-      currentDownloadLink: null,
       isMusicPlaying: false,
       currentProgress: 0,
       currentTimeText: '00:00',
@@ -106,7 +105,6 @@ export default class App extends Component {
               } else {
                 this.setState({ isAudioBuffering: false })
                 this.beatNotice = 0;
-                this.getcurrentDownloadLink(audioData.videoId)
               }
             }.bind(this), 5000);
             this.setState({ currentAudioData: audioData, currentAudioLink: res.link, heartBeat: heartBeatTimer });
@@ -121,19 +119,6 @@ export default class App extends Component {
       toast("Music You are looking for is not available right now! try alternate music!")
     }
   }
-
-  async getcurrentDownloadLink(id) {
-    await fetch(`${variables.baseUrl}/opencc/${id}?q='128`)
-      .then(res => res.json())
-      .then(res => {
-        if (res.link)
-          this.setState({ currentDownloadLink: res.link })
-        else
-          this.getcurrentDownloadLink(id)
-      })
-      .catch(err => console.error(err))
-  }
-
 
   async startPlayer() {
     const player = document.getElementById("music-player");
