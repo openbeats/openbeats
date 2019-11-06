@@ -3,6 +3,7 @@ import { musicNote, play, playlistadd, downloadOrange, } from "../images";
 import Loader from 'react-loader-spinner'
 import "../css/result.css"
 import { variables } from '../config'
+import { toast } from 'react-toastify'
 
 
 export default class Result extends Component {
@@ -31,6 +32,19 @@ export default class Result extends Component {
                                                 await this.props.initPlayer(item)
                                             }} className="action-image-size cursor-pointer" src={play} alt="" />
                                             <a download
+                                                onClick={async (e) => {
+                                                    e.preventDefault()
+                                                    await fetch(`${variables.baseUrl}/downcc/${item.videoId}`)
+                                                        .then(res => {
+                                                            if (res.status === 200) {
+                                                                window.open(`${variables.baseUrl}/downcc/${item.videoId}`, "_self")
+                                                            } else {
+                                                                toast("Requested content not available right now!, try downloading alternate songs!");
+                                                            }
+                                                        }).catch(err => {
+                                                            console.log(err);
+                                                        })
+                                                }}
                                                 className="t-none cursor-pointer" href={`${variables.baseUrl}/downcc/${item.videoId}`}>
                                                 <img className="action-image-size " src={downloadOrange} alt="" />
                                             </a>

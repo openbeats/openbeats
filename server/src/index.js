@@ -95,35 +95,33 @@ app.get("/fallback/:id", async (req, res) => {
 
 app.get('/downcc/:id', async (req, res) => {
     const videoID = req.params.id;
-    await ytdl.getInfo(videoID, (err, info) => {
-        if (err) {
-            res.status(404).send({
-                status: false,
-                message: "content not available"
+    await ytdl.getInfo(videoID)
+        .then(info => {
+            let downloadTitle = `${info.title.trim().replace(" ", '')}@openbeats`
+            downloadTitle = downloadTitle.replace(/[&\/\\#,+()\|" "$~%.'":*?<>{}-]/g, '');
+            const audioFormats = ytdl.filterFormats(info.formats, 'audioonly');
+            let reqFormat = audioFormats.filter(function (item) {
+                return item.audioBitrate == 128
             })
-        }
-        let downloadTitle = `${info.title.trim().replace(" ", '')}@openbeats`
-        const audioFormats = ytdl.filterFormats(info.formats, 'audioonly');
-        let reqFormat = audioFormats.filter(function (item) {
-            return item.audioBitrate == 128
+            let sourceUrl = reqFormat[0].url
+            let contentLength = reqFormat[0].clen
+            res.setHeader('Content-disposition', 'attachment; filename=' + downloadTitle + '.mp3');
+            res.setHeader('Content-Type', 'audio/mpeg');
+            res.setHeader('Content-Length', contentLength);
+            ffmpeg({ source: sourceUrl })
+                .setFfmpegPath(ffmpegPath)
+                .withAudioCodec('libmp3lame')
+                .audioBitrate("128k")
+                .toFormat('mp3')
+                .on('error', (err) => {
+                    console.log(err.message);
+                })
+                .pipe(res, {
+                    end: true
+                });
+        }).catch(err => {
+            res.status(404);
         })
-        let sourceUrl = reqFormat[0].url
-        let contentLenght = reqFormat[0].clen
-        res.setHeader('Content-disposition', 'attachment; filename=' + downloadTitle + '.mp3');
-        res.setHeader('Content-Type', 'audio/mpeg');
-        res.setHeader('Content-Length', contentLenght);
-        ffmpeg({ source: sourceUrl })
-            .setFfmpegPath(ffmpegPath)
-            .withAudioCodec('libmp3lame')
-            .audioBitrate("128k")
-            .toFormat('mp3')
-            .on('error', (err) => {
-                console.log(err.message);
-            })
-            .pipe(res, {
-                end: true
-            });
-    });
 });
 
 app.get("/ytcat", async (req, res) => {
