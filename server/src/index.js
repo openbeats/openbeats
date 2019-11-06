@@ -18,79 +18,83 @@ app.get("/", (req, res) => {
 
 app.get("/opencc/:id", async (req, res) => {
     const videoID = req.params.id;
-    ytdl.getInfo(videoID, (err, info) => {
-        if (err) {
+    await ytdl.getInfo(videoID)
+        .then(info => {
+            const audioFormats = ytdl.filterFormats(info.formats, 'audioonly');
+            let reqFormat = audioFormats.filter(function (item) {
+                return item.audioBitrate == 128
+            })
+            let sourceUrl = reqFormat[0].url
+            if (!reqFormat[0].clen) {
+                console.log("notfound");
+                throw new Error("content-length-not-found")
+            }
+            res.send({
+                status: true,
+                link: sourceUrl
+            })
+        }).catch(err => {
             res.send({
                 status: false,
                 link: null
             })
-        }
-        const audioFormats = ytdl.filterFormats(info.formats, 'audioonly');
-        let reqFormat = audioFormats.filter(function (item) {
-            return item.audioBitrate == 128
         })
-        let sourceUrl = reqFormat[0].url
-        res.send({
-            status: true,
-            link: sourceUrl
-        })
-    });
 })
 
 app.get("/fallback/:id", async (req, res) => {
     const videoID = req.params.id;
-    ytdl.getInfo(videoID, (err, info) => {
-        if (err) {
-            res.status(404).send({
-                status: false,
-                message: "content not available"
+    ytdl.getInfo(videoID)
+        .then(info => {
+            const audioFormats = ytdl.filterFormats(info.formats, 'audioonly');
+            let reqFormat = audioFormats.filter(function (item) {
+                return item.audioBitrate == 128
             })
-        }
-        const audioFormats = ytdl.filterFormats(info.formats, 'audioonly');
 
-        let reqFormat = audioFormats.filter(function (item) {
-            return item.audioBitrate == 128
-        })
-
-        let sourceUrl = reqFormat[0].url
-        let fileSize = reqFormat[0].clen
-        let mimeType = reqFormat[0].type
-        const range = req.headers.range
-
-        if (range) {
-            const parts = range.replace(/bytes=/, "").split("-")
-            const start = parseInt(parts[0], 10)
-            const end = parts[1]
-                ? parseInt(parts[1], 10)
-                : fileSize - 1
-            const chunksize = (end - start) + 1
-            const head = {
-                'Content-Range': `bytes ${start}-${end}/${fileSize}`,
-                'Accept-Ranges': 'bytes',
-                'Content-Length': chunksize,
-                'Content-Type': mimeType,
+            let sourceUrl = reqFormat[0].url
+            let fileSize = reqFormat[0].clen
+            if (!fileSize) {
+                throw new Error("content-length-not-found")
             }
-            res.writeHead(206, head);
-            http.get(sourceUrl, {
-                headers: {
-                    'Range': req.headers.range
+            let mimeType = reqFormat[0].type
+            const range = req.headers.range
+
+            if (range) {
+                const parts = range.replace(/bytes=/, "").split("-")
+                const start = parseInt(parts[0], 10)
+                const end = parts[1]
+                    ? parseInt(parts[1], 10)
+                    : fileSize - 1
+                const chunksize = (end - start) + 1
+                const head = {
+                    'Content-Range': `bytes ${start}-${end}/${fileSize}`,
+                    'Accept-Ranges': 'bytes',
+                    'Content-Length': chunksize,
+                    'Content-Type': mimeType,
                 }
-            }, function (response) {
-                response.pipe(res);
-            });
+                res.writeHead(206, head);
+                http.get(sourceUrl, {
+                    headers: {
+                        'Range': req.headers.range
+                    }
+                }, function (response) {
+                    response.pipe(res);
+                });
 
-        } else {
-            const head = {
-                'Content-Length': fileSize,
-                'Content-Type': mimeType,
+            } else {
+                const head = {
+                    'Content-Length': fileSize,
+                    'Content-Type': mimeType,
+                }
+                res.writeHead(200, head)
+                http.get(sourceUrl, function (response) {
+                    response.pipe(res);
+                });
             }
-            res.writeHead(200, head)
-            http.get(sourceUrl, function (response) {
-                response.pipe(res);
-            });
-        }
 
-    });
+        }).catch(err => {
+            console.log("error");
+            res.status(404);
+        })
 })
 
 app.get('/downcc/:id', async (req, res) => {
@@ -100,6 +104,8 @@ app.get('/downcc/:id', async (req, res) => {
             let downloadTitle = `${info.title.trim().replace(" ", '')}@openbeats`
             downloadTitle = downloadTitle.replace(/[&\/\\#,+()\|" "$~%.'":*?<>{}-]/g, '');
             const audioFormats = ytdl.filterFormats(info.formats, 'audioonly');
+            console.log(audioFormats);
+
             let reqFormat = audioFormats.filter(function (item) {
                 return item.audioBitrate == 128
             })
