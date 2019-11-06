@@ -84,7 +84,7 @@ export default class Player extends Component {
                                             toast("Requested content not available right now!, try downloading alternate songs!");
                                         }
                                     }).catch(err => {
-                                        console.log(err);
+                                        toast("Requested content not available right now!, try downloading alternate songs!");
                                     })
                             }
                         }}
