@@ -26,7 +26,6 @@ app.get("/opencc/:id", async (req, res) => {
             })
             let sourceUrl = reqFormat[0].url
             if (!reqFormat[0].clen) {
-                console.log("notfound");
                 throw new Error("content-length-not-found")
             }
             res.send({
@@ -43,7 +42,7 @@ app.get("/opencc/:id", async (req, res) => {
 
 app.get("/fallback/:id", async (req, res) => {
     const videoID = req.params.id;
-    ytdl.getInfo(videoID)
+    await ytdl.getInfo(videoID)
         .then(info => {
             const audioFormats = ytdl.filterFormats(info.formats, 'audioonly');
             let reqFormat = audioFormats.filter(function (item) {
@@ -51,10 +50,10 @@ app.get("/fallback/:id", async (req, res) => {
             })
 
             let sourceUrl = reqFormat[0].url
-            let fileSize = reqFormat[0].clen
-            if (!fileSize) {
+            if (!reqFormat[0].clen) {
                 throw new Error("content-length-not-found")
             }
+            let fileSize = reqFormat[0].clen
             let mimeType = reqFormat[0].type
             const range = req.headers.range
 
@@ -92,8 +91,10 @@ app.get("/fallback/:id", async (req, res) => {
             }
 
         }).catch(err => {
-            console.log("error");
-            res.status(404);
+            res.status(404).send({
+                status: false,
+                link: null
+            });
         })
 })
 
@@ -101,14 +102,15 @@ app.get('/downcc/:id', async (req, res) => {
     const videoID = req.params.id;
     await ytdl.getInfo(videoID)
         .then(info => {
-            let downloadTitle = `${info.title.trim().replace(" ", '')}@openbeats`
-            downloadTitle = downloadTitle.replace(/[&\/\\#,+()\|" "$~%.'":*?<>{}-]/g, '');
             const audioFormats = ytdl.filterFormats(info.formats, 'audioonly');
-            console.log(audioFormats);
-
             let reqFormat = audioFormats.filter(function (item) {
                 return item.audioBitrate == 128
             })
+            if (!reqFormat[0].clen) {
+                throw new Error("content-length-not-found")
+            }
+            let downloadTitle = `${info.title.trim().replace(" ", '')}@openbeats`
+            downloadTitle = downloadTitle.replace(/[&\/\\#,+()\|" "$~%.'":*?<>{}-]/g, '');
             let sourceUrl = reqFormat[0].url
             let contentLength = reqFormat[0].clen
             res.setHeader('Content-disposition', 'attachment; filename=' + downloadTitle + '.mp3');
@@ -126,7 +128,10 @@ app.get('/downcc/:id', async (req, res) => {
                     end: true
                 });
         }).catch(err => {
-            res.status(404);
+            res.status(404).send({
+                status: false,
+                link: null
+            });
         })
 });
 
