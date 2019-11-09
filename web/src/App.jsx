@@ -101,8 +101,20 @@ export default class App extends Component {
           this.setState({ currentAudioData: audioData, currentAudioLink: res.link, fallBackLink: fallbackUrl });
           await this.startPlayer()
         } else {
-          this.setState({ currentAudioData: audioData, currentAudioLink: res.link, fallBackLink: fallbackUrl });
-          await this.startPlayer()
+          await fetch(fallbackUrl)
+            .then(async res => {
+              if (res.status === 200) {
+                this.setState({ currentAudioData: audioData, currentAudioLink: res.link, fallBackLink: fallbackUrl });
+                await this.startPlayer()
+              } else {
+                toast("Requested audio is not availabe right now! try alternate search!")
+                await this.playerEndHandler()
+              }
+            })
+            .catch(async err => {
+              toast("Requested audio is not availabe right now! try alternate search!")
+              await this.playerEndHandler()
+            })
         }
       })
       .catch(err => console.error(err))
@@ -204,6 +216,7 @@ export default class App extends Component {
       },
       isMusicPlaying: false,
       currentTimeText: '00:00',
+      isAudioBuffering: false
     })
   }
 

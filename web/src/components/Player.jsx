@@ -69,13 +69,25 @@ export default class Player extends Component {
 
                 <div className="music-player-tail">
                     <a
-                        onClick={(e) => {
+                        download
+                        onClick={async (e) => {
+                            e.preventDefault()
                             if (!this.props.state.currentAudioData.videoId) {
                                 e.preventDefault()
                                 toast("Please Select Music to play or Download!")
+                            } else {
+                                await fetch(`${variables.baseUrl}/downcc/${this.props.state.currentAudioData.videoId}`)
+                                    .then(res => {
+                                        if (res.status === 200) {
+                                            window.open(`${variables.baseUrl}/downcc/${this.props.state.currentAudioData.videoId}`, "_self")
+                                        } else {
+                                            toast("Requested content not available right now!, try downloading alternate songs!");
+                                        }
+                                    }).catch(err => {
+                                        toast("Requested content not available right now!, try downloading alternate songs!");
+                                    })
                             }
                         }}
-                        download
                         rel="noopener noreferrer"
                         href={`${variables.baseUrl}/downcc/${this.props.state.currentAudioData.videoId}`}
                         className={`music-download cursor-pointer t-none`}>
