@@ -1,7 +1,9 @@
 import fetch from 'node-fetch';
-import { JSDOM } from 'jsdom';
+import {
+    JSDOM
+} from 'jsdom';
 
-export default async (queryString) => {
+export default async (queryString, first = false) => {
     let searchResults = [];
     const baseQuery = "yt-lockup-video";
     const removables = [
@@ -9,8 +11,7 @@ export default async (queryString) => {
         "feed-item-container"
     ]
     let query = queryString.trim().replace(/ /g, "+");
-    const searchLink = `https://www.youtube.com/results?search_query=${query}`
-    console.log(searchLink)
+    const searchLink = `https://www.youtube.com/results?search_query=${query}`;
     await fetch(searchLink)
         .then(async res => await res.text())
         .then(res => {
@@ -74,7 +75,9 @@ export default async (queryString) => {
                     "views": views,
                     "description": description
                 };
-                searchResults.push(temp)
+                searchResults.push(temp);
+                if (first && searchResults.length > 0)
+                    break;
             }
 
         })
