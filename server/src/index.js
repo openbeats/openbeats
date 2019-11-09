@@ -2,10 +2,7 @@ import "dotenv/config";
 import middleware from "./config/middleware";
 import express from "express";
 import { ytcat, suggestbeat } from "./core";
-//remove
-import fetch from "node-fetch";
-import { JSDOM } from "jsdom";
-//remove
+import cron from "./core/cron";
 const ytdl = require("ytdl-core");
 const ffmpegPath = require("@ffmpeg-installer/ffmpeg").path;
 const ffmpeg = require("fluent-ffmpeg");
@@ -167,98 +164,6 @@ app.get("/suggester", async (req, res) => {
   res.send({
     status: true,
     data: data,
-  });
-});
-
-app.get("/test", async (req, res) => {
-  const langsFetch = [
-    "punjabi-top-10",
-    "tamil-top-20",
-    "telugu-top-20",
-    "malayalam-top-20",
-    "marathi-top-20",
-    "kannada-top-20",
-    "bangla-top-10",
-  ];
-  let fullResponse = [];
-  for (let lang of langsFetch) {
-    try {
-      let playres = await fetch(`https://www.radiomirchi.com/more/${lang}/`);
-      let language = lang.substring(0, lang.indexOf("-"));
-      playres = await playres.text();
-      let DOM = new JSDOM(playres.trim());
-      let targetCollection = DOM.window.document.getElementsByClassName(
-        "top01",
-      );
-      let songlist = [];
-      for (let i = 0; i < targetCollection.length; i++) {
-        let rank = i + 1;
-        let title = targetCollection[i].children
-          .item(3)
-          .getElementsByClassName("header")[0]
-          .getElementsByTagName("h2")[0].textContent;
-        let thumbnail = targetCollection[i].children
-          .item(4)
-          .getElementsByClassName("movieImg")[0]
-          .getElementsByTagName("img")[0].src;
-        let videoId = "";
-        if (thumbnail.replace("https://", "").split("/")[4]) {
-          videoId = thumbnail.replace("https://", "").split("/")[4];
-        }
-        if (videoId) {
-          let song = {
-            videoId,
-            rank,
-            title,
-            thumbnail,
-          };
-          songlist.push(song);
-        } else {
-          try {
-            let result = await ytcat(
-              encodeURIComponent(title + " " + language),
-              true,
-            );
-            let videoId = result[0].videoId;
-            let thumbnail = result[0].thumbnail;
-            let song = {
-              videoId,
-              rank,
-              title,
-              thumbnail,
-            };
-            songlist.push(song);
-          } catch (err) {
-            console.error(err.message);
-          }
-        }
-      }
-      if (songlist.length > 0) {
-        fullResponse.push({
-          status: true,
-          language,
-          songlist,
-        });
-      } else {
-        fullResponse.push({
-          status: false,
-          language: lang.substring(0, lang.indexOf("-")),
-          errorMessage: "Couldn't find songs.",
-        });
-      }
-    } catch (error) {
-      console.error(error.message);
-      fullResponse.push({
-        status: false,
-        language: lang.substring(0, lang.indexOf("-")),
-        errorMessage: "NOT-FOUND",
-      });
-      continue;
-    }
-  }
-  res.status(200).json({
-    status: true,
-    fullResponse,
   });
 });
 
