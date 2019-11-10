@@ -94,9 +94,9 @@ export default class App extends Component {
   }
 
   async getKeywordSuggestion(e) {
-    this.setState({ searchText: e.target.value })
-    const url = `${variables.baseUrl}/suggester?k=${e.target.value}`;
-    if (e.target.value.length > 0) {
+    this.setState({ searchText: e })
+    const url = `${variables.baseUrl}/suggester?k=${e}`;
+    if (e.length > 0) {
       await fetch(url)
         .then(res => res.json())
         .then(res => {

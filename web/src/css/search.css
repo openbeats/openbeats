@@ -19,7 +19,6 @@
   border-bottom: 1px solid rgba(51, 50, 50, 0.3);
   width: 100%;
   font-size: 20px;
-  letter-spacing: 5px;
   caret-color: rgba(255, 103, 103, 0.4);
   line-height: 1px;
   padding-bottom: 6px;
@@ -70,7 +69,6 @@
   box-shadow: 0 0 5px 1px gray;
   border-radius: 5px;
   font-size: 20px;
-  letter-spacing: 5px;
 }
 
 .suggested-keyword {
@@ -103,4 +101,8 @@
   .suggestion-keyword-holder {
     font-size: 18px;
   }
+}
+
+.highlight-current {
+  background: rgb(129, 122, 122, 0.2);
 }
