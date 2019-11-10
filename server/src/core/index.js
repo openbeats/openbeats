@@ -1,5 +1,6 @@
 import copycat from "./copycat";
 import ytcat from "./ytsearchcat";
 import suggestbeat from "./suggestbeat";
+import scrapmirchi from "./scrapmirchi";
 
-export { copycat, ytcat, suggestbeat };
+export { scrapmirchi, copycat, ytcat, suggestbeat };
