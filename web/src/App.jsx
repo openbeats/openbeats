@@ -32,7 +32,8 @@ export default class App extends Component {
       currentTimeText: '00:00',
       playerVolume: 0.5,
       isMuted: false,
-      isSearching: false
+      isSearching: false,
+      typing: true
     }
 
     this.playerTimeUpdater = this.playerTimeUpdater.bind(this);
@@ -50,6 +51,24 @@ export default class App extends Component {
   async componentDidMount() {
     const playerRef = document.getElementById("music-player");
     playerRef.volume = this.state.playerVolume
+    const searchBarRef = document.getElementsByClassName("search-input")[0];
+    searchBarRef.addEventListener("focusin", function (e) {
+      this.setState({ typing: true })
+    }.bind(this))
+    searchBarRef.addEventListener("focusout", function (e) {
+      this.setState({ typing: false })
+    }.bind(this))
+
+    document.addEventListener("keyup", function (e) {
+      if (e.keyCode === 32 && !this.state.typing) {
+        this.playPauseToggle()
+      }
+      if (e.keyCode === 77 && !this.state.typing) {
+        this.muteToggle()
+      }
+    }.bind(this)
+    )
+
   }
 
   async getKeywordSuggestion(e) {
