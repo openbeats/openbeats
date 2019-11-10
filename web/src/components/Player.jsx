@@ -48,7 +48,7 @@ export default class Player extends Component {
                                 <i className="fas fa-play play-icon cursor-pointer"></i>
                             }
                         </span>
-                        <span className="volume-icon cursor-pointer">
+                        <span className={`volume-icon cursor-pointer ${this.props.state.isVolumeActivityNotExpired ? 'volume-notify' : ''}`}>
                             {this.props.state.isMuted ?
                                 <span onClick={async (e) => { await this.props.muteToggle() }}><i className="fas fa-volume-mute"></i></span>
                                 :
@@ -56,7 +56,7 @@ export default class Player extends Component {
                             }
                             <input onChange={async (e) => {
                                 await this.props.updateVolume(e);
-                            }} type="range" className="volume-progress" step="0.1" min="0" max="1" value={this.props.state.playerVolume} />
+                            }} type="range" className={`volume-progress`} step="0.1" min="0" max="1" value={this.props.state.playerVolume} />
                         </span>
                         <span className="music-duration">
                             <span id="current-time">{this.props.state.currentTimeText}</span>
