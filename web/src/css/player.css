@@ -165,7 +165,6 @@
   opacity: 0.5;
   pointer-events: none;
   cursor: default;
-  
 }
 
 @media only screen and (max-width: 800px) {
@@ -181,5 +180,27 @@
 
   .music-playlist > img {
     width: 18px;
+  }
+}
+
+.volume-notify {
+  animation: notify 0.5s infinite;
+}
+
+@keyframes notify {
+  0% {
+    opacity: 0;
+  }
+  25% {
+    opacity: 0.2;
+  }
+  50% {
+    opacity: 0.5;
+  }
+  75% {
+    opacity: 0.7;
+  }
+  100% {
+    opacity: 1;
   }
 }

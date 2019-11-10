@@ -33,7 +33,8 @@ export default class App extends Component {
       playerVolume: 0.5,
       isMuted: false,
       isSearching: false,
-      typing: true
+      typing: true,
+      isVolumeActivityNotExpired: false
     }
 
     this.playerTimeUpdater = this.playerTimeUpdater.bind(this);
@@ -59,15 +60,36 @@ export default class App extends Component {
       this.setState({ typing: false })
     }.bind(this))
 
-    document.addEventListener("keyup", function (e) {
+    document.addEventListener("keydown", function (e) {
       if (e.keyCode === 32 && !this.state.typing) {
         this.playPauseToggle()
       }
       if (e.keyCode === 77 && !this.state.typing) {
         this.muteToggle()
       }
+      if (e.keyCode === 39 && !this.state.typing) {
+        this.seekHandler(true)
+      }
+      if (e.keyCode === 37 && !this.state.typing) {
+        this.seekHandler(false)
+      }
+      if (e.keyCode === 38 && !this.state.typing) {
+        this.volumeSeekHandler(true)
+      }
+      if (e.keyCode === 40 && !this.state.typing) {
+        this.volumeSeekHandler(false)
+      }
     }.bind(this)
     )
+
+    playerRef.onvolumechange = e => {
+      this.setState({ playerVolume: e.target.volume, isVolumeActivityNotExpired: true })
+      setTimeout(function () {
+        this.setState({ isVolumeActivityNotExpired: false })
+      }.bind(this), 100);
+    }
+
+
 
   }
 
@@ -252,6 +274,32 @@ export default class App extends Component {
   async resetBeatNotice() {
     this.beatNotice = 0
   }
+
+  async seekHandler(forward = true) {
+    if (this.state.currentAudioLink) {
+      let audio = document.getElementById('music-player');
+      if (forward)
+        audio.currentTime += 10
+      else
+        audio.currentTime -= 10
+    }
+  }
+
+  async volumeSeekHandler(forward = true) {
+    let audio = document.getElementById('music-player');
+    if (forward) {
+      if (audio.volume <= 0.9)
+        audio.volume += 0.1
+      else
+        audio.volume = 1
+    }
+    else
+      if (audio.volume >= 0.1)
+        audio.volume -= 0.1
+      else
+        audio.volume = 0
+  }
+
 
   render() {
 
