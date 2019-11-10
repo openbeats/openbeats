@@ -1,8 +1,8 @@
 import "dotenv/config";
 import middleware from "./config/middleware";
 import express from "express";
-import { ytcat, suggestbeat } from "./core";
-import cron from "./core/cron";
+import { scrapmirchi, ytcat, suggestbeat } from "./core";
+//import cron from "./core/cron";
 const ytdl = require("ytdl-core");
 const ffmpegPath = require("@ffmpeg-installer/ffmpeg").path;
 const ffmpeg = require("fluent-ffmpeg");
@@ -165,6 +165,11 @@ app.get("/suggester", async (req, res) => {
     status: true,
     data: data,
   });
+});
+app.get("/test", async (req, res) => {
+  await scrapmirchi();
+
+  res.send({ msg: "Written Successfully" });
 });
 
 const PORT = process.env.PORT || 5000;
