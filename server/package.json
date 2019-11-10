@@ -4,7 +4,7 @@
   "description": "openbeats server",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon index.js"
+    "start": "nodemon index.js --ignore localdb.json"
   },
   "keywords": [
     "openbeats"
@@ -27,8 +27,10 @@
     "form-data": "^2.5.1",
     "install": "^0.13.0",
     "jsdom": "^15.2.0",
+    "lowdb": "^1.0.0",
     "mongoose": "^5.7.7",
     "morgan": "^1.9.1",
+    "node-cron": "^2.0.3",
     "node-fetch": "^2.6.0",
     "ytdl-core": "^1.0.0"
   }
