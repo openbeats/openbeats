@@ -1,10 +1,12 @@
-import React, { Component, Fragment } from 'react'
-import "./css/main.css";
-import "./css/common.css";
+import React, { Component } from 'react'
+// import React, { Component, Fragment } from 'react'
+// import "./css/main.css";
+// import "./css/common.css";
 import { musicDummy } from './images';
 import { variables } from "./config";
 import { toast } from 'react-toastify';
-import { Player, Header, Search, Result } from "./components"
+// import { Player, Header, Search, Result } from "./components"
+import { Experiment } from "./components"
 
 export default class App extends Component {
 
@@ -50,44 +52,44 @@ export default class App extends Component {
   }
 
   async componentDidMount() {
-    const playerRef = document.getElementById("music-player");
-    playerRef.volume = this.state.playerVolume
-    const searchBarRef = document.getElementsByClassName("search-input")[0];
-    searchBarRef.addEventListener("focusin", function (e) {
-      this.setState({ typing: true })
-    }.bind(this))
-    searchBarRef.addEventListener("focusout", function (e) {
-      this.setState({ typing: false })
-    }.bind(this))
+    // const playerRef = document.getElementById("music-player");
+    // playerRef.volume = this.state.playerVolume
+    // const searchBarRef = document.getElementsByClassName("search-input")[0];
+    // searchBarRef.addEventListener("focusin", function (e) {
+    //   this.setState({ typing: true })
+    // }.bind(this))
+    // searchBarRef.addEventListener("focusout", function (e) {
+    //   this.setState({ typing: false })
+    // }.bind(this))
 
-    document.addEventListener("keydown", function (e) {
-      if (e.keyCode === 32 && !this.state.typing) {
-        this.playPauseToggle()
-      }
-      if (e.keyCode === 77 && !this.state.typing) {
-        this.muteToggle()
-      }
-      if (e.keyCode === 39 && !this.state.typing) {
-        this.seekHandler(true)
-      }
-      if (e.keyCode === 37 && !this.state.typing) {
-        this.seekHandler(false)
-      }
-      if (e.keyCode === 38 && !this.state.typing) {
-        this.volumeSeekHandler(true)
-      }
-      if (e.keyCode === 40 && !this.state.typing) {
-        this.volumeSeekHandler(false)
-      }
-    }.bind(this)
-    )
+    // document.addEventListener("keydown", function (e) {
+    //   if (e.keyCode === 32 && !this.state.typing) {
+    //     this.playPauseToggle()
+    //   }
+    //   if (e.keyCode === 77 && !this.state.typing) {
+    //     this.muteToggle()
+    //   }
+    //   if (e.keyCode === 39 && !this.state.typing) {
+    //     this.seekHandler(true)
+    //   }
+    //   if (e.keyCode === 37 && !this.state.typing) {
+    //     this.seekHandler(false)
+    //   }
+    //   if (e.keyCode === 38 && !this.state.typing) {
+    //     this.volumeSeekHandler(true)
+    //   }
+    //   if (e.keyCode === 40 && !this.state.typing) {
+    //     this.volumeSeekHandler(false)
+    //   }
+    // }.bind(this)
+    // )
 
-    playerRef.onvolumechange = e => {
-      this.setState({ playerVolume: e.target.volume, isVolumeActivityNotExpired: true })
-      setTimeout(function () {
-        this.setState({ isVolumeActivityNotExpired: false })
-      }.bind(this), 100);
-    }
+    // playerRef.onvolumechange = e => {
+    //   this.setState({ playerVolume: e.target.volume, isVolumeActivityNotExpired: true })
+    //   setTimeout(function () {
+    //     this.setState({ isVolumeActivityNotExpired: false })
+    //   }.bind(this), 100);
+    // }
 
 
 
@@ -305,45 +307,46 @@ export default class App extends Component {
 
     return (
 
-      <Fragment >
+      // <Fragment >
 
-        <Player
-          state={this.state}
-          seekAudio={this.seekAudio}
-          featureNotify={this.featureNotify}
-          playerEndHandler={this.playerEndHandler}
-          updateVolume={this.updateVolume}
-          muteToggle={this.muteToggle}
-          warnUser={this.warnUser}
-          playPauseToggle={this.playPauseToggle}
-          initPlayer={this.initPlayer}
-          playerTimeUpdater={this.playerTimeUpdater}
-        />
+      //   <Player
+      //     state={this.state}
+      //     seekAudio={this.seekAudio}
+      //     featureNotify={this.featureNotify}
+      //     playerEndHandler={this.playerEndHandler}
+      //     updateVolume={this.updateVolume}
+      //     muteToggle={this.muteToggle}
+      //     warnUser={this.warnUser}
+      //     playPauseToggle={this.playPauseToggle}
+      //     initPlayer={this.initPlayer}
+      //     playerTimeUpdater={this.playerTimeUpdater}
+      //   />
 
-        <Header
-          state={this.state}
-          featureNotify={this.featureNotify}
-        />
+      //   <Header
+      //     state={this.state}
+      //     featureNotify={this.featureNotify}
+      //   />
 
 
-        <Search
-          state={this.state}
-          fetchResults={this.fetchResults}
-          getKeywordSuggestion={this.getKeywordSuggestion}
-        />
+      //   <Search
+      //     state={this.state}
+      //     fetchResults={this.fetchResults}
+      //     getKeywordSuggestion={this.getKeywordSuggestion}
+      //   />
 
-        <Result
-          state={this.state}
-          resetBeatNotice={this.resetBeatNotice}
-          featureNotify={this.featureNotify}
-          initPlayer={this.initPlayer}
-        />
+      //   <Result
+      //     state={this.state}
+      //     resetBeatNotice={this.resetBeatNotice}
+      //     featureNotify={this.featureNotify}
+      //     initPlayer={this.initPlayer}
+      //   />
 
-        <div className="copyrights">
-          © 2019 OpenBeats.in | All Rights Reserved.
-        </div>
+      //   <div className="copyrights">
+      //     © 2019 OpenBeats.in | All Rights Reserved.
+      //   </div>
 
-      </Fragment>
+      // </Fragment>
+      <Experiment />
     )
   }
 
