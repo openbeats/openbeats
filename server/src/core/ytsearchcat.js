@@ -7,7 +7,7 @@ export default async (queryString, first = false) => {
   const removables = [".yt-lockup-channel", ".feed-item-container"];
   let query = queryString.trim().replace(/ /g, "+");
   const searchLink = `https://www.youtube.com/results?search_query=${query}`;
-  await fetchRetry(searchLink, 3)
+  await fetchRetry(searchLink, 2)
     .then(async res => await res.text())
     .then(res => {
       let $ = cheerio.load(res.trim());
