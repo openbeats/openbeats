@@ -1,9 +1,7 @@
-import localdb from "../config/localdb";
-import fetch from "node-fetch";
+import fetchRetry from "./refetch";
 import cheerio from "cheerio";
 import ytcat from "./ytsearchcat";
 
-localdb.defaults({ isfirst: true, opencharts: [], lastmodified: "" }).write();
 export default async () => {
   const fetchlist = [
     "punjabi-top-10",
@@ -14,11 +12,17 @@ export default async () => {
     "kannada-top-20",
     "bangla-top-10",
   ];
+  let response = [];
   for (let lang of fetchlist) {
+    let playlist = {};
+    let totalsongs;
     let songlist = [];
     let language = lang.substring(0, lang.indexOf("-"));
     try {
-      let playres = await fetch(`https://www.radiomirchi.com/more/${lang}/`);
+      let playres = await fetchRetry(
+        `https://www.radiomirchi.com/more/${lang}/`,
+        2,
+      );
       playres = await playres.text();
       const $ = cheerio.load(playres.trim());
       $(".top01").each(async (i, el) => {
@@ -43,6 +47,7 @@ export default async () => {
           videoId = thumbnail.replace("https://", "").split("/")[4];
         }
         if (videoId) {
+          totalsongs += 1;
           song = {
             videoId,
             rank,
@@ -51,50 +56,39 @@ export default async () => {
           };
           songlist.push(song);
         } else {
-          try {
-            const result = await ytcat(
-              encodeURIComponent(title + " " + language),
-              true,
-            );
-            videoId = result[0].videoId;
-            thumbnail = result[0].thumbnail;
-            song = {
-              videoId,
-              rank,
-              title,
-              thumbnail,
-            };
-            songlist.push(song);
-          } catch (error) {
-            console.error(error);
+          if (language === "kannada" || language === "bangla") {
+            console.log(title + " " + language);
           }
+          song = await ytcat(encodeURIComponent(title + " " + language), true)
+            .then(result => {
+              totalsongs += 1;
+              console.log(title + " " + language);
+              videoId = result[0].videoId;
+              console.log(videoId);
+              thumbnail = result[0].thumbnail;
+              let temp = {
+                videoId,
+                rank,
+                title,
+                thumbnail,
+              };
+              return temp;
+            })
+            .catch(err => {
+              console.log(err);
+            });
+          songlist.push(song);
         }
       });
-      let playlist = {
-        playlistTitle: lang,
-        language,
-        songlist,
-        totalsongs: songlist.length,
-      };
-      if (localdb.get("isfirst").value()) {
-        localdb
-          .get("opencharts")
-          .push(playlist)
-          .write();
-      } else {
-        localdb
-          .get("opencharts")
-          .find({ playlistTitle: lang })
-          .assign(playlist)
-          .write();
-      }
+      playlist.playlistTitle = lang;
+      playlist.language = language;
+      playlist.songlist = songlist;
+      playlist.totalsongs = totalsongs;
+      response.push(playlist);
     } catch (error) {
       console.error(error);
       continue;
     }
   }
-  localdb.set("lastmodified", Date.now()).write();
-  if (localdb.get("isfirst").value()) {
-    localdb.set("isfirst", false).write();
-  }
+  return response;
 };
