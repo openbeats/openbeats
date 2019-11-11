@@ -10,7 +10,6 @@ toast.configure()
 toast.configure({
     autoClose: 3000,
     position: "bottom-center"
-    // draggable: false,
 });
 
 ReactDOM.render(<App />, document.getElementById('root'));
