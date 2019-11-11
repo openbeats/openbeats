@@ -13,6 +13,16 @@ import navalbum from './navalbum.png'
 import navhistory from './navhistory.png'
 import navplaylist from './navplaylist.png'
 import navplus from './navplus.png'
+import playerdownload from './playerdownload.png'
+import playernext from './playernext.png'
+import playerpause from './playerpause.png'
+import playerplay from './playerplay.png'
+import playerprevious from './playerprevious.png'
+import playerqueue from './playerqueue.png'
+import playervolume from './playervolume.png'
+import angleright from './angleright.png'
+import mainsearch from './mainsearch.png'
+
 
 
 export {
@@ -31,4 +41,13 @@ export {
     navhistory,
     navplaylist,
     navplus,
+    playerdownload,
+    playernext,
+    playerpause,
+    playerplay,
+    playerprevious,
+    playerqueue,
+    playervolume,
+    angleright,
+    mainsearch
 }
