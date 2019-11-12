@@ -6,7 +6,6 @@ import { toast } from 'react-toastify';
 import { Result } from './components'
 import { masterLogo, navhome, navchart, navartist, navalbum, navhistory, navplaylist, navplus, playerprevious, playerplay, playerpause, playernext, musicDummy, playerdownload, playerqueue, angleright, mainsearch, hamburger, navclose } from './images'
 
-
 export default class App extends Component {
 
   constructor(props) {
@@ -31,12 +30,13 @@ export default class App extends Component {
       isMusicPlaying: false,
       currentProgress: 0,
       currentTimeText: '0:00',
-      playerVolume: 0.5,
+      playerVolume: localStorage.getItem("playerVolume") || 0.5,
       isMuted: false,
       isSearching: false,
       typing: false,
       isAudioBuffering: false,
-      currentActionTitle: "Search"
+      currentActionTitle: "Search",
+      downloadProcess: false
     }
 
     this.playerTimeUpdater = this.playerTimeUpdater.bind(this);
@@ -110,7 +110,10 @@ export default class App extends Component {
     )
 
     playerRef.onvolumechange = e => {
-      this.setState({ playerVolume: e.target.volume, isMuted: e.target.volume === 0 ? true : false })
+      if (e.target.volume === 0 && !this.state.isMuted) {
+        this.muteToggle()
+      }
+      localStorage.setItem("playerVolume", e.target.volume)
     }
 
   }
@@ -231,28 +234,24 @@ export default class App extends Component {
   }
 
   async muteToggle() {
-    if (this.state.currentAudioLink) {
-      const playerRef = document.getElementById("music-player");
-      playerRef.muted = !playerRef.muted
-      if (playerRef.muted) {
-        this.setState({ isMuted: true, playerVolume: 0 })
-      } else {
-        this.setState({ isMuted: false, playerVolume: playerRef.volume })
-      }
+    const playerRef = document.getElementById("music-player");
+    playerRef.muted = !playerRef.muted
+    if (playerRef.muted) {
+      this.setState({ isMuted: true, playerVolume: 0 })
     } else {
-      if (this.state.isMuted)
-        this.setState({ isMuted: this.state.isMuted ? false : true, playerVolume: 0.5 })
-      else
-        this.setState({ isMuted: this.state.isMuted ? false : true, playerVolume: 0 })
+      if (playerRef.volume === 0) {
+        playerRef.volume += 0.1
+      }
+      this.setState({ isMuted: false, playerVolume: playerRef.volume })
     }
   }
 
   async updateVolume(e) {
-    if (this.state.currentAudioLink) {
-      const playerRef = document.getElementById("music-player");
-      playerRef.volume = e.target.value
-    }
-    this.setState({ playerVolume: e.target.value });
+    const playerRef = document.getElementById("music-player");
+    if (this.state.isMuted && playerRef.muted)
+      this.muteToggle()
+    playerRef.volume = e.target.value
+    this.setState({ playerVolume: e.target.value, isMuted: playerRef.volume === 0 ? true : false });
   }
 
   async playerEndHandler() {
@@ -312,6 +311,8 @@ export default class App extends Component {
 
   async volumeSeekHandler(forward = true) {
     let audio = document.getElementById('music-player');
+    if (this.state.isMuted && audio.muted)
+      this.muteToggle()
     if (forward) {
       if (audio.volume <= 0.9)
         audio.volume += 0.1
@@ -323,8 +324,9 @@ export default class App extends Component {
         audio.volume -= 0.1
       else
         audio.volume = 0
-  }
 
+    this.setState({ playerVolume: audio.volume })
+  }
 
   render() {
 
@@ -347,32 +349,32 @@ export default class App extends Component {
           </section>
           <section className="nav-content">
             <section className="main-nav-menus">
-              <div className="nav-menu">
-                <div className="nav-menu-icon-holder">
+              <div className="nav-menu" onClick={() => this.featureNotify()}>
+                <div className="nav-menu-icon-holder" >
                   <img className="nav-menu-icon-size" src={navhome} alt="" />
                 </div>
                 <p className="nav-menu-text">Home</p>
               </div>
-              <div className="nav-menu">
-                <div className="nav-menu-icon-holder">
+              <div className="nav-menu" onClick={() => this.featureNotify()}>
+                <div className="nav-menu-icon-holder" >
                   <img className="nav-menu-icon-size" src={navchart} alt="" />
                 </div>
                 <p className="nav-menu-text">Top Charts</p>
               </div>
-              <div className="nav-menu">
-                <div className="nav-menu-icon-holder">
+              <div className="nav-menu" onClick={() => this.featureNotify()}>
+                <div className="nav-menu-icon-holder" >
                   <img className="nav-menu-icon-size" src={navartist} alt="" />
                 </div>
                 <p className="nav-menu-text">Artists</p>
               </div>
-              <div className="nav-menu">
-                <div className="nav-menu-icon-holder">
+              <div className="nav-menu" onClick={() => this.featureNotify()}>
+                <div className="nav-menu-icon-holder" >
                   <img className="nav-menu-icon-size" src={navalbum} alt="" />
                 </div>
                 <p className="nav-menu-text">Albums</p>
               </div>
-              <div className="nav-menu">
-                <div className="nav-menu-icon-holder">
+              <div className="nav-menu" onClick={() => this.featureNotify()}>
+                <div className="nav-menu-icon-holder" >
                   <img className="nav-menu-icon-size" src={navhistory} alt="" />
                 </div>
                 <p className="nav-menu-text">Recently Played</p>
@@ -387,12 +389,12 @@ export default class App extends Component {
                 <p className="nav-menu-text">Your Playlists</p>
               </div>
               <ul className="playlist-content-holder">
-                <div className="nav-playlist-plus-icon-holder">
+                <div className="nav-playlist-plus-icon-holder" onClick={() => this.featureNotify()}>
                   <img src={navplus} alt="" srcSet="" />
                 </div>
-                <li className="playlist-content-holder-text">Houser</li>
-                <li className="playlist-content-holder-text">Travel Melody</li>
-                <li className="playlist-content-holder-text">Rock Collection</li>
+                <li className="playlist-content-holder-text" onClick={() => this.featureNotify()}>Houser</li>
+                <li className="playlist-content-holder-text" onClick={() => this.featureNotify()}>Travel Melody</li>
+                <li className="playlist-content-holder-text" onClick={() => this.featureNotify()}>Rock Collection</li>
               </ul>
             </section>
             <section className="nav-footer-container">
@@ -441,7 +443,7 @@ export default class App extends Component {
                         await this.setState({ currentTextIndex: current, suggestionText: this.state.actualText })
                     }
                   }}
-                  value={this.state.suggestionText}
+                  value={this.state.suggestionText || ''}
                   onChange={async (e) => {
                     let a = e.target.value
                     await this.setState({ suggestionText: a, actualText: a, currentTextIndex: 0 });
@@ -574,26 +576,39 @@ export default class App extends Component {
                   download
                   onClick={async (e) => {
                     e.preventDefault()
+                    this.setState({ downloadProcess: true })
                     if (!this.state.currentAudioData.videoId) {
                       e.preventDefault()
                       toast("Please Select Music to play or Download!")
+                      this.setState({ downloadProcess: false })
                     } else {
                       await fetch(`${variables.baseUrl}/downcc/${this.state.currentAudioData.videoId}`)
                         .then(res => {
                           if (res.status === 200) {
+                            this.setState({ downloadProcess: false })
                             window.open(`${variables.baseUrl}/downcc/${this.state.currentAudioData.videoId}`, "_self")
                           } else {
+                            this.setState({ downloadProcess: false })
                             toast("Requested content not available right now!, try downloading alternate songs!");
                           }
                         }).catch(err => {
+                          this.setState({ downloadProcess: false })
                           toast("Requested content not available right now!, try downloading alternate songs!");
                         })
                     }
                   }}
                   rel="noopener noreferrer"
                   href={`${variables.baseUrl}/downcc/${this.state.currentAudioData.videoId}`}
-                  className={`music-download cursor-pointer t-none`}>
-                  <img src={playerdownload} alt="" srcSet="" />
+                  className={`music-download cursor-pointer t-none ${this.state.downloadProcess ? 'no-access' : ''}`}>
+                  {this.state.downloadProcess ?
+                    <Loader
+                      type="Oval"
+                      color="#F32C2C"
+                      height={20}
+                      width={20}
+                    />
+                    : <img src={playerdownload} alt="" srcSet="" />
+                  }
                 </a>
               </div>
               <div>

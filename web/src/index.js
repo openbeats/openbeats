@@ -6,8 +6,7 @@ import 'react-toastify/dist/ReactToastify.min.css';
 import "react-loader-spinner/dist/loader/css/react-spinner-loader.css"
 import "./css/commons.css"
 
-toast.configure()
-
+const Close = () => <i className="fas fa-times"></i>;
 toast.configure({
     autoClose: 2000,
     position: "bottom-right",
@@ -16,7 +15,7 @@ toast.configure({
     toastClassName: "color-change",
     transition: Zoom,
     progressClassName: "progress-class-toast",
-    closeButton: <i className="fas fa-times"></i>,
+    closeButton: <Close />,
     pauseOnFocusLoss: false,
 });
 

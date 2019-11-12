@@ -279,6 +279,7 @@ main {
 /* Track */
 .main-body::-webkit-scrollbar-track {
   background: rgba(255, 253, 253, 0.5);
+  border-radius: 10px;
 }
 
 /* Handle */
