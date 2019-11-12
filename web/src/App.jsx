@@ -1,12 +1,11 @@
-import React, { Component } from 'react'
-// import React, { Component, Fragment } from 'react'
-// import "./css/main.css";
-// import "./css/common.css";
-import { musicDummy } from './images';
+import React, { Component, Fragment } from 'react'
+import "./css/experiment.css";
 import { variables } from "./config";
+import Loader from 'react-loader-spinner'
 import { toast } from 'react-toastify';
-// import { Player, Header, Search, Result } from "./components"
-import { Experiment } from "./components"
+import { Result } from './components'
+import { masterLogo, navhome, navchart, navartist, navalbum, navhistory, navplaylist, navplus, playerprevious, playerplay, playerpause, playernext, musicDummy, playerdownload, playerqueue, angleright, mainsearch, hamburger, navclose } from './images'
+
 
 export default class App extends Component {
 
@@ -22,7 +21,7 @@ export default class App extends Component {
         channelName: null,
         duration: "0:00",
         thumbnail: musicDummy,
-        title: "Stream or Download Unlimited Music for Free ! @ OpenBeats",
+        title: "OpenBeats Stream Unlimited Music!",
         uploadedOn: null,
         videoId: null,
         views: null,
@@ -31,12 +30,13 @@ export default class App extends Component {
       fallBackLink: null,
       isMusicPlaying: false,
       currentProgress: 0,
-      currentTimeText: '00:00',
+      currentTimeText: '0:00',
       playerVolume: 0.5,
       isMuted: false,
       isSearching: false,
-      typing: true,
-      isVolumeActivityNotExpired: false
+      typing: false,
+      isAudioBuffering: false,
+      currentActionTitle: "Search"
     }
 
     this.playerTimeUpdater = this.playerTimeUpdater.bind(this);
@@ -52,46 +52,66 @@ export default class App extends Component {
   }
 
   async componentDidMount() {
-    // const playerRef = document.getElementById("music-player");
-    // playerRef.volume = this.state.playerVolume
-    // const searchBarRef = document.getElementsByClassName("search-input")[0];
-    // searchBarRef.addEventListener("focusin", function (e) {
-    //   this.setState({ typing: true })
-    // }.bind(this))
-    // searchBarRef.addEventListener("focusout", function (e) {
-    //   this.setState({ typing: false })
-    // }.bind(this))
+    this.initiateListeners()
+  }
 
-    // document.addEventListener("keydown", function (e) {
-    //   if (e.keyCode === 32 && !this.state.typing) {
-    //     this.playPauseToggle()
-    //   }
-    //   if (e.keyCode === 77 && !this.state.typing) {
-    //     this.muteToggle()
-    //   }
-    //   if (e.keyCode === 39 && !this.state.typing) {
-    //     this.seekHandler(true)
-    //   }
-    //   if (e.keyCode === 37 && !this.state.typing) {
-    //     this.seekHandler(false)
-    //   }
-    //   if (e.keyCode === 38 && !this.state.typing) {
-    //     this.volumeSeekHandler(true)
-    //   }
-    //   if (e.keyCode === 40 && !this.state.typing) {
-    //     this.volumeSeekHandler(false)
-    //   }
-    // }.bind(this)
-    // )
+  async initiateListeners() {
+    // navigation toggle handler
+    const navCloseRef = document.getElementById("nav-close");
+    const navHamburgerRef = document.getElementById("nav-hamburger");
+    const navRef = document.getElementById("nav");
+    const mainRef = document.getElementById("main");
+    const footerRef = document.getElementById("footer");
+    navHamburgerRef.onclick = function (e) {
+      navRef.classList.add("nav-show")
+    }
+    navCloseRef.onclick = function (e) {
+      navRef.classList.remove("nav-show")
+    }
 
-    // playerRef.onvolumechange = e => {
-    //   this.setState({ playerVolume: e.target.volume, isVolumeActivityNotExpired: true })
-    //   setTimeout(function () {
-    //     this.setState({ isVolumeActivityNotExpired: false })
-    //   }.bind(this), 100);
-    // }
+    mainRef.onclick = function (e) {
+      navRef.classList.remove("nav-show")
+    }
 
+    footerRef.onclick = function (e) {
+      navRef.classList.remove("nav-show")
+    }
+    // player controls shortcut key handler
+    const playerRef = document.getElementById("music-player");
+    playerRef.volume = this.state.playerVolume
+    const searchBarRef = document.getElementsByClassName("search-input")[0];
+    searchBarRef.addEventListener("focusin", function (e) {
+      this.setState({ typing: true })
+    }.bind(this))
+    searchBarRef.addEventListener("focusout", function (e) {
+      this.setState({ typing: false })
+    }.bind(this))
 
+    document.addEventListener("keydown", function (e) {
+      if (e.keyCode === 32 && !this.state.typing) {
+        this.playPauseToggle()
+      }
+      if (e.keyCode === 77 && !this.state.typing) {
+        this.muteToggle()
+      }
+      if (e.keyCode === 39 && !this.state.typing) {
+        this.seekHandler(true)
+      }
+      if (e.keyCode === 37 && !this.state.typing) {
+        this.seekHandler(false)
+      }
+      if (e.keyCode === 38 && !this.state.typing) {
+        this.volumeSeekHandler(true)
+      }
+      if (e.keyCode === 40 && !this.state.typing) {
+        this.volumeSeekHandler(false)
+      }
+    }.bind(this)
+    )
+
+    playerRef.onvolumechange = e => {
+      this.setState({ playerVolume: e.target.volume, isMuted: e.target.volume === 0 ? true : false })
+    }
 
   }
 
@@ -252,14 +272,17 @@ export default class App extends Component {
         channelName: null,
         duration: "0:00",
         thumbnail: musicDummy,
-        title: "Stream or Download Unlimited Music for Free! @ OpenBeats",
+        title: "OpenBeats Stream Unlimited Music!",
         uploadedOn: null,
         videoId: null,
         views: null,
       },
       isMusicPlaying: false,
       currentTimeText: '00:00',
-      isAudioBuffering: false
+      isAudioBuffering: false,
+      currentTextIndex: 0,
+      actualText: "",
+      suggestionText: ""
     })
   }
 
@@ -306,47 +329,287 @@ export default class App extends Component {
   render() {
 
     return (
+      <Fragment >
+        <div id="nav-hamburger" className="hamburger-holder">
+          <img src={hamburger} alt="" srcSet="" />
+        </div>
 
-      // <Fragment >
+        <nav id="nav">
 
-      //   <Player
-      //     state={this.state}
-      //     seekAudio={this.seekAudio}
-      //     featureNotify={this.featureNotify}
-      //     playerEndHandler={this.playerEndHandler}
-      //     updateVolume={this.updateVolume}
-      //     muteToggle={this.muteToggle}
-      //     warnUser={this.warnUser}
-      //     playPauseToggle={this.playPauseToggle}
-      //     initPlayer={this.initPlayer}
-      //     playerTimeUpdater={this.playerTimeUpdater}
-      //   />
+          <section className="master-logo">
 
-      //   <Header
-      //     state={this.state}
-      //     featureNotify={this.featureNotify}
-      //   />
+            <img className="cursor-pointer" onClick={() => {
+              window.location.reload()
+            }} src={masterLogo} alt="" />
+            <div id="nav-close" className="nav-close-holder">
+              <img src={navclose} alt="" srcSet="" />
+            </div>
+          </section>
+          <section className="nav-content">
+            <section className="main-nav-menus">
+              <div className="nav-menu">
+                <div className="nav-menu-icon-holder">
+                  <img className="nav-menu-icon-size" src={navhome} alt="" />
+                </div>
+                <p className="nav-menu-text">Home</p>
+              </div>
+              <div className="nav-menu">
+                <div className="nav-menu-icon-holder">
+                  <img className="nav-menu-icon-size" src={navchart} alt="" />
+                </div>
+                <p className="nav-menu-text">Top Charts</p>
+              </div>
+              <div className="nav-menu">
+                <div className="nav-menu-icon-holder">
+                  <img className="nav-menu-icon-size" src={navartist} alt="" />
+                </div>
+                <p className="nav-menu-text">Artists</p>
+              </div>
+              <div className="nav-menu">
+                <div className="nav-menu-icon-holder">
+                  <img className="nav-menu-icon-size" src={navalbum} alt="" />
+                </div>
+                <p className="nav-menu-text">Albums</p>
+              </div>
+              <div className="nav-menu">
+                <div className="nav-menu-icon-holder">
+                  <img className="nav-menu-icon-size" src={navhistory} alt="" />
+                </div>
+                <p className="nav-menu-text">Recently Played</p>
+              </div>
+            </section>
+            <section className="nav-horizontal-rule"></section>
+            <section className="nav-playlist-holder">
+              <div className="nav-menu bg-none">
+                <div className="nav-menu-icon-holder">
+                  <img className="nav-menu-icon-size" src={navplaylist} alt="" />
+                </div>
+                <p className="nav-menu-text">Your Playlists</p>
+              </div>
+              <ul className="playlist-content-holder">
+                <div className="nav-playlist-plus-icon-holder">
+                  <img src={navplus} alt="" srcSet="" />
+                </div>
+                <li className="playlist-content-holder-text">Houser</li>
+                <li className="playlist-content-holder-text">Travel Melody</li>
+                <li className="playlist-content-holder-text">Rock Collection</li>
+              </ul>
+            </section>
+            <section className="nav-footer-container">
+              <div className="footer-text-holder">
+                <span>About</span>  <span>Copyright</span> <br />
+                <span>Contact us</span>  <span>Advertise</span> <br />
+                <span>Developers</span> <br />
+                <span>Terms Privacy Policy</span> <br />
+                <span>Request New features</span> <br /><br />
+                © 2019 OpenBeats, LLC <br />
+              </div>
+            </section>
 
+          </section>
+        </nav>
 
-      //   <Search
-      //     state={this.state}
-      //     fetchResults={this.fetchResults}
-      //     getKeywordSuggestion={this.getKeywordSuggestion}
-      //   />
+        <main id="main">
+          <section className="main-header">
+            <div className="container-action-notifier">
+              <img src={angleright} alt="" srcSet="" />
+              <span>{this.state.currentActionTitle}</span>
+            </div>
+            <div className="master-search-bar">
+              <form
+                action=""
+                onSubmit={async (e) => {
+                  e.preventDefault();
+                  let a = await this.state.suggestionText;
+                  await this.fetchResults(a);
+                }}
+              >
+                <input
+                  type="text"
+                  onKeyUp={async (e) => {
+                    if (e.keyCode === 40 && this.state.keywordSuggestions.length) {
+                      let current = (this.state.currentTextIndex + 1) % (this.state.keywordSuggestions.length + 1);
+                      if (current !== 0)
+                        await this.setState({ currentTextIndex: current, suggestionText: this.state.keywordSuggestions[current - 1][0] })
+                      else
+                        await this.setState({ currentTextIndex: current, suggestionText: this.state.actualText })
+                    } else if (e.keyCode === 38 && this.state.keywordSuggestions.length) {
+                      let current = Math.abs(this.state.currentTextIndex - 1) % (this.state.keywordSuggestions.length + 1);
+                      if (current !== 0)
+                        await this.setState({ currentTextIndex: current, suggestionText: this.state.keywordSuggestions[current - 1][0] })
+                      else
+                        await this.setState({ currentTextIndex: current, suggestionText: this.state.actualText })
+                    }
+                  }}
+                  value={this.state.suggestionText}
+                  onChange={async (e) => {
+                    let a = e.target.value
+                    await this.setState({ suggestionText: a, actualText: a, currentTextIndex: 0 });
+                    await this.getKeywordSuggestion(a)
+                  }}
+                  className="search-input"
+                  placeholder="Search Artists, Albums, Films, Songs...."
+                />
+                <button className="search-icon" type="submit"><img src={mainsearch} alt="" srcSet="" /></button>
+              </form>
+              <div className="suggestion-keyword-holder">
+                {this.state.keywordSuggestions.map((item, key) => (
+                  <div
+                    onClick={async (e) => {
+                      await this.setState({ suggestionText: item[0] })
+                      await this.fetchResults(this.state.suggestionText);
+                    }}
+                    key={key}
+                    className={`suggested-keyword ${this.state.currentTextIndex === key + 1 ? 'highlight-current' : ''}`}
+                  >
+                    {item[0]}
+                  </div>
+                ))}
+              </div>
+            </div>
+            <div className="main-user-profile-holder">
+              <img
+                className="cursor-pointer"
+                onClick={() => {
+                  this.featureNotify()
+                }} src={musicDummy}
+                alt=""
+                srcSet="" />
+            </div>
+          </section>
+          <div className="main-body">
+            <Result
+              state={this.state}
+              resetBeatNotice={this.resetBeatNotice}
+              initPlayer={this.initPlayer}
+              featureNotify={this.featureNotify}
+            />
+          </div>
+        </main>
 
-      //   <Result
-      //     state={this.state}
-      //     resetBeatNotice={this.resetBeatNotice}
-      //     featureNotify={this.featureNotify}
-      //     initPlayer={this.initPlayer}
-      //   />
+        <footer id="footer">
+          <audio id="music-player"
+            onEnded={async (e) => await this.playerEndHandler()}
+            onTimeUpdate={async (e) => await this.playerTimeUpdater(e)}
+          >
+            <source src="" id="audio-source-1" />
+            <source src="" id="audio-source-2" />
+          </audio>
+          <div className="progress-bar-holder">
+            <input
+              onChange={async (e) => { await this.seekAudio(e) }}
+              className="progress-bar"
+              min="0"
+              max="100"
+              value={isNaN(this.state.currentProgress) ? 0 : this.state.currentProgress}
+              step="1"
+              type="range"
+              id="player-progress-bar"
+            />
+          </div>
+          <div className="player-controls-holder">
+            <section className="player-desc">
+              <div className="player-desc-img-holder">
+                <img className="player-desc-img" src={this.state.currentAudioData.thumbnail} alt="" srcSet="" />
+              </div>
+              <div className="player-desc-content">
+                <div>{this.state.currentAudioData.title}</div>
+                <div>{this.state.currentTimeText} <span>|</span> {this.state.currentAudioData.duration}</div>
+              </div>
+            </section>
+            <section className="player-control-core">
+              <div className="next-previous fed-up">
+                <img src={playerprevious} alt="" srcSet="" />
+              </div>
+              <div className="cursor-pointer play-pause-toggle" >{
+                !this.state.isAudioBuffering ?
+                  this.state.isMusicPlaying ?
+                    <img src={playerpause}
+                      onClick={async () => {
+                        await this.playPauseToggle()
+                      }}
+                      alt="" srcSet="" />
+                    :
+                    <img src={playerplay}
+                      onClick={async () => {
+                        await this.playPauseToggle()
+                      }}
+                      alt="" srcSet="" />
+                  :
+                  <Loader
+                    type="Rings"
+                    color="#F32C2C"
+                    height={50}
+                    width={50}
+                  />
+              }
+              </div>
+              <div className="next-previous fed-up">
+                <img src={playernext} alt="" srcSet="" />
+              </div>
+            </section>
+            <section className="player-rightmost-control-holder">
+              <div>
+                {this.state.isMuted ?
+                  <span onClick={async (e) => { await this.muteToggle() }}>
+                    <i className="fas fa-volume-mute volume-icon cursor-pointer"></i>
+                  </span>
+                  :
+                  <span onClick={async (e) => { await this.muteToggle() }}>
+                    <i className="fas fa-volume-up volume-icon cursor-pointer"></i>
+                  </span>
+                }
+                <input
+                  onChange={async (e) => {
+                    await this.updateVolume(e);
+                  }}
+                  type="range"
+                  className={`volume-progress`}
+                  step="0.1" min="0" max="1"
+                  value={this.state.playerVolume}
+                />
+              </div>
+              <div>
+                <a
+                  download
+                  onClick={async (e) => {
+                    e.preventDefault()
+                    if (!this.state.currentAudioData.videoId) {
+                      e.preventDefault()
+                      toast("Please Select Music to play or Download!")
+                    } else {
+                      await fetch(`${variables.baseUrl}/downcc/${this.state.currentAudioData.videoId}`)
+                        .then(res => {
+                          if (res.status === 200) {
+                            window.open(`${variables.baseUrl}/downcc/${this.state.currentAudioData.videoId}`, "_self")
+                          } else {
+                            toast("Requested content not available right now!, try downloading alternate songs!");
+                          }
+                        }).catch(err => {
+                          toast("Requested content not available right now!, try downloading alternate songs!");
+                        })
+                    }
+                  }}
+                  rel="noopener noreferrer"
+                  href={`${variables.baseUrl}/downcc/${this.state.currentAudioData.videoId}`}
+                  className={`music-download cursor-pointer t-none`}>
+                  <img src={playerdownload} alt="" srcSet="" />
+                </a>
+              </div>
+              <div>
+                <img
+                  src={playerqueue}
+                  className="cursor-pointer"
+                  onClick={() => {
+                    this.featureNotify()
+                  }}
+                  alt="" srcSet="" />
+              </div>
+            </section>
+          </div>
+        </footer>
 
-      //   <div className="copyrights">
-      //     © 2019 OpenBeats.in | All Rights Reserved.
-      //   </div>
-
-      // </Fragment>
-      <Experiment />
+      </Fragment >
     )
   }
 

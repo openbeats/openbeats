@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { musicNote, play, playlistadd, downloadOrange, } from "../images";
+import { playerdownload, playerplay, master, playlistadd, } from "../images";
 import Loader from 'react-loader-spinner'
 import "../css/result.css"
 import { variables } from '../config'
@@ -30,7 +30,7 @@ export default class Result extends Component {
                                             <img onClick={async (e) => {
                                                 this.props.resetBeatNotice()
                                                 await this.props.initPlayer(item)
-                                            }} className="action-image-size cursor-pointer" src={play} alt="" />
+                                            }} className="action-image-size cursor-pointer" src={playerplay} alt="" />
                                             <a download
                                                 onClick={async (e) => {
                                                     e.preventDefault()
@@ -46,7 +46,7 @@ export default class Result extends Component {
                                                         })
                                                 }}
                                                 className="t-none cursor-pointer" href={`${variables.baseUrl}/downcc/${item.videoId}`}>
-                                                <img className="action-image-size " src={downloadOrange} alt="" />
+                                                <img className="action-image-size " src={playerdownload} alt="" />
                                             </a>
                                             <img onClick={
                                                 () => {
@@ -61,14 +61,14 @@ export default class Result extends Component {
                     </div>
                     :
                     <div className="dummy-music-holder">
-                        <img className={`music-icon ${this.props.state.isSearchProcessing ? 'preload-custom-1' : ''}`} src={musicNote} alt="" />
+                        <img className={`music-icon ${this.props.state.isSearchProcessing ? 'preload-custom-1' : ''}`} src={master} alt="" />
                         <p className="music-icon-para">Your Music Appears Here!</p>
                     </div>
                 :
                 <div className="search-preloader">
                     <Loader
                         type="ThreeDots"
-                        color="#ff7373"
+                        color="#F32C2C"
                         height={80}
                         width={80}
                     />

@@ -35,70 +35,74 @@ export default class Experiment extends Component {
                     <img src={hamburger} alt="" srcSet="" />
                 </div>
                 <nav id="nav">
-                    <div id="nav-close" className="nav-close-holder">
-                        <img src={navclose} alt="" srcSet="" />
-                    </div>
+
                     <section className="master-logo">
                         <img src={masterLogo} alt="" />
-                    </section>
-                    <section className="main-nav-menus">
-                        <div className="nav-menu">
-                            <div className="nav-menu-icon-holder">
-                                <img className="nav-menu-icon-size" src={navhome} alt="" />
-                            </div>
-                            <p className="nav-menu-text">Home</p>
-                        </div>
-                        <div className="nav-menu">
-                            <div className="nav-menu-icon-holder">
-                                <img className="nav-menu-icon-size" src={navchart} alt="" />
-                            </div>
-                            <p className="nav-menu-text">Top Charts</p>
-                        </div>
-                        <div className="nav-menu">
-                            <div className="nav-menu-icon-holder">
-                                <img className="nav-menu-icon-size" src={navartist} alt="" />
-                            </div>
-                            <p className="nav-menu-text">Artists</p>
-                        </div>
-                        <div className="nav-menu">
-                            <div className="nav-menu-icon-holder">
-                                <img className="nav-menu-icon-size" src={navalbum} alt="" />
-                            </div>
-                            <p className="nav-menu-text">Albums</p>
-                        </div>
-                        <div className="nav-menu">
-                            <div className="nav-menu-icon-holder">
-                                <img className="nav-menu-icon-size" src={navhistory} alt="" />
-                            </div>
-                            <p className="nav-menu-text">Recently Played</p>
+                        <div id="nav-close" className="nav-close-holder">
+                            <img src={navclose} alt="" srcSet="" />
                         </div>
                     </section>
-                    <section className="nav-horizontal-rule"></section>
-                    <section className="nav-playlist-holder">
-                        <div className="nav-menu bg-none">
-                            <div className="nav-menu-icon-holder">
-                                <img className="nav-menu-icon-size" src={navplaylist} alt="" />
+                    <section className="nav-content">
+                        <section className="main-nav-menus">
+                            <div className="nav-menu">
+                                <div className="nav-menu-icon-holder">
+                                    <img className="nav-menu-icon-size" src={navhome} alt="" />
+                                </div>
+                                <p className="nav-menu-text">Home</p>
                             </div>
-                            <p className="nav-menu-text">Your Playlists</p>
-                        </div>
-                        <ul className="playlist-content-holder">
-                            <div className="nav-playlist-plus-icon-holder">
-                                <img src={navplus} alt="" srcSet="" />
+                            <div className="nav-menu">
+                                <div className="nav-menu-icon-holder">
+                                    <img className="nav-menu-icon-size" src={navchart} alt="" />
+                                </div>
+                                <p className="nav-menu-text">Top Charts</p>
                             </div>
-                            <li className="playlist-content-holder-text">Houser</li>
-                            <li className="playlist-content-holder-text">Travel Melody</li>
-                            <li className="playlist-content-holder-text">Rock Collection</li>
-                        </ul>
-                    </section>
-                    <section className="nav-footer-container">
-                        <div className="footer-text-holder">
-                            <span>About</span>  <span>Copyright</span> <br />
-                            <span>Contact us</span>  <span>Advertise</span> <br />
-                            <span>Developers</span> <br />
-                            <span>Terms Privacy Policy</span> <br />
-                            <span>Request New features</span> <br /><br />
-                            © 2019 OpenBeats, LLC <br />
-                        </div>
+                            <div className="nav-menu">
+                                <div className="nav-menu-icon-holder">
+                                    <img className="nav-menu-icon-size" src={navartist} alt="" />
+                                </div>
+                                <p className="nav-menu-text">Artists</p>
+                            </div>
+                            <div className="nav-menu">
+                                <div className="nav-menu-icon-holder">
+                                    <img className="nav-menu-icon-size" src={navalbum} alt="" />
+                                </div>
+                                <p className="nav-menu-text">Albums</p>
+                            </div>
+                            <div className="nav-menu">
+                                <div className="nav-menu-icon-holder">
+                                    <img className="nav-menu-icon-size" src={navhistory} alt="" />
+                                </div>
+                                <p className="nav-menu-text">Recently Played</p>
+                            </div>
+                        </section>
+                        <section className="nav-horizontal-rule"></section>
+                        <section className="nav-playlist-holder">
+                            <div className="nav-menu bg-none">
+                                <div className="nav-menu-icon-holder">
+                                    <img className="nav-menu-icon-size" src={navplaylist} alt="" />
+                                </div>
+                                <p className="nav-menu-text">Your Playlists</p>
+                            </div>
+                            <ul className="playlist-content-holder">
+                                <div className="nav-playlist-plus-icon-holder">
+                                    <img src={navplus} alt="" srcSet="" />
+                                </div>
+                                <li className="playlist-content-holder-text">Houser</li>
+                                <li className="playlist-content-holder-text">Travel Melody</li>
+                                <li className="playlist-content-holder-text">Rock Collection</li>
+                            </ul>
+                        </section>
+                        <section className="nav-footer-container">
+                            <div className="footer-text-holder">
+                                <span>About</span>  <span>Copyright</span> <br />
+                                <span>Contact us</span>  <span>Advertise</span> <br />
+                                <span>Developers</span> <br />
+                                <span>Terms Privacy Policy</span> <br />
+                                <span>Request New features</span> <br /><br />
+                                © 2019 OpenBeats, LLC <br />
+                            </div>
+                        </section>
+
                     </section>
                 </nav>
                 <main id="main">
@@ -233,7 +237,31 @@ export default class Experiment extends Component {
                                 />
                             </div>
                             <div>
-                                <img src={playerdownload} alt="" srcSet="" />
+                                <a
+                                    download
+                                    onClick={async (e) => {
+                                        e.preventDefault()
+                                        if (!this.state.currentAudioData.videoId) {
+                                            e.preventDefault()
+                                            toast("Please Select Music to play or Download!")
+                                        } else {
+                                            await fetch(`${variables.baseUrl}/downcc/${this.state.currentAudioData.videoId}`)
+                                                .then(res => {
+                                                    if (res.status === 200) {
+                                                        window.open(`${variables.baseUrl}/downcc/${this.state.currentAudioData.videoId}`, "_self")
+                                                    } else {
+                                                        toast("Requested content not available right now!, try downloading alternate songs!");
+                                                    }
+                                                }).catch(err => {
+                                                    toast("Requested content not available right now!, try downloading alternate songs!");
+                                                })
+                                        }
+                                    }}
+                                    rel="noopener noreferrer"
+                                    href={`${variables.baseUrl}/downcc/${this.state.currentAudioData.videoId}`}
+                                    className={`music-download cursor-pointer t-none`}>
+                                    <img src={playerdownload} alt="" srcSet="" />
+                                </a>
                             </div>
                             <div>
                                 <img src={playerqueue} alt="" srcSet="" />
