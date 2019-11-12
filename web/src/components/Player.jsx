@@ -59,9 +59,9 @@ export default class Player extends Component {
                             }} type="range" className={`volume-progress`} step="0.1" min="0" max="1" value={this.props.state.playerVolume} />
                         </span>
                         <span className="music-duration">
-                            <span id="current-time">{this.props.state.currentTimeText}</span>
+                            <span id="current-time">{this.state.currentTimeText}</span>
                             <span className="font-weight-bold text-black">&nbsp;  |  &nbsp;</span>
-                            <span >{this.props.state.currentAudioData.duration}</span>
+                            <span >{this.state.currentAudioData.duration}</span>
                         </span>
                     </div>
 
