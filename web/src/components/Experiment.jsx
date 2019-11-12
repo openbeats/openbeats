@@ -1,13 +1,43 @@
 import React, { Component, Fragment } from 'react'
 import "../css/experiment.css"
-import { masterLogo, navhome, navchart, navartist, navalbum, navhistory, navplaylist, navplus, playerprevious, playerplay, playernext, musicDummy, playervolume, playerdownload, playerqueue, angleright, mainsearch } from '../images'
+import { masterLogo, navhome, navchart, navartist, navalbum, navhistory, navplaylist, navplus, playerprevious, playerplay, playernext, musicDummy, playervolume, playerdownload, playerqueue, angleright, mainsearch, hamburger, navclose } from '../images'
 // import { masterLogo } from '../images'
 
 export default class Experiment extends Component {
+
+    componentDidMount() {
+        const navCloseRef = document.getElementById("nav-close");
+        const navHamburgerRef = document.getElementById("nav-hamburger");
+        const navRef = document.getElementById("nav");
+        const mainRef = document.getElementById("main");
+        const footerRef = document.getElementById("footer");
+        navHamburgerRef.onclick = function (e) {
+            navRef.classList.add("nav-show")
+        }
+        navCloseRef.onclick = function (e) {
+            navRef.classList.remove("nav-show")
+        }
+
+        mainRef.onclick = function (e) {
+            navRef.classList.remove("nav-show")
+        }
+
+        footerRef.onclick = function (e) {
+            navRef.classList.remove("nav-show")
+        }
+
+    }
+
     render() {
         return (
             <Fragment>
-                <nav>
+                <div id="nav-hamburger" className="hamburger-holder">
+                    <img src={hamburger} alt="" srcSet="" />
+                </div>
+                <nav id="nav">
+                    <div id="nav-close" className="nav-close-holder">
+                        <img src={navclose} alt="" srcSet="" />
+                    </div>
                     <section className="master-logo">
                         <img src={masterLogo} alt="" />
                     </section>
@@ -53,7 +83,7 @@ export default class Experiment extends Component {
                         </div>
                         <ul className="playlist-content-holder">
                             <div className="nav-playlist-plus-icon-holder">
-                                <img src={navplus} alt="" srcset="" />
+                                <img src={navplus} alt="" srcSet="" />
                             </div>
                             <li className="playlist-content-holder-text">Houser</li>
                             <li className="playlist-content-holder-text">Travel Melody</li>
@@ -71,10 +101,10 @@ export default class Experiment extends Component {
                         </div>
                     </section>
                 </nav>
-                <main>
+                <main id="main">
                     <section className="main-header">
                         <div className="container-action-notifier">
-                            <img src={angleright} alt="" srcset="" />
+                            <img src={angleright} alt="" srcSet="" />
                             <span>Home</span>
                         </div>
                         <div className="master-search-bar">
@@ -112,15 +142,56 @@ export default class Experiment extends Component {
                                     className="search-input"
                                     placeholder="Search Artists, Albums, Films, Songs...."
                                 />
-                                <button className="search-icon" type="submit"><img src={mainsearch} alt="" srcset="" /></button>
+                                <button className="search-icon" type="submit"><img src={mainsearch} alt="" srcSet="" /></button>
                             </form>
+                            <div className="suggestion-keyword-holder">
+                                {/* {this.props.state.keywordSuggestions.map((item, key) => ( */}
+                                <div
+                                    // onClick={async (e) => {
+                                    //     await this.setState({ suggestionText: item[0] })
+                                    //     await this.props.fetchResults(this.state.suggestionText);
+                                    // }}
+                                    // key={key}
+                                    // className={`suggested-keyword 
+                                    // ${this.state.currentTextIndex === key + 1 ? 'highlight-current' : ''}`}
+                                    className={`suggested-keyword`}
+                                >Keyword suggester</div>
+                                <div
+                                    // onClick={async (e) => {
+                                    //     await this.setState({ suggestionText: item[0] })
+                                    //     await this.props.fetchResults(this.state.suggestionText);
+                                    // }}
+                                    // key={key}
+                                    // className={`suggested-keyword 
+                                    // ${this.state.currentTextIndex === key + 1 ? 'highlight-current' : ''}`}
+                                    className={`suggested-keyword`}
+                                >Keyword suggester</div>
+                                <div
+                                    // onClick={async (e) => {
+                                    //     await this.setState({ suggestionText: item[0] })
+                                    //     await this.props.fetchResults(this.state.suggestionText);
+                                    // }}
+                                    // key={key}
+                                    // className={`suggested-keyword 
+                                    // ${this.state.currentTextIndex === key + 1 ? 'highlight-current' : ''}`}
+                                    className={`suggested-keyword`}
+                                >Keyword suggester</div>
+                                {/* ))} */}
+                            </div>
                         </div>
                         <div className="main-user-profile-holder">
-                            <img src={musicDummy} alt="" srcset="" />
+                            <img src={musicDummy} alt="" srcSet="" />
                         </div>
                     </section>
                 </main>
-                <footer>
+                <footer id="footer">
+                    <audio id="music-player"
+                    // onEnded={async (e) => await this.props.playerEndHandler()}
+                    // onTimeUpdate={async (e) => await this.props.playerTimeUpdater(e)}
+                    >
+                        <source src="" id="audio-source-1" />
+                        <source src="" id="audio-source-2" />
+                    </audio>
                     <div className="progress-bar-holder">
                         <input
                             // onChange={async (e) => { await this.props.seekAudio(e) }}
@@ -136,7 +207,7 @@ export default class Experiment extends Component {
                     <div className="player-controls-holder">
                         <section className="player-desc">
                             <div className="player-desc-img-holder">
-                                <img className="player-desc-img" src={musicDummy} alt="" srcset="" />
+                                <img className="player-desc-img" src={musicDummy} alt="" srcSet="" />
                             </div>
                             <div className="player-desc-content">
                                 <div>Justin Russelt Hit It Justin Russelt Hit It</div>
@@ -144,13 +215,13 @@ export default class Experiment extends Component {
                             </div>
                         </section>
                         <section className="player-control-core">
-                            <img src={playerprevious} alt="" srcset="" />
-                            <img src={playerplay} alt="" srcset="" />
-                            <img src={playernext} alt="" srcset="" />
+                            <img src={playerprevious} alt="" srcSet="" />
+                            <img src={playerplay} alt="" srcSet="" />
+                            <img src={playernext} alt="" srcSet="" />
                         </section>
                         <section className="player-rightmost-control-holder">
                             <div>
-                                <img src={playervolume} alt="" srcset="" />
+                                <img src={playervolume} alt="" srcSet="" />
                                 <input
                                     // onChange={async (e) => {
                                     //     await this.props.updateVolume(e);
@@ -162,10 +233,10 @@ export default class Experiment extends Component {
                                 />
                             </div>
                             <div>
-                                <img src={playerdownload} alt="" srcset="" />
+                                <img src={playerdownload} alt="" srcSet="" />
                             </div>
                             <div>
-                                <img src={playerqueue} alt="" srcset="" />
+                                <img src={playerqueue} alt="" srcSet="" />
                             </div>
                         </section>
                     </div>
