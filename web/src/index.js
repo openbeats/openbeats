@@ -6,8 +6,6 @@ import 'react-toastify/dist/ReactToastify.min.css';
 import "react-loader-spinner/dist/loader/css/react-spinner-loader.css"
 import "./css/commons.css"
 
-toast.configure()
-
 toast.configure({
     autoClose: 2000,
     position: "bottom-right",
