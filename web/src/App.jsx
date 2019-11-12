@@ -6,7 +6,6 @@ import { toast } from 'react-toastify';
 import { Result } from './components'
 import { masterLogo, navhome, navchart, navartist, navalbum, navhistory, navplaylist, navplus, playerprevious, playerplay, playerpause, playernext, musicDummy, playerdownload, playerqueue, angleright, mainsearch, hamburger, navclose } from './images'
 
-
 export default class App extends Component {
 
   constructor(props) {
@@ -325,7 +324,6 @@ export default class App extends Component {
         audio.volume = 0
   }
 
-
   render() {
 
     return (
@@ -347,32 +345,32 @@ export default class App extends Component {
           </section>
           <section className="nav-content">
             <section className="main-nav-menus">
-              <div className="nav-menu">
-                <div className="nav-menu-icon-holder">
+              <div className="nav-menu" onClick={() => this.featureNotify()}>
+                <div className="nav-menu-icon-holder" >
                   <img className="nav-menu-icon-size" src={navhome} alt="" />
                 </div>
                 <p className="nav-menu-text">Home</p>
               </div>
-              <div className="nav-menu">
-                <div className="nav-menu-icon-holder">
+              <div className="nav-menu" onClick={() => this.featureNotify()}>
+                <div className="nav-menu-icon-holder" >
                   <img className="nav-menu-icon-size" src={navchart} alt="" />
                 </div>
                 <p className="nav-menu-text">Top Charts</p>
               </div>
-              <div className="nav-menu">
-                <div className="nav-menu-icon-holder">
+              <div className="nav-menu" onClick={() => this.featureNotify()}>
+                <div className="nav-menu-icon-holder" >
                   <img className="nav-menu-icon-size" src={navartist} alt="" />
                 </div>
                 <p className="nav-menu-text">Artists</p>
               </div>
-              <div className="nav-menu">
-                <div className="nav-menu-icon-holder">
+              <div className="nav-menu" onClick={() => this.featureNotify()}>
+                <div className="nav-menu-icon-holder" >
                   <img className="nav-menu-icon-size" src={navalbum} alt="" />
                 </div>
                 <p className="nav-menu-text">Albums</p>
               </div>
-              <div className="nav-menu">
-                <div className="nav-menu-icon-holder">
+              <div className="nav-menu" onClick={() => this.featureNotify()}>
+                <div className="nav-menu-icon-holder" >
                   <img className="nav-menu-icon-size" src={navhistory} alt="" />
                 </div>
                 <p className="nav-menu-text">Recently Played</p>
@@ -387,12 +385,12 @@ export default class App extends Component {
                 <p className="nav-menu-text">Your Playlists</p>
               </div>
               <ul className="playlist-content-holder">
-                <div className="nav-playlist-plus-icon-holder">
+                <div className="nav-playlist-plus-icon-holder" onClick={() => this.featureNotify()}>
                   <img src={navplus} alt="" srcSet="" />
                 </div>
-                <li className="playlist-content-holder-text">Houser</li>
-                <li className="playlist-content-holder-text">Travel Melody</li>
-                <li className="playlist-content-holder-text">Rock Collection</li>
+                <li className="playlist-content-holder-text" onClick={() => this.featureNotify()}>Houser</li>
+                <li className="playlist-content-holder-text" onClick={() => this.featureNotify()}>Travel Melody</li>
+                <li className="playlist-content-holder-text" onClick={() => this.featureNotify()}>Rock Collection</li>
               </ul>
             </section>
             <section className="nav-footer-container">
