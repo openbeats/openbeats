@@ -4,7 +4,6 @@ import localdb from "../config/localdb";
 
 cron.schedule("1 00 * * 0", async () => {
   console.log("cron started and runing");
-  let scrapResponse = [];
   const fetchlist = [
     "bangla-top-10",
     "kannada-top-20",
@@ -12,20 +11,28 @@ cron.schedule("1 00 * * 0", async () => {
     "tamil-top-20",
     "telugu-top-20",
     "malayalam-top-20",
-    "marathi-top-20",
+    "marathi-top-20"
   ];
   for (let i of fetchlist) {
     let language = i.substring(0, i.indexOf("-"));
     if (localdb.get("isfirst").value()) {
       localdb
         .get("opencharts")
-        .push({ playlistTitle: i, language, playlist: [] })
+        .push({
+          playlistTitle: i,
+          language,
+          playlist: []
+        })
         .value();
     } else {
       localdb
         .get("opencharts")
-        .find({ playlistTitle: i })
-        .assign({ playlist: [] })
+        .find({
+          playlistTitle: i
+        })
+        .assign({
+          playlist: []
+        })
         .write();
     }
     updatePlaylist(i);

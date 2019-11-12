@@ -103,11 +103,14 @@ export default async (queryString, first = false) => {
           channelId: channelId,
           uploadedOn: uploadedOn,
           views: views,
-          description: description,
+          description: description
         };
         searchResults.push(temp);
         if (first && searchResults.length > 0) {
           return false;
+        } else {
+          console.log(query + "   " + queryString);
+          console.log(searchResults);
         }
       });
     })
