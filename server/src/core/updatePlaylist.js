@@ -9,7 +9,7 @@ export default async lang => {
   try {
     let playres = await fetchRetry(
       `https://www.radiomirchi.com/more/${lang}/`,
-      2,
+      2
     );
     playres = await playres.text();
     const $ = cheerio.load(playres.trim());
@@ -31,51 +31,54 @@ export default async lang => {
         .find("img")
         .attr("src");
       let videoId = null;
+      let temp = null;
       if (thumbnail.includes("http://img.youtube.com")) {
         videoId = thumbnail.replace("https://", "").split("/")[4];
       }
       if (videoId) {
-        let temp1 = {
+        temp = {
           videoId,
           rank,
           title,
-          thumbnail,
+          thumbnail
         };
         playlist = localdb
           .get("opencharts")
           .find({ playlistTitle: lang })
           .get("playlist")
           .value();
-        playlist.push(temp1);
-        playlist = localdb
+        playlist.push(temp);
+        localdb
           .get("opencharts")
           .find({ playlistTitle: lang })
           .assign({ playlist })
           .write();
       } else {
-        console.log(title + " " + language);
         await ytcat(encodeURIComponent(title + " " + language), true)
           .then(result => {
             if (result.length != 0) {
               videoId = result[0].videoId;
               thumbnail = result[0].thumbnail;
-              let temp2 = {
+              temp = {
                 videoId,
                 rank,
                 title,
-                thumbnail,
+                thumbnail
               };
               playlist = localdb
                 .get("opencharts")
                 .find({ playlistTitle: lang })
                 .get("playlist")
                 .value();
-              playlist.push(temp2);
-              let playlist = localdb
+              playlist.push(temp);
+              localdb
                 .get("opencharts")
                 .find({ playlistTitle: lang })
                 .assign({ playlist })
                 .write();
+            } else {
+              console.error(result);
+              console.error(title + language);
             }
           })
           .catch(err => {

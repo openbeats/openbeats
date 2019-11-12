@@ -44,6 +44,6 @@ to get all charts
 
 to get chart in specified language
 
-> https://openbeats-s2.herokuapp.com/getcharts?lang=<-keyword->
+> https://openbeats-s2.herokuapp.com/getcharts?lang=<-language->
 
 ---
