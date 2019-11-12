@@ -1,8 +1,4 @@
-import musicNote from "./music-note.png";
-import download from "./download.png";
-import downloadOrange from "./download-orange.png";
 import playlist from "./playlist.png";
-import play from "./playicon.png";
 import musicDummy from './dummy_music_holder.jpg';
 import masterLogo from './masterlogo.png'
 import navhome from './navhome.png'
@@ -29,11 +25,7 @@ import playlistadd from './playlistadd.png'
 
 
 export {
-    musicNote,
-    download,
     playlist,
-    play,
-    downloadOrange,
     musicDummy,
     masterLogo,
     navhome,
