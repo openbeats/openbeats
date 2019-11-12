@@ -2,7 +2,6 @@ import musicNote from "./music-note.png";
 import download from "./download.png";
 import downloadOrange from "./download-orange.png";
 import playlist from "./playlist.png";
-import playlistadd from "./playlist-add.png";
 import play from "./playicon.png";
 import musicDummy from './dummy_music_holder.jpg';
 import masterLogo from './masterlogo.png'
@@ -24,6 +23,8 @@ import angleright from './angleright.png'
 import mainsearch from './mainsearch.png'
 import hamburger from './hamburger.png'
 import navclose from './navclose.png'
+import master from './master.png'
+import playlistadd from './playlistadd.png'
 
 
 
@@ -32,7 +33,6 @@ export {
     download,
     playlist,
     play,
-    playlistadd,
     downloadOrange,
     musicDummy,
     masterLogo,
@@ -53,5 +53,7 @@ export {
     angleright,
     mainsearch,
     hamburger,
-    navclose
+    navclose,
+    master,
+    playlistadd
 }
