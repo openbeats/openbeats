@@ -7,6 +7,15 @@ import { toast } from 'react-toastify'
 
 
 export default class Result extends Component {
+
+    constructor(props) {
+        super(props);
+        this.state = {
+            downloadProcess: false,
+        }
+        this.videoId = []
+    }
+
     render() {
         return (
             !this.props.state.isSearching ?
@@ -33,20 +42,37 @@ export default class Result extends Component {
                                             }} className="action-image-size cursor-pointer" src={playerplay} alt="" />
                                             <a download
                                                 onClick={async (e) => {
+                                                    this.setState({ downloadProcess: true })
+                                                    this.videoId.push(item.videoId)
                                                     e.preventDefault()
                                                     await fetch(`${variables.baseUrl}/downcc/${item.videoId}`)
                                                         .then(res => {
                                                             if (res.status === 200) {
+                                                                this.setState({ downloadProcess: false })
+                                                                this.videoId.splice(this.videoId.indexOf(item.videoId), 1)
                                                                 window.open(`${variables.baseUrl}/downcc/${item.videoId}`, "_self")
                                                             } else {
+                                                                this.videoId.splice(this.videoId.indexOf(item.videoId), 1)
+                                                                this.setState({ downloadProcess: false })
                                                                 toast("Requested content not available right now!, try downloading alternate songs!");
                                                             }
                                                         }).catch(err => {
+                                                            this.videoId.splice(this.videoId.indexOf(item.videoId), 1)
+                                                            this.setState({ downloadProcess: false })
                                                             toast("Requested content not available right now!, try downloading alternate songs!");
                                                         })
                                                 }}
                                                 className="t-none cursor-pointer" href={`${variables.baseUrl}/downcc/${item.videoId}`}>
-                                                <img className="action-image-size " src={playerdownload} alt="" />
+                                                {this.state.downloadProcess && this.videoId.includes(item.videoId) ?
+                                                    <Loader
+                                                        type="Oval"
+                                                        color="#F32C2C"
+                                                        height={20}
+                                                        width={20}
+                                                    />
+                                                    :
+                                                    <img className="action-image-size " src={playerdownload} alt="" />
+                                                }
                                             </a>
                                             <img onClick={
                                                 () => {
