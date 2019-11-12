@@ -5,6 +5,14 @@
   padding: 0;
   vertical-align: baseline;
   box-sizing: border-box;
+  -khtml-user-select: none;
+  -o-user-select: none;
+  -moz-user-select: none;
+  -webkit-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  -webkit-user-drag: none;
+  -webkit-touch-callout: none;
 }
 
 body {
@@ -21,15 +29,16 @@ nav {
   top: 0;
   left: 0;
   position: fixed;
-  height: 100vh;
   min-height: 100vh;
   width: 250px;
+  height: 100vh;
   overflow-y: hidden;
   overflow-x: hidden;
   padding-top: 10px;
   background: #242424;
   display: flex;
   flex-direction: column;
+  z-index: 10;
 }
 
 nav:hover {
@@ -182,7 +191,7 @@ nav::-webkit-scrollbar-thumb:hover {
   color: #707070;
   text-align: center;
   margin-bottom: 10px;
-  height: 100%;
+  height: auto;
   display: flex;
   justify-content: center;
   flex-direction: row;
@@ -213,18 +222,20 @@ main {
   margin-left: 250px;
   overflow-x: hidden;
   overflow-y: auto;
-  box-sizing: content-box;
+  box-sizing: border-box;
   position: relative;
 }
 
 .main-header {
-  width: 100%;
+  width: inherit;
   height: 68px;
   position: fixed;
   top: 0;
-  display: grid;
-  grid-template-columns: auto auto auto;
-  align-content: center;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  box-sizing: border-box;
+  align-items: center;
   padding: 0px 20px 0 20px;
 }
 
@@ -237,7 +248,7 @@ main {
 
 .container-action-notifier > img {
   height: 18px;
-  margin-right: 10px;
+  padding-right: 10px;
 }
 
 .master-search-bar {
@@ -269,9 +280,11 @@ main {
 
 .search-icon {
   position: absolute;
-  right: 10px;
+  right: 0px;
   top: 10px;
   cursor: pointer;
+  background: #514b4b;
+  width: 35px;
 }
 
 .search-icon > img {
@@ -287,7 +300,7 @@ main {
 }
 
 .main-user-profile-holder {
-    padding-left: 100px;
+  padding-left: 15px;
 }
 
 .main-user-profile-holder > img {
@@ -361,7 +374,7 @@ footer {
 .player-desc-img {
   width: 50px;
   height: 40px;
-  /* border-radius: 50%; */
+  border-radius: 5px;
   opacity: 0.8;
 }
 
@@ -372,6 +385,10 @@ footer {
 .player-desc-content > div:nth-child(1) {
   font-size: 14px;
   color: #979595;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  width: 250px;
 }
 
 .player-desc-content > div:nth-child(2) {
@@ -447,4 +464,240 @@ footer {
 
 .volume-progress::-webkit-slider-thumb:hover {
   background: rgb(243, 243, 243, 0.5);
+}
+
+.hamburger-holder {
+  visibility: hidden;
+  position: absolute;
+  top: 14px;
+  left: 14px;
+  cursor: pointer;
+  z-index: 1;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.hamburger-holder > img {
+  width: 20px;
+}
+
+.hamburger-holder:hover {
+  background: rgba(183, 182, 182, 0.1);
+}
+
+.nav-close-holder {
+  visibility: hidden;
+  position: absolute;
+  top: 20px;
+  right: 10px;
+  cursor: pointer;
+  z-index: 1;
+  border-radius: 50%;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.nav-close-holder > img {
+  width: 15px;
+}
+
+.nav-close-holder:hover {
+  background: rgba(183, 182, 182, 0.1);
+}
+
+.nav-hide {
+  display: none;
+}
+
+.nav-show {
+  display: block;
+}
+
+/* mobile responsiveness */
+@media only screen and (max-width: 1000px) {
+  .hamburger-holder {
+    visibility: visible;
+  }
+  .nav-close-holder {
+    visibility: visible;
+  }
+  nav {
+    display: none;
+  }
+  main {
+    width: calc(100vw);
+    margin-left: 0;
+  }
+  .main-header {
+    padding-left: 70px;
+  }
+  footer {
+    width: calc(100vw);
+    margin-left: 0;
+  }
+}
+@media only screen and (max-width: 750px) {
+  .main-header {
+    padding-left: 70px;
+  }
+
+  .player-desc-img {
+    display: none;
+  }
+  .container-action-notifier {
+    display: none;
+  }
+
+  .player-desc-content > div:nth-child(1) {
+    font-size: 13px;
+    width: 110px;
+  }
+  .player-desc-content > div:nth-child(2) {
+    font-size: 13px;
+  }
+
+  .player-control-core {
+    width: 120px;
+    align-items: center;
+    justify-content: space-evenly;
+  }
+
+  .player-control-core > img:nth-child(1) {
+    height: 15px;
+  }
+  .player-control-core > img:nth-child(3) {
+    height: 15px;
+  }
+  .player-control-core > img:nth-child(2) {
+    margin-left: 10px;
+    margin-right: 10px;
+    height: 20px;
+  }
+
+  .player-rightmost-control-holder {
+    width: 220px;
+    justify-content: space-evenly;
+  }
+
+  .player-rightmost-control-holder > div > img {
+    height: 17px;
+    margin-left: 15px;
+  }
+
+  .player-rightmost-control-holder > div:nth-child(1) {
+    display: flex;
+    align-items: center;
+  }
+
+  .volume-progress {
+    margin-left: 8px;
+    width: 60px;
+  }
+
+  .player-controls-holder {
+    padding-left: 0px;
+    padding-right: 0px;
+  }
+  .search-input {
+    font-size: 12px;
+  }
+  .suggestion-keyword-holder {
+    font-size: 12px !important;
+  }
+  .search-input::placeholder {
+    font-size: 12px;
+  }
+  .search-icon {
+    right: 0px;
+    top: 8px;
+    width: 25px;
+  }
+  .search-icon > img {
+    width: 18px;
+  }
+  .main-user-profile-holder > img {
+    width: 30px;
+    height: 30px;
+  }
+  .main-header {
+    padding-left: 55px;
+    padding-right: 10px;
+  }
+}
+
+@media only screen and (max-width: 320px) {
+  .player-desc-content > div:nth-child(1) {
+    font-size: 10px;
+    width: 100px;
+  }
+  .player-desc-content > div:nth-child(2) {
+    font-size: 10px;
+  }
+  .player-control-core > img:nth-child(1) {
+    height: 12px;
+  }
+  .player-control-core > img:nth-child(3) {
+    height: 12px;
+  }
+  .player-control-core > img:nth-child(2) {
+    margin-left: 8px;
+    margin-right: 8px;
+    height: 18px;
+  }
+  .volume-progress {
+    margin-left: 5px;
+    width: 50px;
+  }
+  .player-rightmost-control-holder > div > img {
+    height: 15px;
+    margin-left: 15px;
+  }
+  .main-header {
+    padding-left: 55px;
+    padding-right: 5px;
+  }
+  .search-icon {
+    width: 20px;
+    padding-left: 5px;
+  }
+  .search-icon > img {
+    width: 16px;
+  }
+}
+
+/* suggestion keyword  */
+.suggestion-keyword-holder {
+  z-index: 1;
+  position: absolute;
+  top: 45px;
+  left: 10px;
+  width: 95%;
+  height: auto;
+  background: rgba(36, 36, 36, 0.5);
+  box-shadow: 0 0 5px 1px rgba(0, 0, 0, 0.6);
+  border-radius: 5px;
+  font-size: 16px;
+  font-weight: normal !important;
+  color: #979797;
+}
+
+.suggested-keyword {
+  opacity: 0.8;
+  border-bottom: 1px solid rgba(37, 37, 37, 0.1);
+  padding-top: 5px;
+  padding-left: 10px;
+  padding-right: 10px;
+  padding-bottom: 5px;
+}
+
+.suggested-keyword:hover {
+  background: rgb(112, 112, 112, 0.2);
+  cursor: pointer;
 }

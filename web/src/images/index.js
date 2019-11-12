@@ -22,6 +22,8 @@ import playerqueue from './playerqueue.png'
 import playervolume from './playervolume.png'
 import angleright from './angleright.png'
 import mainsearch from './mainsearch.png'
+import hamburger from './hamburger.png'
+import navclose from './navclose.png'
 
 
 
@@ -49,5 +51,7 @@ export {
     playerqueue,
     playervolume,
     angleright,
-    mainsearch
+    mainsearch,
+    hamburger,
+    navclose
 }
