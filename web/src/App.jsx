@@ -3,6 +3,7 @@ import "./css/experiment.css";
 import { variables } from "./config";
 import Loader from 'react-loader-spinner'
 import { toast } from 'react-toastify';
+// import { Result, Charts } from './components'
 import { Result } from './components'
 import { masterLogo, navhome, navchart, navartist, navalbum, navhistory, navplaylist, navplus, playerprevious, playerplay, playerpause, playernext, musicDummy, playerdownload, playerqueue, angleright, mainsearch, hamburger, navclose } from './images'
 
@@ -486,6 +487,7 @@ export default class App extends Component {
               initPlayer={this.initPlayer}
               featureNotify={this.featureNotify}
             />
+            {/* <Charts /> */}
           </div>
         </main>
 
@@ -632,6 +634,7 @@ export default class App extends Component {
             </div>
           </div>
         </footer>
+        
         <div
           onClick={() => {
             const footerRef = document.getElementById("footer");

@@ -2,16 +2,20 @@ import "dotenv/config";
 import middleware from "./config/middleware";
 import express from "express";
 import { ytcat, suggestbeat } from "./core";
-import updatePlaylistCron from "./core/updatePlaylistCron";
+import initCron from "./core/updatePlaylistCron";
 import ytdl from "ytdl-core";
 import http from "https";
 import localdb from "./config/localdb";
-const ffmpegPath = require("@ffmpeg-installer/ffmpeg").path;
+import { path } from "@ffmpeg-installer/ffmpeg";
 import ffmpeg from "fluent-ffmpeg";
-
-const app = express();
 // import dbconfig from './config/db';
 // dbconfig();
+
+const ffmpegPath = path;
+
+const app = express();
+
+initCron();
 
 middleware(app);
 
@@ -25,7 +29,7 @@ app.get("/opencc/:id", async (req, res) => {
     .getInfo(videoID)
     .then(info => {
       const audioFormats = ytdl.filterFormats(info.formats, "audioonly");
-      let reqFormat = audioFormats.filter(function(item) {
+      let reqFormat = audioFormats.filter(function (item) {
         return item.audioBitrate == 128;
       });
       let sourceUrl = reqFormat[0].url;
@@ -51,7 +55,7 @@ app.get("/fallback/:id", async (req, res) => {
     .getInfo(videoID)
     .then(info => {
       const audioFormats = ytdl.filterFormats(info.formats, "audioonly");
-      let reqFormat = audioFormats.filter(function(item) {
+      let reqFormat = audioFormats.filter(function (item) {
         return item.audioBitrate == 128;
       });
 
@@ -82,7 +86,7 @@ app.get("/fallback/:id", async (req, res) => {
               Range: req.headers.range,
             },
           },
-          function(response) {
+          function (response) {
             response.pipe(res);
           },
         );
@@ -92,7 +96,7 @@ app.get("/fallback/:id", async (req, res) => {
           "Content-Type": mimeType,
         };
         res.writeHead(200, head);
-        http.get(sourceUrl, function(response) {
+        http.get(sourceUrl, function (response) {
           response.pipe(res);
         });
       }
@@ -111,7 +115,7 @@ app.get("/downcc/:id", async (req, res) => {
     .getInfo(videoID)
     .then(info => {
       const audioFormats = ytdl.filterFormats(info.formats, "audioonly");
-      let reqFormat = audioFormats.filter(function(item) {
+      let reqFormat = audioFormats.filter(function (item) {
         return item.audioBitrate == 128;
       });
       if (!reqFormat[0].clen) {
@@ -146,6 +150,8 @@ app.get("/downcc/:id", async (req, res) => {
         );
     })
     .catch(err => {
+      console.log(err);
+
       res.status(404).send({
         status: false,
         link: null,
@@ -192,7 +198,7 @@ app.get("/getcharts", async (req, res) => {
   }
 });
 
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 2000;
 
 app.listen(PORT, () => {
   console.log("openbeats server up and running on port :", PORT);
