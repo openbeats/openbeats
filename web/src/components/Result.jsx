@@ -39,7 +39,7 @@ export default class Result extends Component {
                                             <img onClick={async (e) => {
                                                 this.props.resetBeatNotice()
                                                 await this.props.initPlayer(item)
-                                            }} className="action-image-size cursor-pointer" src={playerplay} alt="" />
+                                            }} className="action-image-size play-icon-result cursor-pointer" src={playerplay} alt="" />
                                             <a download
                                                 onClick={async (e) => {
                                                     this.setState({ downloadProcess: true })
