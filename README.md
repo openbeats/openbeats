@@ -33,3 +33,17 @@ OpenBeats is an open source Music streamer.
 **suggester**
 
 > https://openbeats-s2.herokuapp.com/suggester?k=<-keyword->
+
+---
+
+**getcharts**
+
+to get all charts
+
+> https://openbeats-s2.herokuapp.com/getcharts
+
+to get chart in specified language
+
+> https://openbeats-s2.herokuapp.com/getcharts?lang=<-language->
+
+---

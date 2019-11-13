@@ -1,87 +1,120 @@
-import fetch from 'node-fetch';
-import {
-    JSDOM
-} from 'jsdom';
+import fetchRetry from "./refetch";
+import cheerio from "cheerio";
 
 export default async (queryString, first = false) => {
-    let searchResults = [];
-    const baseQuery = "yt-lockup-video";
-    const removables = [
-        "yt-lockup-channel",
-        "feed-item-container"
-    ]
-    let query = queryString.trim().replace(/ /g, "+");
-    const searchLink = `https://www.youtube.com/results?search_query=${query}`;
-    await fetch(searchLink)
-        .then(async res => await res.text())
-        .then(res => {
+  let searchResults = [];
+  const baseQuery = ".yt-lockup-video";
+  const removables = [".yt-lockup-channel", ".feed-item-container"];
+  let query = queryString.trim().replace(/ /g, "+");
+  const searchLink = `https://www.youtube.com/results?search_query=${query}`;
+  await fetchRetry(searchLink, 2)
+    .then(async res => await res.text())
+    .then(res => {
+      let $ = cheerio.load(res.trim());
+      for (let i = 0; i < removables.length; i++) {
+        if ($(removables[i]).length > 0) {
+          $(removables[i]).remove();
+        }
+      }
+      $(baseQuery).each((i, el) => {
+        let srcThumb = $(el)
+          .find(".yt-thumb-simple")
+          .find("img")
+          .attr("src");
+        let thumb = $(el)
+          .find(".yt-thumb-simple")
+          .find("img")
+          .attr("data-thumb");
+        let duration = $(el)
+          .find(".yt-thumb-simple")
+          .text()
+          .replace("\\\ng", "")
+          .trim();
+        if (thumb == null) {
+          thumb = srcThumb;
+        }
+        let title = $(el)
+          .find(".yt-uix-tile-link")
+          .text();
+        let videoId = $(el)
+          .find(".yt-uix-tile-link")
+          .attr("href")
+          .replace("/watch?v=", "");
 
-            let response = res.trim()
-            let dom = new JSDOM(response);
+        if (videoId.includes("googleadservices")) return true;
+        let channelName = $(el)
+          .find(".yt-lockup-byline")
+          .find("a")
+          .text();
+        let channelId = $(el)
+          .find(".yt-lockup-byline")
+          .find("a")
+          .attr("href");
+        let uploadedOn = "";
+        let views = "";
+        if (
+          $(el)
+            .find(".yt-lockup-meta-info")
+            .find("li").length == 2
+        ) {
+          uploadedOn = $(el)
+            .find(".yt-lockup-meta-info")
+            .find("li")
+            .text()
+            .trim();
+          views = $(el)
+            .find(".yt-lockup-meta-info")
+            .find("li")
+            .eq(1)
+            .text()
+            .trim();
+        } else if (
+          $(el)
+            .find(".yt-lockup-meta-info")
+            .find("li").length == 1
+        ) {
+          let temp = $(el)
+            .find(".yt-lockup-meta-info")
+            .find("li")
+            .text()
+            .trim();
+          if (temp.includes("views")) {
+            views = temp;
+          } else {
+            uploadedOn = temp;
+          }
+        }
 
-            for (let i = 0; i < removables.length; i++) {
-                if (dom.window.document.getElementsByClassName(removables[i]).length > 0) {
-                    dom.window.document.getElementsByClassName(removables[i])[0].remove()
-                }
-            }
+        if (views.length == 0) return true;
 
-            let targetNodes = dom.window.document.getElementsByClassName(baseQuery);
+        let description = "";
+        if ($(el).find(".yt-lockup-description").length > 0)
+          description = $(el)
+            .find(".yt-lockup-description")
+            .text()
+            .trim();
 
+        let temp = {
+          title: title,
+          thumbnail: thumb,
+          duration: duration,
+          videoId: videoId,
+          channelName: channelName,
+          channelId: channelId,
+          uploadedOn: uploadedOn,
+          views: views,
+          description: description
+        };
+        searchResults.push(temp);
+        if (first && searchResults.length > 0) {
+          return false;
+        } else {
+          console.log(query + "   " + queryString);
+          console.log(searchResults);
+        }
+      });
+    })
+    .catch(err => console.error(err));
 
-            for (let i = 0; i < targetNodes.length; i++) {
-                let srcThumb = targetNodes[i].getElementsByClassName("yt-thumb-simple")[0].getElementsByTagName("img")[0].src;
-                let thumb = targetNodes[i].getElementsByClassName("yt-thumb-simple")[0].getElementsByTagName("img")[0].getAttribute("data-thumb");
-                let duration = targetNodes[i].getElementsByClassName("yt-thumb-simple")[0].textContent.replace("\\\n\g", "").trim()
-                if (thumb == null) {
-                    thumb = srcThumb
-                }
-                let title = targetNodes[i].getElementsByClassName("yt-uix-tile-link")[0].textContent;
-                let videoId = targetNodes[i].getElementsByClassName("yt-uix-tile-link")[0].href.replace("/watch?v=", "");
-                if (videoId.includes("googleadservices")) {
-                    continue;
-                }
-                let channelName = targetNodes[i].getElementsByClassName("yt-lockup-byline")[0].getElementsByTagName("a")[0].textContent;
-                let channelId = targetNodes[i].getElementsByClassName("yt-lockup-byline")[0].getElementsByTagName("a")[0].href;
-                let uploadedOn = ""
-                let views = "";
-                if (targetNodes[i].getElementsByClassName("yt-lockup-meta-info")[0].getElementsByTagName("li").length == 2) {
-                    uploadedOn = targetNodes[i].getElementsByClassName("yt-lockup-meta-info")[0].getElementsByTagName("li")[0].textContent.trim();
-                    views = targetNodes[i].getElementsByClassName("yt-lockup-meta-info")[0].getElementsByTagName("li")[1].textContent.trim();
-                } else if (targetNodes[i].getElementsByClassName("yt-lockup-meta-info")[0].getElementsByTagName("li").length == 1) {
-                    let temp = targetNodes[i].getElementsByClassName("yt-lockup-meta-info")[0].getElementsByTagName("li")[0].textContent.trim();
-                    if (temp.includes("views")) {
-                        views = temp;
-                    } else {
-                        uploadedOn = temp;
-                    }
-                }
-
-                if (views.length == 0) {
-                    continue
-                }
-
-                let description = ""
-                if (targetNodes[i].getElementsByClassName("yt-lockup-description").length > 0)
-                    description = targetNodes[i].getElementsByClassName("yt-lockup-description")[0].textContent.trim();
-
-                let temp = {
-                    "title": title,
-                    "thumbnail": thumb,
-                    "duration": duration,
-                    "videoId": videoId,
-                    "channelName": channelName,
-                    "channelId": channelId,
-                    "uploadedOn": uploadedOn,
-                    "views": views,
-                    "description": description
-                };
-                searchResults.push(temp);
-                if (first && searchResults.length > 0)
-                    break;
-            }
-
-        })
-        .catch(err => console.error(err))
-
-    return searchResults
-}
+  return searchResults;
+};
