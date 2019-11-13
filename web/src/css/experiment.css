@@ -263,9 +263,6 @@ main {
   overflow-y: auto;
   overflow-x: hidden;
   margin-top: 68px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
   position: relative;
   z-index: 1;
 }
