@@ -64,6 +64,7 @@ export default class App extends Component {
     const footerRef = document.getElementById("footer");
     navHamburgerRef.onclick = function (e) {
       navRef.classList.add("nav-show")
+      footerRef.classList.remove("show-footer")
     }
     navCloseRef.onclick = function (e) {
       navRef.classList.remove("nav-show")
@@ -71,6 +72,7 @@ export default class App extends Component {
 
     mainRef.onclick = function (e) {
       navRef.classList.remove("nav-show")
+      footerRef.classList.remove("show-footer")
     }
 
     footerRef.onclick = function (e) {
@@ -280,8 +282,6 @@ export default class App extends Component {
       currentTimeText: '00:00',
       isAudioBuffering: false,
       currentTextIndex: 0,
-      actualText: "",
-      suggestionText: ""
     })
   }
 
@@ -620,10 +620,36 @@ export default class App extends Component {
                   }}
                   alt="" srcSet="" />
               </div>
+
             </section>
+            <div className="minimize-mobile-toggle"
+              onClick={() => {
+                const footerRef = document.getElementById("footer")
+                footerRef.classList.remove("show-footer")
+              }}
+            >
+              <i className="fas fa-times"></i>
+            </div>
           </div>
         </footer>
+        <div
+          onClick={() => {
+            const footerRef = document.getElementById("footer");
+            footerRef.classList.add("show-footer")
+          }}
 
+          className="mobile-music-notifier"
+        >
+          {this.state.isMusicPlaying ?
+            <Loader
+              type="Audio"
+              color="#322C2C"
+              height={25}
+              width={25}
+            /> :
+            <i className="fas fa-play"></i>
+          }
+        </div>
       </Fragment >
     )
   }
