@@ -1,0 +1,17 @@
+.charts-wrapper {
+    width: 100%;
+    height: auto;
+    background: white;
+    color: black !important;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.display {
+    margin-top: 100px;
+    margin-bottom: 100px;
+    width: 300px;
+    height: 300vh;
+    background: rebeccapurple;
+}
