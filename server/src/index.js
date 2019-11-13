@@ -2,12 +2,14 @@ import "dotenv/config";
 import middleware from "./config/middleware";
 import express from "express";
 import { ytcat, suggestbeat } from "./core";
-import cron from "./core/cron";
-const ytdl = require("ytdl-core");
+import updatePlaylistCron from "./core/updatePlaylistCron";
+import ytdl from "ytdl-core";
+import http from "https";
+import localdb from "./config/localdb";
 const ffmpegPath = require("@ffmpeg-installer/ffmpeg").path;
-const ffmpeg = require("fluent-ffmpeg");
+import ffmpeg from "fluent-ffmpeg";
+
 const app = express();
-const http = require("https");
 // import dbconfig from './config/db';
 // dbconfig();
 
@@ -165,6 +167,29 @@ app.get("/suggester", async (req, res) => {
     status: true,
     data: data,
   });
+});
+
+app.get("/getcharts", async (req, res) => {
+  let chart = null;
+  if (req.query.lang) {
+    chart = localdb
+      .get("opencharts")
+      .find({ language: req.query.lang })
+      .value();
+  } else {
+    chart = localdb.get("opencharts").value();
+  }
+  if (!chart) {
+    res.status(404).send({
+      status: false,
+      error: "Cannot find charts in specified language.",
+    });
+  } else {
+    res.send({
+      status: true,
+      chart,
+    });
+  }
 });
 
 const PORT = process.env.PORT || 5000;
