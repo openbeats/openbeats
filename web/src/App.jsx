@@ -109,6 +109,9 @@ export default class App extends Component {
       if (e.keyCode === 40 && !this.state.typing) {
         this.volumeSeekHandler(false)
       }
+      if (e.keyCode === 27) {
+        this.setState({ keywordSuggestions: [] })
+      }
     }.bind(this)
     )
 
@@ -634,7 +637,7 @@ export default class App extends Component {
             </div>
           </div>
         </footer>
-        
+
         <div
           onClick={() => {
             const footerRef = document.getElementById("footer");
