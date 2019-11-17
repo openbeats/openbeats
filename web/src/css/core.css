@@ -41,6 +41,7 @@ body {
   position: relative;
   background: var(--main-bg-color);
   box-sizing: border-box;
+  color: var(--text-color-main);
 }
 
 nav {
