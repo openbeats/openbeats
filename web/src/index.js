@@ -1,32 +1,40 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { toast, Zoom } from 'react-toastify';
+import { toastConfig } from "./config"
 import { Provider } from "react-redux";
-import store from "./store";
+import { Router } from "react-router-dom";
+import { createBrowserHistory as createHistory } from 'history';
+import { routerReducer, routerMiddleware } from 'react-router-redux';
+import { combineReducers, applyMiddleware, createStore } from "redux"
+import thunk from "redux-thunk"
+import logger from "redux-logger";
+import reducers from "./reducers"
 import App from './App';
+// import { push } from 'react-router-redux';
+
+toastConfig()
+
+const history = createHistory();
 
 
-// toastify setup
-import 'react-toastify/dist/ReactToastify.min.css';
-import "react-loader-spinner/dist/loader/css/react-spinner-loader.css"
-import "./css/commons.css"
-const Close = () => <i className="fas fa-times"></i>;
-toast.configure({
-    autoClose: 2000,
-    position: "bottom-right",
-    className: "margin-bottom",
-    bodyClassName: "color-change",
-    toastClassName: "color-change",
-    transition: Zoom,
-    progressClassName: "progress-class-toast",
-    closeButton: <Close />,
-    pauseOnFocusLoss: false,
-});
+const store = createStore(
+    combineReducers({
+        reducers,
+        routing: routerReducer
+    }),
+    applyMiddleware(
+        thunk,
+        logger,
+        routerMiddleware(history)
+    )
+)
 
 
 ReactDOM.render(
     <Provider store={store}>
-        <App />
+        <Router history={history}>
+            <App />
+        </Router>
     </Provider>,
     document.getElementById('root')
 );
