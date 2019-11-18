@@ -11,16 +11,15 @@ export const variables = {
 }
 
 export const toastConfig = () => {
-    // toastify setup
     const Close = () => <i className="fas fa-times"></i>;
     return toast.configure({
         autoClose: 2000,
         position: "bottom-right",
-        className: "margin-bottom",
-        bodyClassName: "color-change",
-        toastClassName: "color-change",
+        className: "toast-margin-bottom",
+        bodyClassName: "toast-bg-color",
+        toastClassName: "toast-bg-color",
         transition: Zoom,
-        progressClassName: "progress-class-toast",
+        progressClassName: "toast-progress-bar-color",
         closeButton: <Close />,
         pauseOnFocusLoss: false,
     });
