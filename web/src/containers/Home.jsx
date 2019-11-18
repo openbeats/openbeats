@@ -1,13 +1,15 @@
 import React, { Component, Fragment } from 'react'
 import "../css/core.css";
+import "../css/leftnav.css";
+import "../css/mainheader.css";
+import "../css/mainbody.css";
+import "../css/player.css";
 import { variables } from "../config";
 import Loader from 'react-loader-spinner'
 import { toast } from 'react-toastify';
 import { Result } from '../components'
-
-import { } from "../actions";
-import { connect } from "react-redux";
 import { toastActions } from "../actions";
+import { connect } from "react-redux";
 import { push } from "connected-react-router";
 
 import {
