@@ -6,9 +6,9 @@ import { toast } from 'react-toastify';
 import { Result } from '../components'
 
 import { } from "../actions";
-import { push } from 'react-router-redux';
 import { connect } from "react-redux";
-import { toastActions } from "../actions"
+import { toastActions } from "../actions";
+import { push } from "connected-react-router";
 
 import {
     masterLogo,
@@ -79,9 +79,6 @@ class Home extends Component {
 
     async componentDidMount() {
         this.initiateListeners()
-        setTimeout(function () {
-            push("/auth")
-        }, 3000)
     }
 
     async initiateListeners() {
@@ -699,6 +696,9 @@ const mapDispatchToProps = (dispatch) => {
     return {
         showNotification: (message) => {
             dispatch(toastActions.showNotification(message))
+        },
+        push: (path) => {
+            dispatch(push(path))
         }
     }
 }

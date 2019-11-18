@@ -2,39 +2,37 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import { toastConfig } from "./config"
 import { Provider } from "react-redux";
-import { Router } from "react-router-dom";
-import { createBrowserHistory as createHistory } from 'history';
-import { routerReducer, routerMiddleware } from 'react-router-redux';
-import { combineReducers, applyMiddleware, createStore } from "redux"
-import thunk from "redux-thunk"
+import { createBrowserHistory } from 'history';
+import { combineReducers, applyMiddleware, createStore } from "redux";
+import { connectRouter, routerMiddleware, ConnectedRouter } from 'connected-react-router';
+import thunk from "redux-thunk";
 import logger from "redux-logger";
-import reducers from "./reducers"
+import reducers from "./reducers";
 import App from './App';
-// import { push } from 'react-router-redux';
 
 toastConfig()
 
-const history = createHistory();
-
+const history = createBrowserHistory();
 
 const store = createStore(
     combineReducers({
+        router: connectRouter(history),
         reducers,
-        routing: routerReducer
     }),
+    {},
     applyMiddleware(
+        routerMiddleware(history),
         thunk,
         logger,
-        routerMiddleware(history)
     )
 )
 
 
 ReactDOM.render(
     <Provider store={store}>
-        <Router history={history}>
+        <ConnectedRouter history={history}>
             <App />
-        </Router>
+        </ConnectedRouter>
     </Provider>,
     document.getElementById('root')
 );
