@@ -1,6 +1,13 @@
-export function showNotification(message) {
-    return {
-        type: "NOTIFY_TOAST",
-        payload: message
-    }
+import { toast } from "react-toastify";
+
+export function showMessage(message) {
+    toast.dismiss();
+    toast(message);
+    return true;
+}
+
+export function featureNotify() {
+    toast.dismiss();
+    toast("We Appreciate Your Interest! This Feature is Under Development!");
+    return true;
 }

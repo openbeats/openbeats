@@ -37,7 +37,6 @@ export default class Result extends Component {
                                         </div>
                                         <div className="result-node-actions">
                                             <img onClick={async (e) => {
-                                                this.props.resetBeatNotice()
                                                 await this.props.initPlayer(item)
                                             }} className="action-image-size play-icon-result cursor-pointer" src={playerplay} alt="" />
                                             <a download

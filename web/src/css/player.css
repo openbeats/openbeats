@@ -1,5 +1,5 @@
 /* footer... player... */
-footer {
+.player-wrapper {
     width: calc(100vw - 250px);
     height: 70px;
     position: fixed;
@@ -213,7 +213,7 @@ footer {
     margin-left: 4px;
 }
 
-.show-footer {
+.show-player {
     display: block !important;
 }
 
@@ -234,14 +234,14 @@ footer {
 }
 
 @media only screen and (max-width: 1000px) {
-    footer {
+    .player-wrapper {
         width: calc(100vw);
         margin-left: 0;
     }
 }
 
 @media only screen and (max-width: 750px) {
-    footer {
+    .player-wrapper {
         height: 200px;
         display: none;
         box-shadow: 0 0 10px 10px #242424;
