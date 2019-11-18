@@ -1,7 +1,8 @@
-import toastReducer from './toastReducer';
+import playerReducer from "./playerReducer";
+
 
 const reducers = {
-    toastReducer
+    playerReducer
 }
 
 export default reducers;

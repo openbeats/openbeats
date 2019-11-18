@@ -32,7 +32,6 @@
   user-select: none;
   -webkit-user-drag: none;
   -webkit-touch-callout: none;
-  transition: all 0.3s ease-in-out;
 }
 
 body {
