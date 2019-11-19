@@ -3,10 +3,10 @@ import { playerdownload, playerplay, master, playlistadd, } from "../images";
 import Loader from 'react-loader-spinner'
 import "../css/result.css"
 import { variables } from '../config'
-import { toast } from 'react-toastify'
+import { connect } from "react-redux"
+import { toastActions, playerActions } from '../actions';
 
-
-export default class Result extends Component {
+class Result extends Component {
 
     constructor(props) {
         super(props);
@@ -18,10 +18,10 @@ export default class Result extends Component {
 
     render() {
         return (
-            !this.props.state.isSearching ?
-                this.props.state.searchResults.length > 0 ?
+            !this.props.isSearching ?
+                this.props.searchResults.length > 0 ?
                     <div className="search-result-container">
-                        {this.props.state.searchResults.map((item, key) => (
+                        {this.props.searchResults.map((item, key) => (
 
                             <div className="result-node" key={key}>
                                 <div className="result-node-thumb">
@@ -53,12 +53,12 @@ export default class Result extends Component {
                                                             } else {
                                                                 this.videoId.splice(this.videoId.indexOf(item.videoId), 1)
                                                                 this.setState({ downloadProcess: false })
-                                                                toast("Requested content not available right now!, try downloading alternate songs!");
+                                                                this.props.showMessage("Requested content not available right now!, try downloading alternate songs!");
                                                             }
                                                         }).catch(err => {
                                                             this.videoId.splice(this.videoId.indexOf(item.videoId), 1)
                                                             this.setState({ downloadProcess: false })
-                                                            toast("Requested content not available right now!, try downloading alternate songs!");
+                                                            this.props.showMessage("Requested content not available right now!, try downloading alternate songs!");
                                                         })
                                                 }}
                                                 className="t-none cursor-pointer" href={`${variables.baseUrl}/downcc/${item.videoId}`}>
@@ -86,7 +86,7 @@ export default class Result extends Component {
                     </div>
                     :
                     <div className="dummy-music-holder">
-                        <img className={`music-icon ${this.props.state.isSearchProcessing ? 'preload-custom-1' : ''}`} src={master} alt="" />
+                        <img className={`music-icon`} src={master} alt="" />
                         <p className="music-icon-para">Your Music Appears Here!</p>
                     </div>
                 :
@@ -101,3 +101,29 @@ export default class Result extends Component {
         )
     }
 }
+
+const mapStateToProps = (state) => {
+    return {
+        searchResults: state.searchReducer.searchResults,
+        isSearching: state.searchReducer.isSearching,
+    }
+
+}
+
+const mapDispatchToProps = (dispatch) => {
+    return {
+        featureNotify: () => {
+            toastActions.featureNotify();
+        },
+        initPlayer: (audioData) => {
+            playerActions.initPlayer(audioData)
+        },
+        showMessage: (message) => {
+            toastActions.showMessage(message)
+        },
+
+
+    }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(Result);

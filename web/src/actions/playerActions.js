@@ -123,9 +123,9 @@ export function audioSeekHandler(forward) {
         const audio = document.getElementById('music-player');
         console.log(audio.currentTime);
         if (forward)
-            audio.currentTime += 10
+            audio.currentTime += 5
         else
-            audio.currentTime -= 10
+            audio.currentTime -= 5
         console.log(audio.currentTime);
     }
     return true;

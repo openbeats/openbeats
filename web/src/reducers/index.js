@@ -1,8 +1,10 @@
 import playerReducer from "./playerReducer";
+import searchReducer from "./searchReducer";
 
 
 const reducers = {
-    playerReducer
+    playerReducer,
+    searchReducer,
 }
 
 export default reducers;
