@@ -31,7 +31,7 @@ export async function fetchResults() {
         }
     });
 
-    const url = `${variables.baseUrl}/ytcat?q=${state.suggestionText}`
+    const url = `${variables.baseUrl}/ytcat?q=${state.suggestionText.replace(/\W/g, '')}`
     await fetch(url)
         .then(res => res.json())
         .then(async res => {
