@@ -53,12 +53,12 @@ class Result extends Component {
                                                             } else {
                                                                 this.videoId.splice(this.videoId.indexOf(item.videoId), 1)
                                                                 this.setState({ downloadProcess: false })
-                                                                this.props.showMessage("Requested content not available right now!, try downloading alternate songs!");
+                                                                this.props.notify("Requested content not available right now!, try downloading alternate songs!");
                                                             }
                                                         }).catch(err => {
                                                             this.videoId.splice(this.videoId.indexOf(item.videoId), 1)
                                                             this.setState({ downloadProcess: false })
-                                                            this.props.showMessage("Requested content not available right now!, try downloading alternate songs!");
+                                                            this.props.notify("Requested content not available right now!, try downloading alternate songs!");
                                                         })
                                                 }}
                                                 className="t-none cursor-pointer" href={`${variables.baseUrl}/downcc/${item.videoId}`}>
@@ -118,7 +118,7 @@ const mapDispatchToProps = (dispatch) => {
         initPlayer: (audioData) => {
             playerActions.initPlayer(audioData)
         },
-        showMessage: (message) => {
+        notify: (message) => {
             toastActions.showMessage(message)
         },
 

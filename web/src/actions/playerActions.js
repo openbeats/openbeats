@@ -121,12 +121,10 @@ export function audioSeekHandler(forward) {
     const state = store.getState().playerReducer;
     if (state.masterUrl) {
         const audio = document.getElementById('music-player');
-        console.log(audio.currentTime);
         if (forward)
             audio.currentTime += 5
         else
             audio.currentTime -= 5
-        console.log(audio.currentTime);
     }
     return true;
 }
@@ -155,11 +153,9 @@ export function playerTimeUpdater(e) {
 
 export function seekAudio(e) {
     const playerRef = document.getElementById("music-player");
-    console.log(playerRef.currentTime);
     const state = store.getState().playerReducer;
     if (state.masterUrl) {
         playerRef.currentTime = playerRef.duration * (e / 100)
-        console.log(playerRef.currentTime);
     }
     return true
 }
