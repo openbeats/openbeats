@@ -9,7 +9,7 @@ import { connect } from "react-redux";
 import { toastActions, searchActions } from '../actions';
 
 
-class Topnav extends Component {
+class TopNav extends Component {
 
     componentDidMount() {
         this.initListeners();
@@ -93,7 +93,7 @@ class Topnav extends Component {
 
 const mapStateToProps = (state) => {
     return {
-        currentActionTitle: state.searchReducer.currentActionTitle,
+        currentActionTitle: state.coreReducer.currentActionTitle,
         suggestionText: state.searchReducer.suggestionText,
         keywordSuggestions: state.searchReducer.keywordSuggestions,
         currentTextIndex: state.searchReducer.currentTextIndex,
@@ -129,4 +129,4 @@ const mapDispatchToProps = (dispatch) => {
 
 
 
-export default connect(mapStateToProps, mapDispatchToProps)(Topnav);
+export default connect(mapStateToProps, mapDispatchToProps)(TopNav);

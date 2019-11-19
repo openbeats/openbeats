@@ -4,7 +4,7 @@ import Loader from 'react-loader-spinner'
 import "../css/result.css"
 import { variables } from '../config'
 import { connect } from "react-redux"
-import { toastActions, playerActions } from '../actions';
+import { toastActions, playerActions, coreActions } from '../actions';
 
 class Result extends Component {
 
@@ -12,8 +12,14 @@ class Result extends Component {
         super(props);
         this.state = {
             downloadProcess: false,
+            isPlaying: false
         }
+        this.playId = null
         this.videoId = []
+
+    }
+    componentDidMount() {
+        this.props.setCurrentAction("Search Result");
     }
 
     render() {
@@ -23,7 +29,7 @@ class Result extends Component {
                     <div className="search-result-container">
                         {this.props.searchResults.map((item, key) => (
 
-                            <div className="result-node" key={key}>
+                            <div className={`result-node ${this.state.isPlaying && this.playId === item.videoId ? "highlight-current-play" : ""}`} key={key}>
                                 <div className="result-node-thumb">
                                     <img src={item.thumbnail} alt="" />
                                 </div>
@@ -37,6 +43,8 @@ class Result extends Component {
                                         </div>
                                         <div className="result-node-actions">
                                             <img onClick={async (e) => {
+                                                this.setState({ isPlaying: true })
+                                                this.playId = item.videoId
                                                 await this.props.initPlayer(item)
                                             }} className="action-image-size play-icon-result cursor-pointer" src={playerplay} alt="" />
                                             <a download
@@ -121,6 +129,9 @@ const mapDispatchToProps = (dispatch) => {
         notify: (message) => {
             toastActions.showMessage(message)
         },
+        setCurrentAction: (action) => {
+            dispatch(coreActions.setCurrentAction(action))
+        }
 
 
     }

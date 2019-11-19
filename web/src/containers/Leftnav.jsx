@@ -16,7 +16,7 @@ import {
     navclose
 } from '../images'
 
-class Leftnav extends Component {
+class LeftNav extends Component {
     render() {
         return (
             <Fragment>
@@ -122,4 +122,4 @@ const mapDispatchToProps = (dispatch) => {
     }
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(Leftnav);
+export default connect(mapStateToProps, mapDispatchToProps)(LeftNav);
