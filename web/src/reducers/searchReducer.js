@@ -1,5 +1,4 @@
 const initialState = {
-    currentActionTitle: "Search",
     suggestionText: "",
     keywordSuggestions: [],
     currentTextIndex: 0,

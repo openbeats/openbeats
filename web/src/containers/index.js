@@ -1,16 +1,18 @@
 import Home from "./Home";
-import Leftnav from "./Leftnav";
+import LeftNav from "./LeftNav";
 import Player from "./Player";
 import Auth from "./Auth";
 import Result from "./Result";
-import Topnav from "./Topnav";
+import TopNav from "./TopNav";
+import playlistDisplay from "./PlaylistDisplay";
 
 
 export {
     Home,
-    Leftnav,
+    LeftNav,
     Player,
     Auth,
-    Topnav,
-    Result
+    TopNav,
+    Result,
+    playlistDisplay,
 }

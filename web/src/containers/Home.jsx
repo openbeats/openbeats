@@ -1,7 +1,8 @@
 import React, { Component, Fragment } from 'react'
 import "../css/core.css";
 import "../css/mainbody.css";
-import { Player, Topnav, Result, Leftnav } from '../containers'
+// import { Player, TopNav, Result, LeftNav, playlistDisplay } from '../containers'
+import { Player, TopNav, Result, LeftNav } from '../containers'
 import { toastActions } from "../actions";
 import { connect } from "react-redux";
 import { push } from "connected-react-router";
@@ -43,12 +44,13 @@ class Home extends Component {
     render() {
         return (
             <Fragment >
-                <Leftnav />
+                <LeftNav />
                 <main id="main">
-                    <Topnav />
+                    <TopNav />
                     <section className="main-body">
                         {/* Main content Loading Region ... any ui content should be loaded here... all overflows has been handled.*/}
                         <Result />
+                        {/* <PlaylistDisplay /> */}
                     </section>
                 </main>
                 <Player />
