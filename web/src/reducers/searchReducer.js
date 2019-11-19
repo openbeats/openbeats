@@ -1,74 +1,61 @@
-import { musicDummy } from "../images"
-
 const initialState = {
-    masterUrl: null,
-    fallBackUrl: null,
-    isMusicPlaying: false,
-    isMuted: false,
-    playerVolume: localStorage.getItem("playerVolume") || 0.5,
-    currentProgress: 0,
-    currentTimeText: '0:00',
-    durationTimeText: '0:00',
-    thumbnail: musicDummy,
-    songTitle: "OpenBeats Stream Unlimited Music!",
-    id: null,
-    isAudioBuffering: false,
-    isPreviousAvailable: false,
-    isNextAvailable: false,
-    downloadProcess: false
+    currentActionTitle: "Search",
+    suggestionText: "",
+    keywordSuggestions: [],
+    currentTextIndex: 0,
+    actualText: "",
+    searchText: "",
+    searchResults: [],
+    listener: null,
+    isSearching: false,
+    isTyping: false,
 }
 
-const playerReducer = (state = initialState, action) => {
+const searchReducer = (state = initialState, action) => {
     switch (action.type) {
-        case "PLAY_PAUSE_TOGGLE":
-            state = {
-                ...state,
-                isMusicPlaying: action.payload
-            };
-            break;
-        case "MUTE_TOGGLE":
+        case "UPDATE_SUGGESTION_TEXT":
             state = {
                 ...state,
                 ...action.payload
             };
             break;
-        case "SEEK_VOLUME":
+        case "UPDATE_Actual_TEXT":
             state = {
                 ...state,
                 ...action.payload
             };
             break;
-        case "SET_TOTAL_DURATION":
+        case "FETCH_RESULTS":
             state = {
                 ...state,
                 ...action.payload
             };
             break;
-        case "UPDATE_VOLUME":
+        case "SEARCH_INITIAL_CLEAR":
             state = {
                 ...state,
                 ...action.payload
             };
             break;
-        case "AUDIO_PROGRESS_UPDATE":
+        case "FETCH_KEYWORD_SUGGESTION":
             state = {
                 ...state,
                 ...action.payload
             };
             break;
-        case "MUSIC_END_HANDLER":
+        case "EMPTY_KEYWORD_SUGGESTION":
             state = {
                 ...state,
                 ...action.payload
             };
             break;
-        case "LOAD_AUDIO_DATA":
+        case "UPDATE_TYPING":
             state = {
                 ...state,
                 ...action.payload
             };
             break;
-        case "PLAYER_DOWNLOAD_HANDLE":
+        case "KEY_UP_HANDLE":
             state = {
                 ...state,
                 ...action.payload
@@ -82,4 +69,4 @@ const playerReducer = (state = initialState, action) => {
 
 }
 
-export default playerReducer;
+export default searchReducer;

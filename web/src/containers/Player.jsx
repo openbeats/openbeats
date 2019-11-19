@@ -31,17 +31,17 @@ class Player extends Component {
         document.addEventListener("keydown", function (e) {
             volumeRef.blur();
             progressRef.blur();
-            if (e.keyCode === 32 && !this.props.state.typing) {
+            if (e.keyCode === 32 && !this.props.isTyping) {
                 this.props.playPauseToggle()
-            } else if (e.keyCode === 77 && !this.props.state.typing) {
+            } else if (e.keyCode === 77 && !this.props.isTyping) {
                 this.props.muteToggle()
-            } else if (e.keyCode === 39 && !this.props.state.typing) {
+            } else if (e.keyCode === 39 && !this.props.isTyping) {
                 this.props.audioSeekHandler(true)
-            } else if (e.keyCode === 37 && !this.props.state.typing) {
+            } else if (e.keyCode === 37 && !this.props.isTyping) {
                 this.props.audioSeekHandler(false)
-            } else if (e.keyCode === 38 && !this.props.state.typing) {
+            } else if (e.keyCode === 38 && !this.props.isTyping) {
                 this.props.volumeSeekHandler(true)
-            } else if (e.keyCode === 40 && !this.props.state.typing) {
+            } else if (e.keyCode === 40 && !this.props.isTyping) {
                 this.props.volumeSeekHandler(false)
             }
         }.bind(this))
@@ -59,7 +59,7 @@ class Player extends Component {
                 <div className="player-wrapper" id="player-wrapper">
                     <audio id="music-player"
                         onLoadedMetadata={() => this.props.setTotalDuration()}
-                        onEnded={(e) => this.props.playerEndHandler()}
+                        onEnded={(e) => this.props.musicEndHandler()}
                         onTimeUpdate={(e) => this.props.playerTimeUpdater(e)}
                     >
                         <source src="" id="audio-source-1" />
@@ -214,6 +214,7 @@ const mapStateToProps = (state) => {
         songTitle: state.playerReducer.songTitle,
         isAudioBuffering: state.playerReducer.isAudioBuffering,
         downloadProcess: state.playerReducer.downloadProcess,
+        isTyping: state.searchReducer.isTyping,
     }
 }
 
