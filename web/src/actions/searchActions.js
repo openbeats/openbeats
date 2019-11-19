@@ -21,18 +21,17 @@ export function updateActualText(text) {
     }
 }
 
-export async function fetchResults(text) {
+export async function fetchResults() {
     let state = store.getState().searchReducer;
     await store.dispatch({
         type: "SEARCH_INITIAL_CLEAR",
         payload: {
-            searchText: text,
             keywordSuggestions: [],
             isSearching: true
         }
     });
 
-    const url = `${variables.baseUrl}/ytcat?q=${state.searchText}`
+    const url = `${variables.baseUrl}/ytcat?q=${state.suggestionText}`
     await fetch(url)
         .then(res => res.json())
         .then(async res => {
@@ -57,7 +56,6 @@ export async function getKeywordSuggestion(key) {
     await store.dispatch({
         type: "SEARCH_INITIAL_CLEAR",
         payload: {
-            searchText: key,
             suggestionText: key,
             actualText: key,
             currentTextIndex: 0
