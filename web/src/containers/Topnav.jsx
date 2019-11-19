@@ -45,8 +45,7 @@ class Topnav extends Component {
                         action=""
                         onSubmit={async (e) => {
                             e.preventDefault();
-                            let a = await this.props.suggestionText;
-                            await this.props.fetchResults(a);
+                            await this.props.fetchResults();
                         }}
                     >
                         <input
@@ -68,7 +67,7 @@ class Topnav extends Component {
                             <div
                                 onClick={async (e) => {
                                     await this.props.updateSuggestionText(item[0])
-                                    await this.props.fetchResults(this.props.suggestionText);
+                                    await this.props.fetchResults();
                                 }}
                                 key={key}
                                 className={`suggested-keyword ${this.props.currentTextIndex === key + 1 ? 'highlight-current' : ''}`}
