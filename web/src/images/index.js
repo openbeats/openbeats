@@ -1,4 +1,3 @@
-import playlist from "./playlist.png";
 import musicDummy from './dummy_music_holder.jpg';
 import masterLogo from './masterlogo.png'
 import navhome from './navhome.png'
@@ -25,7 +24,6 @@ import playlistadd from './playlistadd.png'
 
 
 export {
-    playlist,
     musicDummy,
     masterLogo,
     navhome,

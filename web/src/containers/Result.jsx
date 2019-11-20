@@ -3,27 +3,33 @@ import { playerdownload, playerplay, master, playlistadd, } from "../images";
 import Loader from 'react-loader-spinner'
 import "../css/result.css"
 import { variables } from '../config'
-import { toast } from 'react-toastify'
+import { connect } from "react-redux"
+import { toastActions, playerActions, coreActions } from '../actions';
 
-
-export default class Result extends Component {
+class Result extends Component {
 
     constructor(props) {
         super(props);
         this.state = {
             downloadProcess: false,
+            isPlaying: false
         }
+        this.playId = null
         this.videoId = []
+
+    }
+    componentDidMount() {
+        this.props.setCurrentAction("Search Result");
     }
 
     render() {
         return (
-            !this.props.state.isSearching ?
-                this.props.state.searchResults.length > 0 ?
+            !this.props.isSearching ?
+                this.props.searchResults.length > 0 ?
                     <div className="search-result-container">
-                        {this.props.state.searchResults.map((item, key) => (
+                        {this.props.searchResults.map((item, key) => (
 
-                            <div className="result-node" key={key}>
+                            <div className={`result-node ${this.state.isPlaying && this.playId === item.videoId ? "highlight-current-play" : ""}`} key={key}>
                                 <div className="result-node-thumb">
                                     <img src={item.thumbnail} alt="" />
                                 </div>
@@ -37,7 +43,8 @@ export default class Result extends Component {
                                         </div>
                                         <div className="result-node-actions">
                                             <img onClick={async (e) => {
-                                                this.props.resetBeatNotice()
+                                                this.setState({ isPlaying: true })
+                                                this.playId = item.videoId
                                                 await this.props.initPlayer(item)
                                             }} className="action-image-size play-icon-result cursor-pointer" src={playerplay} alt="" />
                                             <a download
@@ -54,12 +61,12 @@ export default class Result extends Component {
                                                             } else {
                                                                 this.videoId.splice(this.videoId.indexOf(item.videoId), 1)
                                                                 this.setState({ downloadProcess: false })
-                                                                toast("Requested content not available right now!, try downloading alternate songs!");
+                                                                this.props.notify("Requested content not available right now!, try downloading alternate songs!");
                                                             }
                                                         }).catch(err => {
                                                             this.videoId.splice(this.videoId.indexOf(item.videoId), 1)
                                                             this.setState({ downloadProcess: false })
-                                                            toast("Requested content not available right now!, try downloading alternate songs!");
+                                                            this.props.notify("Requested content not available right now!, try downloading alternate songs!");
                                                         })
                                                 }}
                                                 className="t-none cursor-pointer" href={`${variables.baseUrl}/downcc/${item.videoId}`}>
@@ -87,7 +94,7 @@ export default class Result extends Component {
                     </div>
                     :
                     <div className="dummy-music-holder">
-                        <img className={`music-icon ${this.props.state.isSearchProcessing ? 'preload-custom-1' : ''}`} src={master} alt="" />
+                        <img className={`music-icon`} src={master} alt="" />
                         <p className="music-icon-para">Your Music Appears Here!</p>
                     </div>
                 :
@@ -102,3 +109,32 @@ export default class Result extends Component {
         )
     }
 }
+
+const mapStateToProps = (state) => {
+    return {
+        searchResults: state.searchReducer.searchResults,
+        isSearching: state.searchReducer.isSearching,
+    }
+
+}
+
+const mapDispatchToProps = (dispatch) => {
+    return {
+        featureNotify: () => {
+            toastActions.featureNotify();
+        },
+        initPlayer: (audioData) => {
+            playerActions.initPlayer(audioData)
+        },
+        notify: (message) => {
+            toastActions.showMessage(message)
+        },
+        setCurrentAction: (action) => {
+            dispatch(coreActions.setCurrentAction(action))
+        }
+
+
+    }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(Result);
