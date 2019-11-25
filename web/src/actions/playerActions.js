@@ -1,4 +1,4 @@
-import { toastActions } from "../actions";
+import { toastActions, nowPlayingActions } from "../actions";
 import { store } from "../store";
 import { variables } from "../config";
 import { musicDummy } from "../images"
@@ -161,6 +161,19 @@ export function seekAudio(e) {
 }
 
 export function musicEndHandler() {
+    let state = store.getState().nowPlayingReducer;
+    console.log("here");
+    console.log(state);
+
+    if (state.isPlaylist && state.playerQueue.length > 0) {
+        console.log("playing next song");
+        nowPlayingActions.playNextSong();
+    } else {
+        store.dispatch(resetPlayer())
+    }
+}
+
+export function resetPlayer() {
     let payload = {}
     const player = document.getElementById("music-player");
     const source1 = document.getElementById("audio-source-1");
@@ -169,7 +182,6 @@ export function musicEndHandler() {
     player.currentTime = 0;
     source1.src = ""
     source2.src = ""
-    // player.load()
     payload = {
         masterUrl: null,
         fallBackUrl: null,
@@ -182,7 +194,6 @@ export function musicEndHandler() {
         id: null,
         isAudioBuffering: false,
     }
-
     return {
         type: "MUSIC_END_HANDLER",
         payload
@@ -190,7 +201,7 @@ export function musicEndHandler() {
 }
 
 export async function initPlayer(audioData) {
-    await store.dispatch(musicEndHandler())
+    await store.dispatch(resetPlayer())
     await store.dispatch({
         type: 'LOAD_AUDIO_DATA',
         payload: {
