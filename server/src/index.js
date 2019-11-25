@@ -1,7 +1,7 @@
 import "dotenv/config";
 import middleware from "./config/middleware";
 import express from "express";
-import { ytcat, suggestbeat } from "./core";
+import { ytcat, suggestbeat, copycat } from "./core";
 //import initCron from "./core/updatePlaylistCron";
 import ytdl from "ytdl-core";
 import http from "https";
@@ -37,10 +37,15 @@ app.get("/opencc/:id", async (req, res) => {
       link: sourceUrl,
     });
   } catch (error) {
-    console.error(error.message);
-    res.status(404).send({
-      status: false,
-      link: null,
+    let link = null;
+    let status = 404;
+    if (ytdl.validateID(videoID)) {
+      link = await copycat(videoID);
+      status = 200;
+    }
+    res.status(status).send({
+      status: status === 200 ? true : false,
+      link: link,
     });
   }
 });
@@ -115,10 +120,31 @@ app.get("/downcc/:id", async (req, res) => {
         end: true,
       });
   } catch (error) {
-    res.status(404).send({
-      status: false,
-      link: null,
-    });
+    let link = null;
+    let status = 404;
+    if (ytdl.validateID(videoID)) {
+      link = await copycat(videoID);
+      status = 200;
+      res.setHeader(
+        "Content-disposition",
+        "attachment; filename=" + videoID + ".mp3",
+      );
+      res.setHeader("Content-Type", "audio/mpeg");
+      ffmpeg({ source: link })
+        .setFfmpegPath(ffmpegPath)
+        .withAudioCodec("libmp3lame")
+        .audioBitrate(128)
+        .toFormat("mp3")
+        .on("error", err => console.log(err.message))
+        .pipe(res, {
+          end: true,
+        });
+    } else {
+      res.status(status).send({
+        status: status === 200 ? true : false,
+        link: link,
+      });
+    }
   }
 });
 
