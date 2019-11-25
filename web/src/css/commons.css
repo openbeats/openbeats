@@ -28,3 +28,13 @@
 .highlight-current-play {
     border: 0.5px solid rgba(255, 255, 255, 0.2);
 }
+
+.hover-me:hover {
+    opacity: 0.8;
+}
+
+hr {
+    opacity: 0.1;
+    width: 90%;
+    margin-left: 2%;
+}

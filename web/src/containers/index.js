@@ -4,7 +4,8 @@ import Player from "./Player";
 import Auth from "./Auth";
 import Result from "./Result";
 import TopNav from "./TopNav";
-import playlistDisplay from "./PlaylistDisplay";
+import NowPlaying from "./NowPlaying";
+import PlaylistDisplay from "./PlaylistDisplay";
 
 
 export {
@@ -14,5 +15,6 @@ export {
     Auth,
     TopNav,
     Result,
-    playlistDisplay,
+    NowPlaying,
+    PlaylistDisplay
 }
