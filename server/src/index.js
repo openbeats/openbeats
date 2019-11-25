@@ -2,7 +2,7 @@ import "dotenv/config";
 import middleware from "./config/middleware";
 import express from "express";
 import { ytcat, suggestbeat } from "./core";
-import initCron from "./core/updatePlaylistCron";
+//import initCron from "./core/updatePlaylistCron";
 import ytdl from "ytdl-core";
 import http from "https";
 import localdb from "./config/localdb";
@@ -15,7 +15,7 @@ const ffmpegPath = path;
 
 const app = express();
 
-initCron();
+//initCron();
 
 middleware(app);
 
@@ -25,138 +25,101 @@ app.get("/", (req, res) => {
 
 app.get("/opencc/:id", async (req, res) => {
   const videoID = req.params.id;
-  await ytdl
-    .getInfo(videoID)
-    .then(info => {
-      const audioFormats = ytdl.filterFormats(info.formats, "audioonly");
-      let reqFormat = audioFormats.filter(function (item) {
-        return item.audioBitrate == 128;
-      });
-      let sourceUrl = reqFormat[0].url;
-      if (!reqFormat[0].clen) {
-        throw new Error("content-length-not-found");
-      }
-      res.send({
-        status: true,
-        link: sourceUrl,
-      });
-    })
-    .catch(err => {
-      res.send({
-        status: false,
-        link: null,
-      });
+  try {
+    const info = await ytdl.getInfo(videoID);
+    let audioFormats = ytdl.filterFormats(info.formats, "audioonly");
+    if (!audioFormats[0].clen) {
+      audioFormats = ytdl.filterFormats(info.formats, "audioandvideo");
+    }
+    let sourceUrl = audioFormats[0].url;
+    res.send({
+      status: true,
+      link: sourceUrl,
     });
+  } catch (error) {
+    console.error(error.message);
+    res.status(404).send({
+      status: false,
+      link: null,
+    });
+  }
 });
 
 app.get("/fallback/:id", async (req, res) => {
   const videoID = req.params.id;
-  await ytdl
-    .getInfo(videoID)
-    .then(info => {
-      const audioFormats = ytdl.filterFormats(info.formats, "audioonly");
-      let reqFormat = audioFormats.filter(function (item) {
-        return item.audioBitrate == 128;
-      });
-
-      let sourceUrl = reqFormat[0].url;
-      if (!reqFormat[0].clen) {
-        throw new Error("content-length-not-found");
-      }
-      let fileSize = reqFormat[0].clen;
-      let mimeType = reqFormat[0].type;
-      const range = req.headers.range;
-
-      if (range) {
-        const parts = range.replace(/bytes=/, "").split("-");
-        const start = parseInt(parts[0], 10);
-        const end = parts[1] ? parseInt(parts[1], 10) : fileSize - 1;
-        const chunksize = end - start + 1;
-        const head = {
-          "Content-Range": `bytes ${start}-${end}/${fileSize}`,
-          "Accept-Ranges": "bytes",
-          "Content-Length": chunksize,
-          "Content-Type": mimeType,
-        };
-        res.writeHead(206, head);
-        http.get(
-          sourceUrl,
-          {
-            headers: {
-              Range: req.headers.range,
-            },
+  try {
+    const info = await ytdl.getInfo(videoID);
+    let audioFormats = ytdl.filterFormats(info.formats, "audioonly");
+    if (!audioFormats[0].clen) {
+      audioFormats = ytdl.filterFormats(info.formats, "audioandvideo");
+    }
+    let sourceUrl = audioFormats[0].url;
+    const range = req.headers.range;
+    if (range) {
+      http.get(
+        sourceUrl,
+        {
+          headers: {
+            Range: req.headers.range,
           },
-          function (response) {
-            response.pipe(res);
-          },
-        );
-      } else {
-        const head = {
-          "Content-Length": fileSize,
-          "Content-Type": mimeType,
-        };
-        res.writeHead(200, head);
-        http.get(sourceUrl, function (response) {
+        },
+        function(response) {
+          res.writeHead(206, response.headers);
           response.pipe(res);
-        });
-      }
-    })
-    .catch(err => {
-      res.status(404).send({
-        status: false,
-        link: null,
+        },
+      );
+    } else {
+      http.get(sourceUrl, function(response) {
+        res.writeHead(200, response.headers);
+        response.pipe(res);
       });
+    }
+  } catch (error) {
+    console.error(error.message);
+    res.status(404).send({
+      status: false,
+      link: null,
     });
+  }
 });
 
 app.get("/downcc/:id", async (req, res) => {
   const videoID = req.params.id;
-  await ytdl
-    .getInfo(videoID)
-    .then(info => {
-      const audioFormats = ytdl.filterFormats(info.formats, "audioonly");
-      let reqFormat = audioFormats.filter(function (item) {
-        return item.audioBitrate == 128;
+  try {
+    const info = await ytdl.getInfo(videoID);
+    let audioFormats = ytdl.filterFormats(info.formats, "audioonly");
+    if (!audioFormats[0].clen) {
+      audioFormats = ytdl.filterFormats(info.formats, "audioandvideo");
+    }
+    let sourceUrl = audioFormats[0].url;
+    let downloadTitle = `${info.title
+      .trim()
+      .replace(" ", "")
+      .replace(/[^\w]/gi, "")}@openbeats`;
+    let contentLength =
+      audioFormats[0].clen ||
+      info.length_seconds * audioFormats[0].audioBitrate * 125;
+    res.setHeader(
+      "Content-disposition",
+      "attachment; filename=" + downloadTitle + ".mp3",
+    );
+    res.setHeader("Content-Type", "audio/mpeg");
+    res.setHeader("Content-Length", contentLength);
+    ffmpeg({ source: sourceUrl })
+      .setFfmpegPath(ffmpegPath)
+      .withAudioCodec("libmp3lame")
+      .audioBitrate(audioFormats[0].audioBitrate)
+      .toFormat("mp3")
+      .on("error", err => console.log(err.message))
+      .pipe(res, {
+        end: true,
       });
-      if (!reqFormat[0].clen) {
-        throw new Error("content-length-not-found");
-      }
-      let downloadTitle = `${info.title.trim().replace(" ", "")}@openbeats`;
-      downloadTitle = downloadTitle.replace(
-        /[&\/\\#,+()\|" "$~%.'":*?<>{}-]/g,
-        "",
-      );
-      let sourceUrl = reqFormat[0].url;
-      let contentLength = reqFormat[0].clen;
-      res.setHeader(
-        "Content-disposition",
-        "attachment; filename=" + downloadTitle + ".mp3",
-      );
-      res.setHeader("Content-Type", "audio/mpeg");
-      res.setHeader("Content-Length", contentLength);
-      ffmpeg({ source: sourceUrl })
-        .setFfmpegPath(ffmpegPath)
-        .withAudioCodec("libmp3lame")
-        .audioBitrate("128k")
-        .toFormat("mp3")
-        .on("error", err => {
-          console.log(err.message);
-        })
-        .pipe(
-          res,
-          {
-            end: true,
-          },
-        );
-    })
-    .catch(err => {
-      console.log(err);
-
-      res.status(404).send({
-        status: false,
-        link: null,
-      });
+  } catch (error) {
+    res.status(404).send({
+      status: false,
+      link: null,
     });
+  }
 });
 
 app.get("/ytcat", async (req, res) => {
