@@ -376,4 +376,7 @@
     .minimize-mobile-toggle {
         display: none;
     }
+    .mobile-music-notifier {
+        display: none;
+    }
 }

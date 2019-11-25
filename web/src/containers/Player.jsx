@@ -1,6 +1,6 @@
 import React, { Component, Fragment } from 'react';
 import "../css/player.css";
-import Loader from 'react-loader-spinner'
+import Loader from 'react-loader-spinner';
 import { toastActions, playerActions } from "../actions";
 import { connect } from "react-redux";
 import { push } from "connected-react-router";
@@ -261,8 +261,9 @@ const mapDispatchToProps = (dispatch) => {
             dispatch(action)
         },
         musicEndHandler: () => {
-            let action = playerActions.musicEndHandler();
-            dispatch(action)
+            console.log("called");
+            
+            playerActions.musicEndHandler();
         },
         playerDownloadHandler: (e) => {
             playerActions.playerDownloadHandler(e);
