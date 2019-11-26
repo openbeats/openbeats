@@ -11,8 +11,8 @@ class Result extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            downloadProcess: false,
-            isPlaying: false
+            isPlaying: false,
+            videoId: []
         }
         this.playId = null
         this.videoId = []
@@ -29,7 +29,7 @@ class Result extends Component {
                     <div className="search-result-container">
                         {this.props.searchResults.map((item, key) => (
 
-                            <div className={`result-node ${!this.props.isPlaylist && this.props.currentPlaying && this.props.currentPlaying.videoId === item.videoId ? "highlight-current-play" : ""}`} key={key}>
+                            <div className={`result-node ${!this.props.isPlaylist && this.props.currentPlaying && this.props.currentPlaying.videoId === item.videoId ? "highlight-active-result" : ""}`} key={key}>
                                 <div className="result-node-thumb">
                                     <img src={item.thumbnail} alt="" />
                                 </div>
@@ -68,28 +68,28 @@ class Result extends Component {
 
                                             <a download
                                                 onClick={async (e) => {
-                                                    this.setState({ downloadProcess: true })
                                                     this.videoId.push(item.videoId)
+                                                    this.setState({ videoId: this.videoId })
                                                     e.preventDefault()
                                                     await fetch(`${variables.baseUrl}/downcc/${item.videoId}`)
                                                         .then(res => {
                                                             if (res.status === 200) {
-                                                                this.setState({ downloadProcess: false })
                                                                 this.videoId.splice(this.videoId.indexOf(item.videoId), 1)
+                                                                this.setState({ videoId: this.videoId })
                                                                 window.open(`${variables.baseUrl}/downcc/${item.videoId}`, "_self")
                                                             } else {
                                                                 this.videoId.splice(this.videoId.indexOf(item.videoId), 1)
-                                                                this.setState({ downloadProcess: false })
+                                                                this.setState({ videoId: this.videoId })
                                                                 this.props.notify("Requested content not available right now!, try downloading alternate songs!");
                                                             }
                                                         }).catch(err => {
                                                             this.videoId.splice(this.videoId.indexOf(item.videoId), 1)
-                                                            this.setState({ downloadProcess: false })
+                                                            this.setState({ videoId: this.videoId })
                                                             this.props.notify("Requested content not available right now!, try downloading alternate songs!");
                                                         })
                                                 }}
                                                 className="t-none cursor-pointer" href={`${variables.baseUrl}/downcc/${item.videoId}`}>
-                                                {this.state.downloadProcess && this.videoId.includes(item.videoId) ?
+                                                {this.state.videoId.includes(item.videoId) ?
                                                     <Loader
                                                         type="Oval"
                                                         color="#F32C2C"

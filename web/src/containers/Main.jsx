@@ -12,6 +12,9 @@ import Result from './Result';
 
 class Main extends Component {
 
+    componentDidMount() {
+        this.initiateListeners();
+    }
     initiateListeners() {
         const navCloseRef = document.getElementById("nav-close");
         const navHamburgerRef = document.getElementById("nav-hamburger");

@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import "../css/nowplaying.css";
-import { toastActions, coreActions } from "../actions";
+import { toastActions, coreActions, nowPlayingActions, playerActions } from "../actions";
 import { connect } from "react-redux";
 import { push } from "connected-react-router";
 import Loader from 'react-loader-spinner';
@@ -22,7 +22,7 @@ class NowPlaying extends Component {
                     </div>
                     <div className="now-playing-body">
                         {this.props.currentPlaying ?
-                            <div className="now-playing-item hover-me">
+                            <div className="now-playing-item">
                                 <span>
                                     {this.props.isAudioBuffering ?
                                         <Loader
@@ -33,8 +33,16 @@ class NowPlaying extends Component {
                                         />
                                         :
                                         this.props.isMusicPlaying ?
-                                            <i className="fas fa-pause now-playing-icon-size cursor-pointer"></i> :
-                                            <i className="fas fa-play now-playing-icon-size cursor-pointer"></i>
+                                            <i
+                                                onClick={() => {
+                                                    this.props.playPauseToggle()
+                                                }}
+                                                className="fas fa-pause now-playing-icon-size cursor-pointer"></i> :
+                                            <i
+                                                onClick={() => {
+                                                    this.props.playPauseToggle()
+                                                }}
+                                                className="fas fa-play now-playing-icon-size cursor-pointer"></i>
                                     }
                                 </span>
                                 <span className="now-playing-duration">{this.props.currentPlaying.duration}</span>
@@ -53,9 +61,27 @@ class NowPlaying extends Component {
                         <div className="up-next-body">
                             {this.props.playerQueue.map((item, key) => (
                                 key > this.props.currentIndex &&
-                                <div className="now-playing-item hover-me" key={key}>
+                                <div className="now-playing-item" key={key}>
                                     <span>
-                                        <i className="fas fa-play now-playing-icon-size cursor-pointer"></i>
+                                        <i
+                                            onClick={() => {
+                                                this.props.selectFromPlaylist(key)
+                                            }}
+                                            className="fas fa-play now-playing-icon-size cursor-pointer"></i>
+                                    </span>
+                                    <span className="now-playing-duration">{item.duration}</span>
+                                    <span className="now-playing-title">{item.title}</span>
+                                </div>
+                            ))}
+                            {this.props.playerQueue.map((item, key) => (
+                                key < this.props.currentIndex &&
+                                <div className="now-playing-item" key={key}>
+                                    <span >
+                                        <i
+                                            onClick={() => {
+                                                this.props.selectFromPlaylist(key)
+                                            }}
+                                            className="fas fa-play now-playing-icon-size cursor-pointer"></i>
                                     </span>
                                     <span className="now-playing-duration">{item.duration}</span>
                                     <span className="now-playing-title">{item.title}</span>
@@ -97,6 +123,12 @@ const mapDispatchToProps = (dispatch) => {
         },
         setCurrentAction: (action) => {
             dispatch(coreActions.setCurrentAction(action))
+        },
+        selectFromPlaylist: (key) => {
+            nowPlayingActions.selectFromPlaylist(key);
+        },
+        playPauseToggle: () => {
+            dispatch(playerActions.playPauseToggle())
         },
     }
 }

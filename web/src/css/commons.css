@@ -38,3 +38,15 @@ hr {
     width: 90%;
     margin-left: 2%;
 }
+
+.highlight-active {
+    box-shadow: 0px 0px 10px 0px var(--main-master-color);
+    border-radius: 5px;
+    padding: 10px;
+}
+
+.highlight-active-result {
+    box-shadow: 0px 0px 10px 0px var(--main-master-color);
+    border-radius: 5px;
+    /* padding: 10px; */
+}

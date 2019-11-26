@@ -3,8 +3,9 @@ import "../css/playlistdisplay.css";
 import { toastActions, coreActions, nowPlayingActions, playerActions } from "../actions";
 import { connect } from "react-redux";
 import { push } from "connected-react-router";
-import { musicDummy } from '../images';
-// import Loader from 'react-loader-spinner';
+import { musicDummy, playerdownload } from '../images';
+import Loader from 'react-loader-spinner';
+import { variables } from '../config';
 
 class PlaylistDisplay extends Component {
 
@@ -125,8 +126,11 @@ class PlaylistDisplay extends Component {
                 },
             ],
             playlistName: "Beast Collection",
-            playlistThumbnail: musicDummy
+            playlistThumbnail: musicDummy,
+            downloadProcess: false,
+            videoId: []
         }
+        this.videoId = []
     }
 
 
@@ -176,16 +180,92 @@ class PlaylistDisplay extends Component {
                 <div className="playlist-display-right-section-wrapper">
                     {this.state.playlistItems.map((item, key) => (
                         <Fragment key={key}>
-                            <div className="playlist-display-songs-holder" >
+                            <div className={`playlist-display-songs-holder ${this.props.isPlaylist && this.props.currentPlaying.videoId === item.videoId ? 'highlight-active' : ''}`} >
                                 <span className="playlist-display-songs-serial-no">
                                     {key + 1}.
                                 </span>
-                                <span>
-                                    {this.props.isMusicPlaying && this.props.currentPlaying.videoId === item.videoId ?
-                                        <i className="fas fa-pause playlist-display-songs-icon"></i>
+                                <span
+                                    className="cursor-pointer"
+                                >
+                                    {this.props.isPlaylist && this.props.currentPlaying.videoId === item.videoId ?
+                                        this.props.isAudioBuffering ?
+                                            <Loader
+                                                type="Rings"
+                                                color="#F32C2C"
+                                                height={30}
+                                                width={30}
+                                                className="playlist-display-songs-icon"
+                                            />
+                                            :
+                                            this.props.isMusicPlaying ?
+                                                <i
+                                                    onClick={
+                                                        () => {
+                                                            this.props.playPauseToggle()
+                                                        }
+                                                    }
+                                                    className="fas fa-pause playlist-display-songs-icon"
+
+                                                ></i>
+                                                :
+                                                <i
+                                                    onClick={
+                                                        () => {
+                                                            this.props.playPauseToggle()
+                                                        }
+                                                    }
+                                                    className="fas fa-play playlist-display-songs-icon"
+
+                                                ></i>
                                         :
-                                        <i className="fas fa-play playlist-display-songs-icon"></i>
+                                        <i
+                                            onClick={() => {
+                                                if (this.props.playlistId) {
+                                                    this.props.selectFromPlaylist(key)
+                                                } else {
+                                                    this.initQueue()
+                                                    this.props.selectFromPlaylist(key)
+                                                }
+                                            }}
+                                            className="fas fa-play playlist-display-songs-icon"></i>
                                     }
+                                </span>
+                                <span>
+                                    <a download
+                                        onClick={async (e) => {
+                                            e.preventDefault()
+                                            this.videoId.push(item.videoId)
+                                            this.setState({ videoId: this.videoId })
+                                            await fetch(`${variables.baseUrl}/downcc/${item.videoId}`)
+                                                .then(res => {
+                                                    if (res.status === 200) {
+                                                        this.videoId.splice(this.videoId.indexOf(item.videoId), 1)
+                                                        this.setState({ videoId: this.videoId })
+                                                        window.open(`${variables.baseUrl}/downcc/${item.videoId}`, '_self')
+                                                    } else {
+                                                        this.videoId.splice(this.videoId.indexOf(item.videoId), 1)
+                                                        this.setState({ videoId: this.videoId })
+                                                        this.props.notify("Requested content not available right now!, try downloading alternate songs!");
+                                                    }
+                                                }).catch(err => {
+                                                    this.videoId.splice(this.videoId.indexOf(item.videoId), 1)
+                                                    this.setState({ videoId: this.videoId })
+                                                    this.props.notify("Requested content not available right now!, try downloading alternate songs!");
+                                                })
+                                        }}
+                                        className="t-none cursor-pointer" href={`${variables.baseUrl}/downcc/${item.videoId}`}>
+                                        {this.state.videoId.includes(item.videoId) ?
+                                            <Loader
+                                                type="Oval"
+                                                color="#F32C2C"
+                                                height={20}
+                                                width={20}
+                                                className="playlist-display-songs-icon-2"
+                                            />
+                                            :
+                                            <img className="playlist-display-songs-icon-2" src={playerdownload} alt="" />
+                                        }
+                                    </a>
                                 </span>
                                 <span>
                                     <div className="playlist-display-songs-title">{item.title}</div>
@@ -208,6 +288,7 @@ const mapStateToProps = (state) => {
         isAudioBuffering: state.playerReducer.isAudioBuffering,
         playlistId: state.nowPlayingReducer.playlistId,
         currentPlaying: state.nowPlayingReducer.currentPlaying,
+        isPlaylist: state.nowPlayingReducer.isPlaylist,
     }
 }
 
@@ -227,6 +308,9 @@ const mapDispatchToProps = (dispatch) => {
         },
         updatePlayerQueue: (playlistData) => {
             nowPlayingActions.updatePlayerQueue(playlistData);
+        },
+        selectFromPlaylist: (key) => {
+            nowPlayingActions.selectFromPlaylist(key);
         },
         playPauseToggle: () => {
             let action = playerActions.playPauseToggle();

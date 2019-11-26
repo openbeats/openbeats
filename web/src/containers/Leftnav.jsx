@@ -16,6 +16,7 @@ import {
   navclose,
   mainsearch,
 } from "../images";
+import { store } from "../store";
 
 class LeftNav extends Component {
   render() {
@@ -152,7 +153,8 @@ const mapStateToProps = state => {
 const mapDispatchToProps = dispatch => {
   return {
     push: path => {
-      dispatch(push(path));
+      if (path !== store.getState().router.location.pathname)
+        dispatch(push(path));
     },
     notify: message => {
       toastActions.showMessage(message);

@@ -13,7 +13,7 @@ export const variables = {
 export const toastConfig = () => {
   const Close = () => <i className="fas fa-times"></i>;
   return toast.configure({
-    autoClose: 2000,
+    autoClose: 3000,
     position: "bottom-right",
     className: "toast-margin-bottom",
     bodyClassName: "toast-bg-color",
@@ -21,6 +21,6 @@ export const toastConfig = () => {
     transition: Zoom,
     progressClassName: "toast-progress-bar-color",
     closeButton: <Close />,
-    pauseOnFocusLoss: false,
+    // pauseOnFocusLoss: false,
   });
 };
