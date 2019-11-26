@@ -5,6 +5,7 @@ import {
     angleright,
     mainsearch,
 } from "../images";
+import { push } from "connected-react-router";
 import { connect } from "react-redux";
 import { toastActions, searchActions } from '../actions';
 
@@ -103,6 +104,9 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
     return {
+        push: (path) => {
+            dispatch(push(path))
+        },
         featureNotify: () => {
             toastActions.featureNotify();
         },
@@ -120,6 +124,7 @@ const mapDispatchToProps = (dispatch) => {
         },
         fetchResults: () => {
             searchActions.fetchResults();
+            dispatch(push("/search"))
         },
         getKeywordSuggestion: (key) => {
             searchActions.getKeywordSuggestion(key);

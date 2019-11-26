@@ -14,38 +14,41 @@ class NowPlaying extends Component {
 
     render() {
         return (
-            <div className="playlist-display-wrapper">
+            <div className="player-queue-display-wrapper">
                 <div className="now-playing-wrapper">
                     <div className="now-playing-header">
                         <i className="fas fa-angle-double-right now-playing-head-icon-size"></i>
                         Now Playing
                     </div>
                     <div className="now-playing-body">
-                        <div className="now-playing-item hover-me">
-                            <span>
-                                {this.props.isAudioBuffering ?
-                                    <Loader
-                                        type="Rings"
-                                        color="#F32C2C"
-                                        height={50}
-                                        width={50}
-                                    />
-                                    :
-                                    this.props.isMusicPlaying ?
-                                        <i className="fas fa-pause now-playing-icon-size cursor-pointer"></i> :
-                                        <i className="fas fa-play now-playing-icon-size cursor-pointer"></i>
-                                }
-                            </span>
-                            <span className="now-playing-duration">{this.props.currentPlaying.duration}</span>
-                            <span className="now-playing-title">{this.props.currentPlaying.title}</span>
-                        </div>
+                        {this.props.currentPlaying ?
+                            <div className="now-playing-item hover-me">
+                                <span>
+                                    {this.props.isAudioBuffering ?
+                                        <Loader
+                                            type="Rings"
+                                            color="#F32C2C"
+                                            height={50}
+                                            width={50}
+                                        />
+                                        :
+                                        this.props.isMusicPlaying ?
+                                            <i className="fas fa-pause now-playing-icon-size cursor-pointer"></i> :
+                                            <i className="fas fa-play now-playing-icon-size cursor-pointer"></i>
+                                    }
+                                </span>
+                                <span className="now-playing-duration">{this.props.currentPlaying.duration}</span>
+                                <span className="now-playing-title">{this.props.currentPlaying.title}</span>
+                            </div> :
+                            <div>Your queue is empty!</div>
+                        }
                     </div>
                 </div>
                 {this.props.isPlaylist && this.props.playerQueue.length > 0 &&
                     <div className="up-next-wrapper">
                         <div className="up-next-header">
                             <i className="fas fa-angle-double-up now-playing-head-icon-size"></i> up Next
-                    </div>
+                          </div>
                         <div className="up-next-body">
                             {this.props.playerQueue.map((item, key) => (
                                 <div className="now-playing-item hover-me" key={key}>
@@ -74,8 +77,8 @@ const mapStateToProps = (state) => {
         playedSongs: map.playedSongs,
         isPlaylist: map.isPlaylist,
         playlistId: map.playlistId,
-        isPlaying: state.playerReducer.isMusicPlaying,
-        isAudioBuffering: state.playerReducer.isAudioBuffering
+        isMusicPlaying: state.playerReducer.isMusicPlaying,
+        isAudioBuffering: state.playerReducer.isAudioBuffering,
     }
 }
 

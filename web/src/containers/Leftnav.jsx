@@ -41,7 +41,7 @@ class LeftNav extends Component {
             <section className="main-nav-menus">
               <div
                 className="nav-menu"
-                onClick={() => this.props.featureNotify()}
+                onClick={() => this.props.push("/")}
               >
                 <div className="nav-menu-icon-holder">
                   <img className="nav-menu-icon-size" src={navhome} alt="" />
@@ -87,7 +87,10 @@ class LeftNav extends Component {
             </section>
             <section className="nav-horizontal-rule"></section>
             <section className="nav-playlist-holder">
-              <div className="nav-menu bg-none">
+              <div className="nav-menu cursor-pointer"
+                title="View All of Your Playlist"
+                onClick={() => this.props.push("/")}
+              >
                 <div className="nav-menu-icon-holder">
                   <img
                     className="nav-menu-icon-size"
@@ -100,28 +103,18 @@ class LeftNav extends Component {
               <ul className="playlist-content-holder">
                 <div
                   className="nav-playlist-plus-icon-holder"
+                  title="Create New Playlist"
                   onClick={() => this.props.featureNotify()}
                 >
                   <img src={navplus} alt="" srcSet="" />
                 </div>
                 <li
                   className="playlist-content-holder-text"
-                  onClick={() => this.props.featureNotify()}
+                  onClick={() => this.props.push("/playlist")}
                 >
-                  Houser
+                  Houserasf asdfasfasdfsfasdfsf
                 </li>
-                <li
-                  className="playlist-content-holder-text"
-                  onClick={() => this.props.featureNotify()}
-                >
-                  Travel Melody
-                </li>
-                <li
-                  className="playlist-content-holder-text"
-                  onClick={() => this.props.featureNotify()}
-                >
-                  Rock Collection
-                </li>
+
               </ul>
             </section>
             <section className="nav-footer-container">

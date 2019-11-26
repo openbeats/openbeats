@@ -144,6 +144,10 @@
     height: 20px;
 }
 
+.player-playlist-queue {
+    height: 20px;
+}
+
 .volume-icon {
     font-size: 20px;
     color: var(--main-master-color);
@@ -370,12 +374,18 @@
         height: 15px;
         margin-left: 15px;
     }
+
+    .player-playlist-queue {
+        height: 15px;
+        margin-left: 15px;
+    }
 }
 
 @media only screen and (min-width: 750px) {
     .minimize-mobile-toggle {
         display: none;
     }
+
     .mobile-music-notifier {
         display: none;
     }

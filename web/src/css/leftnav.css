@@ -72,6 +72,7 @@ nav {
 }
 
 .nav-menu {
+    text-decoration: none;
     display: flex;
     justify-content: space-between;
     min-width: 100%;
@@ -112,11 +113,9 @@ nav {
 }
 
 .playlist-content-holder {
-    margin-top: -20px;
-    padding-top: 10px;
+    margin-top: -10px;
     border-left: 1px solid var(--horizontal-rule-color);
     margin-left: 52px;
-    padding-left: 35px;
     text-decoration: none;
     list-style: none;
     cursor: pointer;
@@ -125,12 +124,14 @@ nav {
 }
 
 .playlist-content-holder-text {
-    padding: 10px 0 10px 0;
+    width: inherit;
+    padding: 10px 0 10px 35px;
     margin-right: 5px;
     font-size: 14px;
     color: var(--text-color-sub-1);
-    word-wrap: none;
-    overflow-x: hidden;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .playlist-content-holder-text:hover {
@@ -138,6 +139,9 @@ nav {
 }
 
 .nav-playlist-plus-icon-holder {
+    position: absolute;
+    top: -30px;
+    right: 20px;
     width: 22px;
     height: 22px;
     border-radius: 50%;
@@ -145,9 +149,6 @@ nav {
     justify-content: center;
     align-items: center;
     background: rgb(255, 255, 255, 0.2);
-    position: absolute;
-    bottom: -21px;
-    left: -11.5px;
     cursor: pointer;
 }
 
