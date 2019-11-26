@@ -1,10 +1,10 @@
 import React, { Component } from 'react';
-import { playerdownload, playerplay, master, playlistadd, } from "../images";
+import { playerdownload, playerplay, master, playlistadd, playerpause, } from "../images";
 import Loader from 'react-loader-spinner'
 import "../css/result.css"
 import { variables } from '../config'
 import { connect } from "react-redux"
-import { toastActions, coreActions, nowPlayingActions } from '../actions';
+import { toastActions, coreActions, nowPlayingActions, playerActions } from '../actions';
 
 class Result extends Component {
 
@@ -29,7 +29,7 @@ class Result extends Component {
                     <div className="search-result-container">
                         {this.props.searchResults.map((item, key) => (
 
-                            <div className={`result-node ${this.state.isPlaying && this.playId === item.videoId ? "highlight-current-play" : ""}`} key={key}>
+                            <div className={`result-node ${!this.props.isPlaylist && this.props.currentPlaying && this.props.currentPlaying.videoId === item.videoId ? "highlight-current-play" : ""}`} key={key}>
                                 <div className="result-node-thumb">
                                     <img src={item.thumbnail} alt="" />
                                 </div>
@@ -42,11 +42,30 @@ class Result extends Component {
                                             {item.duration}
                                         </div>
                                         <div className="result-node-actions">
-                                            <img onClick={async (e) => {
-                                                this.setState({ isPlaying: true })
-                                                this.playId = item.videoId
-                                                await this.props.updateCurrentPlaying(item)
-                                            }} className="action-image-size play-icon-result cursor-pointer" src={playerplay} alt="" />
+                                            {!this.props.isPlaylist && this.props.currentPlaying && this.props.currentPlaying.videoId === item.videoId ?
+                                                !this.props.isAudioBuffering ?
+                                                    this.props.isMusicPlaying ?
+                                                        <img onClick={async (e) => {
+                                                            await this.props.playPauseToggle()
+                                                        }} className="action-image-size play-icon-result cursor-pointer" src={playerpause} alt="" />
+                                                        :
+                                                        <img onClick={async (e) => {
+                                                            await this.props.playPauseToggle()
+                                                        }} className="action-image-size play-icon-result cursor-pointer" src={playerplay} alt="" />
+                                                    :
+                                                    <Loader
+                                                        type="Rings"
+                                                        color="#F32C2C"
+                                                        height={30}
+                                                        width={30}
+                                                    />
+                                                :
+                                                <img onClick={async (e) => {
+                                                    await this.props.updateCurrentPlaying(item)
+                                                }} className="action-image-size play-icon-result cursor-pointer" src={playerplay} alt="" />
+                                            }
+
+
                                             <a download
                                                 onClick={async (e) => {
                                                     this.setState({ downloadProcess: true })
@@ -114,6 +133,10 @@ const mapStateToProps = (state) => {
     return {
         searchResults: state.searchReducer.searchResults,
         isSearching: state.searchReducer.isSearching,
+        currentPlaying: state.nowPlayingReducer.currentPlaying,
+        isPlaylist: state.nowPlayingReducer.isPlaylist,
+        isMusicPlaying: state.playerReducer.isMusicPlaying,
+        isAudioBuffering: state.playerReducer.isAudioBuffering,
     }
 
 }
@@ -131,7 +154,10 @@ const mapDispatchToProps = (dispatch) => {
         },
         setCurrentAction: (action) => {
             dispatch(coreActions.setCurrentAction(action))
-        }
+        },
+        playPauseToggle: () => {
+            dispatch(playerActions.playPauseToggle())
+        },
 
 
     }

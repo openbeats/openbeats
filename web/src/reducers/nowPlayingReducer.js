@@ -5,10 +5,13 @@ const initialState = {
     currentPlaying: null,
     playlistName: null,
     playlistId: null,
-    playlistThumbnail: null
+    playlistThumbnail: null,
+    isNextAvailable: false,
+    isPreviousAvailable: false,
+    playlistData: null,
 }
 
-const nowPlayingREducer = (state = initialState, action) => {
+const nowPlayingReducer = (state = initialState, action) => {
     switch (action.type) {
         case "UPDATE_CURRENT_PLAYING":
             state = {
@@ -33,4 +36,4 @@ const nowPlayingREducer = (state = initialState, action) => {
 
 }
 
-export default nowPlayingREducer;
+export default nowPlayingReducer;

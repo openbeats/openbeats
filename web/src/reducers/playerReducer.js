@@ -13,8 +13,6 @@ const initialState = {
     songTitle: "OpenBeats Stream Unlimited Music!",
     id: null,
     isAudioBuffering: false,
-    isPreviousAvailable: false,
-    isNextAvailable: false,
     downloadProcess: false
 }
 

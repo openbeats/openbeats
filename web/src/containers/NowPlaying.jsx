@@ -62,6 +62,25 @@ class NowPlaying extends Component {
                         </div>
                     </div>
                 }
+                {this.props.isPlaylist && this.props.playedSongs.length > 1 &&
+                    <div className="up-next-wrapper">
+                        <div className="up-next-header">
+                            <i className="fas fa-angle-double-down now-playing-head-icon-size"></i> Played Songs
+                          </div>
+                        <div className="up-next-body">
+                            {this.props.playedSongs.map((item, key) => (
+                                key + 1 < this.props.playedSongs.length &&
+                                <div className="now-playing-item hover-me" key={key}>
+                                    <span>
+                                        <i className="fas fa-play now-playing-icon-size cursor-pointer"></i>
+                                    </span>
+                                    <span className="now-playing-duration">{item.duration}</span>
+                                    <span className="now-playing-title">{item.title}</span>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                }
             </div>
         )
     }
