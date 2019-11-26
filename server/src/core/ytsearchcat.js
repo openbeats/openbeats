@@ -6,9 +6,7 @@ export default async (queryString, first = false) => {
   const baseQuery = ".yt-lockup-video";
   const removables = [".yt-lockup-channel", ".feed-item-container"];
   let query = queryString.trim().replace(/ /g, "+");
-  console.log(query);
   const searchLink = `https://www.youtube.com/results?search_query=${query}`;
-  console.log(searchLink);
   await fetchRetry(searchLink, 2)
     .then(async res => await res.text())
     .then(res => {

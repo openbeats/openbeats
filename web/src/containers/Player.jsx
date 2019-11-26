@@ -90,7 +90,12 @@ class Player extends Component {
                             </div>
                         </section>
                         <section className="player-control-core">
-                            <div className={`next-previous ${!this.props.isPreviousAvailable ? "fed-up" : ""}`}>
+                            <div
+                                onClick={() => {
+                                    this.props.playPreviousSong()
+
+                                }}
+                                className={`next-previous ${!this.props.isPreviousAvailable ? "fed-up" : ""}`}>
                                 <img src={playerprevious} alt="" srcSet="" />
                             </div>
                             <div className="cursor-pointer play-pause-toggle" >{
@@ -272,7 +277,10 @@ const mapDispatchToProps = (dispatch) => {
         },
         playNextSong: () => {
             nowPlayingActions.playNextSong();
-        }
+        },
+        playPreviousSong: () => {
+            nowPlayingActions.playPreviousSong();
+        },
     }
 }
 

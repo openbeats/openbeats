@@ -39,37 +39,20 @@ class NowPlaying extends Component {
                                 </span>
                                 <span className="now-playing-duration">{this.props.currentPlaying.duration}</span>
                                 <span className="now-playing-title">{this.props.currentPlaying.title}</span>
-                            </div> :
+                            </div>
+                            :
                             <div>Your queue is empty!</div>
                         }
                     </div>
                 </div>
-                {this.props.isPlaylist && this.props.playerQueue.length > 0 &&
+                {this.props.isPlaylist &&
                     <div className="up-next-wrapper">
                         <div className="up-next-header">
                             <i className="fas fa-angle-double-up now-playing-head-icon-size"></i> up Next
                           </div>
                         <div className="up-next-body">
                             {this.props.playerQueue.map((item, key) => (
-                                <div className="now-playing-item hover-me" key={key}>
-                                    <span>
-                                        <i className="fas fa-play now-playing-icon-size cursor-pointer"></i>
-                                    </span>
-                                    <span className="now-playing-duration">{item.duration}</span>
-                                    <span className="now-playing-title">{item.title}</span>
-                                </div>
-                            ))}
-                        </div>
-                    </div>
-                }
-                {this.props.isPlaylist && this.props.playedSongs.length > 1 &&
-                    <div className="up-next-wrapper">
-                        <div className="up-next-header">
-                            <i className="fas fa-angle-double-down now-playing-head-icon-size"></i> Played Songs
-                          </div>
-                        <div className="up-next-body">
-                            {this.props.playedSongs.map((item, key) => (
-                                key + 1 < this.props.playedSongs.length &&
+                                key > this.props.currentIndex &&
                                 <div className="now-playing-item hover-me" key={key}>
                                     <span>
                                         <i className="fas fa-play now-playing-icon-size cursor-pointer"></i>
@@ -92,8 +75,8 @@ const mapStateToProps = (state) => {
     let map = state.nowPlayingReducer;
     return {
         currentPlaying: map.currentPlaying,
+        currentIndex: map.currentIndex,
         playerQueue: map.playerQueue,
-        playedSongs: map.playedSongs,
         isPlaylist: map.isPlaylist,
         playlistId: map.playlistId,
         isMusicPlaying: state.playerReducer.isMusicPlaying,

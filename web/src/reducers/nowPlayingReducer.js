@@ -1,14 +1,13 @@
 const initialState = {
     isPlaylist: false,
-    playerQueue: [],
-    playedSongs: [],
     currentPlaying: null,
     playlistName: null,
     playlistId: null,
     playlistThumbnail: null,
     isNextAvailable: false,
     isPreviousAvailable: false,
-    playlistData: null,
+    currentPlayIndex: 0,
+    playerQueue: [],
 }
 
 const nowPlayingReducer = (state = initialState, action) => {
