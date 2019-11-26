@@ -5,9 +5,9 @@ import "react-loader-spinner/dist/loader/css/react-spinner-loader.css";
 import "../css/commons.css";
 
 export const variables = {
-  // "baseUrl": "https://openbeats-s1.herokuapp.com",
-  // "baseUrl": "https://openbeats-s2.herokuapp.com",
-  baseUrl: "http://localhost:2000",
+  // baseUrl: "https://openbeats-s1.herokuapp.com",
+  baseUrl: "https://openbeats-s2.herokuapp.com",
+  // baseUrl: "http://localhost:2000",
 };
 
 export const toastConfig = () => {

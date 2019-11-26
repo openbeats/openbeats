@@ -79,7 +79,33 @@ export function reQueue() {
 
 export function playNextSong() {
     let state = store.getState().nowPlayingReducer;
-    if (state.playerQueue.length > 0 && state.isPlaylist) {
+    if (state.isPlaylist && state.playerQueue.length > 0) {
+        let queue = state.playerQueue;
+        let playedQueue = state.playedSongs;
+        let audioData = queue.shift();
+        let isNextAvailable = queue.length > 0 ? true : false
+        let isPreviousAvailable = playedQueue.length + 1 > 1 ? true : false
+
+        store.dispatch({
+            type: "UPDATE_PLAYER_QUEUE",
+            payload: {
+                playerQueue: queue,
+                currentPlaying: audioData,
+                playedSongs: [
+                    ...state.playedSongs,
+                    audioData
+                ],
+                isNextAvailable,
+                isPreviousAvailable
+            }
+        })
+        playerActions.initPlayer(audioData)
+    }
+}
+
+export function playPreviousSong() {
+    let state = store.getState().nowPlayingReducer;
+    if (state.isPlaylist && state.playedSongs.length > 1) {
         let queue = state.playerQueue;
         let playedQueue = state.playedSongs;
         let audioData = queue.shift();
@@ -108,5 +134,4 @@ export function clearQueue() {
         type: "CLEAR_PLAYER_QUEUE"
     })
     playerActions.resetPlayer()
-
 }
