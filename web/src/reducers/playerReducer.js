@@ -13,7 +13,7 @@ const initialState = {
     songTitle: "OpenBeats Stream Unlimited Music!",
     id: null,
     isAudioBuffering: false,
-    downloadProcess: false
+    downloadProcess: false,
 }
 
 const playerReducer = (state = initialState, action) => {
