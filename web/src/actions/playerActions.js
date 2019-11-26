@@ -162,15 +162,14 @@ export function seekAudio(e) {
 
 export function musicEndHandler() {
     let state = store.getState().nowPlayingReducer;
-    if (state.isPlaylist && state.playerQueue.length > 0) {
-        nowPlayingActions.playNextSong();
-    } else {
+    if (state.isPlaylist && state.playerQueue.length === state.currentIndex + 1) {
         if (state.isPlaylist) {
             nowPlayingActions.reQueue();
         } else {
-            // store.dispatch(await resetPlayer())
             nowPlayingActions.updateCurrentPlaying(state.currentPlaying, false)
         }
+    } else {
+        nowPlayingActions.playNextSong();
     }
 }
 
@@ -218,30 +217,34 @@ export async function initPlayer(audioData, playMusic = true) {
         .then(res => res.json())
         .then(async res => {
             if (res.status) {
-                await store.dispatch({
-                    type: "LOAD_AUDIO_DATA",
-                    payload: {
-                        masterUrl: res.link, fallBackUrl
-                    }
-                })
-                await startPlayer(playMusic)
+                if (store.getState().nowPlayingReducer.currentPlaying.videoId === audioData.videoId) {
+                    await store.dispatch({
+                        type: "LOAD_AUDIO_DATA",
+                        payload: {
+                            masterUrl: res.link, fallBackUrl
+                        }
+                    })
+                    await startPlayer(playMusic)
+                }
             } else {
                 await fetch(fallBackUrl)
                     .then(async res => {
                         if (res.status === 200) {
-                            await store.dispatch({
-                                type: "LOAD_AUDIO_DATA",
-                                payload: { masterUrl: res.link, fallBackUrl }
-                            })
-                            await startPlayer(playMusic)
+                            if (store.getState().nowPlayingReducer.currentPlaying.videoId === audioData.videoId) {
+                                await store.dispatch({
+                                    type: "LOAD_AUDIO_DATA",
+                                    payload: { masterUrl: res.link, fallBackUrl }
+                                })
+                                await startPlayer(playMusic)
+                            }
                         } else {
                             toastActions.showMessage("Requested audio is not availabe right now! try alternate search!")
-                            await store.dispatch(musicEndHandler())
+                            await store.dispatch(resetPlayer())
                         }
                     })
                     .catch(async err => {
                         toastActions.showMessage("Requested audio is not availabe right now! try alternate search!")
-                        await store.dispatch(musicEndHandler())
+                        await store.dispatch(resetPlayer())
                     })
             }
         })
