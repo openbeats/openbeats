@@ -162,15 +162,14 @@ export function seekAudio(e) {
 
 export function musicEndHandler() {
     let state = store.getState().nowPlayingReducer;
-    if (state.isPlaylist && state.playerQueue.length === state.currentIndex + 1) {
-        if (state.isPlaylist) {
+    if (state.isPlaylist)
+        if (state.isPlaylist && state.playerQueue.length === state.currentIndex + 1)
             nowPlayingActions.reQueue();
-        } else {
-            nowPlayingActions.updateCurrentPlaying(state.currentPlaying, false)
-        }
-    } else {
-        nowPlayingActions.playNextSong();
-    }
+        else
+            nowPlayingActions.playNextSong();
+    else
+        nowPlayingActions.updateCurrentPlaying(state.currentPlaying, false)
+
 }
 
 export async function resetPlayer() {
@@ -239,16 +238,22 @@ export async function initPlayer(audioData, playMusic = true) {
                             }
                         } else {
                             toastActions.showMessage("Requested audio is not availabe right now! try alternate search!")
-                            await store.dispatch(resetPlayer())
+                            await store.dispatch(await resetPlayer())
+                            nowPlayingActions.clearQueue();
                         }
                     })
                     .catch(async err => {
-                        toastActions.showMessage("Requested audio is not availabe right now! try alternate search!")
-                        await store.dispatch(resetPlayer())
+                        toastActions.showMessage("Requested audio is not availabe right now!" + String(err))
+                        await store.dispatch(await resetPlayer())
+                        nowPlayingActions.clearQueue();
                     })
             }
         })
-        .catch(err => console.error(err))
+        .catch(async err => {
+            toastActions.showMessage("Requested audio is not availabe right now! " + String(err))
+            await store.dispatch(await resetPlayer());
+            nowPlayingActions.clearQueue();
+        })
 
     return true
 }
