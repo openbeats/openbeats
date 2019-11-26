@@ -1,8 +1,10 @@
-.playlist-display-wrapper {
+.player-queue-display-wrapper {
     width: 100%;
-    height: inherit;
+    height: auto;
     background: inherit;
     padding: 10px 10px 10px 20px;
+    display: flex;
+    flex-direction: column;
 }
 
 .now-playing-icon-size {
@@ -19,6 +21,7 @@
 .now-playing-wrapper,
 .up-next-wrapper {
     margin-bottom: 10px;
+    width: 100%;
 }
 
 
@@ -54,6 +57,7 @@
     overflow: hidden;
     text-overflow: ellipsis;
     padding: 10px 5px 20px 10px;
+    cursor: pointer;
 
 }
 

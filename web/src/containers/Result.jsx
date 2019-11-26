@@ -4,7 +4,7 @@ import Loader from 'react-loader-spinner'
 import "../css/result.css"
 import { variables } from '../config'
 import { connect } from "react-redux"
-import { toastActions, playerActions, coreActions } from '../actions';
+import { toastActions, coreActions, nowPlayingActions } from '../actions';
 
 class Result extends Component {
 
@@ -45,7 +45,7 @@ class Result extends Component {
                                             <img onClick={async (e) => {
                                                 this.setState({ isPlaying: true })
                                                 this.playId = item.videoId
-                                                await this.props.initPlayer(item)
+                                                await this.props.updateCurrentPlaying(item)
                                             }} className="action-image-size play-icon-result cursor-pointer" src={playerplay} alt="" />
                                             <a download
                                                 onClick={async (e) => {
@@ -123,8 +123,8 @@ const mapDispatchToProps = (dispatch) => {
         featureNotify: () => {
             toastActions.featureNotify();
         },
-        initPlayer: (audioData) => {
-            playerActions.initPlayer(audioData)
+        updateCurrentPlaying: (audioData) => {
+            nowPlayingActions.updateCurrentPlaying(audioData)
         },
         notify: (message) => {
             toastActions.showMessage(message)

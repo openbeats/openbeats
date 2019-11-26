@@ -4,6 +4,8 @@ import Loader from 'react-loader-spinner';
 import { toastActions, playerActions } from "../actions";
 import { connect } from "react-redux";
 import { push } from "connected-react-router";
+import { Link } from "react-router-dom";
+
 
 import {
     playerprevious,
@@ -156,13 +158,15 @@ class Player extends Component {
                                 </div>
                             </div>
                             <div>
-                                <img
-                                    src={playerqueue}
-                                    className="cursor-pointer"
-                                    onClick={() => {
-                                        this.props.featureNotify()
-                                    }}
-                                    alt="" srcSet="" />
+                                <Link to="/nowplaying">
+                                    <img
+                                        src={playerqueue}
+                                        className="cursor-pointer player-playlist-queue"
+                                        onClick={() => {
+                                            // this.props.featureNotify()
+                                        }}
+                                        alt="" srcSet="" />
+                                </Link>
                             </div>
 
                         </section>
@@ -203,6 +207,7 @@ class Player extends Component {
 const mapStateToProps = (state) => {
     return {
         isMusicPlaying: state.playerReducer.isMusicPlaying,
+        isAudioBuffering: state.playerReducer.isAudioBuffering,
         isMuted: state.playerReducer.isMuted,
         playerVolume: state.playerReducer.playerVolume,
         currentProgress: state.playerReducer.currentProgress,
@@ -212,7 +217,6 @@ const mapStateToProps = (state) => {
         isNextAvailable: state.playerReducer.isNextAvailable,
         thumbnail: state.playerReducer.thumbnail,
         songTitle: state.playerReducer.songTitle,
-        isAudioBuffering: state.playerReducer.isAudioBuffering,
         downloadProcess: state.playerReducer.downloadProcess,
         isTyping: state.searchReducer.isTyping,
     }
@@ -262,7 +266,7 @@ const mapDispatchToProps = (dispatch) => {
         },
         musicEndHandler: () => {
             console.log("called");
-            
+
             playerActions.musicEndHandler();
         },
         playerDownloadHandler: (e) => {

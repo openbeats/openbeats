@@ -2,7 +2,7 @@ const initialState = {
     isPlaylist: false,
     playerQueue: [],
     playedSongs: [],
-    currentPlaying: {},
+    currentPlaying: null,
     playlistName: null,
     playlistId: null,
     playlistThumbnail: null

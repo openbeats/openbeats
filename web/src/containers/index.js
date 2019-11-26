@@ -1,3 +1,4 @@
+import Main from "./Main";
 import Home from "./Home";
 import LeftNav from "./LeftNav";
 import Player from "./Player";
@@ -9,6 +10,7 @@ import PlaylistDisplay from "./PlaylistDisplay";
 
 
 export {
+    Main,
     Home,
     LeftNav,
     Player,
