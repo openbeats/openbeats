@@ -6,7 +6,7 @@ export function updateCurrentPlaying(audioData, playMusic = true) {
         type: "UPDATE_CURRENT_PLAYING",
         payload: {
             currentPlaying: audioData,
-            playedSongs: [],
+            currentIndex: 0,
             playerQueue: [],
             playlistId: null,
             isPlaylist: false,
@@ -19,113 +19,92 @@ export function updateCurrentPlaying(audioData, playMusic = true) {
     playerActions.initPlayer(audioData, playMusic);
 }
 
-export function updatePlayerQueue(queueData) {
-    const playlistData = { ...queueData, playlistData: [...queueData.playlistData] }
-    let songsList = [...queueData.playlistData];
-    let audioData = songsList.shift()
-    let playlistId = queueData.playlistId;
-    let playlistName = queueData.playlistName;
-    let playlistThumbnail = queueData.playlistThumbnail;
-    let isNextAvailable = songsList.length > 0 ? true : false
-    let isPreviousAvailable = false
+export function updatePlayerQueue(playlistData) {
+    const playerQueue = [...playlistData.playlistData]
+    const audioData = playerQueue[0]
+    const playlistId = playlistData.playlistId;
+    const playlistName = playlistData.playlistName;
+    const playlistThumbnail = playlistData.playlistThumbnail;
+    const isNextAvailable = playerQueue.length - 1 > 0 ? true : false
+    const isPreviousAvailable = false
     store.dispatch({
         type: "UPDATE_PLAYER_QUEUE",
         payload: {
             isPlaylist: true,
-            playlistId: playlistId,
-            playerQueue: songsList,
+            playlistId,
+            playerQueue,
+            currentIndex: 0,
             currentPlaying: audioData,
-            playedSongs: [
-                audioData
-            ],
             playlistName,
             playlistThumbnail,
             isNextAvailable,
             isPreviousAvailable,
-            playlistData
         }
     })
     playerActions.initPlayer(audioData)
+
+
 }
+
 export function reQueue() {
-    let queueData = store.getState().nowPlayingReducer.playlistData;
-    const playlistData = { ...queueData, playlistData: [...queueData.playlistData] };
-    let songsList = [...queueData.playlistData];
-    let audioData = songsList.shift()
-    let playlistId = queueData.playlistId;
-    let playlistName = queueData.playlistName;
-    let playlistThumbnail = queueData.playlistThumbnail;
-    let isNextAvailable = songsList.length > 0 ? true : false
-    let isPreviousAvailable = false
+    let state = store.getState().nowPlayingReducer;
+    const audioData = state.playerQueue[0]
+    const isNextAvailable = state.playerQueue.length > 0 ? true : false
+    const isPreviousAvailable = false
     store.dispatch({
         type: "UPDATE_PLAYER_QUEUE",
         payload: {
-            isPlaylist: true,
-            playlistId: playlistId,
-            playerQueue: songsList,
             currentPlaying: audioData,
-            playedSongs: [
-                audioData
-            ],
-            playlistName,
-            playlistThumbnail,
+            currentIndex: 0,
             isNextAvailable,
             isPreviousAvailable,
-            playlistData
         }
     })
     playerActions.initPlayer(audioData, false)
 }
 
 export function playNextSong() {
+
     let state = store.getState().nowPlayingReducer;
-    if (state.isPlaylist && state.playerQueue.length > 0) {
-        let queue = state.playerQueue;
-        let playedQueue = state.playedSongs;
-        let audioData = queue.shift();
-        let isNextAvailable = queue.length > 0 ? true : false
-        let isPreviousAvailable = playedQueue.length + 1 > 1 ? true : false
+    if (state.isPlaylist && state.currentIndex + 1 < state.playerQueue.length) {
+        let audioData = state.playerQueue[state.currentIndex + 1];
+        let isNextAvailable = state.playerQueue.length - (state.currentIndex + 2) > 0 ? true : false;
+        let isPreviousAvailable = state.playerQueue.length + 1 > 1 ? true : false
+
 
         store.dispatch({
             type: "UPDATE_PLAYER_QUEUE",
             payload: {
-                playerQueue: queue,
+                currentIndex: state.currentIndex + 1,
                 currentPlaying: audioData,
-                playedSongs: [
-                    ...state.playedSongs,
-                    audioData
-                ],
                 isNextAvailable,
                 isPreviousAvailable
             }
         })
         playerActions.initPlayer(audioData)
+
     }
 }
-
 export function playPreviousSong() {
     let state = store.getState().nowPlayingReducer;
-    if (state.isPlaylist && state.playedSongs.length > 1) {
-        let queue = state.playerQueue;
-        let playedQueue = state.playedSongs;
-        let audioData = queue.shift();
-        let isNextAvailable = queue.length > 0 ? true : false
-        let isPreviousAvailable = playedQueue.length + 1 > 1 ? true : false
+
+    if (state.isPlaylist && state.currentIndex - 1 >= 0) {
+        let audioData = state.playerQueue[state.currentIndex - 1];
+        let isNextAvailable = state.playerQueue.length - (state.currentIndex) > 0 ? true : false;
+        let isPreviousAvailable = state.currentIndex - 1 !== 0 ? true : false
+
 
         store.dispatch({
             type: "UPDATE_PLAYER_QUEUE",
             payload: {
-                playerQueue: queue,
+                currentIndex: state.currentIndex - 1,
                 currentPlaying: audioData,
-                playedSongs: [
-                    ...state.playedSongs,
-                    audioData
-                ],
                 isNextAvailable,
                 isPreviousAvailable
             }
         })
         playerActions.initPlayer(audioData)
+
     }
 }
 
