@@ -1,7 +1,7 @@
 import React, { Component, Fragment } from 'react';
 import "../css/player.css";
 import Loader from 'react-loader-spinner';
-import { toastActions, playerActions } from "../actions";
+import { toastActions, playerActions, nowPlayingActions } from "../actions";
 import { connect } from "react-redux";
 import { push } from "connected-react-router";
 import { Link } from "react-router-dom";
@@ -116,7 +116,10 @@ class Player extends Component {
                                     />
                             }
                             </div>
-                            <div className={`next-previous ${!this.props.isNextAvailable ? "fed-up" : ""}`}>
+                            <div onClick={() => {
+                                this.props.playNextSong()
+
+                            }} className={`next-previous ${!this.props.isNextAvailable ? "fed-up" : ""}`}>
                                 <img src={playernext} alt="" srcSet="" />
                             </div>
                         </section>
@@ -162,9 +165,6 @@ class Player extends Component {
                                     <img
                                         src={playerqueue}
                                         className="cursor-pointer player-playlist-queue"
-                                        onClick={() => {
-                                            // this.props.featureNotify()
-                                        }}
                                         alt="" srcSet="" />
                                 </Link>
                             </div>
@@ -213,8 +213,8 @@ const mapStateToProps = (state) => {
         currentProgress: state.playerReducer.currentProgress,
         currentTimeText: state.playerReducer.currentTimeText,
         durationTimeText: state.playerReducer.durationTimeText,
-        isPreviousAvailable: state.playerReducer.isPreviousAvailable,
-        isNextAvailable: state.playerReducer.isNextAvailable,
+        isPreviousAvailable: state.nowPlayingReducer.isPreviousAvailable,
+        isNextAvailable: state.nowPlayingReducer.isNextAvailable,
         thumbnail: state.playerReducer.thumbnail,
         songTitle: state.playerReducer.songTitle,
         downloadProcess: state.playerReducer.downloadProcess,
@@ -265,12 +265,13 @@ const mapDispatchToProps = (dispatch) => {
             dispatch(action)
         },
         musicEndHandler: () => {
-            console.log("called");
-
             playerActions.musicEndHandler();
         },
         playerDownloadHandler: (e) => {
             playerActions.playerDownloadHandler(e);
+        },
+        playNextSong: () => {
+            nowPlayingActions.playNextSong();
         }
     }
 }

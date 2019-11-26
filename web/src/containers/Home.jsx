@@ -1,7 +1,9 @@
 import React, { Component } from 'react'
 import { toastActions, coreActions } from "../actions";
+import "../css/home.css"
 import { connect } from "react-redux";
 import { push } from "connected-react-router";
+import { musicDummy } from '../images';
 
 
 class Home extends Component {
@@ -10,8 +12,12 @@ class Home extends Component {
     }
     render() {
         return (
-            <div>
-                Home
+            <div className="home-wrapper">
+                <img src={musicDummy} alt="" srcSet="" />
+                <div>
+                    Home screen content is under development! <br />
+                    Give a try to our new playlist feature.. (your playlist - leftnavbar)
+                </div>
             </div>
         )
     }

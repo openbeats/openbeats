@@ -14,6 +14,7 @@ import {
   navplus,
   hamburger,
   navclose,
+  mainsearch,
 } from "../images";
 
 class LeftNav extends Component {
@@ -77,6 +78,15 @@ class LeftNav extends Component {
               </div>
               <div
                 className="nav-menu"
+                onClick={() => this.props.push("/search")}
+              >
+                <div className="nav-menu-icon-holder">
+                  <img className="nav-menu-icon-size" src={mainsearch} alt="" />
+                </div>
+                <p className="nav-menu-text">Search</p>
+              </div>
+              <div
+                className="nav-menu"
                 onClick={() => this.props.featureNotify()}
               >
                 <div className="nav-menu-icon-holder">
@@ -112,7 +122,7 @@ class LeftNav extends Component {
                   className="playlist-content-holder-text"
                   onClick={() => this.props.push("/playlist")}
                 >
-                  Houserasf asdfasfasdfsfasdfsf
+                  Beauty and the Beast
                 </li>
 
               </ul>

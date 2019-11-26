@@ -162,23 +162,24 @@ export function seekAudio(e) {
 
 export function musicEndHandler() {
     let state = store.getState().nowPlayingReducer;
-    console.log("here");
-    console.log(state);
-
     if (state.isPlaylist && state.playerQueue.length > 0) {
-        console.log("playing next song");
         nowPlayingActions.playNextSong();
     } else {
-        store.dispatch(resetPlayer())
+        if (state.isPlaylist) {
+            nowPlayingActions.reQueue();
+        } else {
+            // store.dispatch(await resetPlayer())
+            nowPlayingActions.updateCurrentPlaying(state.currentPlaying, false)
+        }
     }
 }
 
-export function resetPlayer() {
+export async function resetPlayer() {
     let payload = {}
     const player = document.getElementById("music-player");
     const source1 = document.getElementById("audio-source-1");
     const source2 = document.getElementById("audio-source-2");
-    player.pause()
+    await player.pause()
     player.currentTime = 0;
     source1.src = ""
     source2.src = ""
@@ -200,8 +201,8 @@ export function resetPlayer() {
     }
 }
 
-export async function initPlayer(audioData) {
-    await store.dispatch(resetPlayer())
+export async function initPlayer(audioData, playMusic = true) {
+    await store.dispatch(await resetPlayer())
     await store.dispatch({
         type: 'LOAD_AUDIO_DATA',
         payload: {
@@ -217,22 +218,22 @@ export async function initPlayer(audioData) {
         .then(res => res.json())
         .then(async res => {
             if (res.status) {
-                store.dispatch({
+                await store.dispatch({
                     type: "LOAD_AUDIO_DATA",
                     payload: {
                         masterUrl: res.link, fallBackUrl
                     }
                 })
-                await startPlayer()
+                await startPlayer(playMusic)
             } else {
                 await fetch(fallBackUrl)
                     .then(async res => {
                         if (res.status === 200) {
-                            store.dispatch({
+                            await store.dispatch({
                                 type: "LOAD_AUDIO_DATA",
                                 payload: { masterUrl: res.link, fallBackUrl }
                             })
-                            await startPlayer()
+                            await startPlayer(playMusic)
                         } else {
                             toastActions.showMessage("Requested audio is not availabe right now! try alternate search!")
                             await store.dispatch(musicEndHandler())
@@ -249,7 +250,7 @@ export async function initPlayer(audioData) {
     return true
 }
 
-export async function startPlayer() {
+export async function startPlayer(shallIPlay = true) {
     let state = store.getState().playerReducer
     const player = document.getElementById("music-player");
     const source1 = document.getElementById("audio-source-1");
@@ -257,10 +258,12 @@ export async function startPlayer() {
     source1.src = state.masterUrl
     source2.src = state.fallBackUrl
     await player.load();
-    await player.play();
+    if (shallIPlay) {
+        await player.play();
+    }
     await store.dispatch({
         type: "LOAD_AUDIO_DATA",
-        payload: { isMusicPlaying: true, isAudioBuffering: false }
+        payload: { isMusicPlaying: shallIPlay, isAudioBuffering: false }
     })
     return true
 }
