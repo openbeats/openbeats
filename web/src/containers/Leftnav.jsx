@@ -29,7 +29,7 @@ class LeftNav extends Component {
             <img
               className="cursor-pointer"
               onClick={() => {
-                window.location.reload();
+                window.open("/", "_self")
               }}
               src={masterLogo}
               alt=""
