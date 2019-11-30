@@ -58,7 +58,7 @@ class Player extends Component {
     render() {
         return (
             <Fragment>
-                <div className="player-wrapper" id="player-wrapper">
+                <div className="player-wrapper " id="player-wrapper">
                     <audio id="music-player"
                         onLoadedMetadata={() => this.props.setTotalDuration()}
                         onEnded={(e) => this.props.musicEndHandler()}

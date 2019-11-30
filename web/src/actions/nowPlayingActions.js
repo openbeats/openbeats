@@ -19,31 +19,28 @@ export function updateCurrentPlaying(audioData, playMusic = true) {
     playerActions.initPlayer(audioData, playMusic);
 }
 
-export function updatePlayerQueue(playlistData) {
+export async function updatePlayerQueue(playlistData, key = 0) {
     const playerQueue = [...playlistData.playlistData]
-    const audioData = playerQueue[0]
     const playlistId = playlistData.playlistId;
     const playlistName = playlistData.playlistName;
     const playlistThumbnail = playlistData.playlistThumbnail;
     const isNextAvailable = playerQueue.length - 1 > 0 ? true : false
     const isPreviousAvailable = false
-    store.dispatch({
+    await store.dispatch({
         type: "UPDATE_PLAYER_QUEUE",
         payload: {
             isPlaylist: true,
             playlistId,
             playerQueue,
             currentIndex: 0,
-            currentPlaying: audioData,
             playlistName,
+            currentPlaying: playerQueue[key],
             playlistThumbnail,
             isNextAvailable,
             isPreviousAvailable,
         }
     })
-    playerActions.initPlayer(audioData)
-
-
+    selectFromPlaylist(key)
 }
 
 export function reQueue() {
@@ -63,17 +60,14 @@ export function reQueue() {
     playerActions.initPlayer(audioData, false)
 }
 
-export function playNextSong() {
+export async function playNextSong() {
 
     let state = store.getState().nowPlayingReducer;
     if (state.isPlaylist && state.currentIndex + 1 < state.playerQueue.length) {
         let audioData = state.playerQueue[state.currentIndex + 1];
         let isNextAvailable = state.playerQueue.length - (state.currentIndex + 2) > 0 ? true : false;
         let isPreviousAvailable = state.currentIndex + 1 > 0 ? true : false
-
-
-
-        store.dispatch({
+        await store.dispatch({
             type: "UPDATE_PLAYER_QUEUE",
             payload: {
                 currentIndex: state.currentIndex + 1,
@@ -87,7 +81,7 @@ export function playNextSong() {
     }
 }
 
-export function playPreviousSong() {
+export async function playPreviousSong() {
     let state = store.getState().nowPlayingReducer;
 
     if (state.isPlaylist && state.currentIndex - 1 >= 0) {
@@ -95,8 +89,7 @@ export function playPreviousSong() {
         let isNextAvailable = state.playerQueue.length - (state.currentIndex) > 0 ? true : false;
         let isPreviousAvailable = state.currentIndex - 1 !== 0 ? true : false
 
-
-        store.dispatch({
+        await store.dispatch({
             type: "UPDATE_PLAYER_QUEUE",
             payload: {
                 currentIndex: state.currentIndex - 1,
@@ -110,7 +103,7 @@ export function playPreviousSong() {
     }
 }
 
-export function selectFromPlaylist(key) {
+export async function selectFromPlaylist(key) {
 
     let state = store.getState().nowPlayingReducer;
 
@@ -121,7 +114,7 @@ export function selectFromPlaylist(key) {
     let isPreviousAvailable = key > 0 ? true : false
 
 
-    store.dispatch({
+    await store.dispatch({
         type: "UPDATE_PLAYER_QUEUE",
         payload: {
             currentIndex: key,
@@ -130,6 +123,7 @@ export function selectFromPlaylist(key) {
             isPreviousAvailable
         }
     })
+
     playerActions.initPlayer(audioData)
 
 }

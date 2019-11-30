@@ -4,17 +4,17 @@
   --main-bg-color: #242020;
   --main-nav-bg-color: #242424;
   --main-master-color: #F32C2C;
-  --scroll-track-bg-color: rgba(255, 253, 253, 0.3);
-  --scroll-track-thumb-color: rgb(50, 44, 44, 0.8);
-  --scroll-track-thumb-color-hover: rgb(36, 36, 36, 0.6);
-  --nav-menu-hover-color: rgb(112, 112, 112, 0.2);
+  --scroll-track-bg-color: rgb(56, 45, 45);
+  --scroll-track-thumb-color: #5e3737;
+  --scroll-track-thumb-color-hover: rgba(75, 72, 72, 0.8);
+  --nav-menu-hover-color: rgba(94, 66, 66, 0.2);
   --text-color-main: #C1CCCC;
   --text-color-sub-1: #999992;
   --text-color-sub-2: #707070;
   --horizontal-rule-color: #707070;
   --brigth-hover: #cccccc;
-  --progress-bar-bg-color: #494343;
   --search-input-bg-color: rgba(112, 106, 106, 0.1);
+  --progress-bar-bg-color: #363333;
   --progress-bar-slider-thumb: #cccccc;
   --search-icon-background: #2B2828;
 }

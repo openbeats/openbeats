@@ -5,6 +5,7 @@
     align-items: center;
     flex-direction: column;
     justify-content: center;
+    text-align: center;
 }
 
 .home-wrapper>img {
@@ -15,4 +16,5 @@
 .home-wrapper > div {
     font-size: 20px;
     color: var(--main-master-color);
+    font-size: 16px;
 }

@@ -193,6 +193,7 @@ export async function resetPlayer() {
         id: null,
         isAudioBuffering: false,
     }
+
     return {
         type: "MUSIC_END_HANDLER",
         payload
@@ -229,7 +230,7 @@ export async function initPlayer(audioData, playMusic = true) {
                 await fetch(fallBackUrl)
                     .then(async res => {
                         if (res.status === 200) {
-                            if (store.getState().nowPlayingReducer.currentPlaying.videoId === audioData.videoId) {
+                            if (await store.getState().nowPlayingReducer.currentPlaying.videoId === audioData.videoId) {
                                 await store.dispatch({
                                     type: "LOAD_AUDIO_DATA",
                                     payload: { masterUrl: res.link, fallBackUrl }
@@ -250,11 +251,15 @@ export async function initPlayer(audioData, playMusic = true) {
             }
         })
         .catch(async err => {
-            toastActions.showMessage("Requested audio is not availabe right now! " + String(err))
-            await store.dispatch(await resetPlayer());
-            nowPlayingActions.clearQueue();
+            if (String(err).indexOf("AbortError:") > -1) {
+                // toastActions.showMessage("Slow and Steady Wins the Race!")
+            }
+            else {
+                toastActions.showMessage("Requested audio is not availabe right now! " + String(err))
+                await store.dispatch(await resetPlayer());
+                nowPlayingActions.clearQueue();
+            }
         })
-
     return true
 }
 
