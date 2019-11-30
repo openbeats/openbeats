@@ -138,9 +138,9 @@ class PlaylistDisplay extends Component {
         this.props.setCurrentAction("Playlist");
     }
 
-    initQueue() {
+    initQueue(key = 0) {
         const playlistData = { ...this.state, playlistData: [...this.state.playlistItems] }
-        this.props.updatePlayerQueue(playlistData)
+        this.props.updatePlayerQueue(playlistData, key)
     }
 
     render() {
@@ -152,6 +152,9 @@ class PlaylistDisplay extends Component {
                     </div>
                     <div className="playlist-display-title-holder">
                         {this.state.playlistName}
+                    </div>
+                    <div className="playlist-display-songs-count-holder">
+                        {`( ${this.state.playlistItems.length} Songs )`}
                     </div>
                     <div className="playlist-display-play-pause-holder">
                         {this.props.playlistId !== this.state.playlistId ?
@@ -223,8 +226,7 @@ class PlaylistDisplay extends Component {
                                                 if (this.props.playlistId) {
                                                     this.props.selectFromPlaylist(key)
                                                 } else {
-                                                    this.initQueue()
-                                                    this.props.selectFromPlaylist(key)
+                                                    this.initQueue(key)
                                                 }
                                             }}
                                             className="fas fa-play playlist-display-songs-icon"></i>
@@ -272,7 +274,6 @@ class PlaylistDisplay extends Component {
                                     <div className="playlist-display-songs-duration">{item.duration}</div>
                                 </span>
                             </div>
-                            <hr />
                         </Fragment>
                     ))}
                 </div>
@@ -306,8 +307,8 @@ const mapDispatchToProps = (dispatch) => {
         setCurrentAction: (action) => {
             dispatch(coreActions.setCurrentAction(action))
         },
-        updatePlayerQueue: (playlistData) => {
-            nowPlayingActions.updatePlayerQueue(playlistData);
+        updatePlayerQueue: (playlistData, key) => {
+            nowPlayingActions.updatePlayerQueue(playlistData, key);
         },
         selectFromPlaylist: (key) => {
             nowPlayingActions.selectFromPlaylist(key);
