@@ -1,0 +1,8 @@
+{
+    "mongoURI": "mongodb+srv://obadmin:pRfjn1zy3mqi885m@openbeatscluster-j7jhy.mongodb.net/test?retryWrites=true&w=majority",
+    "google": {
+        "client_id": "2800805513-or82jtgi9ug4bskbftp792o90so12f1d.apps.googleusercontent.com",
+        "client_secret": "5SsBLfvwqqrs0r1se2Y3noix"
+    },
+    "jwtSecret": "WeAreAwesome"
+}
