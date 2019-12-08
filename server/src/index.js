@@ -68,13 +68,13 @@ app.get("/fallback/:id", async (req, res) => {
             Range: req.headers.range,
           },
         },
-        function(response) {
+        function (response) {
           res.writeHead(206, response.headers);
           response.pipe(res);
         },
       );
     } else {
-      http.get(sourceUrl, function(response) {
+      http.get(sourceUrl, function (response) {
         res.writeHead(200, response.headers);
         response.pipe(res);
       });
@@ -99,8 +99,8 @@ app.get("/downcc/:id", async (req, res) => {
     let sourceUrl = audioFormats[0].url;
     let downloadTitle = `${info.title
       .trim()
-      .replace(" ", "")
-      .replace(/[^\w]/gi, "")}@openbeats`;
+      .replace(" ", "_")
+      .replace(/[^\w]/gi, "_")}@openbeats`;
     let contentLength =
       audioFormats[0].clen ||
       info.length_seconds * audioFormats[0].audioBitrate * 125;
