@@ -2,6 +2,7 @@ import cors from "cors";
 import express from "express";
 import morgan from "morgan";
 import passport from "passport";
+import passportStrategy from "./passport";
 
 export default app => {
 	app.use(cors());
