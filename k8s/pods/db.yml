@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: ReplicaSet
+metadata:
+  name: obs-db
+spec:
+  selector:
+    matchLabels:
+      type: db
+      service: obs-db
+  template:
+    metadata:
+      labels:
+        type: db
+        service: obs-db
+        vendor: MongoLabs
+    spec:
+      containers:
+      - name: obs-db
+        image: mongo:3.3
+        ports:
+        - containerPort: 28017
