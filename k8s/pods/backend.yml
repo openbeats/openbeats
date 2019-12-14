@@ -1,0 +1,28 @@
+apiVersion: apps/v1
+kind: ReplicaSet
+metadata:
+  name: obs-server
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      type: backend
+      service: obs-server
+  template:
+    metadata:
+      labels:
+        type: backend
+        service: obs-server
+    spec:
+      containers:
+      - name: server
+        image: thayalangr/obs-server 
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 2000
+          periodSeconds: 1
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 2000
