@@ -1,8 +1,9 @@
-import passport from "passport";
-import googleStrategy from "passport-google-oauth20";
 import config from "config";
 import User from "../models/User";
-import jwt from "jsonwebtoken";
+import passport from "passport";
+import { Strategy as googleStrategy } from "passport-google-oauth20";
+import { Strategy as localStrategy } from "passport-local";
+import bcrypt from "bcryptjs";
 
 const googleclientID = config.get("google").client_id;
 const clientSecret = config.get("google").client_secret;
@@ -19,22 +20,7 @@ passport.use(
 			const email = profile["_json"].email;
 			try {
 				let user = await User.findOne({ email });
-				if (user) {
-					const payload = {
-						user: {
-							id: user.id,
-						},
-					};
-					jwt.sign(
-						payload,
-						config.get("jwtSecret"),
-						{ expiresIn: 360000 },
-						(err, token) => {
-							if (err) throw err;
-							done(null, { token });
-						},
-					);
-				} else {
+				if (!user) {
 					const name = profile["_json"].name;
 					const avatar = profile["_json"].picture;
 					user = new User({
@@ -43,25 +29,44 @@ passport.use(
 						avatar,
 					});
 					await user.save();
-					const payload = {
-						user: {
-							id: user.id,
-						},
-					};
-					jwt.sign(
-						payload,
-						config.get("jwtSecret"),
-						{ expiresIn: 360000 },
-						(err, token) => {
-							if (err) throw err;
-							done(null, { token });
-						},
-					);
 				}
+				return done(null, {
+					id: user.id,
+				});
 			} catch (error) {
-				res.status(400);
-				done(null, false, { message: "Not a valid token" });
 				console.error(error.message);
+				return done(null, false, { message: "Cannot login using google" });
+			}
+		},
+	),
+);
+
+passport.use(
+	new localStrategy(
+		{
+			usernameField: "email",
+			passwordField: "password",
+			session: false,
+		},
+		async (email, password, done) => {
+			try {
+				const user = await User.findOne({ email });
+				if (!user) {
+					return done(null, false, {
+						message: "Invalid Credentials.",
+					});
+				}
+				const passwordValid = await bcrypt.compare(password, user.password);
+				if (!passwordValid) {
+					return done(null, false, {
+						message: "Invalid Credentials.",
+					});
+				}
+				return done(null, {
+					id: user.id,
+				});
+			} catch (error) {
+				return done(error);
 			}
 		},
 	),

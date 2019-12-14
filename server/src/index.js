@@ -8,10 +8,12 @@ import localdb from "./config/localdb";
 import { path } from "@ffmpeg-installer/ffmpeg";
 import ffmpeg from "fluent-ffmpeg";
 import dbconfig from "./config/db";
+
 dbconfig();
 
 //Router Routes
 import authRoutes from "./routes/auth";
+import userRoutes from "./routes/user";
 
 const ffmpegPath = path;
 
@@ -191,6 +193,7 @@ app.get("/getcharts", async (req, res) => {
 
 //Modular auth routes
 app.use("/auth", authRoutes);
+app.use("/user", userRoutes);
 
 const PORT = process.env.PORT || 2000;
 
