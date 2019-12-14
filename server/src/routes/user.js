@@ -5,6 +5,7 @@ import bcrypt from "bcryptjs";
 import config from "config";
 import User from "../models/User";
 import jwt from "jsonwebtoken";
+import auth from "../config/auth";
 
 const router = express.Router();
 
@@ -72,4 +73,13 @@ router.post(
 	},
 );
 
+router.get("/me", auth, async (req, res) => {
+	try {
+		const user = await User.findById(req.user.id).select("-password");
+		res.json(user);
+	} catch (error) {
+		console.error(error.message);
+		res.status(500).send("Server error");
+	}
+});
 export default router;
