@@ -55,6 +55,7 @@ app.get("/opencc/:id", async (req, res) => {
 });
 
 app.get("/fallback/:id", async (req, res) => {
+<<<<<<< HEAD
 	const videoID = req.params.id;
 	try {
 		const info = await ytdl.getInfo(videoID);
@@ -150,6 +151,103 @@ app.get("/downcc/:id", async (req, res) => {
 			});
 		}
 	}
+=======
+  const videoID = req.params.id;
+  try {
+    const info = await ytdl.getInfo(videoID);
+    let audioFormats = ytdl.filterFormats(info.formats, "audioonly");
+    if (!audioFormats[0].clen) {
+      audioFormats = ytdl.filterFormats(info.formats, "audioandvideo");
+    }
+    let sourceUrl = audioFormats[0].url;
+    const range = req.headers.range;
+    if (range) {
+      http.get(
+        sourceUrl,
+        {
+          headers: {
+            Range: req.headers.range,
+          },
+        },
+        function (response) {
+          res.writeHead(206, response.headers);
+          response.pipe(res);
+        },
+      );
+    } else {
+      http.get(sourceUrl, function (response) {
+        res.writeHead(200, response.headers);
+        response.pipe(res);
+      });
+    }
+  } catch (error) {
+    console.error(error.message);
+    res.status(404).send({
+      status: false,
+      link: null,
+    });
+  }
+});
+
+app.get("/downcc/:id", async (req, res) => {
+  const videoID = req.params.id;
+  try {
+    const info = await ytdl.getInfo(videoID);
+    let audioFormats = ytdl.filterFormats(info.formats, "audioonly");
+    if (!audioFormats[0].clen) {
+      audioFormats = ytdl.filterFormats(info.formats, "audioandvideo");
+    }
+    let sourceUrl = audioFormats[0].url;
+    let downloadTitle = `${info.title
+      .trim()
+      .replace(" ", "_")
+      .replace(/[^\w]/gi, "_")}@openbeats`;
+    let contentLength =
+      audioFormats[0].clen ||
+      info.length_seconds * audioFormats[0].audioBitrate * 125;
+    res.setHeader(
+      "Content-disposition",
+      "attachment; filename=" + downloadTitle + ".mp3",
+    );
+    res.setHeader("Content-Type", "audio/mpeg");
+    res.setHeader("Content-Length", contentLength);
+    ffmpeg({ source: sourceUrl })
+      .setFfmpegPath(ffmpegPath)
+      .withAudioCodec("libmp3lame")
+      .audioBitrate(audioFormats[0].audioBitrate)
+      .toFormat("mp3")
+      .on("error", err => console.log(err.message))
+      .pipe(res, {
+        end: true,
+      });
+  } catch (error) {
+    let link = null;
+    let status = 404;
+    if (ytdl.validateID(videoID)) {
+      link = await copycat(videoID);
+      status = 200;
+      res.setHeader(
+        "Content-disposition",
+        "attachment; filename=" + videoID + ".mp3",
+      );
+      res.setHeader("Content-Type", "audio/mpeg");
+      ffmpeg({ source: link })
+        .setFfmpegPath(ffmpegPath)
+        .withAudioCodec("libmp3lame")
+        .audioBitrate(128)
+        .toFormat("mp3")
+        .on("error", err => console.log(err.message))
+        .pipe(res, {
+          end: true,
+        });
+    } else {
+      res.status(status).send({
+        status: status === 200 ? true : false,
+        link: link,
+      });
+    }
+  }
+>>>>>>> 649c6eeb66333817bc7fba7254fdd44666f994b6
 });
 
 app.get("/ytcat", async (req, res) => {
