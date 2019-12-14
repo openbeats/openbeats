@@ -1,1 +1,0 @@
-# OpenBeats Website Frontend
