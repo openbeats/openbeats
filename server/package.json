@@ -1,0 +1,37 @@
+{
+  "name": "server",
+  "version": "1.0.0",
+  "description": "openbeats server",
+  "main": "index.js",
+  "scripts": {
+    "start": "nodemon index.js --ignore localdb.json"
+  },
+  "keywords": [
+    "openbeats"
+  ],
+  "author": "ThayalanGR",
+  "license": "ISC",
+  "devDependencies": {
+    "nodemon": "^1.19.4"
+  },
+  "dependencies": {
+    "@ffmpeg-installer/ffmpeg": "^1.0.20",
+    "babel-polyfill": "^6.26.0",
+    "babel-preset-env": "^1.7.0",
+    "babel-preset-stage-0": "^6.24.1",
+    "babel-register": "^6.26.0",
+    "cheerio": "^1.0.0-rc.3",
+    "cors": "^2.8.5",
+    "dotenv": "^8.2.0",
+    "express": "^4.17.1",
+    "fluent-ffmpeg": "^2.1.2",
+    "form-data": "^2.5.1",
+    "install": "^0.13.0",
+    "lowdb": "^1.0.0",
+    "mongoose": "^5.7.7",
+    "morgan": "^1.9.1",
+    "node-cron": "^2.0.3",
+    "node-fetch": "^2.6.0",
+    "ytdl-core": "^1.0.0"
+  }
+}

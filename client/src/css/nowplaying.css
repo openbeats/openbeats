@@ -1,0 +1,72 @@
+.player-queue-display-wrapper {
+    width: 100%;
+    height: auto;
+    background: inherit;
+    padding: 10px 10px 10px 20px;
+    display: flex;
+    flex-direction: column;
+}
+
+.now-playing-icon-size {
+    font-size: 15px;
+    margin-right: 20px;
+    color: var(--main-master-color);
+}
+
+.now-playing-head-icon-size {
+    margin-right: 10px;
+    color: var(--main-master-color);
+}
+
+.now-playing-wrapper,
+.up-next-wrapper {
+    margin-bottom: 10px;
+    width: 100%;
+}
+
+
+
+.now-playing-header,
+.up-next-header {
+    border-bottom: .5px solid var(--horizontal-rule-color);
+    color: var(--main-master-color);
+    font-weight: bold;
+    font-size: 18px;
+    padding-bottom: 5px;
+    margin-bottom: 5px;
+    display: flex;
+    align-items: center;
+    padding-left: 5px;
+
+}
+
+.now-playing-body,
+.up-next-body {
+    color: var(--text-color-sub-1);
+    font-size: 15px;
+    width: 100%;
+    font-weight: normal;
+    padding: 5px 5px 10px 5px;
+}
+
+.now-playing-item {
+    display: flex;
+    align-items: center;
+    width: calc(100% - 20px);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    padding: 10px 5px 20px 10px;
+    cursor: pointer;
+
+}
+
+.now-playing-duration {
+    margin-right: 20px;
+    font-size: 13px;
+    color: var(--text-color-sub-2);
+}
+
+.now-playing-title {
+    color: var(--text-color-sub-1);
+}
