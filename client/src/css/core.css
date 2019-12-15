@@ -1,0 +1,71 @@
+@import url("https://fonts.googleapis.com/css?family=Roboto&display=swap");
+
+:root {
+  --main-bg-color: #242020;
+  --main-nav-bg-color: #242424;
+  --main-master-color: #F32C2C;
+  --scroll-track-bg-color: rgb(56, 45, 45);
+  --scroll-track-thumb-color: #644747;
+  --scroll-track-thumb-color-hover: rgba(75, 72, 72, 0.8);
+  --nav-menu-hover-color: rgba(94, 66, 66, 0.2);
+  --text-color-main: #C1CCCC;
+  --text-color-sub-1: #999992;
+  --text-color-sub-2: #707070;
+  --horizontal-rule-color: #707070;
+  --brigth-hover: #cccccc;
+  --search-input-bg-color: rgba(112, 106, 106, 0.1);
+  --progress-bar-bg-color: #363333;
+  --progress-bar-slider-thumb: #cccccc;
+  --search-icon-background: #2B2828;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  vertical-align: baseline;
+  box-sizing: border-box;
+  -khtml-user-select: none;
+  -o-user-select: none;
+  -moz-user-select: none;
+  -webkit-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  -webkit-user-drag: none;
+  -webkit-touch-callout: none;
+}
+
+body {
+  width: 100vw;
+  height: 100vh;
+  font-family: "Roboto", sans-serif;
+  position: relative;
+  background: var(--main-bg-color);
+  box-sizing: border-box;
+  color: var(--text-color-main);
+  overflow: hidden;
+}
+
+main {
+  height: calc(100vh - 65px);
+  width: calc(100vw - 250px);
+  margin-left: 250px;
+  overflow-x: hidden;
+  overflow-y: auto;
+  box-sizing: border-box;
+  position: relative;
+  z-index: 1;
+}
+
+/* mobile responsiveness */
+@media only screen and (max-width: 1000px) {
+  main {
+    width: calc(100vw);
+    margin-left: 0;
+  }
+}
+
+@media only screen and (max-width: 750px) {
+  main {
+    height: calc(800vh);
+  }
+}

@@ -1,0 +1,41 @@
+.main-body {
+    height: calc(100vh - 68px - 70px);
+    width: inherit;
+    overflow-y: auto;
+    overflow-x: hidden;
+    top: 68px;
+    position: fixed;
+    z-index: 1;
+}
+
+/* width */
+.main-body::-webkit-scrollbar {
+    width: 8px;
+    border-radius: 10px;
+}
+
+/* Track */
+.main-body::-webkit-scrollbar-track {
+    background: var(--scroll-track-bg-color);
+    border-radius: 10px;
+}
+
+/* Handle */
+.main-body::-webkit-scrollbar-thumb {
+    background: var(--scroll-track-thumb-color);
+    border-radius: 20px;
+    cursor: pointer;
+}
+
+/* Handle on hover */
+.main-body::-webkit-scrollbar-thumb:hover {
+    background: var(--scroll-track-thumb-color-hover);
+}
+
+/* mobile responsiveness */
+@media only screen and (max-width: 750px) {
+    .main-body {
+        height: calc(100vh - 65px);
+        padding-bottom: 90px;
+    }
+}
