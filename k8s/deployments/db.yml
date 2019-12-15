@@ -1,5 +1,5 @@
 apiVersion: apps/v1
-kind: ReplicaSet
+kind: Deployment
 metadata:
   name: obs-db
 spec:
@@ -7,6 +7,8 @@ spec:
     matchLabels:
       type: db
       service: obs-db
+  strategy:
+    type: Recreate
   template:
     metadata:
       labels:
@@ -17,5 +19,15 @@ spec:
       containers:
       - name: obs-db
         image: mongo:3.3
-        ports:
-        - containerPort: 27017
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: obs-db
+spec:
+  ports:
+  - port: 27017
+  selector:
+    type: db
+    service: obs-db

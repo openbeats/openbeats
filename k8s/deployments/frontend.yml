@@ -1,18 +1,18 @@
 apiVersion: apps/v1
-kind: ReplicaSet
+kind: Deployment
 metadata:
-  name: webc
+  name: obs-frontend
 spec:
   replicas: 2
   selector:
     matchLabels:
       type: frontend
-      service: webc
+      service: obs-frontend
   template:
     metadata:
       labels:
         type: frontend
-        service: webc
+        service: obs-frontend
     spec:
       containers:
       - name: ui
@@ -26,3 +26,16 @@ spec:
           httpGet:
             path: /
             port: 3000
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: obs-frontend
+spec:
+  type: NodePort
+  ports:
+  - port: 3000
+  selector:
+    type: frontend
+    service: obs-frontend
