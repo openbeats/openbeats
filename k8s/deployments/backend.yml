@@ -1,9 +1,9 @@
 apiVersion: apps/v1
-kind: ReplicaSet
+kind: Deployment
 metadata:
   name: obs-server
 spec:
-  replicas: 4
+  replicas: 5
   selector:
     matchLabels:
       type: backend
