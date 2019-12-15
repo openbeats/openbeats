@@ -3,7 +3,7 @@ kind: ReplicaSet
 metadata:
   name: obs-server
 spec:
-  replicas: 2
+  replicas: 4
   selector:
     matchLabels:
       type: backend
@@ -19,7 +19,7 @@ spec:
         image: thayalangr/obs-server 
         env:
         - name: DB
-          value: obs-db
+          value: obs-db:27017
         readinessProbe:
           httpGet:
             path: /
