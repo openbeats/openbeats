@@ -17,6 +17,9 @@ spec:
       containers:
       - name: server
         image: thayalangr/obs-server 
+        env:
+        - name: DB
+          value: obs-db
         readinessProbe:
           httpGet:
             path: /
