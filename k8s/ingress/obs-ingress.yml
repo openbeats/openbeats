@@ -1,11 +1,12 @@
 apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
-  name: obs-ingress
+  name: obs-frontend-ingress
   annotations:
     kubernetes.io/ingress.class: "nginx"
     ingress.kubernetes.io/ssl-redirect: "false"
     nginx.ingress.kubernetes.io/ssl-redirect: "false"
+    nginx.ingress.kubernetes.io/rewrite-target: /
 spec:
   backend:
     serviceName: obs-frontend
@@ -17,7 +18,22 @@ spec:
         backend:
           serviceName: obs-frontend
           servicePort: 3000
-      - path: /mongocheck
+
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: obs-backend-ingress
+  annotations:
+    kubernetes.io/ingress.class: "nginx"
+    ingress.kubernetes.io/ssl-redirect: "false"
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
+spec:
+  rules:
+  - http:
+      paths:
+      - path: /api(/|$)(.*)
         backend:
           serviceName: obs-server
           servicePort: 2000
