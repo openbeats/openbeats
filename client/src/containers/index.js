@@ -8,15 +8,14 @@ import TopNav from "./TopNav";
 import NowPlaying from "./NowPlaying";
 import PlaylistDisplay from "./PlaylistDisplay";
 
-
 export {
-    Main,
-    Home,
-    LeftNav,
-    Player,
-    Auth,
-    TopNav,
-    Result,
-    NowPlaying,
-    PlaylistDisplay
-}
+	Main,
+	Home,
+	LeftNav,
+	Player,
+	Auth,
+	TopNav,
+	Result,
+	NowPlaying,
+	PlaylistDisplay,
+};
