@@ -1,0 +1,63 @@
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+  name: obs-frontend-ingress
+  annotations:
+    nginx.ingress.kubernetes.io/ingress.class: "nginx"
+    cert-manager.io/issuer: letsencrypt-openbeats-dns
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/rewrite-target: /
+spec:
+  tls:
+    - hosts:
+      - openbeats.live
+      - www.openbeats.live
+      secretName: openbeats-ingress-tls
+  rules:
+    - host: openbeats.live
+      http:
+        paths:
+          - backend:
+              serviceName: obs-frontend
+              servicePort: 3000
+            path: /
+
+    - host: www.openbeats.live
+      http:
+        paths:
+          - backend:
+              serviceName: obs-frontend
+              servicePort: 3000
+            path: /
+
+---
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+  name: obs-backend-ingress
+  annotations:
+    nginx.ingress.kubernetes.io/ingress.class: "nginx"
+    cert-manager.io/issuer: letsencrypt-openbeats-dns
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
+spec:
+  tls:
+    - hosts:
+        - openbeats.live
+        - www.openbeats.live
+      secretName: openbeats-backend-tls
+  rules:
+    - host: openbeats.live
+      http:
+        paths:
+          - path: /api(/|$)(.*)
+            backend:
+              serviceName: obs-server
+              servicePort: 2000
+    - host: www.openbeats.live
+      http:
+        paths:
+          - path: /api(/|$)(.*)
+            backend:
+              serviceName: obs-server
+              servicePort: 2000
