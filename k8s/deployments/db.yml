@@ -17,8 +17,22 @@ spec:
         vendor: MongoLabs
     spec:
       containers:
-      - name: obs-db
-        image: mongo:3.3
+        - name: obs-db
+          image: mongo:3.3
+          volumeMounts:
+            - name: mongodb-persistent-storage
+              mountPath: /data/db
+      initContainers:
+        - name: mongodb-data-permission-fix
+          image: busybox
+          command: ["/bin/chmod", "-R", "777", "/data"]
+          volumeMounts:
+            - name: mongodb-persistent-storage
+              mountPath: /data
+      volumes:
+        - name: mongodb-persistent-storage
+          persistentVolumeClaim:
+            claimName: obs-mongodb-pv
 
 ---
 apiVersion: v1
@@ -27,7 +41,7 @@ metadata:
   name: obs-db
 spec:
   ports:
-  - port: 27017
+    - port: 27017
   selector:
     type: db
     service: obs-db

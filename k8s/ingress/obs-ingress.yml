@@ -12,6 +12,7 @@ spec:
     - hosts:
       - openbeats.live
       - www.openbeats.live
+      - jenkins.openbeats.live
       secretName: openbeats-ingress-tls
   rules:
     - host: openbeats.live
@@ -29,6 +30,13 @@ spec:
               serviceName: obs-frontend
               servicePort: 3000
             path: /
+    - host: jenkins.openbeats.live
+      http:
+        paths:
+          - backend:
+              serviceName: jenkins
+              servicePort: 8080
+            path: /
 
 ---
 apiVersion: networking.k8s.io/v1beta1
@@ -45,6 +53,7 @@ spec:
     - hosts:
         - openbeats.live
         - www.openbeats.live
+        - api.openbeats.live
       secretName: openbeats-backend-tls
   rules:
     - host: openbeats.live

@@ -20,15 +20,15 @@ spec:
         env:
         - name: DB
           value: obs-db:27017
-        readinessProbe:
-          httpGet:
-            path: /
-            port: 2000
-          periodSeconds: 1
-        livenessProbe:
-          httpGet:
-            path: /
-            port: 2000
+        # readinessProbe:
+        #   httpGet:
+        #     path: /
+        #     port: 2000
+        #   periodSeconds: 1
+        # livenessProbe:
+        #   httpGet:
+        #     path: /
+        #     port: 2000
 
 ---
 apiVersion: v1
