@@ -1,0 +1,59 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: jenkins-deployment
+  namespace: jenkins
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: jenkins
+  template:
+    metadata:
+      labels:
+        app: jenkins
+    spec:
+      containers:
+        - name: jenkins
+          image: jenkins/jenkins
+          ports:
+            - containerPort: 8080
+          volumeMounts:
+            - name: jenkins-persistent-storage
+              mountPath: /var/jenkins_home
+      initContainers:
+        - name: jenkins-data-permission-fix
+          image: busybox
+          command: ["/bin/chmod", "-R", "777", "/data"]
+          volumeMounts:
+            - name: jenkins-persistent-storage
+              mountPath: /data
+      volumes:
+        - name: jenkins-persistent-storage
+          persistentVolumeClaim:
+            claimName: obs-jenkins-pv
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: jenkins
+  namespace: jenkins
+spec:
+  type: NodePort
+  ports:
+    - port: 8080
+      targetPort: 8080
+      nodePort: 30000
+  selector:
+    app: jenkins
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: jenkins
+spec:
+  type: ExternalName
+  externalName: jenkins.jenkins.svc.cluster.local
+  ports:
+  - port: 8080
