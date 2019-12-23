@@ -1,20 +1,25 @@
 pipeline {
     agent any
     stages {
-        stage('build matchengine') {
+        stage("Init") {
+            steps{
+                echo 'loading init stage...'
+            }
+        }
+        stage('build backend') {
             when {
                 changeset "**/services/backend/*.*"
             }
             steps {
-                echo 'building match engine'
+                echo 'building backend...'
             }
         }
-        stage('build posttrade') {
+        stage('build clientapp') {
             when {
                 changeset "**/services/clientapp/*.*"
             }
             steps {
-                echo 'building post trade'
+                echo 'building clientapp...'
             }
         }
     }
