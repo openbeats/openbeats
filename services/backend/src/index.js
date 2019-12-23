@@ -11,6 +11,7 @@ import dbconfig from "./config/db";
 
 dbconfig();
 
+
 //Router Routes
 import authRoutes from "./routes/auth";
 import userRoutes from "./routes/user";
@@ -198,5 +199,5 @@ app.use("/user", userRoutes);
 const PORT = process.env.PORT || 2000;
 
 app.listen(PORT, () => {
-	console.log("openbeats server up and running on port :", PORT);
+	console.log("openbeats server up and running");
 });

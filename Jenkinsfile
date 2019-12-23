@@ -2,24 +2,38 @@ pipeline {
     agent any
     stages {
         stage("Init") {
-            steps{
-                echo 'loading init stage...'
+            steps {
+                echo 'Pipeline Process Initiated..'
             }
         }
-        stage('build backend') {
+        stage("Branch Check"){
+            // specify branch to build
             when {
-                changeset "**/services/backend/*.*"
+                branch 'CICD'
             }
-            steps {
-                echo 'building backend...'
+            // Declare services here
+            stages{
+                stage('Clientapp') {
+                    when {
+                        changeset "services/clientapp/**"
+                    }
+                    steps {
+                        echo 'building clientapp...'
+                    }
+                }
+                stage('backend') {
+                    when {
+                        changeset "services/backend/**"
+                    }
+                    steps {
+                        echo 'building backend...'
+                    }
+                }
             }
         }
-        stage('build clientapp') {
-            when {
-                changeset "**/services/clientapp/*.*"
-            }
+        stage("End") {
             steps {
-                echo 'building clientapp...'
+                echo 'Pipeline Process Ended..'
             }
         }
     }
