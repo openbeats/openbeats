@@ -19,6 +19,5 @@ export const toastConfig = () => {
     transition: Zoom,
     progressClassName: "toast-progress-bar-color",
     closeButton: <Close />,
-    // pauseOnFocusLoss: false,
   });
 };
