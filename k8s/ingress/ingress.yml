@@ -19,7 +19,7 @@ spec:
       http:
         paths:
           - backend:
-              serviceName: obs-frontend
+              serviceName: obs-clientapp
               servicePort: 3000
             path: /
 
@@ -27,7 +27,7 @@ spec:
       http:
         paths:
           - backend:
-              serviceName: obs-frontend
+              serviceName: obs-clientapp
               servicePort: 3000
             path: /
     - host: jenkins.openbeats.live

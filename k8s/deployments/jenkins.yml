@@ -15,12 +15,22 @@ spec:
     spec:
       containers:
         - name: jenkins
-          image: jenkins/jenkins
+          image: kmlaydin/modified-jenkins
           ports:
             - containerPort: 8080
+          env:
+            - name: DOCKER_HOST
+              value: tcp://localhost:2375
           volumeMounts:
             - name: jenkins-persistent-storage
               mountPath: /var/jenkins_home
+        - name: dockerindocker
+          image: docker:18.05-dind
+          securityContext:
+            privileged: true
+          volumeMounts:
+            - name: dind-persistent-storage
+              mountPath: /var/lib/docker
       initContainers:
         - name: jenkins-data-permission-fix
           image: busybox
@@ -28,32 +38,16 @@ spec:
           volumeMounts:
             - name: jenkins-persistent-storage
               mountPath: /data
+        - name: dind-data-permission-fix
+          image: busybox
+          command: ["/bin/chmod", "-R", "777", "/data"]
+          volumeMounts:
+            - name: dind-persistent-storage
+              mountPath: /data
       volumes:
         - name: jenkins-persistent-storage
           persistentVolumeClaim:
             claimName: obs-jenkins-pv
-
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: jenkins
-  namespace: jenkins
-spec:
-  type: NodePort
-  ports:
-    - port: 8080
-      targetPort: 8080
-      nodePort: 30000
-  selector:
-    app: jenkins
----
-kind: Service
-apiVersion: v1
-metadata:
-  name: jenkins
-spec:
-  type: ExternalName
-  externalName: jenkins.jenkins.svc.cluster.local
-  ports:
-  - port: 8080
+        - name: dind-persistent-storage
+          persistentVolumeClaim:
+            claimName: obs-dind-pv
