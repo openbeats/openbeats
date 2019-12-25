@@ -4,7 +4,7 @@ import App from './App';
 import { Provider } from "react-redux";
 import { history, store, ConnectedRouter } from "./store"
 import { toastConfig } from "./config";
-toastConfig()
+toastConfig();
 
 ReactDOM.render(
     <Provider store={store}>
