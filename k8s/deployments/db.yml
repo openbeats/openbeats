@@ -17,7 +17,7 @@ spec:
         vendor: MongoLabs
     spec:
       containers:
-        - name: obs-db
+        - name: container
           image: mongo:3.3
           volumeMounts:
             - name: mongodb-persistent-storage
@@ -33,15 +33,3 @@ spec:
         - name: mongodb-persistent-storage
           persistentVolumeClaim:
             claimName: obs-mongodb-pv
-
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: obs-db
-spec:
-  ports:
-    - port: 27017
-  selector:
-    type: db
-    service: obs-db

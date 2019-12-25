@@ -1,0 +1,19 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: obs-clientapp
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      type: frontend
+      service: obs-clientapp
+  template:
+    metadata:
+      labels:
+        type: frontend
+        service: obs-clientapp
+    spec:
+      containers:
+      - name: container
+        image: thayalangr/obs-clientapp:latest
