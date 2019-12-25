@@ -5,7 +5,7 @@ import "react-loader-spinner/dist/loader/css/react-spinner-loader.css";
 import "../css/commons.css";
 
 export const variables = {
-  baseUrl: "https://openbeats.live/api",
+  baseUrl: "https://api.openbeats.live",
 };
 
 export const toastConfig = () => {

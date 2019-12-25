@@ -12,7 +12,7 @@ def buildAndUpdateCluster(String buildDir, String dockerImageName, String deploy
 
 pipeline {
     environment {
-        BRANCH_TO_BUILD = "buildtest"
+        BRANCH_TO_BUILD = "master"
         USER_CREDENTIALS = credentials('dockerhub-credentials')
     }
     agent any
