@@ -21,11 +21,19 @@ spec:
           env:
             - name: DOCKER_HOST
               value: tcp://localhost:2375
+            - name: DOCKER_DRIVER
+              value: overlay
           volumeMounts:
             - name: jenkins-persistent-storage
               mountPath: /var/jenkins_home
         - name: dockerindocker
-          image: docker:18.05-dind
+          # image: docker:18.05-dind
+          image: docker:stable-dind
+          env:
+            - name: DOCKER_TLS_CERTDIR
+              value: ""
+            - name: DOCKER_DRIVER
+              value: overlay
           securityContext:
             privileged: true
           volumeMounts:
