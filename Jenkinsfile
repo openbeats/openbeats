@@ -12,6 +12,7 @@ def buildAndUpdateCluster(String buildDir, String dockerImageName, String deploy
 
 pipeline {
     environment {
+        // specify branch to build
         BRANCH_TO_BUILD = "master"
         USER_CREDENTIALS = credentials('dockerhub-credentials')
     }
@@ -27,7 +28,6 @@ pipeline {
             }
         }
         stage("Branch Check"){
-            // specify branch to build
             when {
                 branch "$BRANCH_TO_BUILD"
             }
