@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: jenkins
-          image: kmlaydin/modified-jenkins
+          image: thayalangr/jenkins-mod:latest
           ports:
             - containerPort: 8080
           env:
