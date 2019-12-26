@@ -1,10 +1,8 @@
 import middleware from "./config/middleware";
 import express from "express";
 import { ytcat, suggestbeat, copycat } from "./core";
-//import initCron from "./core/updatePlaylistCron";
 import ytdl from "ytdl-core";
 import http from "https";
-import localdb from "./config/localdb";
 import { path } from "@ffmpeg-installer/ffmpeg";
 import ffmpeg from "fluent-ffmpeg";
 import dbconfig from "./config/db";
@@ -22,8 +20,6 @@ const PORT = process.env.PORT || 2000;
 const ffmpegPath = path;
 
 const app = express();
-
-//initCron();
 
 middleware(app);
 
