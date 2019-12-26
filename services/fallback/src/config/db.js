@@ -1,5 +1,4 @@
 import mongoose from "mongoose";
-import { Book } from "./schema";
 import config from "config";
 
 export default async () => {

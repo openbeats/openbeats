@@ -14,6 +14,7 @@ spec:
       - www.openbeats.live
       - jenkins.openbeats.live
       - captain.openbeats.live
+      - api.openbeats.live
       secretName: openbeats-ingress-tls
   rules:
     - host: openbeats.live
@@ -47,6 +48,13 @@ spec:
               serviceName: obs-captainapp
               servicePort: 3000
             path: /
+    - host: api.openbeats.live
+      http:
+        paths:
+          - path: /
+            backend:
+              serviceName: obs-server
+              servicePort: 2000
 
 ---
 apiVersion: networking.k8s.io/v1beta1
@@ -57,7 +65,7 @@ metadata:
     nginx.ingress.kubernetes.io/ingress.class: "nginx"
     cert-manager.io/issuer: letsencrypt-openbeats-dns
     nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
-    nginx.ingress.kubernetes.io/rewrite-target: /
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
 spec:
   tls:
     - hosts:
@@ -67,11 +75,11 @@ spec:
     - host: api.openbeats.live
       http:
         paths:
-          - path: /
+          - path: /fallback(/|$)(.*)
             backend:
-              serviceName: obs-server
+              serviceName: obs-fallback
               servicePort: 2000
-          - path: /auth
+          - path: /downcc(/|$)(.*)
             backend:
-              serviceName: obs-auth
+              serviceName: obs-downcc
               servicePort: 2000

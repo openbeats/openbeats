@@ -1,22 +1,22 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: obs-server
+  name: obs-downcc
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
       type: backend
-      service: obs-server
+      service: obs-downcc
   template:
     metadata:
       labels:
         type: backend
-        service: obs-server
+        service: obs-downcc
     spec:
       containers:
       - name: container
-        image: thayalangr/obs-server:latest
+        image: thayalangr/obs-downcc:latest
         env:
         - name: DB
           value: obs-db:27017
