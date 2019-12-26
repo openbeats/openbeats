@@ -13,7 +13,7 @@ def buildAndUpdateCluster(String buildDir, String dockerImageName, String deploy
 pipeline {
     environment {
         // specify branch to build
-        BRANCH_TO_BUILD = "donotdeploy"
+        BRANCH_TO_BUILD = "donotbuild"
         USER_CREDENTIALS = credentials('dockerhub-credentials')
     }
     agent any
@@ -22,9 +22,6 @@ pipeline {
             steps {
                 echo 'Pipeline Process Initiated..'
                 sh "docker login -u $USER_CREDENTIALS_USR -p $USER_CREDENTIALS_PSW"
-                withKubeConfig([credentialsId: 'kubeconfig']) {
-                    sh "kubectl get deployments -n default"
-                }
             }
         }
         stage("Branch Check"){
