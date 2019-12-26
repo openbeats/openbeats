@@ -88,7 +88,6 @@ app.get("/getcharts", async (req, res) => {
 app.use("/auth", authRoutes);
 app.use("/user", userRoutes);
 
-
 app.listen(PORT, () => {
   console.log("openbeats server up and running!");
 });

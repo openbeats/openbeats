@@ -48,13 +48,31 @@ pipeline {
                         buildAndUpdateCluster("services/captianapp/", "obs-captianapp", "obs-captianapp")
                     }
                 }
-                stage('backend') {
+                stage('server') {
                     when {
                         changeset "services/server/**"
                     }
                     steps {
-                        echo 'building backend...'
+                        echo 'building server...'
                         buildAndUpdateCluster("services/server/", "obs-server", "obs-server")
+                    }
+                }
+                stage('fallback') {
+                    when {
+                        changeset "services/fallback/**"
+                    }
+                    steps {
+                        echo 'building fallback...'
+                        buildAndUpdateCluster("services/fallback/", "obs-fallback", "obs-fallback")
+                    }
+                }
+                stage('downcc') {
+                    when {
+                        changeset "services/downcc/**"
+                    }
+                    steps {
+                        echo 'building downcc...'
+                        buildAndUpdateCluster("services/downcc/", "obs-downcc", "obs-downcc")
                     }
                 }
             }
