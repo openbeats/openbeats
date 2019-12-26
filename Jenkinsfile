@@ -13,7 +13,7 @@ def buildAndUpdateCluster(String buildDir, String dockerImageName, String deploy
 pipeline {
     environment {
         // specify branch to build
-        BRANCH_TO_BUILD = "master"
+        BRANCH_TO_BUILD = "donotdeploy"
         USER_CREDENTIALS = credentials('dockerhub-credentials')
     }
     agent any
@@ -33,13 +33,22 @@ pipeline {
             }
             // Declare services here
             stages{
-                stage('Clientapp') {
+                stage('clientapp') {
                     when {
                         changeset "services/clientapp/**"
                     }
                     steps {
                         echo 'building clientapp...'
                         buildAndUpdateCluster("services/clientapp/", "obs-clientapp", "obs-clientapp")
+                    }
+                }
+                stage('captainapp') {
+                    when {
+                        changeset "services/captainapp/**"
+                    }
+                    steps {
+                        echo 'building captainapp...'
+                        buildAndUpdateCluster("services/captianapp/", "obs-captianapp", "obs-captianapp")
                     }
                 }
                 stage('backend') {

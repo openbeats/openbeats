@@ -13,6 +13,7 @@ spec:
       - openbeats.live
       - www.openbeats.live
       - jenkins.openbeats.live
+      - captain.openbeats.live
       secretName: openbeats-ingress-tls
   rules:
     - host: openbeats.live
@@ -30,12 +31,21 @@ spec:
               serviceName: obs-clientapp
               servicePort: 3000
             path: /
+
     - host: jenkins.openbeats.live
       http:
         paths:
           - backend:
               serviceName: jenkins
               servicePort: 8080
+            path: /
+
+    - host: captain.openbeats.live
+      http:
+        paths:
+          - backend:
+              serviceName: obs-captainapp
+              servicePort: 3000
             path: /
 
 ---
