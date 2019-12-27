@@ -17,6 +17,9 @@ middleware(app);
 app.get("/", (req, res) => {
   res.send("Welcome to OpenBeats!\n Enjoy Unlimited music for free! ");
 });
+app.get("/check", (req, res) => {
+  res.send("check endpoint!!! ");
+});
 
 app.get("/opencc/:id", async (req, res) => {
   const videoID = req.params.id;
