@@ -22,7 +22,7 @@
 }
 
 .cursor-pointer:hover {
-    opacity: 0.7;
+    opacity: 0.8;
 }
 
 .highlight-current-play {
@@ -46,4 +46,11 @@ hr {
 .highlight-active-result {
     box-shadow: 0px 0px 10px 0px var(--main-master-color);
     border-radius: 5px;
+}
+
+.green-color {
+    color: lightgreen;
+}
+.red-color {
+    color: red;
 }
