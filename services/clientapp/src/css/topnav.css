@@ -27,6 +27,7 @@
 .master-search-bar {
     position: relative;
     width: 500px;
+    /* align-content: center; */
 }
 
 .search-input {
@@ -119,6 +120,18 @@
 
 .highlight-current {
     background: rgb(112, 112, 112, 0.2);
+}
+
+
+.auth-login-register-holder {
+    display: flex;
+    justify-content: center;    
+}
+
+
+.auth-power-on {
+    font-size: 20px;
+    font-weight: bold;
 }
 
 /* mobile responsiveness */
