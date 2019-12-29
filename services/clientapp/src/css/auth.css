@@ -1,0 +1,193 @@
+.auth-wrapper {
+  width: 100vw;
+  height: 100vh;
+  position: relative;
+  display: grid;
+  grid-template-columns: 50% 50%;
+  background: var(--main-bg-color);
+}
+
+.toggle-slider {
+  position: fixed;
+  width: 50%;
+  height: 100%;
+  z-index: 10;
+  background: var(--main-nav-bg-color);
+  box-shadow: 0 0 15px 0 black;
+  top: 0;
+  right: 50%;
+  transition: all 0.1s linear;
+}
+.music-illustration {
+  width: 30%;
+  margin-bottom: 60px;
+}
+
+.music-master-logo {
+  width: 30%;
+  margin-bottom: 50px;
+}
+
+.toggle-content-holder {
+  margin-top: -50px;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+}
+
+.toggler-content-holder {
+  font-size: 20px;
+  letter-spacing: 3px;
+  margin-bottom: 50px;
+}
+
+.toggler-login-register-button {
+  outline: none;
+  border: none;
+  border-radius: 20px;
+  width: 200px;
+  padding: 15px;
+  color: white;
+  font-size: 16px;
+  letter-spacing: 3px;
+  background: var(--main-master-color);
+}
+
+.display-register {
+  right: 0 !important;
+}
+
+.login-holder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  flex-direction: column;
+}
+
+.register-holder {
+  flex-direction: column;
+  display: flex;
+  align-items: center;
+  width: 100%;
+  justify-content: center;
+  height: 100%;
+}
+
+.login-header {
+  font-size: 30px;
+  font-weight: bold;
+  color: var(--main-master-color);
+  margin-bottom: 30px;
+  letter-spacing: 5px;
+  text-transform: uppercase;
+}
+
+.native-login-input {
+  margin-bottom: 30px;
+}
+
+.native-login-input > input {
+  font-size: 14px;
+  text-align: center;
+  letter-spacing: 5px;
+  width: 350px;
+  padding: 15px;
+  border-radius: 20px;
+  border: none;
+  outline: none;
+}
+
+.remaind-me {
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  font-size: 14px;
+}
+
+.remaind-me > input {
+  margin-right: 10px;
+  transform: scale(1);
+  border: none;
+  outline: none;
+}
+
+.native-login-button {
+  width: 350px;
+  height: 45px;
+  font-size: 15px;
+  border-radius: 20px;
+  letter-spacing: 5px;
+  background: var(--main-master-color);
+  border: none;
+  outline: none;
+  color: white;
+  margin-bottom: 20px;
+}
+
+.login-or-holder {
+  margin-bottom: 20px;
+}
+
+.google-oauth-button {
+  height: 45px;
+  width: 350px;
+  font-size: 15px;
+  border-radius: 20px;
+  letter-spacing: 5px;
+  background: var(--main-master-color);
+  border: none;
+  outline: none;
+  color: white;
+}
+
+.google-oauth-button > i {
+  margin-right: 20px;
+}
+
+.responsive-link-creator {
+  margin-top: 30px;
+  display: none;
+}
+
+.responsive-custom-link {
+  margin-top: 10px;
+  display: none;
+  color: #f3f3f3;
+  border: 1px solid red;
+  padding: 10px;
+  border-radius: 20px;
+  width: 350px;
+  text-align: center;
+}
+
+.responsive-master-logo {
+  display: none;
+  width: 250px;
+  margin-bottom: 30px;
+}
+
+@media only screen and (max-width: 1000px) {
+  .responsive-link-creator {
+    display: block;
+  }
+  .responsive-custom-link {
+    display: block;
+  }
+  .toggle-slider {
+    display: none;
+  }
+  .hide-me {
+    display: none;
+  }
+  .auth-wrapper {
+    grid-template-columns: auto;
+  }
+  .responsive-master-logo {
+    display: block;
+  }
+}
