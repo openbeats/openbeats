@@ -27,7 +27,7 @@ class Auth extends Component {
 				<img className="responsive-master-logo" src={masterLogo} alt="" />
 				<div className="login-header">Login</div>
 				<div className="native-login-input">
-					<input placeholder="Username" type="text" name="" id="" />
+					<input placeholder="Email" type="text" name="" id="" />
 				</div>
 				<div className="native-login-input">
 					<input placeholder="Password" type="password" name="" id="" />
@@ -37,11 +37,6 @@ class Auth extends Component {
 					Remember Me
 				</div>
 				<button className="native-login-button cursor-pointer">Login</button>
-				<div className="login-or-holder">or</div>
-				<button className="google-oauth-button cursor-pointer">
-					<i className="fab fa-google"></i>
-					Login with Google
-				</button>
 				<div className="responsive-link-creator">
 					Don't have a OpenBeats Accont yet?{" "}
 				</div>
@@ -71,17 +66,15 @@ class Auth extends Component {
 					<input placeholder="Username" type="text" name="" id="" />
 				</div>
 				<div className="native-login-input">
+					<input placeholder="Email" type="text" name="" id="" />
+				</div>
+				<div className="native-login-input">
 					<input placeholder="Password" type="password" name="" id="" />
 				</div>
 				<div className="native-login-input">
 					<input placeholder="Confirm Password" type="password" name="" id="" />
 				</div>
 				<button className="native-login-button cursor-pointer">Register</button>
-				<div className="login-or-holder">or</div>
-				<button className="google-oauth-button cursor-pointer">
-					<i className="fab fa-google"></i>
-					Register with Google
-				</button>
 				<div className="responsive-link-creator">
 					Already have a OpenBeats Accont?
 				</div>
