@@ -75,6 +75,15 @@ pipeline {
                         buildAndUpdateCluster("services/downcc/", "obs-downcc", "obs-downcc")
                     }
                 }
+                stage('auth') {
+                    when {
+                        changeset "services/auth/**"
+                    }
+                    steps {
+                        echo 'building downcc...'
+                        buildAndUpdateCluster("services/auth/", "obs-auth", "obs-auth")
+                    }
+                }
             }
         }
         stage("End") {
