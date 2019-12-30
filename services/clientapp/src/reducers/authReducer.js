@@ -1,5 +1,6 @@
 const initialState = {
   isAuthenticated: false,
+  isAuthLoading: false,
   userDetails: {
     name: "",
     id: "",
@@ -20,7 +21,13 @@ const authReducer = (state = initialState, action) => {
       state = {
         ...state,
         ...action.payload
-      };;
+      };
+      break;
+    case "LOADING_STATE_TOGGLER":
+      state = {
+        ...state,
+        ...action.payload
+      };
       break;
     default:
       break;
