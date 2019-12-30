@@ -10,11 +10,11 @@ metadata:
 spec:
   tls:
     - hosts:
-      - openbeats.live
-      - www.openbeats.live
-      - jenkins.openbeats.live
-      - captain.openbeats.live
-      - api.openbeats.live
+        - openbeats.live
+        - www.openbeats.live
+        - jenkins.openbeats.live
+        - captain.openbeats.live
+        - api.openbeats.live
       secretName: openbeats-ingress-tls
   rules:
     - host: openbeats.live
@@ -82,4 +82,8 @@ spec:
           - path: /downcc(/|$)(.*)
             backend:
               serviceName: obs-downcc
+              servicePort: 2000
+          - path: /auth(/|$)(.*)
+            backend:
+              serviceName: obs-auth
               servicePort: 2000
