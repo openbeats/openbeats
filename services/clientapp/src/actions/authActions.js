@@ -5,7 +5,6 @@ import { variables } from "../config";
 
 export function loginHandler(email, password) {
   setAuthLoader(true);
-  console.log(email, password);
   fetch(`${variables.baseUrl}/auth/login`, {
     method: "POST",
     headers: {
@@ -17,12 +16,36 @@ export function loginHandler(email, password) {
       password
     })
   })
-    .then(data => data.json())
-    .then(data => {
-      console.log(data);
+    .then(async res => {
+      let data = await res.json();
+      if (res.status !== 400) {
+        let userDetails = {
+          name: data.name,
+          email: data.email,
+          id: data.id,
+          token: data.token,
+          avatar: data.avatar
+        };
+        localStorage.setItem("userDetails", JSON.stringify(userDetails));
+        store.dispatch({
+          type: "LOGIN_USER",
+          payload: {
+            userDetails,
+            isAuthenticated: true
+          }
+        });
+        setAuthLoader(false);
+        store.dispatch(push("/"));
+      } else {
+        let err = data.error;
+        toastActions.showMessage(err.toString());
+        setAuthLoader(false);
+      }
     })
     .catch(err => {
-      console.log(err);
+      toastActions.showMessage(
+        "Internal server error!\n please try again later or\n  email to support@openbeats.live"
+      );
     });
 }
 
@@ -44,16 +67,33 @@ export function registerHandler(name, email, password) {
     .then(async res => {
       let data = await res.json();
       if (res.status !== 400) {
-        // set user state authenticated
+        let userDetails = {
+          name: data.name,
+          email: data.email,
+          id: data.id,
+          token: data.token,
+          avatar: data.avatar
+        };
+        localStorage.setItem("userDetails", JSON.stringify(userDetails));
+        store.dispatch({
+          type: "LOGIN_USER",
+          payload: {
+            userDetails,
+            isAuthenticated: true
+          }
+        });
+        setAuthLoader(false);
+        store.dispatch(push("/"));
       } else {
-        let err = data.errors;
-        console.log(err);
-
-        toastActions.showMessage(err);
+        let err = data.error;
+        toastActions.showMessage(err.toString());
+        setAuthLoader(false);
       }
     })
     .catch(err => {
-      toastActions.showMessage(err);
+      toastActions.showMessage(
+        "Internal server error!\n please try again later or\n  email to support@openbeats.live"
+      );
     });
 }
 
@@ -62,6 +102,24 @@ function setAuthLoader(val) {
     type: "LOADING_STATE_TOGGLER",
     payload: {
       isAuthLoading: val
+    }
+  });
+}
+
+export function logoutHandler() {
+  let userDetails = {
+    name: "",
+    id: "",
+    token: "",
+    email: "",
+    avatar: ""
+  };
+  localStorage.removeItem("userDetails");
+  store.dispatch({
+    type: "LOGOUT_USER",
+    payload: {
+      userDetails,
+      isAuthenticated: false
     }
   });
 }

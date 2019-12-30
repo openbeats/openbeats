@@ -197,9 +197,11 @@
   .toggle-slider {
     display: none;
   }
+  
   .hide-me {
     display: none;
   }
+
   .auth-wrapper {
     grid-template-columns: auto;
   }

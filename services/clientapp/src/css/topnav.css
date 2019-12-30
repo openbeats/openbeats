@@ -79,9 +79,10 @@
 
 .main-user-profile-holder {
   padding-left: 15px;
+  position: relative;
 }
 
-.main-user-profile-holder > img {
+.login-user-display > img {
   width: 35px;
   height: 35px;
   border-radius: 50%;
@@ -129,6 +130,39 @@
 .auth-power-on {
   font-size: 20px;
   font-weight: bold;
+}
+
+.user-option-display-holder {
+  position: absolute;
+  background: var(--main-bg-color);
+  width: 200px;
+  height: auto;
+  right: 0;
+  border-radius: 5px;
+  top: 45px;
+  box-shadow: 0 0 10px 0 rgba(243, 44, 44, 0.9);
+  text-align: center;
+  font-size: 15px;
+  color: var(--text-color-sub-1);
+}
+.list {
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
+
+.logout-button-holder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.logout-icon {
+  font-size: 18px;
+  margin-right: 5px;
+}
+
+.user-name-holder {
+  color: var(--text-color-main);
 }
 
 /* mobile responsiveness */
