@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: obs-auth
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      type: backend
+      service: obs-auth
+  template:
+    metadata:
+      labels:
+        type: backend
+        service: obs-auth
+    spec:
+      containers:
+        - name: container
+          image: thayalangr/obs-auth:latest
+          env:
+            - name: DB
+              value: obs-db:27017

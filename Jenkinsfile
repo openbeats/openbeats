@@ -13,7 +13,7 @@ def buildAndUpdateCluster(String buildDir, String dockerImageName, String deploy
 pipeline {
     environment {
         // specify branch to build
-        BRANCH_TO_BUILD = "donotbuild"
+        BRANCH_TO_BUILD = "donot"
         USER_CREDENTIALS = credentials('dockerhub-credentials')
     }
     agent any
