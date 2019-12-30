@@ -10,34 +10,6 @@ import auth from "../config/auth";
 
 const router = express.Router();
 
-router.get(
-	"/google",
-	passport.authenticate("google", {
-		scope: ["email", "profile"],
-	}),
-);
-
-router.get(
-	"/google/callback",
-	passport.authenticate("google", { session: false }),
-	(req, res) => {
-		const payload = { user: req.user };
-		jwt.sign(
-			payload,
-			config.get("jwtSecret"),
-			{ expiresIn: 360000 },
-			(err, token) => {
-				try {
-					if (err) throw error;
-					res.redirect(302, `https://openbeats.live/auth/callback/${token}`);
-				} catch (error) {
-					res.status(500).json({ error: "Internal Server Error" });
-				}
-			},
-		);
-	},
-);
-
 router.post("/login", (req, res, next) => {
 	passport.authenticate("local", (error, user, info) => {
 		if (error) {
