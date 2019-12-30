@@ -1,14 +1,18 @@
 import React, { Component } from "react";
 import "../css/auth.css";
+import { toastActions } from "../actions";
+import { connect } from "react-redux";
+import { push } from "connected-react-router";
+import { store } from "../store";
 import { musicIllustration, masterLogo } from "../images";
+// import * as qs from 'query-string';
 
-export default class Auth extends Component {
+class Auth extends Component {
   constructor(props) {
     super(props);
     this.state = {
       displayRegister: false
     };
-
     this.Toggler = this.Toggler.bind(this);
     this.Login = this.Login.bind(this);
     this.Register = this.Register.bind(this);
@@ -173,3 +177,24 @@ export default class Auth extends Component {
     );
   }
 }
+
+const mapStateToProps = state => {
+  return {};
+};
+
+const mapDispatchToProps = dispatch => {
+  return {
+    push: path => {
+      if (path !== store.getState().router.location.pathname)
+        dispatch(push(path));
+    },
+    notify: message => {
+      toastActions.showMessage(message);
+    },
+    featureNotify: () => {
+      toastActions.featureNotify();
+    }
+  };
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(Auth);

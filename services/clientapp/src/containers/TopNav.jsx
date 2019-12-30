@@ -1,9 +1,9 @@
 import React, { Component } from "react";
 import "../css/topnav.css";
-import { angleright, mainsearch } from "../images";
 import { push } from "connected-react-router";
 import { connect } from "react-redux";
 import { toastActions, searchActions } from "../actions";
+import { musicDummy, angleright, mainsearch } from "../images";
 
 class TopNav extends Component {
   componentDidMount() {
@@ -86,20 +86,25 @@ class TopNav extends Component {
           </div>
         </div>
         <div className="main-user-profile-holder">
-          {/* <img
-                        className="cursor-pointer"
-                        onClick={() => {
-                            this.props.featureNotify()
-                        }} src={musicDummy}
-                        alt=""
-                        srcSet="" /> */}
-          <div
-            className="auth-login-register-holder cursor-pointer"
-            onClick={() => this.props.push("/auth")}
-          >
-            <i class="fas fa-power-off red-color auth-power-on"></i>
-            <span>&nbsp;&nbsp;Login/Register</span>
-          </div>
+          {this.props.isAuthenticated ? (
+            <img
+              className="cursor-pointer"
+              onClick={() => {
+                this.props.featureNotify();
+              }}
+              src={musicDummy}
+              alt=""
+              srcSet=""
+            />
+          ) : (
+            <div
+              className="auth-login-register-holder cursor-pointer"
+              onClick={() => this.props.push("/auth")}
+            >
+              <i class="fas fa-power-off red-color auth-power-on"></i>
+              <span>&nbsp;&nbsp;Login/Register</span>
+            </div>
+          )}
         </div>
       </section>
     );
@@ -112,7 +117,9 @@ const mapStateToProps = state => {
     suggestionText: state.searchReducer.suggestionText,
     keywordSuggestions: state.searchReducer.keywordSuggestions,
     currentTextIndex: state.searchReducer.currentTextIndex,
-    actualText: state.searchReducer.actualText
+    actualText: state.searchReducer.actualText,
+    isAuthenticated: state.authReducer.isAuthenticated,
+    userDetails: state.authReducer.userDetails
   };
 };
 
