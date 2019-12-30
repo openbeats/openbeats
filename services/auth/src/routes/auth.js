@@ -14,10 +14,10 @@ router.post("/login", (req, res, next) => {
   passport.authenticate("local", (error, user, info) => {
     if (error) {
       console.error(error.message);
-      res.status(500).json({ error: "Internal Server Error" });
+      res.status(500).send({ error: "Internal Server Error" });
     }
     if (info !== undefined) {
-      res.status(401).json({ error: info.message });
+      res.status(400).send({ error: info.message });
     } else {
       const payload = { user: { id: user.id } };
       jwt.sign(
@@ -27,7 +27,7 @@ router.post("/login", (req, res, next) => {
         (err, token) => {
           try {
             if (err) throw error;
-            res.json({
+            res.send({
               token,
               name: user.name,
               email: user.email,
@@ -35,7 +35,7 @@ router.post("/login", (req, res, next) => {
               avatar: user.avatar
             });
           } catch (error) {
-            res.status(500).json({ error: "Internal Server Error" });
+            res.status(500).send({ error: "Internal Server Error" });
           }
         }
       );
@@ -57,7 +57,13 @@ router.post(
   async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      return res.status(400).json({ errors: errors.array() });
+      let msg = "";
+      if (errors.errors.length > 0) {
+        errors.errors.forEach(element => {
+          msg += element.msg + "\n";
+        });
+      }
+      return res.status(400).send({ msg });
     }
 
     const { name, email, password } = req.body;
@@ -67,7 +73,7 @@ router.post(
       if (user) {
         return res
           .status(400)
-          .json({ errors: [{ msg: "User with that email id already exist" }] });
+          .send({ error: "User with that email id already exist" });
       }
 
       const avatar = gravatar.url(email, {
@@ -94,7 +100,7 @@ router.post(
         (err, token) => {
           try {
             if (err) throw err;
-            res.json({
+            res.send({
               token,
               name: user.name,
               email: user.email,
@@ -116,7 +122,7 @@ router.post(
 router.get("/me", auth, async (req, res) => {
   try {
     const user = await User.findById(req.user.id).select("-password");
-    res.json(user);
+    res.send(user);
   } catch (error) {
     console.error(error.message);
     res.status(500).send("Server error");

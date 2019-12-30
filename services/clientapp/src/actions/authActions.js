@@ -1,41 +1,60 @@
 import { store } from "../store";
 import { toastActions } from ".";
 import { push } from "connected-react-router";
+import { variables } from "../config";
 
 export function loginHandler(email, password) {
   setAuthLoader(true);
-  let loginSuccess = false;
-  if (loginSuccess) {
-    console.log(email, password);
-    setAuthLoader(false);
-    store.dispatch(push("/"));
-  } else {
-    toastActions.showMessage("Invalid username or password!");
-    setAuthLoader(false);
-  }
+  console.log(email, password);
+  fetch(`${variables.baseUrl}/auth/login`, {
+    method: "POST",
+    headers: {
+      Accept: "application/json",
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      email,
+      password
+    })
+  })
+    .then(data => data.json())
+    .then(data => {
+      console.log(data);
+    })
+    .catch(err => {
+      console.log(err);
+    });
 }
 
-export function registerHandler(userName, email, password) {
+export function registerHandler(name, email, password) {
   setAuthLoader(true);
-  let registerSuccess = true;
-  let payload = {
-    name: "",
-    id: "",
-    token: "",
-    mail: ""
-  };
-  if (registerSuccess) {
-    console.log(userName, email, password);
-    store.dispatch({
-      type: "LOGIN_USER",
-      payload
+  fetch(`${variables.baseUrl}/auth/register`, {
+    method: "POST",
+    headers: {
+      Accept: "application/json",
+      "Content-Type": "application/json",
+      "Access-Control-Allow-Origin": "*"
+    },
+    body: JSON.stringify({
+      email,
+      password,
+      name
+    })
+  })
+    .then(async res => {
+      let data = await res.json();
+      if (res.status !== 400) {
+        // set user state authenticated
+      } else {
+        let err = data.errors;
+        console.log(err);
+
+        toastActions.showMessage(err);
+      }
+    })
+    .catch(err => {
+      toastActions.showMessage(err);
     });
-    setAuthLoader(false);
-    store.dispatch(push("/"));
-  } else {
-    toastActions.showMessage("something went wrong try again later!");
-    setAuthLoader(false);
-  }
 }
 
 function setAuthLoader(val) {
