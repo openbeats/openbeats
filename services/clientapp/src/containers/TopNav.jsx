@@ -6,34 +6,34 @@ import { toastActions, searchActions } from "../actions";
 import { musicDummy, angleright, mainsearch } from "../images";
 
 class TopNav extends Component {
-  componentDidMount() {
-    this.initListeners();
-  }
+	componentDidMount() {
+		this.initListeners();
+	}
 
-  initListeners() {
-    const searchBarRef = document.getElementsByClassName("search-input")[0];
-    searchBarRef.addEventListener(
-      "focusin",
-      function(e) {
-        this.props.updateTyping(true);
-      }.bind(this)
-    );
-    searchBarRef.addEventListener(
-      "focusout",
-      function(e) {
-        this.props.updateTyping(false);
-      }.bind(this)
-    );
+	initListeners() {
+		const searchBarRef = document.getElementsByClassName("search-input")[0];
+		searchBarRef.addEventListener(
+			"focusin",
+			function(e) {
+				this.props.updateTyping(true);
+			}.bind(this),
+		);
+		searchBarRef.addEventListener(
+			"focusout",
+			function(e) {
+				this.props.updateTyping(false);
+			}.bind(this),
+		);
 
-    document.addEventListener(
-      "keydown",
-      function(e) {
-        if (e.keyCode === 27) {
-          this.props.emptyKeywordSuggestion();
-        }
-      }.bind(this)
-    );
-  }
+		document.addEventListener(
+			"keydown",
+			function(e) {
+				if (e.keyCode === 27) {
+					this.props.emptyKeywordSuggestion();
+				}
+			}.bind(this),
+		);
+	}
 
   render() {
     return (
@@ -124,33 +124,33 @@ const mapStateToProps = state => {
 };
 
 const mapDispatchToProps = dispatch => {
-  return {
-    push: path => {
-      dispatch(push(path));
-    },
-    featureNotify: () => {
-      toastActions.featureNotify();
-    },
-    updateSuggestionText: text => {
-      dispatch(searchActions.updateSuggestionText(text));
-    },
-    onKeyUpHandler: e => {
-      dispatch(searchActions.onKeyUpHandler(e));
-    },
-    updateTyping: isTyping => {
-      dispatch(searchActions.updateTyping(isTyping));
-    },
-    emptyKeywordSuggestion: () => {
-      dispatch(searchActions.emptyKeywordSuggestion());
-    },
-    fetchResults: () => {
-      searchActions.fetchResults();
-      dispatch(push("/search"));
-    },
-    getKeywordSuggestion: key => {
-      searchActions.getKeywordSuggestion(key);
-    }
-  };
+	return {
+		push: path => {
+			dispatch(push(path));
+		},
+		featureNotify: () => {
+			toastActions.featureNotify();
+		},
+		updateSuggestionText: text => {
+			dispatch(searchActions.updateSuggestionText(text));
+		},
+		onKeyUpHandler: e => {
+			dispatch(searchActions.onKeyUpHandler(e));
+		},
+		updateTyping: isTyping => {
+			dispatch(searchActions.updateTyping(isTyping));
+		},
+		emptyKeywordSuggestion: () => {
+			dispatch(searchActions.emptyKeywordSuggestion());
+		},
+		fetchResults: () => {
+			searchActions.fetchResults();
+			dispatch(push("/search"));
+		},
+		getKeywordSuggestion: key => {
+			searchActions.getKeywordSuggestion(key);
+		},
+	};
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(TopNav);
