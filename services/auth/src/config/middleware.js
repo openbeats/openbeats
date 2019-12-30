@@ -11,5 +11,5 @@ export default app => {
 	app.use(express.urlencoded({ extended: true }));
 	app.use(morgan("dev"));
 	app.use(passport.initialize());
-	app.use("/auth", authRoutes);
+	app.use("/", authRoutes);
 };
