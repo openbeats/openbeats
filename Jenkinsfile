@@ -1,10 +1,7 @@
 def buildAndUpdateCluster(String buildDir, String dockerImageName, String deploymentName) {
     String buildImageName = "thayalangr/" + dockerImageName + ":" + env.BUILD_NUMBER
-    // build docker image
     sh "docker build ${buildDir} -t ${buildImageName}"
-    // push docker image to hub
     sh "docker push ${buildImageName}"
-    // rollout cluster
     withKubeConfig([credentialsId: 'kubeconfig']) {
         sh "kubectl set image deployments/${deploymentName} container=${buildImageName} -n default"
     }
@@ -12,7 +9,6 @@ def buildAndUpdateCluster(String buildDir, String dockerImageName, String deploy
 
 pipeline {
     environment {
-        // specify branch to build
         BRANCH_TO_BUILD = "master"
         USER_CREDENTIALS = credentials('dockerhub-credentials')
     }
@@ -28,7 +24,6 @@ pipeline {
             when {
                 branch "$BRANCH_TO_BUILD"
             }
-            // Declare services here
             stages{
                 stage('clientapp') {
                     when {
@@ -36,7 +31,7 @@ pipeline {
                     }
                     steps {
                         echo 'building clientapp...'
-                        // buildAndUpdateCluster("services/clientapp/", "obs-clientapp", "obs-clientapp")
+                        buildAndUpdateCluster("services/clientapp/", "obs-clientapp", "obs-clientapp")
                     }
                 }
                 stage('captainapp') {

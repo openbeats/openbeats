@@ -1,12 +1,21 @@
+let isAuthenticated = false;
+let userDetails = {
+  name: "",
+  id: "",
+  token: "",
+  email: "",
+  avatar: ""
+};
+
+if (localStorage.getItem("userDetails")) {
+  userDetails = JSON.parse(localStorage.getItem("userDetails"));
+  isAuthenticated = true;
+}
+
 const initialState = {
-  isAuthenticated: false,
+  isAuthenticated: isAuthenticated,
   isAuthLoading: false,
-  userDetails: {
-    name: "",
-    id: "",
-    token: "",
-    mail: ""
-  }
+  userDetails: userDetails
 };
 
 const authReducer = (state = initialState, action) => {

@@ -10,13 +10,7 @@ class App extends Component {
       <Provider store={store}>
         <Switch>
           <Route path="/auth" component={Auth} />
-          <Route
-            path="/"
-            component={() => {
-              // check for authentication logic.. goes here
-              return <Main />;
-            }}
-          />
+          <Route path="/" component={Main} />
         </Switch>
       </Provider>
     );
