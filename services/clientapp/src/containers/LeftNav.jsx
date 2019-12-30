@@ -3,6 +3,7 @@ import "../css/leftnav.css";
 import { toastActions } from "../actions";
 import { connect } from "react-redux";
 import { push } from "connected-react-router";
+import { store } from "../store";
 import {
   masterLogo,
   navhome,
@@ -14,9 +15,8 @@ import {
   navplus,
   hamburger,
   navclose,
-  mainsearch,
+  mainsearch
 } from "../images";
-import { store } from "../store";
 
 class LeftNav extends Component {
   render() {
@@ -30,7 +30,7 @@ class LeftNav extends Component {
             <img
               className="cursor-pointer"
               onClick={() => {
-                window.open("/", "_self")
+                window.open("/", "_self");
               }}
               src={masterLogo}
               alt=""
@@ -41,10 +41,7 @@ class LeftNav extends Component {
           </section>
           <section className="nav-content">
             <section className="main-nav-menus">
-              <div
-                className="nav-menu"
-                onClick={() => this.props.push("/")}
-              >
+              <div className="nav-menu" onClick={() => this.props.push("/")}>
                 <div className="nav-menu-icon-holder">
                   <img className="nav-menu-icon-size" src={navhome} alt="" />
                 </div>
@@ -98,7 +95,8 @@ class LeftNav extends Component {
             </section>
             <section className="nav-horizontal-rule"></section>
             <section className="nav-playlist-holder">
-              <div className="nav-menu cursor-pointer"
+              <div
+                className="nav-menu cursor-pointer"
                 title="View All of Your Playlist"
                 onClick={() => this.props.push("/")}
               >
@@ -125,7 +123,6 @@ class LeftNav extends Component {
                 >
                   Beauty and the Beast
                 </li>
-
               </ul>
             </section>
             <section className="nav-footer-container">
@@ -161,7 +158,7 @@ const mapDispatchToProps = dispatch => {
     },
     featureNotify: () => {
       toastActions.featureNotify();
-    },
+    }
   };
 };
 
