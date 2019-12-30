@@ -2,37 +2,45 @@
 
 OpenBeats is an open source Music streamer.
 
+# Deployment Details
+- micoservices architecture
+- monorepo implementation
+- Kubernetes deployment
+- custom domain with multi subdomain ingress controller for kubernetes services
+
+---
+
 # OpenBeats API Docs
 
 ---
 
 **Opencc**
 
-> https://openbeats-s2.herokuapp.com/opencc/<-audio-id->
+> https://api.openbeats.live/opencc/<-audio-id->
 
 ---
 
 **fallback**
 
-> https://openbeats-s2.herokuapp.com/fallback/<-audio-id->
+> https://api.openbeats.live/fallback/<-audio-id->
 
 ---
 
 **downcc**
 
-> https://openbeats-s2.herokuapp.com/downcc/<-audio-id->
+> https://api.openbeats.live/downcc/<-audio-id->
 
 ---
 
 **ytcat**
 
-> https://openbeats-s2.herokuapp.com/ytcat?q=<-search-query->
+> https://api.openbeats.live/ytcat?q=<-search-query->
 
 ---
 
 **suggester**
 
-> https://openbeats-s2.herokuapp.com/suggester?k=<-keyword->
+> https://api.openbeats.live/suggester?k=<-keyword->
 
 ---
 
@@ -40,10 +48,10 @@ OpenBeats is an open source Music streamer.
 
 to get all charts
 
-> https://openbeats-s2.herokuapp.com/getcharts
+> https://api.openbeats.live/getcharts
 
 to get chart in specified language
 
-> https://openbeats-s2.herokuapp.com/getcharts?lang=<-language->
+> https://api.openbeats.live/getcharts?lang=<-language->
 
 ---
