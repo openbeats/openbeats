@@ -1,7 +1,7 @@
 // import {} from "../actions"
 // import { store } from "../store";
 
-export function loginHandler(userName, password) {
+export function loginHandler(email, password) {
   // auth logic
   // contact server validate user
   // recieve token
@@ -9,6 +9,6 @@ export function loginHandler(userName, password) {
   // update local storage with user token
 }
 
-export function registerHandler(userName, password) {}
-
-export function OAuthLoginHandler(token) {}
+export function registerHandler(userName, email, password) {
+  
+}
