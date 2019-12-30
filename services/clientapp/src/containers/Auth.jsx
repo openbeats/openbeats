@@ -1,11 +1,11 @@
 import React, { Component } from "react";
 import "../css/auth.css";
-import { toastActions } from "../actions";
+import { toastActions, authActions } from "../actions";
+import Loader from "react-loader-spinner";
 import { connect } from "react-redux";
 import { push } from "connected-react-router";
 import { store } from "../store";
 import { musicIllustration, masterLogo } from "../images";
-// import * as qs from 'query-string';
 
 class Auth extends Component {
   constructor(props) {
@@ -18,157 +18,213 @@ class Auth extends Component {
     this.Register = this.Register.bind(this);
   }
 
-	Login() {
-		return (
-			<div
-				className={`login-holder ${
-					this.state.displayRegister ? "hide-me" : ""
-				}`}>
-				<img className="responsive-master-logo" src={masterLogo} alt="" />
-				<div className="login-header">Login</div>
-				<div className="native-login-input">
-					<input placeholder="Email" type="text" name="" id="" />
-				</div>
-				<div className="native-login-input">
-					<input placeholder="Password" type="password" name="" id="" />
-				</div>
-				<div className="remaind-me">
-					<input type="checkbox" name="" id="" />
-					Remember Me
-				</div>
-				<button className="native-login-button cursor-pointer">Login</button>
-				<div className="responsive-link-creator">
-					Don't have a OpenBeats Accont yet?{" "}
-				</div>
-				<div
-					onClick={() =>
-						this.setState({
-							displayRegister: !this.state.displayRegister,
-						})
-					}
-					className="responsive-custom-link cursor-pointer">
-					Create One
-				</div>
-			</div>
-		);
-	}
+  Login() {
+    return (
+      <form
+        className={`login-holder ${
+          this.state.displayRegister ? "hide-me" : ""
+        }`}
+        onSubmit={e => {
+          e.preventDefault();
+          let element = e.target.elements;
+          this.props.loginHandler(element.email.value, element.password.value);
+        }}
+      >
+        <img className="responsive-master-logo" src={masterLogo} alt="" />
+        <div className="login-header">Login</div>
+        <div className="native-login-input">
+          <input required placeholder="Email" name="email" type="email" />
+        </div>
+        <div className="native-login-input">
+          <input
+            required
+            placeholder="Password"
+            name="password"
+            type="password"
+          />
+        </div>
+        <div className="remaind-me">
+          <input type="checkbox" name="rememberme" />
+          Remember Me
+        </div>
+        <button type="submit" className="native-login-button cursor-pointer">
+          Login
+        </button>
+        <div className="forgot-password-holder cursor-pointer">
+          Forgot password?
+        </div>
+        <div className="responsive-link-creator">
+          Don't have a OpenBeats Accont yet?{" "}
+        </div>
+        <div
+          onClick={() =>
+            this.setState({
+              displayRegister: !this.state.displayRegister
+            })
+          }
+          className="responsive-custom-link cursor-pointer"
+        >
+          Create One
+        </div>
+      </form>
+    );
+  }
 
-	Register() {
-		return (
-			<div
-				className={`register-holder ${
-					!this.state.displayRegister ? "hide-me" : ""
-				}`}>
-				<img className="responsive-master-logo" src={masterLogo} alt="" />
+  Register() {
+    return (
+      <form
+        className={`register-holder ${
+          !this.state.displayRegister ? "hide-me" : ""
+        }`}
+        onSubmit={e => {
+          e.preventDefault();
+          let element = e.target.elements;
+          if (element.password.value !== element.confirmpassword.value) {
+            this.props.notify("Password doesn't match!");
+            element.confirmpassword.value = "";
+          } else {
+            this.props.registerHandler(
+              element.name.value,
+              element.email.value,
+              element.password.value
+            );
+          }
+        }}
+      >
+        <img className="responsive-master-logo" src={masterLogo} alt="" />
 
-				<div className="login-header">Register</div>
-				<div className="native-login-input">
-					<input placeholder="Username" type="text" name="" id="" />
-				</div>
-				<div className="native-login-input">
-					<input placeholder="Email" type="text" name="" id="" />
-				</div>
-				<div className="native-login-input">
-					<input placeholder="Password" type="password" name="" id="" />
-				</div>
-				<div className="native-login-input">
-					<input placeholder="Confirm Password" type="password" name="" id="" />
-				</div>
-				<button className="native-login-button cursor-pointer">Register</button>
-				<div className="responsive-link-creator">
-					Already have a OpenBeats Accont?
-				</div>
-				<div
-					onClick={() =>
-						this.setState({
-							displayRegister: !this.state.displayRegister,
-						})
-					}
-					className="responsive-custom-link cursor-pointer">
-					Login
-				</div>
-			</div>
-		);
-	}
+        <div className="login-header">Register</div>
+        <div className="native-login-input">
+          <input required placeholder="Username" type="text" name="name" />
+        </div>
+        <div className="native-login-input">
+          <input required placeholder="Email" type="email" name="email" />
+        </div>
+        <div className="native-login-input">
+          <input
+            required
+            placeholder="Password"
+            type="password"
+            name="password"
+          />
+        </div>
+        <div className="native-login-input">
+          <input
+            required
+            placeholder="Confirm Password"
+            type="password"
+            name="confirmpassword"
+          />
+        </div>
+        <button type="submit" className="native-login-button cursor-pointer">
+          Register
+        </button>
+        <div className="responsive-link-creator">
+          Already have a OpenBeats Accont?
+        </div>
+        <div
+          onClick={() =>
+            this.setState({
+              displayRegister: !this.state.displayRegister
+            })
+          }
+          className="responsive-custom-link cursor-pointer"
+        >
+          Login
+        </div>
+      </form>
+    );
+  }
 
-	Toggler() {
-		return (
-			<div
-				className={`toggle-slider ${
-					this.state.displayRegister ? "display-register" : ""
-				}`}>
-				{this.state.displayRegister ? (
-					<div className="toggle-content-holder">
-						<img
-							className="music-master-logo"
-							src={masterLogo}
-							alt=""
-							srcSet=""
-						/>
-						<img
-							className="music-illustration"
-							src={musicIllustration}
-							alt=""
-							srcSet=""
-						/>
-						<div className="toggler-content-holder">
-							Already have a OpenBeats Account ?
-						</div>
-						<button
-							onClick={() =>
-								this.setState({
-									displayRegister: !this.state.displayRegister,
-								})
-							}
-							className="toggler-login-register-button cursor-pointer">
-							Login
-						</button>
-					</div>
-				) : (
-					<div className="toggle-content-holder">
-						<img
-							className="music-master-logo"
-							src={masterLogo}
-							alt=""
-							srcSet=""
-						/>
-						<img
-							className="music-illustration"
-							src={musicIllustration}
-							alt=""
-							srcSet=""
-						/>
-						<div className="toggler-content-holder">
-							Don't have a OpenBeats Account Yet?
-						</div>
-						<button
-							onClick={() =>
-								this.setState({
-									displayRegister: !this.state.displayRegister,
-								})
-							}
-							className="toggler-login-register-button cursor-pointer">
-							Register
-						</button>
-					</div>
-				)}
-			</div>
-		);
-	}
+  Toggler() {
+    return (
+      <div
+        className={`toggle-slider ${
+          this.state.displayRegister ? "display-register" : ""
+        }`}
+      >
+        {this.state.displayRegister ? (
+          <div className="toggle-content-holder">
+            <img
+              className="music-master-logo"
+              src={masterLogo}
+              alt=""
+              srcSet=""
+            />
+            <img
+              className="music-illustration"
+              src={musicIllustration}
+              alt=""
+              srcSet=""
+            />
+            <div className="toggler-content-holder">
+              Already have a OpenBeats Account ?
+            </div>
+            <button
+              onClick={() =>
+                this.setState({
+                  displayRegister: !this.state.displayRegister
+                })
+              }
+              className="toggler-login-register-button cursor-pointer"
+            >
+              Login
+            </button>
+          </div>
+        ) : (
+          <div className="toggle-content-holder">
+            <img
+              className="music-master-logo"
+              src={masterLogo}
+              alt=""
+              srcSet=""
+            />
+            <img
+              className="music-illustration"
+              src={musicIllustration}
+              alt=""
+              srcSet=""
+            />
+            <div className="toggler-content-holder">
+              Don't have a OpenBeats Account Yet?
+            </div>
+            <button
+              onClick={() =>
+                this.setState({
+                  displayRegister: !this.state.displayRegister
+                })
+              }
+              className="toggler-login-register-button cursor-pointer"
+            >
+              Register
+            </button>
+          </div>
+        )}
+      </div>
+    );
+  }
 
-	render() {
-		return (
-			<div className="auth-wrapper">
-				<this.Toggler />
-				<this.Register />
-				<this.Login />
-			</div>
-		);
-	}
+  render() {
+    return (
+      <div className="auth-wrapper">
+        {this.props.isAuthLoading && (
+          <div className="auth-preloader">
+            <Loader type="ThreeDots" color="#F32C2C" height={80} width={80} />
+          </div>
+        )}
+        <this.Toggler />
+        <this.Register />
+        <this.Login />
+      </div>
+    );
+  }
 }
 
 const mapStateToProps = state => {
-  return {};
+  return {
+    isAuthenticated: state.authReducer.isAuthenticated,
+    isAuthLoading: state.authReducer.isAuthLoading
+  };
 };
 
 const mapDispatchToProps = dispatch => {
@@ -182,6 +238,12 @@ const mapDispatchToProps = dispatch => {
     },
     featureNotify: () => {
       toastActions.featureNotify();
+    },
+    loginHandler: (email, password) => {
+      authActions.loginHandler(email, password);
+    },
+    registerHandler: (userName, email, password) => {
+      authActions.registerHandler(userName, email, password);
     }
   };
 };
