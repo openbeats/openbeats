@@ -36,7 +36,7 @@ pipeline {
                     }
                     steps {
                         echo 'building clientapp...'
-                        buildAndUpdateCluster("services/clientapp/", "obs-clientapp", "obs-clientapp")
+                        // buildAndUpdateCluster("services/clientapp/", "obs-clientapp", "obs-clientapp")
                     }
                 }
                 stage('captainapp') {

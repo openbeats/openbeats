@@ -102,7 +102,7 @@ class TopNav extends Component {
               onClick={() => this.props.push("/auth")}
             >
               <i class="fas fa-power-off red-color auth-power-on"></i>
-              <span>&nbsp;&nbsp;Login/Register</span>
+              <span className="hide-me">&nbsp;&nbsp;Login/Register</span>
             </div>
           )}
         </div>

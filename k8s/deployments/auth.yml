@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: obs-auth
 spec:
-  replicas: 1
+  replicas: 2
   selector:
     matchLabels:
       type: backend
@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: container
-          image: thayalangr/obs-auth:latest
+          image: thayalangr/obs-auth
           env:
             - name: DB
               value: obs-db:27017
