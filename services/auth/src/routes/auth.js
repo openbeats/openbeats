@@ -42,6 +42,7 @@ router.post("/login", (req, res, next) => {
     }
   })(req, res, next);
 });
+
 router.post(
   "/register",
   [
@@ -118,15 +119,5 @@ router.post(
     }
   }
 );
-
-router.get("/me", auth, async (req, res) => {
-  try {
-    const user = await User.findById(req.user.id).select("-password");
-    res.send(user);
-  } catch (error) {
-    console.error(error.message);
-    res.status(500).send("Server error");
-  }
-});
 
 export default router;

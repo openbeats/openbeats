@@ -6,7 +6,7 @@ export default async () => {
   if (config.get("isDev")) {
     mongoUrl = config.get("mongoURI_DEV");
   } else {
-    mongoUrl = process.env.DB;
+    mongoUrl = `mongodb://${process.env.DB}/obs-db`;
   }
   await mongoose
     .connect(mongoUrl, {

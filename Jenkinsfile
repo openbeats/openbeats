@@ -7,10 +7,23 @@ def buildAndUpdateCluster(String buildDir, String dockerImageName, String deploy
     }
 }
 
+def buildAndAddNewServiceToCluster(String buildDir, String dockerImageName, String deploymentName, String svcName) {
+    String buildImageName = "thayalangr/" + dockerImageName
+    sh "docker build ${buildDir} -t ${buildImageName}"
+    sh "docker push ${buildImageName}"
+    withKubeConfig([credentialsId: 'kubeconfig']) {
+        sh "kubectl apply -f k83/deployments/${svcName}.yml"
+        sh "kubectl apply -f k83/svc/${svcName}.yml"
+        sh "kubectl apply -f k83/ingress/ingress.yml"
+    }
+}
+
 pipeline {
     environment {
         BRANCH_TO_BUILD = "master"
         USER_CREDENTIALS = credentials('dockerhub-credentials')
+        HAS_NEW_SERVICE_TO_ADD = "yes"
+        NEW_SERVICE_NAME = "playlist"
     }
     agent any
     stages {
@@ -77,6 +90,28 @@ pipeline {
                     steps {
                         echo 'building downcc...'
                         buildAndUpdateCluster("services/auth/", "obs-auth", "obs-auth")
+                    }
+                }
+                stage('playlist') {
+                    when {
+                        changeset "services/playlist/**"
+                    }
+                    steps {
+                        echo 'building playlist...'
+                        buildAndUpdateCluster("services/playlist/", "obs-playlist", "obs-playlist")
+                    }
+                }
+            }
+        }
+        stage("Add New Service"){
+            when {
+                expression { "$HAS_NEW_SERVICE_TO_ADD" == "yes" }
+            }
+            stages{
+                stage("Build And Deploy New Service to cluster"){
+                    steps {
+                        echo 'Building and Adding new Service to the cluster...'
+                        buildAndAddNewServiceToCluster("services/$NEW_SERVICE_NAME/", "obs-$NEW_SERVICE_NAME", "obs-$NEW_SERVICE_NAME", "$NEW_SERVICE_NAME")
                     }
                 }
             }
