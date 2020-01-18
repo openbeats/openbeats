@@ -13,6 +13,39 @@ OpenBeats is an open source Music streamer.
 # OpenBeats API Docs
 
 ---
+**Auth**
+
+Register
+>https://api.openbeats.live/auth/register
+
+```
+reqType: post,
+bodyType: JSON
+JSON-Structure:
+
+{
+    "name": "name",
+    "email": "email@email.com",
+    "password": "password" 
+}
+
+```
+Login
+>https://api.openbeats.live/auth/login
+
+```
+reqType: post,
+bodyType: JSON
+JSON-Structure:
+
+{
+    "email": "email@email.com",
+    "password": "password" 
+}
+
+```
+
+---
 
 **Opencc**
 

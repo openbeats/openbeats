@@ -87,3 +87,7 @@ spec:
             backend:
               serviceName: obs-auth
               servicePort: 2000
+          - path: /playlist(/|$)(.*)
+            backend:
+              serviceName: obs-playlist
+              servicePort: 2000
