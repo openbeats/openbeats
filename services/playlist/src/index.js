@@ -1,6 +1,8 @@
 import middleware from "./config/middleware";
 import express from "express";
 import dbconfig from "./config/db";
+import userPlaylistRoutes from "./routes/userPlaylist";
+
 
 dbconfig();
 
@@ -10,12 +12,7 @@ const app = express();
 
 middleware(app);
 
-app.get("/", async (req, res) => {
-  res.send("Hello world!");
-});
-
-
-
+app.use("/userplaylist", userPlaylistRoutes)
 
 app.listen(PORT, () => {
   console.log("openbeats playlist service up and running!");

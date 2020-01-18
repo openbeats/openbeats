@@ -22,8 +22,8 @@ pipeline {
     environment {
         BRANCH_TO_BUILD = "master"
         USER_CREDENTIALS = credentials('dockerhub-credentials')
-        HAS_NEW_SERVICE_TO_ADD = "true"
-        NEW_SERVICE_NAME = "playlist"
+        HAS_NEW_SERVICE_TO_ADD = "false"
+        NEW_SERVICE_NAME = "nothing"
     }
     agent any
     stages {

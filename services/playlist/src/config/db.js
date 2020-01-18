@@ -12,7 +12,8 @@ export default async () => {
     .connect(mongoUrl, {
       useNewUrlParser: true,
       useUnifiedTopology: true,
-      useCreateIndex: true
+      useCreateIndex: true,
+      useFindAndModify: false
     })
     .then(() => {
       console.log("Connection Successful!");
