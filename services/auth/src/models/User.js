@@ -22,5 +22,13 @@ export default mongoose.model(
 			type: Date,
 			default: Date.now,
 		},
+		myPlaylists: {
+			type: Array,
+			default: [],
+		},
+		playlistCollections: {
+			type: Array,
+			default: []
+		}
 	}),
 );
