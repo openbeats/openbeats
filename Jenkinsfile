@@ -12,9 +12,9 @@ def buildAndAddNewServiceToCluster(String buildDir, String dockerImageName, Stri
     sh "docker build ${buildDir} -t ${buildImageName}"
     sh "docker push ${buildImageName}"
     withKubeConfig([credentialsId: 'kubeconfig']) {
-        sh "kubectl apply -f k83/deployments/${svcName}.yml"
-        sh "kubectl apply -f k83/svc/${svcName}.yml"
-        sh "kubectl apply -f k83/ingress/ingress.yml"
+        sh "kubectl apply -f k8s/deployments/${svcName}.yml"
+        sh "kubectl apply -f k8s/svc/${svcName}.yml"
+        sh "kubectl apply -f k8s/ingress/ingress.yml"
     }
 }
 

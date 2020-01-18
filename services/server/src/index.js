@@ -58,29 +58,6 @@ app.get("/suggester", async (req, res) => {
 	});
 });
 
-// app.get("/getcharts", async (req, res) => {
-// 	let chart = null;
-// 	if (req.query.lang) {
-// 		chart = localdb
-// 			.get("opencharts")
-// 			.find({ language: req.query.lang })
-// 			.value();
-// 	} else {
-// 		chart = localdb.get("opencharts").value();
-// 	}
-// 	if (!chart) {
-// 		res.status(404).send({
-// 			status: false,
-// 			error: "Cannot find charts in specified language.",
-// 		});
-// 	} else {
-// 		res.send({
-// 			status: true,
-// 			chart,
-// 		});
-// 	}
-// });
-
 app.listen(PORT, () => {
 	console.log("openbeats server up and running!");
 });
