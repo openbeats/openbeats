@@ -2,8 +2,8 @@ import middleware from "./config/middleware";
 import express from "express";
 import { ytcat, suggestbeat, copycat } from "./core";
 import ytdl from "ytdl-core";
-import dbconfig from "./config/db";
-dbconfig();
+// import dbconfig from "./config/db";
+// dbconfig();
 
 const PORT = process.env.PORT || 2000;
 
@@ -20,7 +20,7 @@ app.get("/opencc/:id", async (req, res) => {
 	try {
 		const info = await ytdl.getInfo(videoID);
 		let audioFormats = ytdl.filterFormats(info.formats, "audioonly");
-		if (!audioFormats[0].clen) {
+		if (!audioFormats[0].contentLength) {
 			audioFormats = ytdl.filterFormats(info.formats, "audioandvideo");
 		}
 		let sourceUrl = audioFormats[0].url;
@@ -80,8 +80,6 @@ app.get("/suggester", async (req, res) => {
 // 		});
 // 	}
 // });
-
-
 
 app.listen(PORT, () => {
 	console.log("openbeats server up and running!");
