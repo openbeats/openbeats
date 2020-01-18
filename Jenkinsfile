@@ -22,7 +22,7 @@ pipeline {
     environment {
         BRANCH_TO_BUILD = "master"
         USER_CREDENTIALS = credentials('dockerhub-credentials')
-        HAS_NEW_SERVICE_TO_ADD = "yes"
+        HAS_NEW_SERVICE_TO_ADD = "true"
         NEW_SERVICE_NAME = "playlist"
     }
     agent any
@@ -103,9 +103,9 @@ pipeline {
                 }
             }
         }
-        stage("Add New Service"){
+        stage("Check for New Service"){
             when {
-                expression { "$HAS_NEW_SERVICE_TO_ADD" == "yes" }
+                expression { HAS_NEW_SERVICE_TO_ADD == "true" }
             }
             stages{
                 stage("Build And Deploy New Service to cluster"){
