@@ -8,6 +8,7 @@ import { push } from "connected-react-router";
 import { Switch, Route } from "react-router";
 import NowPlaying from "./NowPlaying";
 import Result from "./Result";
+import PlaylistManipulator from "./PlaylistManipulator";
 
 class Main extends Component {
   componentDidMount() {
@@ -20,21 +21,21 @@ class Main extends Component {
     const mainRef = document.getElementById("main");
     const playerWrapperRef = document.getElementById("player-wrapper");
 
-    navHamburgerRef.onclick = function(e) {
+    navHamburgerRef.onclick = function (e) {
       navRef.classList.add("nav-show");
       playerWrapperRef.classList.remove("show-player");
     };
 
-    navCloseRef.onclick = function(e) {
+    navCloseRef.onclick = function (e) {
       navRef.classList.remove("nav-show");
     };
 
-    mainRef.onclick = function(e) {
+    mainRef.onclick = function (e) {
       navRef.classList.remove("nav-show");
       playerWrapperRef.classList.remove("show-player");
     };
 
-    playerWrapperRef.onclick = function(e) {
+    playerWrapperRef.onclick = function (e) {
       navRef.classList.remove("nav-show");
     };
   }
@@ -42,6 +43,9 @@ class Main extends Component {
   render() {
     return (
       <Fragment>
+        {this.props.showAddPlaylistDialog &&
+          <PlaylistManipulator />
+        }
         <LeftNav />
         <main id="main">
           <TopNav />
@@ -62,7 +66,9 @@ class Main extends Component {
 }
 
 const mapStateToProps = state => {
-  return {};
+  return {
+    showAddPlaylistDialog: state.playlistManipulatorReducer.showAddPlaylistDialog
+  };
 };
 
 const mapDispatchToProps = dispatch => {

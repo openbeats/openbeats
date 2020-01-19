@@ -3,16 +3,13 @@
 OpenBeats is an open source Music streamer.
 
 # Deployment Details
-- micoservices architecture
+- microservices architecture
 - monorepo implementation
 - Kubernetes deployment
 - custom domain with multi subdomain ingress controller for kubernetes services
 
----
-
 # OpenBeats API Docs
 
----
 **Auth**
 
 *Register*

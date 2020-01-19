@@ -7,6 +7,7 @@ import Result from "./Result";
 import TopNav from "./TopNav";
 import NowPlaying from "./NowPlaying";
 import PlaylistDisplay from "./PlaylistDisplay";
+import PlaylistManipulator from "./PlaylistManipulator";
 
 export {
 	Main,
@@ -18,4 +19,5 @@ export {
 	Result,
 	NowPlaying,
 	PlaylistDisplay,
+	PlaylistManipulator
 };
