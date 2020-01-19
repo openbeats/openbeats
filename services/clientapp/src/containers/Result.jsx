@@ -4,7 +4,7 @@ import Loader from 'react-loader-spinner'
 import "../css/result.css"
 import { variables } from '../config'
 import { connect } from "react-redux"
-import { toastActions, coreActions, nowPlayingActions, playerActions } from '../actions';
+import { toastActions, coreActions, nowPlayingActions, playerActions, playlistManipulatorActions } from '../actions';
 
 class Result extends Component {
 
@@ -102,7 +102,7 @@ class Result extends Component {
                                             </a>
                                             <img onClick={
                                                 () => {
-                                                    this.props.featureNotify()
+                                                    this.props.showAddPlaylistDialog(item)
                                                 }
                                             } className="action-image-size cursor-pointer" src={playlistadd} alt="" />
                                         </div>
@@ -158,6 +158,9 @@ const mapDispatchToProps = (dispatch) => {
         playPauseToggle: () => {
             dispatch(playerActions.playPauseToggle())
         },
+        showAddPlaylistDialog: (song) => {
+            playlistManipulatorActions.showAddPlaylistDialog(song)
+        }
 
 
     }
