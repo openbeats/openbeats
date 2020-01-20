@@ -17,6 +17,7 @@ class PlaylistManipulator extends Component {
     componentDidMount() {
         document.addEventListener("keyup", this.escKeyListener)
 
+        this.props.fetchUserPlaylistMetadata(this.props.userDetails.id)
     }
 
     escKeyListener(e) {
@@ -39,16 +40,47 @@ class PlaylistManipulator extends Component {
                     <div onClick={() => this.props.clearAddPlaylistDialog()} className="pm-close-button-holder cursor-pointer">
                         <i className="fas fa-times"></i>
                     </div>
-                    <div className="pm-create-new-playlist-holder cursor-pointer">
-                        <i className="fas fa-plus"></i> Create New Playlist
+                    {this.state.showCreateNewPlaylistTextInputField ?
+                        <form className="pm-create-new-playlist-holder playlist-text-input-container" id="inp-form" onSubmit={(e) => {
+                            e.preventDefault()
+                            const inpFrm = document.getElementById("inp-form");
+                            let pName = inpFrm.elements[0].value;
+                            if (pName.length > 0) {
+                                let success = this.props.createNewPlaylist(this.props.userDetails.id, pName);
+                                if (success) {
+                                    this.setState({ showCreateNewPlaylistTextInputField: false })
+                                }
+                            } else {
+                                this.props.notify("Playlist Name is Empty!")
+                            }
+                        }}>
+                            <input type="text" name="pname" autoFocus placeholder="Playlist Name" />
+                            <button type="submit" className="upst-submit-btn cursor-pointer">
+                                <i className="fas fa-check" type="submit"></i>
+                            </button>
+                            <div className="upst-div"></div>
+                            <i className="fas fa-times upst-close-btn cursor-pointer" onClick={() => this.setState({ showCreateNewPlaylistTextInputField: false })}></i>
+                        </form>
+                        : <div className="pm-create-new-playlist-holder cursor-pointer" onClick={e => this.setState({ showCreateNewPlaylistTextInputField: true })}>
+                            <i className="fas fa-plus"></i> Create New Playlist
                     </div>
+                    }
                     <div className="pm-core-playlist-holder">
-                        <div className="pm-core-playlist-item-holer">
-                            <label className="pm-core-playlist-container">One
-                                    <input type="checkbox" />
-                                <span className="pm-core-playlist-checkmark"></span>
-                            </label>
-                        </div>
+                        {this.props.userPlaylistMetaData.length > 0 && this.props.userPlaylistMetaData.map((item, key) => (
+                            <div className="pm-core-playlist-item-holer" key={key}>
+                                <label className="pm-core-playlist-container">{item.name}
+                                    <input type="checkbox" onChange={(e) => {
+                                        console.log(e.target.checked);
+                                        if (e.target.checked)
+                                            this.props.addSongToPlaylist(item.playlistId, this.props.currentSong)
+                                        else
+                                            this.props.removeSongFromPlaylist(item.playlistId, this.props.currentSong)
+                                    }} />
+                                    <span className="pm-core-playlist-checkmark"></span>
+                                </label>
+                            </div>
+                        ))
+                        }
                     </div>
 
                 </div>
@@ -61,7 +93,9 @@ class PlaylistManipulator extends Component {
 const mapStateToProps = (state) => {
     return {
         showAddPlaylistDialog: state.playlistManipulatorReducer.showAddPlaylistDialog,
-        currentSong: state.playlistManipulatorReducer.currentSong
+        currentSong: state.playlistManipulatorReducer.currentSong,
+        userPlaylistMetaData: state.playlistManipulatorReducer.userPlaylistMetaData,
+        userDetails: state.authReducer.userDetails
     }
 
 }
@@ -79,6 +113,18 @@ const mapDispatchToProps = (dispatch) => {
         },
         clearAddPlaylistDialog: () => {
             playlistManipulatorActions.clearAddPlaylistDialog();
+        },
+        fetchUserPlaylistMetadata: (userId) => {
+            playlistManipulatorActions.fetchUserPlaylistMetadata(userId);
+        },
+        addSongToPlaylist: (pId, song) => {
+            playlistManipulatorActions.addSongToPlaylist(pId, song);
+        },
+        removeSongFromPlaylist: (pId, song) => {
+            playlistManipulatorActions.removeSongFromPlaylist(pId, song);
+        },
+        createNewPlaylist: (userId, name) => {
+            return playlistManipulatorActions.createNewPlaylist(userId, name);
         }
     }
 }

@@ -21,6 +21,13 @@ const playlistManipulatorReducer = (state = initialState, action) => {
             }
             break;
 
+        case "RECIEVE_USER_PLAYLIST_METADATA":
+            state = {
+                ...state,
+                ...action.payload
+            }
+            break;
+
         default:
             break;
     }

@@ -72,6 +72,61 @@
     box-sizing: border-box;
 }
 
+.playlist-text-input-container {
+    /* position: relative; */
+    width: 100%;
+}
+
+.playlist-text-input-container>input {
+    text-align: center;
+    letter-spacing: 1px;
+    width: 75%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 38px;
+    background: whitesmoke;
+    outline: none;
+    border: none;
+}
+
+.upst-close-btn {
+    color: white;
+    position: absolute;
+    right: 7px;
+    top: 10px;
+    font-size: 18px !important;
+}
+
+.upst-div {
+    position: absolute;
+    /* top: 5px; */
+    right: 36px;
+    border: 0.5px solid white;
+    height: 40px;
+    opacity: 0.2;
+}
+
+.upst-submit-btn {
+    color: white;
+    position: absolute;
+    right: 46px;
+    top: 10px;
+    font-size: 17px !important;
+    outline: none;
+    background: none;
+    border: none;
+    display: flex;
+}
+
+.upst-submit-btn:focus {
+    outline: none;
+}
+
+.upst-submit-btn:active {
+    outline: none;
+}
+
 /* width */
 .pm-core-playlist-holder::-webkit-scrollbar {
     width: 8px;

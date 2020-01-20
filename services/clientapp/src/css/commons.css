@@ -1,5 +1,6 @@
 .toast-margin-bottom {
   margin-bottom: 40px;
+  z-index: 100000000000;
 }
 
 .toast-bg-color {

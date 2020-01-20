@@ -48,7 +48,7 @@ class Player extends Component {
     const progressRef = document.getElementById("player-progress-bar");
     volumeRef.blur();
     progressRef.blur();
-    if (e.keyCode === 32 && !this.props.isTyping) {
+    if (e.keyCode === 32 && !this.props.isTyping && !this.props.showAddPlaylistDialog) {
       this.props.playPauseToggle();
     } else if (e.keyCode === 77 && !this.props.isTyping) {
       this.props.muteToggle();
@@ -119,7 +119,7 @@ class Player extends Component {
                 }}
                 className={`next-previous ${
                   !this.props.isPreviousAvailable ? "fed-up" : ""
-                }`}
+                  }`}
               >
                 <img src={playerprevious} alt="" srcSet="" />
               </div>
@@ -135,18 +135,18 @@ class Player extends Component {
                       srcSet=""
                     />
                   ) : (
-                    <img
-                      src={playerplay}
-                      onClick={() => {
-                        this.props.playPauseToggle();
-                      }}
-                      alt=""
-                      srcSet=""
-                    />
-                  )
+                      <img
+                        src={playerplay}
+                        onClick={() => {
+                          this.props.playPauseToggle();
+                        }}
+                        alt=""
+                        srcSet=""
+                      />
+                    )
                 ) : (
-                  <Loader type="Rings" color="#F32C2C" height={50} width={50} />
-                )}
+                    <Loader type="Rings" color="#F32C2C" height={50} width={50} />
+                  )}
               </div>
               <div
                 onClick={() => {
@@ -154,7 +154,7 @@ class Player extends Component {
                 }}
                 className={`next-previous ${
                   !this.props.isNextAvailable ? "fed-up" : ""
-                }`}
+                  }`}
               >
                 <img src={playernext} alt="" srcSet="" />
               </div>
@@ -170,14 +170,14 @@ class Player extends Component {
                     <i className="fas fa-volume-mute volume-icon cursor-pointer"></i>
                   </span>
                 ) : (
-                  <span
-                    onClick={e => {
-                      this.props.muteToggle();
-                    }}
-                  >
-                    <i className="fas fa-volume-up volume-icon cursor-pointer"></i>
-                  </span>
-                )}
+                    <span
+                      onClick={e => {
+                        this.props.muteToggle();
+                      }}
+                    >
+                      <i className="fas fa-volume-up volume-icon cursor-pointer"></i>
+                    </span>
+                  )}
                 <input
                   onChange={e => {
                     this.props.updateVolume(e);
@@ -198,7 +198,7 @@ class Player extends Component {
                   }}
                   className={`music-download cursor-pointer t-none ${
                     this.props.downloadProcess ? "no-access" : ""
-                  }`}
+                    }`}
                 >
                   {this.props.downloadProcess ? (
                     <Loader
@@ -208,8 +208,8 @@ class Player extends Component {
                       width={20}
                     />
                   ) : (
-                    <img src={playerdownload} alt="" srcSet="" />
-                  )}
+                      <img src={playerdownload} alt="" srcSet="" />
+                    )}
                 </div>
               </div>
               <div>
@@ -246,8 +246,8 @@ class Player extends Component {
           {this.props.isMusicPlaying ? (
             <Loader type="Audio" color="#322C2C" height={25} width={25} />
           ) : (
-            <i className="fas fa-play"></i>
-          )}
+              <i className="fas fa-play"></i>
+            )}
         </div>
       </Fragment>
     );
@@ -268,7 +268,8 @@ const mapStateToProps = state => {
     thumbnail: state.playerReducer.thumbnail,
     songTitle: state.playerReducer.songTitle,
     downloadProcess: state.playerReducer.downloadProcess,
-    isTyping: state.searchReducer.isTyping
+    isTyping: state.searchReducer.isTyping,
+    showAddPlaylistDialog: state.playlistManipulatorReducer.showAddPlaylistDialog
   };
 };
 
