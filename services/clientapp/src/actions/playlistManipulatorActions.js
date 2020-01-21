@@ -59,11 +59,19 @@ export async function fetchUserPlaylistMetadata(userId) {
 }
 
 export async function addSongToPlaylist(pId, song) {
-    console.log(pId, song);
-    toastActions.showMessage(pId.toString() + " " + song.videoId.toString())
+    try {
+        await axios.post(`${variables.baseUrl}/playlist/userplaylist/addsongs`, {
+            playlistId: pId,
+            songs: [song]
+        })
+        toastActions.showMessage("Song added to the playlsit!")
+    } catch (error) {
+        toastActions.showMessage(error.toString())
+    }
 
-
+    return true;
 }
+
 export async function removeSongFromPlaylist(pId, song) {
     console.log(pId, song);
     toastActions.showMessage(pId.toString() + " " + song.videoId.toString())

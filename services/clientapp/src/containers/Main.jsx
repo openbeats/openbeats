@@ -9,6 +9,7 @@ import { Switch, Route } from "react-router";
 import NowPlaying from "./NowPlaying";
 import Result from "./Result";
 import PlaylistManipulator from "./PlaylistManipulator";
+import YourPlaylist from "./YourPlaylist";
 
 class Main extends Component {
   componentDidMount() {
@@ -55,6 +56,7 @@ class Main extends Component {
               <Route exact path="/" component={Home} />
               <Route path="/nowplaying" component={NowPlaying} />
               <Route path="/playlist" component={PlaylistDisplay} />
+              <Route path="/yourplaylist" component={YourPlaylist} />
               <Route path="/search" component={Result} />
             </Switch>
           </section>
