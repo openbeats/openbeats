@@ -1,6 +1,6 @@
 import React, { Component, Fragment } from "react";
 import "../css/leftnav.css";
-import { toastActions } from "../actions";
+import { toastActions, playlistManipulatorActions } from "../actions";
 import { connect } from "react-redux";
 import { push } from "connected-react-router";
 import { store } from "../store";
@@ -19,6 +19,14 @@ import {
 } from "../images";
 
 class LeftNav extends Component {
+
+  componentDidMount() {
+    if (this.props.isAuthenticated) {
+      this.props.fetchUserPlaylistMetadata(this.props.userDetails.id);
+    }
+  }
+
+
   render() {
     return (
       <Fragment>
@@ -98,7 +106,7 @@ class LeftNav extends Component {
               <div
                 className="nav-menu cursor-pointer"
                 title="View All of Your Playlist"
-                onClick={() => this.props.push("/")}
+                onClick={() => this.props.push("/yourplaylist")}
               >
                 <div className="nav-menu-icon-holder">
                   <img
@@ -109,21 +117,37 @@ class LeftNav extends Component {
                 </div>
                 <p className="nav-menu-text">Your Playlists</p>
               </div>
-              <ul className="playlist-content-holder">
-                <div
-                  className="nav-playlist-plus-icon-holder"
-                  title="Create New Playlist"
-                  onClick={() => this.props.featureNotify()}
-                >
-                  <img src={navplus} alt="" srcSet="" />
+              {this.props.isAuthenticated ?
+
+                <ul className="playlist-content-holder">
+
+                  <div
+                    className="nav-playlist-plus-icon-holder"
+                    title="Create New Playlist"
+                    onClick={() => this.props.featureNotify()}
+                  >
+                    <img src={navplus} alt="" srcSet="" />
+                  </div>
+                  {this.props.userPlaylistMetaData.length > 0 ?
+                    this.props.userPlaylistMetaData.map((item, key) => (
+                      <li
+                        className="playlist-content-holder-text"
+                        onClick={() => this.props.push(`/playlist`)}
+                      >
+                        {item.name}
+                      </li>
+                    ))
+                    :
+                    <li className="empty-playlist-leftnav">Your playlist is empty</li>
+                  }
+                </ul> :
+                <div className="playlist-login-notifier cursor-pointer" onClick={() => this.props.push("/auth")}>
+                  <div>
+                    <i className="fas fa-power-off red-color auth-power-on"></i>
+                  </div>
+                  <p>please login to <br /> view or create your playlist</p>
                 </div>
-                <li
-                  className="playlist-content-holder-text"
-                  onClick={() => this.props.push("/playlist")}
-                >
-                  Beauty and the Beast
-                </li>
-              </ul>
+              }
             </section>
             <section className="nav-footer-container">
               <div className="footer-text-holder">
@@ -144,7 +168,11 @@ class LeftNav extends Component {
 }
 
 const mapStateToProps = state => {
-  return {};
+  return {
+    isAuthenticated: state.authReducer.isAuthenticated,
+    userPlaylistMetaData: state.playlistManipulatorReducer.userPlaylistMetaData,
+    userDetails: state.authReducer.userDetails
+  };
 };
 
 const mapDispatchToProps = dispatch => {
@@ -158,6 +186,9 @@ const mapDispatchToProps = dispatch => {
     },
     featureNotify: () => {
       toastActions.featureNotify();
+    },
+    fetchUserPlaylistMetadata: (userId) => {
+      playlistManipulatorActions.fetchUserPlaylistMetadata(userId);
     }
   };
 };

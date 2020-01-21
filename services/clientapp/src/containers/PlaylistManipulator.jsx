@@ -22,7 +22,10 @@ class PlaylistManipulator extends Component {
 
     escKeyListener(e) {
         if (e.keyCode === 27) {
-            this.props.clearAddPlaylistDialog()
+            if (this.state.showCreateNewPlaylistTextInputField)
+                this.setState({ showCreateNewPlaylistTextInputField: false })
+            else
+                this.props.clearAddPlaylistDialog()
         }
     }
 
