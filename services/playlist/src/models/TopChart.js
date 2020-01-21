@@ -1,20 +1,22 @@
 import mongoose from "mongoose";
 
 export default mongoose.model(
-	"UserPlaylist",
+	"TopChart",
 	new mongoose.Schema({
-		name: String,
+		name: {
+			type: String,
+			required: true,
+		},
+		language: {
+			type: String,
+			required: true,
+		},
 		songs: [
 			{
 				title: String,
+				rank: String,
 				thumbnail: String,
-				duration: String,
 				videoId: String,
-				channelName: String,
-				channelId: String,
-				uploadedOn: String,
-				views: String,
-				description: String,
 			},
 		],
 		createdAt: {
@@ -23,8 +25,10 @@ export default mongoose.model(
 		},
 		updatedAt: {
 			type: Date,
-			default: Date.now(),
 		},
-		createdBy: String,
+		createdBy: {
+			type: String,
+			required: true,
+		},
 	}),
 );
