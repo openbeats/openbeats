@@ -245,6 +245,34 @@ nav {
     display: block;
 }
 
+.playlist-login-notifier {
+    font-size: 12px;
+    width: 100%;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    flex-direction: column;
+    line-height: 20px;
+}
+
+.playlist-login-notifier>div>i {
+    font-size: 17px;
+    margin-bottom: 5px;
+}
+
+.empty-playlist-leftnav {
+    font-size: 14px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    padding-left: 25px;
+    cursor: default;
+    color: teal;
+    /* padding-top: 20px; */
+}
+
 
 @media only screen and (max-width: 1000px) {
     .hamburger-holder {
