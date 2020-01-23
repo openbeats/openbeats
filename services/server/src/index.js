@@ -5,7 +5,7 @@ import ytdl from "ytdl-core";
 // import dbconfig from "./config/db";
 // dbconfig();
 
-const PORT = process.env.PORT || 2000;
+const PORT = process.env.PORT || 2001;
 
 const app = express();
 
@@ -43,11 +43,21 @@ app.get("/opencc/:id", async (req, res) => {
 });
 
 app.get("/ytcat", async (req, res) => {
-	let data = await ytcat(req.query.q);
-	res.send({
-		status: true,
-		data: data,
-	});
+	try {
+		if (!req.query.q) throw new Error("Missing required query param q.");
+		const fr = (req.query.fr && true) || false;
+		const data = await ytcat(req.query.q, fr);
+		res.send({
+			status: true,
+			data: data,
+		});
+	} catch (error) {
+		console.log(error.message);
+		res.send({
+			status: false,
+			error: error.message,
+		});
+	}
 });
 
 app.get("/suggester", async (req, res) => {

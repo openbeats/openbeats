@@ -22,21 +22,27 @@ export default mongoose.model(
 			type: Date,
 			default: Date.now,
 		},
-		myPlaylists: [{
-			name: String,
-			playlistId: String
-		}],
-		playlistCollections: [{
-			name: String,
-			playlistId: String
-		}],
-		likedPlaylists: [{
-			name: String,
-			playlistId: String
-		}],
+		myPlaylists: [
+			{
+				name: String,
+				playlistId: String,
+			},
+		],
+		playlistCollections: [
+			{
+				name: String,
+				playlistId: String,
+			},
+		],
+		likedPlaylists: [
+			{
+				name: String,
+				playlistId: String,
+			},
+		],
 		recentlyPlayedSongs: {
 			type: Array,
-			default: []
-		}
+			default: [],
+		},
 	}),
 );
