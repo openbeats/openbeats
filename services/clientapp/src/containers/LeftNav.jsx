@@ -131,8 +131,9 @@ class LeftNav extends Component {
                   {this.props.userPlaylistMetaData.length > 0 ?
                     this.props.userPlaylistMetaData.map((item, key) => (
                       <li
+                        key={key}
                         className="playlist-content-holder-text"
-                        onClick={() => this.props.push(`/playlist`)}
+                        onClick={() => this.props.push(`/playlist/user/${item.playlistId}`)}
                       >
                         {item.name}
                       </li>

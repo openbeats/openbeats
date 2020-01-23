@@ -28,9 +28,16 @@ export function clearAddPlaylistDialog() {
     return true;
 }
 
-export function fetchUserPlaylist() {
-
-    return true;
+export async function fetchUserPlaylist(playlistId) {
+    try {
+        const {
+            data
+        } = await axios.get(`${variables.baseUrl}/playlist/userplaylist/getplaylist/${playlistId}`)
+        return data;
+    } catch (error) {
+        toastActions.showMessage(error.toString());
+        return null;
+    }
 }
 
 export async function fetchUserPlaylistMetadata(userId) {
@@ -99,7 +106,17 @@ export function deleteUserPlaylist(params) {
     return true;
 }
 
-export function changeUserPlaylistName(params) {
-
-    return true;
+export async function changeUserPlaylistName(playlistId, name) {
+    try {
+        await axios.post(`${variables.baseUrl}/playlist/userplaylist/updatename`, {
+            name,
+            playlistId
+        })
+        toastActions.showMessage("playlist name updated successfully");
+        fetchUserPlaylistMetadata(store.getState().authReducer.userDetails.id);
+        return true;
+    } catch (error) {
+        toastActions.showMessage(error.toString())
+        return false;
+    }
 }

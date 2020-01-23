@@ -55,7 +55,7 @@ class Main extends Component {
             <Switch>
               <Route exact path="/" component={Home} />
               <Route path="/nowplaying" component={NowPlaying} />
-              <Route path="/playlist" component={PlaylistDisplay} />
+              <Route path="/playlist/:type/:id" component={PlaylistDisplay} />
               <Route path="/yourplaylist" component={YourPlaylist} />
               <Route path="/search" component={Result} />
             </Switch>
