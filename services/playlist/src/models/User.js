@@ -44,5 +44,6 @@ export default mongoose.model(
 			type: Array,
 			default: [],
 		},
+		isAdmin: { type: Boolean, default: false },
 	}),
 );

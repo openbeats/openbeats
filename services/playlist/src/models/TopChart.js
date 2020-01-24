@@ -7,6 +7,10 @@ export default mongoose.model(
 			type: String,
 			required: true,
 		},
+		thumbnail: {
+			type: String,
+			//required: true,
+		},
 		language: {
 			type: String,
 			required: true,
