@@ -1,26 +1,37 @@
 import express from "express";
 import UserPlaylist from "../models/UserPlaylist";
 import User from "../models/User";
+import uuid from "uuid";
 
 const router = express.Router();
 
 // create empty Playlist
 router.post("/create", async (req, res) => {
 	try {
-		const { name, userId } = req.body;
+		const {
+			name,
+			userId
+		} = req.body;
+		const myPid = uuid.v1()
 		const userPlaylist = new UserPlaylist({
 			name,
 			createdBy: userId,
+			metaDataId: myPid
 		});
+
 		const playlistData = await userPlaylist.save();
+
 		const user = await User.findOne({
 			_id: userId,
 		});
+
 		await user.myPlaylists.push({
+			_id: myPid,
 			name,
 			playlistId: playlistData._id,
 		});
 		const userData = await user.save();
+
 		res.send({
 			status: true,
 			data: playlistData,
@@ -37,8 +48,10 @@ router.post("/create", async (req, res) => {
 // add songs into Playlist
 router.post("/addsongs", async (req, res) => {
 	try {
-		const { songs, playlistId } = req.body;
-
+		const {
+			songs,
+			playlistId
+		} = req.body;
 		const playlist = await UserPlaylist.findOne({
 			_id: playlistId,
 		});
@@ -50,6 +63,18 @@ router.post("/addsongs", async (req, res) => {
 		});
 
 		const savedSongs = await playlist.save();
+
+		const songsCount = savedSongs.songs.length
+
+		await User.update({
+			"_id": savedSongs.createdBy,
+			"myPlaylists._id": savedSongs.metaDataId
+		}, {
+			$set: {
+				"myPlaylists.$.thumbnail": songs[0].thumbnail,
+				"myPlaylists.$.totalSongs": songsCount,
+			}
+		})
 
 		res.send({
 			status: true,
@@ -106,7 +131,10 @@ router.get("/getplaylist/:id", async (req, res) => {
 // delete songs from playlist
 router.post("/deletesong", async (req, res) => {
 	try {
-		const { playlistId, songId } = req.body;
+		const {
+			playlistId,
+			songId
+		} = req.body;
 
 		const playlist = await UserPlaylist.findOne({
 			_id: playlistId,
@@ -133,7 +161,10 @@ router.post("/deletesong", async (req, res) => {
 // update name of the playlist
 router.post("/updatename", async (req, res) => {
 	try {
-		const { name, playlistId } = req.body;
+		const {
+			name,
+			playlistId
+		} = req.body;
 
 		const playlist = await UserPlaylist.findOne({
 			_id: playlistId,
