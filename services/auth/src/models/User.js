@@ -24,8 +24,18 @@ export default mongoose.model(
 		},
 		myPlaylists: [
 			{
+				_id: String,
 				name: String,
 				playlistId: String,
+				thumbnail: {
+					type: String,
+					default:
+						"https://openbeats.live/static/media/dummy_music_holder.a3d0de2e.jpg",
+				},
+				totalSongs: {
+					type: Number,
+					default: 0,
+				},
 			},
 		],
 		playlistCollections: [
