@@ -25,12 +25,17 @@ class PlaylistDisplay extends Component {
         }
         this.state = { ...this.initialState };
         this.videoId = []
+        this.locationChange = this.locationChange.bind(this);
     }
 
 
     componentDidMount() {
         this.props.setCurrentAction("Playlist");
         this.playlistFetchHandler();
+    }
+
+    locationChange() {
+        console.log("location changed")
     }
 
     async playlistFetchHandler() {
@@ -58,16 +63,18 @@ class PlaylistDisplay extends Component {
         }
     }
 
-    UNSAFE_componentWillReceiveProps() {
-        this.playlistFetchHandler()
-    }
-
     initQueue(key = 0) {
         if (this.state.playlistItems.length > 0) {
             const playlistData = { ...this.state, playlistData: [...this.state.playlistItems] };
             this.props.updatePlayerQueue(playlistData, key);
         } else {
             this.props.notify("Your playlist is empty! you can search and add songs to the playlist :-)")
+        }
+    }
+
+    componentDidUpdate(prevProps) {
+        if (prevProps.match.params.id !== this.props.match.params.id) {
+            this.playlistFetchHandler()
         }
     }
 
