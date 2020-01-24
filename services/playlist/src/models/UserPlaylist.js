@@ -26,5 +26,6 @@ export default mongoose.model(
 			default: Date.now(),
 		},
 		createdBy: String,
+		metaDataId: String,
 	}),
 );
