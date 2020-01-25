@@ -101,9 +101,16 @@ export async function createNewPlaylist(userId, name) {
 
 }
 
-export function deleteUserPlaylist(params) {
-
-    return true;
+export async function deleteUserPlaylist(pId) {
+    try {
+        await axios.get(`${variables.baseUrl}/playlist/userplaylist/delete/${pId}`)
+        toastActions.showMessage("playlist Deleted successfully");
+        await fetchUserPlaylistMetadata(store.getState().authReducer.userDetails.id);
+        return true;
+    } catch (error) {
+        toastActions.showMessage(error.toString())
+        return false;
+    }
 }
 
 export async function changeUserPlaylistName(playlistId, name) {
