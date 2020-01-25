@@ -6,6 +6,7 @@ import { push } from "connected-react-router";
 import { musicDummy, playerdownload } from '../images';
 import Loader from 'react-loader-spinner';
 import { variables } from '../config';
+import queryString from 'query-string';
 
 class PlaylistDisplay extends Component {
 
@@ -29,9 +30,13 @@ class PlaylistDisplay extends Component {
     }
 
 
-    componentDidMount() {
-        this.props.setCurrentAction("Playlist");
-        this.playlistFetchHandler();
+    async componentDidMount() {
+        await this.props.setCurrentAction("Playlist");
+        await this.playlistFetchHandler();
+        const queryValues = await queryString.parse(this.props.location.search)
+        if (queryValues.autoplay && queryValues.autoplay === "true")
+            this.initQueue()
+
     }
 
     locationChange() {
@@ -52,6 +57,7 @@ class PlaylistDisplay extends Component {
                     type,
                     playlistId: id,
                     playlistName: data.data.name,
+                    playlistThumbnail: data.data.songs.length > 0 ? data.data.songs[0].thumbnail : musicDummy,
                     editedName: data.data.name,
                     playlistItems: data.data.songs,
                     isLoading: false,
@@ -105,8 +111,8 @@ class PlaylistDisplay extends Component {
                                 }} className="edit-playlist-name playlist-display-title-holder">
                                     <input type="text" value={this.state.editedName} onChange={(e) => this.setState({ editedName: e.target.value })} />
                                     <div className="edit-playlist-button-holder">
-                                        <button type="submit">save</button>
-                                        <button onClick={() => this.setState({ editPlaylistName: false })}>cancel</button>
+                                        <button className="cursor-pointer" type="submit">save</button>
+                                        <button className="cursor-pointer" onClick={() => this.setState({ editPlaylistName: false })}>cancel</button>
                                     </div>
                                 </form>
                                 : <div className="playlist-display-title-holder">
@@ -137,8 +143,18 @@ class PlaylistDisplay extends Component {
 
                             </div>
                             <div className="playlist-display-miscellanious-holder">
-                                <i className="fas fa-heart cursor-pointer"></i>
-                                <i className="fas fa-bookmark cursor-pointer"></i>
+                                {this.state.type === 'user' ?
+                                    <Fragment>
+                                        {/* <i className="fas fa-unlock cursor-pointer"></i> */}
+                                        {/* <i className="fas fa-globe-americas cursor-pointer" title="Make Playlist Public"></i> */}
+                                        <i className="fas fa-lock cursor-pointer" title="Make Playlist Private"></i>
+                                        <i className="fas fa-trash-alt cursor-pointer" title="Delete Playlist" onClick={() => this.props.deleteUserPlaylist(this.state.playlistId)}></i>
+                                    </Fragment> :
+                                    <Fragment>
+                                        <i className="fas fa-heart cursor-pointer"></i>
+                                        <i className="fas fa-bookmark cursor-pointer"></i>
+                                    </Fragment>
+                                }
                             </div>
                         </div>
                         <div className="playlist-display-right-section-wrapper">
@@ -293,6 +309,10 @@ const mapDispatchToProps = (dispatch) => {
         },
         changeUserPlaylistName: (playlistId, playlistName) => {
             return playlistManipulatorActions.changeUserPlaylistName(playlistId, playlistName);
+        },
+        deleteUserPlaylist: async (pId) => {
+            await playlistManipulatorActions.deleteUserPlaylist(pId);
+            dispatch(push("/yourplaylist"))
         }
     }
 }

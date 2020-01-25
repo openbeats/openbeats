@@ -1,21 +1,29 @@
-import { store } from "../store";
-import { toastActions } from ".";
-import { push } from "connected-react-router";
-import { variables } from "../config";
+import {
+  store
+} from "../store";
+import {
+  toastActions
+} from ".";
+import {
+  push
+} from "connected-react-router";
+import {
+  variables
+} from "../config";
 
 export function loginHandler(email, password) {
   setAuthLoader(true);
   fetch(`${variables.baseUrl}/auth/login`, {
-    method: "POST",
-    headers: {
-      Accept: "application/json",
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({
-      email,
-      password
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        email,
+        password
+      })
     })
-  })
     .then(async res => {
       let data = await res.json();
       if (res.status !== 400) {
@@ -52,18 +60,18 @@ export function loginHandler(email, password) {
 export function registerHandler(name, email, password) {
   setAuthLoader(true);
   fetch(`${variables.baseUrl}/auth/register`, {
-    method: "POST",
-    headers: {
-      Accept: "application/json",
-      "Content-Type": "application/json",
-      "Access-Control-Allow-Origin": "*"
-    },
-    body: JSON.stringify({
-      email,
-      password,
-      name
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+        "Access-Control-Allow-Origin": "*"
+      },
+      body: JSON.stringify({
+        email,
+        password,
+        name
+      })
     })
-  })
     .then(async res => {
       let data = await res.json();
       if (res.status !== 400) {
@@ -106,7 +114,7 @@ function setAuthLoader(val) {
   });
 }
 
-export function logoutHandler() {
+export async function logoutHandler() {
   let userDetails = {
     name: "",
     id: "",
@@ -115,11 +123,12 @@ export function logoutHandler() {
     avatar: ""
   };
   localStorage.removeItem("userDetails");
-  store.dispatch({
+  await store.dispatch({
     type: "LOGOUT_USER",
     payload: {
       userDetails,
       isAuthenticated: false
     }
   });
+  await store.dispatch(push("/"))
 }

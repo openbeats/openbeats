@@ -66,7 +66,7 @@ router.post("/addsongs", async (req, res) => {
 
 		const songsCount = savedSongs.songs.length
 
-		await User.update({
+		await User.updateOne({
 			"_id": savedSongs.createdBy,
 			"myPlaylists._id": savedSongs.metaDataId
 		}, {
@@ -171,27 +171,22 @@ router.post("/updatename", async (req, res) => {
 		});
 
 		const createdBy = playlist.createdBy;
+		const metaDataId = playlist.metaDataId;
 
-		const user = await User.findOne({
-			_id: createdBy,
-		});
 
 		await playlist.updateOne({
 			name,
 			updatedAt: Date.now(),
 		});
 
-		await user.updateOne({
-			myPlaylists: [
-				...(await user.myPlaylists.filter(
-					item => item.playlistId !== playlistId,
-				)),
-				{
-					name,
-					playlistId,
-				},
-			],
-		});
+		await User.updateOne({
+			"_id": createdBy,
+			"myPlaylists._id": metaDataId
+		}, {
+			$set: {
+				"myPlaylists.$.name": name,
+			}
+		})
 
 		res.send({
 			status: true,
