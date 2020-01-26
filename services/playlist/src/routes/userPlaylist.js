@@ -12,30 +12,17 @@ router.post("/create", async (req, res) => {
 			name,
 			userId
 		} = req.body;
-		const myPid = uuid.v1()
+
 		const userPlaylist = new UserPlaylist({
 			name,
 			createdBy: userId,
-			metaDataId: myPid
 		});
 
 		const playlistData = await userPlaylist.save();
 
-		const user = await User.findOne({
-			_id: userId,
-		});
-
-		await user.myPlaylists.push({
-			_id: myPid,
-			name,
-			playlistId: playlistData._id,
-		});
-		const userData = await user.save();
-
 		res.send({
 			status: true,
 			data: playlistData,
-			d: userData,
 		});
 	} catch (error) {
 		res.send({
@@ -52,6 +39,7 @@ router.post("/addsongs", async (req, res) => {
 			songs,
 			playlistId
 		} = req.body;
+
 		const playlist = await UserPlaylist.findOne({
 			_id: playlistId,
 		});
@@ -60,26 +48,17 @@ router.post("/addsongs", async (req, res) => {
 
 		await playlist.updateOne({
 			updatedAt: Date.now(),
+			totalSongs: playlist.songs.length,
+			thumbnail: songs[0].thumbnail
 		});
 
 		const savedSongs = await playlist.save();
-
-		const songsCount = savedSongs.songs.length
-
-		await User.updateOne({
-			"_id": savedSongs.createdBy,
-			"myPlaylists._id": savedSongs.metaDataId
-		}, {
-			$set: {
-				"myPlaylists.$.thumbnail": songs[0].thumbnail,
-				"myPlaylists.$.totalSongs": songsCount,
-			}
-		})
 
 		res.send({
 			status: true,
 			data: savedSongs,
 		});
+
 	} catch (error) {
 		res.send({
 			status: false,
@@ -92,13 +71,18 @@ router.post("/addsongs", async (req, res) => {
 router.get("/getallplaylistmetadata/:uid", async (req, res) => {
 	try {
 		const uid = req.params.uid;
-		const user = await User.findOne({
-			_id: uid,
-		});
-		const playlistMetadata = user.myPlaylists;
+
+		const metaData = await UserPlaylist.find({
+			createdBy: uid
+		}, {
+			_id: true,
+			name: 1,
+			thumbnail: 2,
+			totalSongs: 3,
+		})
 		res.send({
 			status: true,
-			data: playlistMetadata,
+			data: metaData,
 		});
 	} catch (error) {
 		res.send({
@@ -136,20 +120,31 @@ router.post("/deletesong", async (req, res) => {
 			songId
 		} = req.body;
 
-		const playlist = await UserPlaylist.findOne({
-			_id: playlistId,
+		await UserPlaylist.findByIdAndUpdate(playlistId, {
+			$pull: {
+				songs: {
+					_id: songId
+				}
+			}
 		});
 
+		const playlist = await UserPlaylist.findOne({
+			_id: playlistId
+		})
+
 		await playlist.updateOne({
-			songs: await playlist.songs.filter(
-				item => item._id.toString() !== songId.toString(),
-			),
+			updatedAt: Date.now(),
+			totalSongs: playlist.songs.length,
+			thumbnail: playlist.songs.length ? playlist.songs[playlist.songs.length - 1].thumbnail : "https://openbeats.live/static/media/dummy_music_holder.a3d0de2e.jpg"
 		});
+
+		await playlist.save();
 
 		res.send({
 			status: true,
-			data: "song delete from playlist successfully!",
+			data: "Song has been deleted successfully",
 		});
+
 	} catch (error) {
 		res.send({
 			status: false,
@@ -170,23 +165,10 @@ router.post("/updatename", async (req, res) => {
 			_id: playlistId,
 		});
 
-		const createdBy = playlist.createdBy;
-		const metaDataId = playlist.metaDataId;
-
-
 		await playlist.updateOne({
 			name,
 			updatedAt: Date.now(),
 		});
-
-		await User.updateOne({
-			"_id": createdBy,
-			"myPlaylists._id": metaDataId
-		}, {
-			$set: {
-				"myPlaylists.$.name": name,
-			}
-		})
 
 		res.send({
 			status: true,
@@ -204,19 +186,9 @@ router.post("/updatename", async (req, res) => {
 router.get("/delete/:id", async (req, res) => {
 	try {
 		const _id = req.params.id;
+
 		const playlist = await UserPlaylist.findOne({
 			_id,
-		});
-
-		const userId = playlist.createdBy;
-		const user = await User.findOne({
-			_id: userId,
-		});
-
-		await user.updateOne({
-			myPlaylists: await user.myPlaylists.filter(
-				item => item.playlistId !== _id,
-			),
 		});
 
 		await playlist.deleteOne();

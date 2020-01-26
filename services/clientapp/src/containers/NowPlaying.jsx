@@ -21,7 +21,7 @@ class NowPlaying extends Component {
                         Now Playing
                     </div>
                     <div className="now-playing-body">
-                        {this.props.currentPlaying ?
+                        {this.props.currentPlaying.videoId ?
                             <div className="now-playing-item">
                                 <span>
                                     {this.props.isAudioBuffering ?

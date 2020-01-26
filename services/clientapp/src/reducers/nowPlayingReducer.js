@@ -1,7 +1,7 @@
 const initialState = {
     isPlaylist: false,
     currentPlaying: {
-        videoId: "dummy"
+        videoId: null
     },
     playlistName: null,
     playlistId: null,

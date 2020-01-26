@@ -83,11 +83,10 @@ class PlaylistManipulator extends Component {
                             <div className="pm-core-playlist-item-holer" key={key}>
                                 <label className="pm-core-playlist-container">{item.name}
                                     <input type="checkbox" onChange={(e) => {
-                                        console.log(e.target.checked);
                                         if (e.target.checked)
-                                            this.props.addSongToPlaylist(item.playlistId, this.props.currentSong)
-                                        else
-                                            this.props.removeSongFromPlaylist(item.playlistId, this.props.currentSong)
+                                            this.props.addSongToPlaylist(item._id, this.props.currentSong)
+                                        // else
+                                        //     this.props.removeSongFromPlaylist(item._id, this.props.currentSong)
                                     }} />
                                     <span className="pm-core-playlist-checkmark"></span>
                                 </label>
