@@ -3,11 +3,12 @@ import express from "express";
 import dbconfig from "./config/db";
 import userPlaylistRoutes from "./routes/userPlaylist";
 import topcharts from "./routes/topcharts";
-import inittopChartsCron from "./core/topChartsCron";
+import { arrangeTopCharts, fetchTopChartsCron } from "./core/topChartsCron";
 
 dbconfig();
 
-inittopChartsCron();
+fetchTopChartsCron();
+arrangeTopCharts();
 
 const PORT = process.env.PORT || 2000;
 
@@ -17,7 +18,7 @@ middleware(app);
 
 // app.get("/test", (req, res) => {
 // 	setTimeout(() => {
-// 		inittopChartsCron();
+// 		arrangeTopCharts();
 // 	}, 0);
 // 	res.send("Started");
 // });
