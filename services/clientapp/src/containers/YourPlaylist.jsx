@@ -25,7 +25,7 @@ class YourPlaylist extends Component {
             <div className="your-playlist-wrapper">
                 {this.props.userPlaylistMetaData.map((item, key) => (
                     <div className="playlist-panel-wrapper" key={key}>
-                        <div className="playlist-panel-image cursor-pointer" onClick={() => this.props.push(`/playlist/user/${item.playlistId}?autoplay=true`)} style={{ backgroundImage: `url(${item.thumbnail ? item.thumbnail : musicDummy})` }}>
+                        <div className="playlist-panel-image cursor-pointer" title="Play All songs!" onClick={() => this.props.push(`/playlist/user/${item._id}?autoplay=true`)} style={{ backgroundImage: `url(${item.thumbnail ? item.thumbnail : musicDummy})` }}>
                             <div className="playlist-total-songs-display">
                                 <img src={playlistSvg} alt="" srcSet="" />
                                 <p>{item.totalSongs}</p>

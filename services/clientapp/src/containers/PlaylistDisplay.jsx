@@ -57,7 +57,7 @@ class PlaylistDisplay extends Component {
                     type,
                     playlistId: id,
                     playlistName: data.data.name,
-                    playlistThumbnail: data.data.songs.length > 0 ? data.data.songs[0].thumbnail : musicDummy,
+                    playlistThumbnail: data.data.thumbnail ? data.data.thumbnail : musicDummy,
                     editedName: data.data.name,
                     playlistItems: data.data.songs,
                     isLoading: false,
@@ -255,6 +255,14 @@ class PlaylistDisplay extends Component {
                                             </a>
                                         </span>
                                         <span>
+                                            <i className="fas fa-trash-alt playlist-display-songs-icon cursor-pointer"
+                                                onClick={async () => {
+                                                    await this.props.removeSongFromPlaylist(this.state.playlistId, item._id)
+                                                    await this.playlistFetchHandler()
+                                                }}
+                                            ></i>
+                                        </span>
+                                        <span>
                                             <div className="playlist-display-songs-title">{item.title}</div>
                                             <div className="playlist-display-songs-duration">{item.duration}</div>
                                         </span>
@@ -324,6 +332,9 @@ const mapDispatchToProps = (dispatch) => {
         },
         updateTyping: (isTyping) => {
             dispatch(searchActions.updateTyping(isTyping));
+        },
+        removeSongFromPlaylist: async (playlistId, songId) => {
+            await playlistManipulatorActions.removeSongFromPlaylist(playlistId, songId);
         }
     }
 }

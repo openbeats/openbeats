@@ -164,7 +164,7 @@ class LeftNav extends Component {
                       <li
                         key={key}
                         className="playlist-content-holder-text"
-                        onClick={() => this.props.push(`/playlist/user/${item.playlistId}`)}
+                        onClick={() => this.props.push(`/playlist/user/${item._id}`)}
                       >
                         {item.name}
                       </li>

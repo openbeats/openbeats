@@ -60,7 +60,6 @@ export async function fetchUserPlaylistMetadata(userId) {
         metaData = data.data
         console.log(metaData);
 
-
         store.dispatch({
             type: "SHOW_PLAYLIST_ADD_DIALOG",
             payload: {
@@ -88,9 +87,19 @@ export async function addSongToPlaylist(pId, song) {
     return true;
 }
 
-export async function removeSongFromPlaylist(pId, song) {
-    console.log(pId, song);
-    toastActions.showMessage(pId.toString() + " " + song.videoId.toString())
+export async function removeSongFromPlaylist(playlistId, songId) {
+    try {
+        await axios.post(`${variables.baseUrl}/playlist/userplaylist/deletesong`, {
+            playlistId,
+            songId
+        })
+        toastActions.showMessage("Song removed to the playlsit!")
+    } catch (error) {
+        toastActions.showMessage(error.toString())
+    }
+
+    return true;
+
 
 }
 

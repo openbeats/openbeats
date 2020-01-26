@@ -29,6 +29,7 @@ export async function updatePlayerQueue(playlistData, key = 0) {
     const playlistName = playlistData.playlistName;
     const playlistThumbnail = playlistData.playlistThumbnail;
     const isNextAvailable = playerQueue.length - 1 > 0 ? true : false
+    console.log(isNextAvailable)
     const isPreviousAvailable = false
     await store.dispatch({
         type: "UPDATE_PLAYER_QUEUE",
@@ -113,7 +114,8 @@ export async function selectFromPlaylist(key) {
 
     let audioData = state.playerQueue[key];
 
-    let isNextAvailable = state.playerQueue.length - (key) > 0 ? true : false;
+    let isNextAvailable = state.playerQueue.length - key > 1 ? true : false;
+    console.log(state.playerQueue.length, key)
 
     let isPreviousAvailable = key > 0 ? true : false
 
