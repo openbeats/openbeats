@@ -2,7 +2,8 @@ import {
   store
 } from "../store";
 import {
-  toastActions
+  toastActions,
+  playerActions
 } from ".";
 import {
   push
@@ -115,20 +116,43 @@ function setAuthLoader(val) {
 }
 
 export async function logoutHandler() {
-  let userDetails = {
-    name: "",
-    id: "",
-    token: "",
-    email: "",
-    avatar: ""
-  };
   localStorage.removeItem("userDetails");
+  await playerActions.resetPlayer();
   await store.dispatch({
     type: "LOGOUT_USER",
     payload: {
-      userDetails,
       isAuthenticated: false
     }
   });
+  await store.dispatch({
+    type: "RESET_CORE",
+    payload: {
+      reset: true
+    }
+  })
+  await store.dispatch({
+    type: "RESET_NOW_PLAYING",
+    payload: {
+      reset: true
+    }
+  })
+  await store.dispatch({
+    type: "RESET_PLAYER",
+    payload: {
+      reset: true
+    }
+  })
+  await store.dispatch({
+    type: "RESET_PLAYLIST_MANIPULATOR",
+    payload: {
+      reset: true
+    }
+  })
+  await store.dispatch({
+    type: "RESET_SEARCH",
+    payload: {
+      reset: true
+    }
+  })
   await store.dispatch(push("/"))
 }

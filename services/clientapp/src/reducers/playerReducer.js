@@ -1,4 +1,6 @@
-import { musicDummy } from "../images"
+import {
+    musicDummy
+} from "../images"
 
 const initialState = {
     masterUrl: null,
@@ -71,6 +73,9 @@ const playerReducer = (state = initialState, action) => {
                 ...state,
                 ...action.payload
             };
+            break;
+        case "RESET_PLAYER":
+            state = initialState
             break;
         default:
             break;

@@ -1,6 +1,6 @@
 import React, { Component, Fragment } from "react";
 import "../css/leftnav.css";
-import { toastActions, playlistManipulatorActions } from "../actions";
+import { toastActions, playlistManipulatorActions, searchActions } from "../actions";
 import { connect } from "react-redux";
 import { push } from "connected-react-router";
 import { store } from "../store";
@@ -33,7 +33,6 @@ class LeftNav extends Component {
       this.props.fetchUserPlaylistMetadata(this.props.userDetails.id);
     }
   }
-
 
   render() {
     return (
@@ -132,7 +131,10 @@ class LeftNav extends Component {
                   <div
                     className="nav-playlist-plus-icon-holder"
                     title="Create New Playlist"
-                    onClick={() => this.setState({ playlistName: '', isCreateNewPlaylistTriggered: true })}
+                    onClick={() => {
+                      this.props.updateTyping(true)
+                      this.setState({ playlistName: '', isCreateNewPlaylistTriggered: true })
+                    }}
                   >
                     <img src={navplus} alt="" srcSet="" />
                   </div>
@@ -142,13 +144,17 @@ class LeftNav extends Component {
                         e.preventDefault();
                         if (await this.props.createNewPlaylist(this.props.userDetails.id, this.state.playlistName)) {
                           await this.setState({ playlistName: '', isCreateNewPlaylistTriggered: false })
+                          this.props.updateTyping(false)
                           await this.props.fetchUserPlaylistMetadata(this.props.userDetails.id);
                         }
                       }} className="playlist-panel-edit-name">
                         <input placeholder="Playlist Name" type="text" value={this.state.playlistName} onChange={(e) => this.setState({ playlistName: e.target.value })} />
                         <div className="playlist-panel-edit-options">
                           <button className="cursor-pointer" type="submit"><i className="fas fa-check"></i></button>
-                          <button className="cursor-pointer" onClick={() => this.setState({ isCreateNewPlaylistTriggered: false, playlistName: '' })}><i className="fas fa-times"></i></button>
+                          <button className="cursor-pointer" onClick={() => {
+                            this.props.updateTyping(false)
+                            this.setState({ isCreateNewPlaylistTriggered: false, playlistName: '' })
+                          }}><i className="fas fa-times"></i></button>
                         </div>
                       </form>
                     </li>
@@ -218,6 +224,9 @@ const mapDispatchToProps = dispatch => {
     },
     createNewPlaylist: (userId, name) => {
       return playlistManipulatorActions.createNewPlaylist(userId, name);
+    },
+    updateTyping: (isTyping) => {
+      dispatch(searchActions.updateTyping(isTyping));
     }
   };
 };

@@ -27,10 +27,7 @@ const authReducer = (state = initialState, action) => {
       };
       break;
     case "LOGOUT_USER":
-      state = {
-        ...state,
-        ...action.payload
-      };
+      state = initialState
       break;
     case "LOADING_STATE_TOGGLER":
       state = {
