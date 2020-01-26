@@ -1,6 +1,6 @@
 import React, { Component, Fragment } from 'react'
 import "../css/playlistdisplay.css";
-import { toastActions, coreActions, nowPlayingActions, playerActions, playlistManipulatorActions } from "../actions";
+import { toastActions, coreActions, nowPlayingActions, playerActions, playlistManipulatorActions, searchActions } from "../actions";
 import { connect } from "react-redux";
 import { push } from "connected-react-router";
 import { musicDummy, playerdownload } from '../images';
@@ -105,19 +105,27 @@ class PlaylistDisplay extends Component {
                             {this.state.type === "user" && this.state.editPlaylistName ?
                                 <form onSubmit={async (e) => {
                                     e.preventDefault();
-                                    if (await this.props.changeUserPlaylistName(this.state.playlistId, this.state.editedName))
+                                    this.setState({ editPlaylistName: false })
+                                    this.props.updateTyping(false)
+                                    if (await this.props.changeUserPlaylistName(this.state.playlistId, this.state.editedName)) {
                                         await this.playlistFetchHandler();
-
+                                    }
                                 }} className="edit-playlist-name playlist-display-title-holder">
                                     <input type="text" value={this.state.editedName} onChange={(e) => this.setState({ editedName: e.target.value })} />
                                     <div className="edit-playlist-button-holder">
                                         <button className="cursor-pointer" type="submit">save</button>
-                                        <button className="cursor-pointer" onClick={() => this.setState({ editPlaylistName: false })}>cancel</button>
+                                        <button className="cursor-pointer" onClick={() => {
+                                            this.props.updateTyping(false);
+                                            this.setState({ editPlaylistName: false });
+                                        }}>cancel</button>
                                     </div>
                                 </form>
                                 : <div className="playlist-display-title-holder">
                                     {this.state.playlistName}
-                                    {this.state.type === "user" && <i onClick={() => this.setState({ editPlaylistName: true })} className="fas fa-pencil-alt ml-3 cursor-pointer f-s-15"></i>}
+                                    {this.state.type === "user" && <i onClick={() => {
+                                        this.props.updateTyping(true);
+                                        this.setState({ editPlaylistName: true });
+                                    }} className="fas fa-pencil-alt ml-3 cursor-pointer f-s-15"></i>}
                                 </div>
                             }
                             <div className="playlist-display-songs-count-holder">
@@ -126,7 +134,7 @@ class PlaylistDisplay extends Component {
                             <div className="playlist-display-play-pause-holder">
                                 {this.props.playlistId !== this.state.playlistId ?
                                     <div onClick={() => {
-                                        this.initQueue()
+                                        this.initQueue();
                                     }}>
                                         <i className="fas fa-play"></i> Play
                         </div>
@@ -313,6 +321,9 @@ const mapDispatchToProps = (dispatch) => {
         deleteUserPlaylist: async (pId) => {
             await playlistManipulatorActions.deleteUserPlaylist(pId);
             dispatch(push("/yourplaylist"))
+        },
+        updateTyping: (isTyping) => {
+            dispatch(searchActions.updateTyping(isTyping));
         }
     }
 }
