@@ -161,8 +161,6 @@ const mapDispatchToProps = (dispatch) => {
         showAddPlaylistDialog: (song) => {
             playlistManipulatorActions.showAddPlaylistDialog(song)
         }
-
-
     }
 }
 

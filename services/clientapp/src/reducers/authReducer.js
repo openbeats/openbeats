@@ -12,6 +12,12 @@ if (localStorage.getItem("userDetails")) {
   isAuthenticated = true;
 }
 
+const resetState = {
+  isAuthenticated: false,
+  isAuthLoading: false,
+  userDetails: null
+}
+
 const initialState = {
   isAuthenticated: isAuthenticated,
   isAuthLoading: false,
@@ -27,10 +33,7 @@ const authReducer = (state = initialState, action) => {
       };
       break;
     case "LOGOUT_USER":
-      state = {
-        ...state,
-        ...action.payload
-      };
+      state = resetState;
       break;
     case "LOADING_STATE_TOGGLER":
       state = {

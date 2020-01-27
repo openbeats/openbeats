@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import "../css/playlistmanipulator.css";
 import { connect } from "react-redux";
-import { toastActions, coreActions, playlistManipulatorActions } from "../actions";
+import { toastActions, coreActions, playlistManipulatorActions, searchActions } from "../actions";
 
 class PlaylistManipulator extends Component {
 
@@ -16,21 +16,21 @@ class PlaylistManipulator extends Component {
 
     componentDidMount() {
         document.addEventListener("keyup", this.escKeyListener)
-
         this.props.fetchUserPlaylistMetadata(this.props.userDetails.id)
     }
 
     escKeyListener(e) {
         if (e.keyCode === 27) {
-            if (this.state.showCreateNewPlaylistTextInputField)
+            if (this.state.showCreateNewPlaylistTextInputField) {
                 this.setState({ showCreateNewPlaylistTextInputField: false })
-            else
+            } else
                 this.props.clearAddPlaylistDialog()
         }
     }
 
     componentWillUnmount() {
         document.removeEventListener("keyup", this.escKeyListener)
+        this.props.updateTyping(false)
     }
 
     render() {
@@ -40,7 +40,10 @@ class PlaylistManipulator extends Component {
                     <div className="pm-main-header">
                         Add to Playlist
                     </div>
-                    <div onClick={() => this.props.clearAddPlaylistDialog()} className="pm-close-button-holder cursor-pointer">
+                    <div onClick={() => {
+                        this.props.clearAddPlaylistDialog()
+                        this.props.updateTyping(false)
+                    }} className="pm-close-button-holder cursor-pointer">
                         <i className="fas fa-times"></i>
                     </div>
                     {this.state.showCreateNewPlaylistTextInputField ?
@@ -52,6 +55,7 @@ class PlaylistManipulator extends Component {
                                 let success = this.props.createNewPlaylist(this.props.userDetails.id, pName);
                                 if (success) {
                                     this.setState({ showCreateNewPlaylistTextInputField: false })
+                                    this.props.updateTyping(false)
                                 }
                             } else {
                                 this.props.notify("Playlist Name is Empty!")
@@ -62,9 +66,15 @@ class PlaylistManipulator extends Component {
                                 <i className="fas fa-check" type="submit"></i>
                             </button>
                             <div className="upst-div"></div>
-                            <i className="fas fa-times upst-close-btn cursor-pointer" onClick={() => this.setState({ showCreateNewPlaylistTextInputField: false })}></i>
+                            <i className="fas fa-times upst-close-btn cursor-pointer" onClick={() => {
+                                this.props.updateTyping(false)
+                                this.setState({ showCreateNewPlaylistTextInputField: false })
+                            }}></i>
                         </form>
-                        : <div className="pm-create-new-playlist-holder cursor-pointer" onClick={e => this.setState({ showCreateNewPlaylistTextInputField: true })}>
+                        : <div className="pm-create-new-playlist-holder cursor-pointer" onClick={e => {
+                            this.props.updateTyping(true)
+                            this.setState({ showCreateNewPlaylistTextInputField: true })
+                        }}>
                             <i className="fas fa-plus"></i> Create New Playlist
                     </div>
                     }
@@ -73,11 +83,10 @@ class PlaylistManipulator extends Component {
                             <div className="pm-core-playlist-item-holer" key={key}>
                                 <label className="pm-core-playlist-container">{item.name}
                                     <input type="checkbox" onChange={(e) => {
-                                        console.log(e.target.checked);
                                         if (e.target.checked)
-                                            this.props.addSongToPlaylist(item.playlistId, this.props.currentSong)
-                                        else
-                                            this.props.removeSongFromPlaylist(item.playlistId, this.props.currentSong)
+                                            this.props.addSongToPlaylist(item._id, this.props.currentSong)
+                                        // else
+                                        //     this.props.removeSongFromPlaylist(item._id, this.props.currentSong)
                                     }} />
                                     <span className="pm-core-playlist-checkmark"></span>
                                 </label>
@@ -128,6 +137,9 @@ const mapDispatchToProps = (dispatch) => {
         },
         createNewPlaylist: (userId, name) => {
             return playlistManipulatorActions.createNewPlaylist(userId, name);
+        },
+        updateTyping: (isTyping) => {
+            dispatch(searchActions.updateTyping(isTyping));
         }
     }
 }

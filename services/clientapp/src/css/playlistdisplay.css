@@ -34,7 +34,40 @@
     margin-top: 25px;
     font-size: 22px;
     padding: 0 10px 0 10px;
+    margin-bottom: 8px;
 }
+
+.playlist-display-title-holder>input {
+    background: transparent;
+    color: var(--text-color-main);
+    font-size: 16px;
+    border: none;
+    border-bottom: 1px solid gray;
+    padding: 3px;
+    margin-bottom: 10px;
+    outline: none;
+}
+
+.edit-playlist-button-holder>button {
+    cursor: pointer;
+    border: none;
+    background: none;
+    color: var(--text-color-sub-1);
+    font-size: 15px;
+    padding: 3px 5px 3px 5px;
+    border-radius: 5px;
+}
+
+.edit-playlist-button-holder>button:nth-child(1) {
+    border: 1px solid lightgreen;
+    margin-right: 10px;
+}
+
+.edit-playlist-button-holder>button:nth-child(2) {
+    border: 1px solid red;
+}
+
+
 
 .playlist-display-play-pause-holder {
     margin-top: 15px;

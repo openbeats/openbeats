@@ -11,6 +11,9 @@ const coreReducer = (state = initialState, action) => {
                 ...action.payload
             }
             break;
+        case "RESET_CORE":
+            state = initialState
+            break;
         default:
             break;
     }

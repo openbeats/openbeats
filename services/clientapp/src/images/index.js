@@ -21,6 +21,7 @@ import navclose from "./navclose.png";
 import master from "./master.png";
 import playlistadd from "./playlistadd.png";
 import musicIllustration from "./music_illustration.svg";
+import playlistSvg from "./playlist-svg.svg";
 
 export {
   musicDummy,
@@ -45,5 +46,6 @@ export {
   navclose,
   master,
   playlistadd,
-  musicIllustration
+  musicIllustration,
+  playlistSvg,
 };
