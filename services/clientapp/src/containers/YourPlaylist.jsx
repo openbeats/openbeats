@@ -69,7 +69,7 @@ class YourPlaylist extends Component {
                                     <i className="fas fa-lock cursor-pointer" onClick={() => this.props.featureNotify()} title="Make Playlist Private"></i>
                                 </div>
                                 <div className="p-options-icon-holder">
-                                    <i className="fas fa-trash-alt cursor-pointer" title="Delete Playlist" onClick={() => this.props.deleteUserPlaylist(item.playlistId)}></i>
+                                    <i className="fas fa-trash-alt cursor-pointer" title="Delete Playlist" onClick={() => this.props.deleteUserPlaylist(item._id)}></i>
                                 </div>
                             </div>
                         </div>
