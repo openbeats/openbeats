@@ -27,6 +27,9 @@ const playlistManipulatorReducer = (state = initialState, action) => {
                 ...action.payload
             }
             break;
+        case "RESET_PLAYLIST_MANIPULATOR":
+            state = initialState
+            break;
 
         default:
             break;

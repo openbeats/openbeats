@@ -1,7 +1,7 @@
 const initialState = {
     isPlaylist: false,
     currentPlaying: {
-        videoId: "dummy"
+        videoId: null
     },
     playlistName: null,
     playlistId: null,
@@ -28,6 +28,9 @@ const nowPlayingReducer = (state = initialState, action) => {
                 ...state,
                 ...action.payload
             };
+            break;
+        case "RESET_NOW_PLAYING":
+            state = initialState
             break;
         default:
             break;

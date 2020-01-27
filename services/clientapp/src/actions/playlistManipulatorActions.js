@@ -8,15 +8,24 @@ import {
 import {
     toastActions
 } from ".";
+import {
+    push
+} from "connected-react-router";
 
-export function showAddPlaylistDialog(song) {
-    store.dispatch({
-        type: "SHOW_PLAYLIST_ADD_DIALOG",
-        payload: {
-            showAddPlaylistDialog: true,
-            currentSong: song
-        }
-    })
+export async function showAddPlaylistDialog(song) {
+    const isAuthenticated = await store.getState().authReducer.isAuthenticated;
+    if (isAuthenticated)
+        store.dispatch({
+            type: "SHOW_PLAYLIST_ADD_DIALOG",
+            payload: {
+                showAddPlaylistDialog: true,
+                currentSong: song
+            }
+        })
+    else {
+        toastActions.showMessage("Please Login to use this feature!!!")
+        store.dispatch(push("/auth"))
+    }
     return true;
 }
 
@@ -51,7 +60,6 @@ export async function fetchUserPlaylistMetadata(userId) {
         metaData = data.data
         console.log(metaData);
 
-
         store.dispatch({
             type: "SHOW_PLAYLIST_ADD_DIALOG",
             payload: {
@@ -79,9 +87,19 @@ export async function addSongToPlaylist(pId, song) {
     return true;
 }
 
-export async function removeSongFromPlaylist(pId, song) {
-    console.log(pId, song);
-    toastActions.showMessage(pId.toString() + " " + song.videoId.toString())
+export async function removeSongFromPlaylist(playlistId, songId) {
+    try {
+        await axios.post(`${variables.baseUrl}/playlist/userplaylist/deletesong`, {
+            playlistId,
+            songId
+        })
+        toastActions.showMessage("Song removed to the playlsit!")
+    } catch (error) {
+        toastActions.showMessage(error.toString())
+    }
+
+    return true;
+
 
 }
 
@@ -101,9 +119,16 @@ export async function createNewPlaylist(userId, name) {
 
 }
 
-export function deleteUserPlaylist(params) {
-
-    return true;
+export async function deleteUserPlaylist(pId) {
+    try {
+        await axios.get(`${variables.baseUrl}/playlist/userplaylist/delete/${pId}`)
+        toastActions.showMessage("playlist Deleted successfully");
+        await fetchUserPlaylistMetadata(store.getState().authReducer.userDetails.id);
+        return true;
+    } catch (error) {
+        toastActions.showMessage(error.toString())
+        return false;
+    }
 }
 
 export async function changeUserPlaylistName(playlistId, name) {

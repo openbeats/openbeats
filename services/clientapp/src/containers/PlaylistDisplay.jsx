@@ -1,11 +1,12 @@
 import React, { Component, Fragment } from 'react'
 import "../css/playlistdisplay.css";
-import { toastActions, coreActions, nowPlayingActions, playerActions, playlistManipulatorActions } from "../actions";
+import { toastActions, coreActions, nowPlayingActions, playerActions, playlistManipulatorActions, searchActions } from "../actions";
 import { connect } from "react-redux";
 import { push } from "connected-react-router";
 import { musicDummy, playerdownload } from '../images';
 import Loader from 'react-loader-spinner';
 import { variables } from '../config';
+import queryString from 'query-string';
 
 class PlaylistDisplay extends Component {
 
@@ -29,9 +30,13 @@ class PlaylistDisplay extends Component {
     }
 
 
-    componentDidMount() {
-        this.props.setCurrentAction("Playlist");
-        this.playlistFetchHandler();
+    async componentDidMount() {
+        await this.props.setCurrentAction("Playlist");
+        await this.playlistFetchHandler();
+        const queryValues = await queryString.parse(this.props.location.search)
+        if (queryValues.autoplay && queryValues.autoplay === "true")
+            this.initQueue()
+
     }
 
     locationChange() {
@@ -52,6 +57,7 @@ class PlaylistDisplay extends Component {
                     type,
                     playlistId: id,
                     playlistName: data.data.name,
+                    playlistThumbnail: data.data.thumbnail ? data.data.thumbnail : musicDummy,
                     editedName: data.data.name,
                     playlistItems: data.data.songs,
                     isLoading: false,
@@ -99,19 +105,27 @@ class PlaylistDisplay extends Component {
                             {this.state.type === "user" && this.state.editPlaylistName ?
                                 <form onSubmit={async (e) => {
                                     e.preventDefault();
-                                    if (await this.props.changeUserPlaylistName(this.state.playlistId, this.state.editedName))
+                                    this.setState({ editPlaylistName: false })
+                                    this.props.updateTyping(false)
+                                    if (await this.props.changeUserPlaylistName(this.state.playlistId, this.state.editedName)) {
                                         await this.playlistFetchHandler();
-
+                                    }
                                 }} className="edit-playlist-name playlist-display-title-holder">
                                     <input type="text" value={this.state.editedName} onChange={(e) => this.setState({ editedName: e.target.value })} />
                                     <div className="edit-playlist-button-holder">
-                                        <button type="submit">save</button>
-                                        <button onClick={() => this.setState({ editPlaylistName: false })}>cancel</button>
+                                        <button className="cursor-pointer" type="submit">save</button>
+                                        <button className="cursor-pointer" onClick={() => {
+                                            this.props.updateTyping(false);
+                                            this.setState({ editPlaylistName: false });
+                                        }}>cancel</button>
                                     </div>
                                 </form>
                                 : <div className="playlist-display-title-holder">
                                     {this.state.playlistName}
-                                    {this.state.type === "user" && <i onClick={() => this.setState({ editPlaylistName: true })} className="fas fa-pencil-alt ml-3 cursor-pointer f-s-15"></i>}
+                                    {this.state.type === "user" && <i onClick={() => {
+                                        this.props.updateTyping(true);
+                                        this.setState({ editPlaylistName: true });
+                                    }} className="fas fa-pencil-alt ml-3 cursor-pointer f-s-15"></i>}
                                 </div>
                             }
                             <div className="playlist-display-songs-count-holder">
@@ -120,7 +134,7 @@ class PlaylistDisplay extends Component {
                             <div className="playlist-display-play-pause-holder">
                                 {this.props.playlistId !== this.state.playlistId ?
                                     <div onClick={() => {
-                                        this.initQueue()
+                                        this.initQueue();
                                     }}>
                                         <i className="fas fa-play"></i> Play
                         </div>
@@ -137,8 +151,18 @@ class PlaylistDisplay extends Component {
 
                             </div>
                             <div className="playlist-display-miscellanious-holder">
-                                <i className="fas fa-heart cursor-pointer"></i>
-                                <i className="fas fa-bookmark cursor-pointer"></i>
+                                {this.state.type === 'user' ?
+                                    <Fragment>
+                                        {/* <i className="fas fa-unlock cursor-pointer"></i> */}
+                                        {/* <i className="fas fa-globe-americas cursor-pointer" title="Make Playlist Public"></i> */}
+                                        <i className="fas fa-lock cursor-pointer" title="Make Playlist Private"></i>
+                                        <i className="fas fa-trash-alt cursor-pointer" title="Delete Playlist" onClick={() => this.props.deleteUserPlaylist(this.state.playlistId)}></i>
+                                    </Fragment> :
+                                    <Fragment>
+                                        <i className="fas fa-heart cursor-pointer"></i>
+                                        <i className="fas fa-bookmark cursor-pointer"></i>
+                                    </Fragment>
+                                }
                             </div>
                         </div>
                         <div className="playlist-display-right-section-wrapper">
@@ -231,6 +255,14 @@ class PlaylistDisplay extends Component {
                                             </a>
                                         </span>
                                         <span>
+                                            <i className="fas fa-trash-alt playlist-display-songs-icon cursor-pointer"
+                                                onClick={async () => {
+                                                    await this.props.removeSongFromPlaylist(this.state.playlistId, item._id)
+                                                    await this.playlistFetchHandler()
+                                                }}
+                                            ></i>
+                                        </span>
+                                        <span>
                                             <div className="playlist-display-songs-title">{item.title}</div>
                                             <div className="playlist-display-songs-duration">{item.duration}</div>
                                         </span>
@@ -293,6 +325,16 @@ const mapDispatchToProps = (dispatch) => {
         },
         changeUserPlaylistName: (playlistId, playlistName) => {
             return playlistManipulatorActions.changeUserPlaylistName(playlistId, playlistName);
+        },
+        deleteUserPlaylist: async (pId) => {
+            await playlistManipulatorActions.deleteUserPlaylist(pId);
+            dispatch(push("/yourplaylist"))
+        },
+        updateTyping: (isTyping) => {
+            dispatch(searchActions.updateTyping(isTyping));
+        },
+        removeSongFromPlaylist: async (playlistId, songId) => {
+            await playlistManipulatorActions.removeSongFromPlaylist(playlistId, songId);
         }
     }
 }

@@ -22,6 +22,7 @@ export default mongoose.model(
 			type: Date,
 			default: Date.now,
 		},
+<<<<<<< HEAD
 		myPlaylists: [
 			{
 				_id: String,
@@ -50,10 +51,23 @@ export default mongoose.model(
 				playlistId: String,
 			},
 		],
+=======
+		playlistCollections: [{
+			name: String,
+			playlistId: String,
+		}, ],
+		likedPlaylists: [{
+			name: String,
+			playlistId: String,
+		}, ],
+>>>>>>> 6142c498323b97550dc868c3d5702c9fbb043480
 		recentlyPlayedSongs: {
 			type: Array,
 			default: [],
 		},
-		isAdmin: { type: Boolean, default: false },
+		isAdmin: {
+			type: Boolean,
+			default: false
+		},
 	}),
 );

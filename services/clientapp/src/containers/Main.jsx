@@ -51,12 +51,19 @@ class Main extends Component {
         <main id="main">
           <TopNav />
           <section className="main-body">
-            {/* Main content Loading Region ... any ui content should be loaded here... all overflows has been handled.*/}
             <Switch>
               <Route exact path="/" component={Home} />
               <Route path="/nowplaying" component={NowPlaying} />
               <Route path="/playlist/:type/:id" component={PlaylistDisplay} />
-              <Route path="/yourplaylist" component={YourPlaylist} />
+              <Route path="/yourplaylist" component={() => {
+                if (this.props.isAuthenticated)
+                  return <YourPlaylist />
+                else {
+                  this.props.notify("please login to use this feature!!!")
+                  this.props.push("/auth")
+                  return null
+                }
+              }} />
               <Route path="/search" component={Result} />
             </Switch>
           </section>
@@ -69,7 +76,8 @@ class Main extends Component {
 
 const mapStateToProps = state => {
   return {
-    showAddPlaylistDialog: state.playlistManipulatorReducer.showAddPlaylistDialog
+    showAddPlaylistDialog: state.playlistManipulatorReducer.showAddPlaylistDialog,
+    isAuthenticated: state.authReducer.isAuthenticated
   };
 };
 

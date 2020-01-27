@@ -1,11 +1,15 @@
 import middleware from "./config/middleware";
 import express from "express";
-import { ytcat, suggestbeat, copycat } from "./core";
+import {
+	ytcat,
+	suggestbeat,
+	copycat
+} from "./core";
 import ytdl from "ytdl-core";
 // import dbconfig from "./config/db";
 // dbconfig();
 
-const PORT = process.env.PORT || 2001;
+const PORT = process.env.PORT || 2000;
 
 const app = express();
 

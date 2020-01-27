@@ -60,6 +60,9 @@ const searchReducer = (state = initialState, action) => {
                 ...action.payload
             };
             break;
+        case "RESET_SEARCH":
+            state = initialState
+            break;
         default:
             break;
     }
