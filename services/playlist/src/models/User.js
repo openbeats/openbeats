@@ -22,21 +22,25 @@ export default mongoose.model(
 			type: Date,
 			default: Date.now,
 		},
-		playlistCollections: [{
-			name: String,
-			playlistId: String,
-		}, ],
-		likedPlaylists: [{
-			name: String,
-			playlistId: String,
-		}, ],
+		playlistCollections: [
+			{
+				name: String,
+				playlistId: String,
+			},
+		],
+		likedPlaylists: [
+			{
+				name: String,
+				playlistId: String,
+			},
+		],
 		recentlyPlayedSongs: {
 			type: Array,
 			default: [],
 		},
 		isAdmin: {
 			type: Boolean,
-			default: false
+			default: false,
 		},
 	}),
 );
