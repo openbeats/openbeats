@@ -3,12 +3,23 @@ import express from "express";
 import dbconfig from "./config/db";
 import userPlaylistRoutes from "./routes/userPlaylist";
 import topcharts from "./routes/topcharts";
-import { arrangeTopCharts, fetchTopChartsCron } from "./core/topChartsCron";
+import { fetchTopCharts, arrangeTopCharts } from "./core/topCharts";
+import cron from "node-cron";
 
 dbconfig();
 
-fetchTopChartsCron();
-arrangeTopCharts();
+cron.schedule("0 0 * * 0", async () => {
+	fetchTopCharts();
+});
+
+cron.schedule("2 0 * * 0", async () => {
+	arrangeTopCharts();
+});
+
+fetchTopCharts();
+setTimeout(() => {
+	arrangeTopCharts();
+}, 120000);
 
 const PORT = process.env.PORT || 2000;
 
@@ -27,5 +38,5 @@ app.use("/userplaylist", userPlaylistRoutes);
 app.use("/topcharts", topcharts);
 
 app.listen(PORT, () => {
-	console.log("openbeats playlist service up and running!");
+	console.log(`openbeats playlist service up and running on ${PORT}!`);
 });

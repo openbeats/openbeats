@@ -1,26 +1,20 @@
 import mongoose from "mongoose";
 
 export default mongoose.model(
-	"TopChart",
+	"CustomCollection",
 	new mongoose.Schema({
-		name: {
-			type: String,
-			required: true,
-		},
-		topchartThumbnail: {
-			type: String,
-			//required: true,
-		},
-		language: {
-			type: String,
-			required: true,
-		},
+		name: String,
 		songs: [
 			{
 				title: String,
-				rank: String,
 				thumbnail: String,
+				duration: String,
 				videoId: String,
+				channelName: String,
+				channelId: String,
+				uploadedOn: String,
+				views: String,
+				description: String,
 			},
 		],
 		createdAt: {
@@ -31,12 +25,8 @@ export default mongoose.model(
 			type: Date,
 		},
 		createdBy: {
-			type: String,
-			required: true,
-		},
-		totalSongs: {
-			type: Number,
-			default: 0,
+			type: mongoose.Schema.Types.ObjectId,
+			ref: "User",
 		},
 	}),
 );
