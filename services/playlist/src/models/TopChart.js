@@ -7,22 +7,20 @@ export default mongoose.model(
 			type: String,
 			required: true,
 		},
-		topchartThumbnail: {
+		thumbnail: {
 			type: String,
-			//required: true,
+			default: "https://openbeats.live/static/media/dummy_music_holder.a3d0de2e.jpg",
 		},
 		language: {
 			type: String,
 			required: true,
 		},
-		songs: [
-			{
-				title: String,
-				rank: String,
-				thumbnail: String,
-				videoId: String,
-			},
-		],
+		songs: [{
+			title: String,
+			rank: String,
+			thumbnail: String,
+			videoId: String,
+		}, ],
 		createdAt: {
 			type: Date,
 			default: Date.now(),

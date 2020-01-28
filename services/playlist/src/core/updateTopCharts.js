@@ -66,9 +66,7 @@ export default async (chartName, chartId, language) => {
 
 async function coreFallback(title, language, rank, chartId) {
 	let isSuccess = false;
-	const baseurl = config.get("isDev")
-		? config.get("baseurl").dev
-		: config.get("baseurl").production;
+	const baseurl = config.get("baseurl").production;
 	try {
 		const result = await axios.get(`${baseurl}/ytcat`, {
 			params: {
@@ -88,7 +86,7 @@ async function coreFallback(title, language, rank, chartId) {
 			};
 			let chart = await TopChart.findById(chartId);
 			if (Object.is(rank, "01")) {
-				chart.topchartThumbnail = thumbnail;
+				chart.thumbnail = thumbnail;
 			}
 			chart.songs.push(temp);
 			await chart.save();
