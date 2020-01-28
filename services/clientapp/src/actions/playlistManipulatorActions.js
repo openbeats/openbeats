@@ -48,6 +48,17 @@ export async function fetchUserPlaylist(playlistId) {
         return null;
     }
 }
+export async function fetchChartsPlaylist(playlistId) {
+    try {
+        const {
+            data
+        } = await axios.get(`${variables.baseUrl}/playlist/topcharts/${playlistId}`)
+        return data;
+    } catch (error) {
+        toastActions.showMessage(error.toString());
+        return null;
+    }
+}
 
 export async function fetchUserPlaylistMetadata(userId) {
     try {
@@ -58,8 +69,6 @@ export async function fetchUserPlaylistMetadata(userId) {
         } = await axios.get(`${variables.baseUrl}/playlist/userplaylist/getallplaylistmetadata/${userId}`)
 
         metaData = data.data
-        console.log(metaData);
-
         store.dispatch({
             type: "SHOW_PLAYLIST_ADD_DIALOG",
             payload: {
@@ -71,6 +80,23 @@ export async function fetchUserPlaylistMetadata(userId) {
         console.error(error)
     }
     return true;
+}
+export async function fetchChartsPlaylistMetadata() {
+    try {
+
+        let metaData = [];
+        const {
+            data
+        } = await axios.get(`${variables.baseUrl}/playlist/topcharts/metadata`)
+
+        metaData = data.allcharts
+        return metaData
+
+
+    } catch (error) {
+        console.error(error)
+        return [];
+    }
 }
 
 export async function addSongToPlaylist(pId, song) {
