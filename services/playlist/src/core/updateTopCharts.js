@@ -2,7 +2,8 @@ import fetchRetry from "./refetch";
 import cheerio from "cheerio";
 import TopChart from "../models/TopChart";
 import config from "config";
-import axios from "axios";
+// import axios from "axios";
+import fetch from "node-fetch";
 
 export default async (chartName, chartId, language) => {
 	try {
@@ -68,16 +69,17 @@ async function coreFallback(title, language, rank, chartId) {
 	let isSuccess = false;
 	const baseurl = config.get("baseurl").production;
 	try {
-		const result = await axios.get(`obs-server/ytcat`, {
-			params: {
-				q: encodeURIComponent(title + " " + language),
-				fr: true,
-			},
-		});
-		console.log(baseurl)
+		// const result = await axios.get(`obs-server/ytcat`, {
+		// 	params: {
+		// 		q: encodeURIComponent(title + " " + language),
+		// 		fr: true,
+		// 	},
+		// });
+		const data = await fetch(`https://api.openbeats.live/ytcat?q=${encodeURIComponent(title + " " + language)}&fr=${true}`)
+		const result = await data.json()
 		console.log(result)
-		if (result.data["data"].length != 0) {
-			const response = result.data["data"][0];
+		if (result.data.length) {
+			const response = result.data[0];
 			const videoId = response.videoId;
 			const thumbnail = response.thumbnail;
 			const temp = {
