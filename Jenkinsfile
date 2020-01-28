@@ -53,7 +53,7 @@ pipeline {
                     }
                     steps {
                         echo 'building captainapp...'
-                        buildAndUpdateCluster("services/captianapp/", "obs-captianapp", "obs-captianapp")
+                        buildAndUpdateCluster("services/captainapp/", "obs-captainapp", "obs-captainapp")
                     }
                 }
                 stage('server') {
