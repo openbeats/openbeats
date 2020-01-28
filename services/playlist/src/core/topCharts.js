@@ -17,7 +17,9 @@ export const fetchTopCharts = async () => {
 		for (let chartName of fetchlist) {
 			let language = chartName.substring(0, chartName.indexOf("-"));
 			language == "mirchi" ? (language = "hindi") : null;
-			const chart = await TopChart.findOne({ name: chartName });
+			const chart = await TopChart.findOne({
+				name: chartName
+			});
 			if (!chart) {
 				chart = new TopChart({
 					name: chartName,
@@ -27,7 +29,6 @@ export const fetchTopCharts = async () => {
 				});
 				await chart.save();
 			} else {
-				chart.topchartThumbnail = "";
 				chart.songs = [];
 				chart.updatedAt = Date.now();
 				await chart.save();
@@ -54,7 +55,9 @@ export const arrangeTopCharts = async () => {
 	];
 	try {
 		for (let chartName of fetchlist) {
-			const chart = await TopChart.findOne({ name: chartName });
+			const chart = await TopChart.findOne({
+				name: chartName
+			});
 			chart.songs.sort((x, y) => {
 				if (parseInt(x.rank) < parseInt(y.rank)) {
 					return -1;
