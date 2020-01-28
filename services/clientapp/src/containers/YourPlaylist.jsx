@@ -32,7 +32,7 @@ class YourPlaylist extends Component {
                             </div>
                         </div>
                         <div className="playlist-panel-name">
-                            {this.state.editId === item.playlistId ?
+                            {this.state.editId === item._id ?
                                 <form onSubmit={async (e) => {
                                     e.preventDefault();
                                     if (await this.props.changeUserPlaylistName(this.state.editId, this.state.editedName)) {
@@ -49,14 +49,14 @@ class YourPlaylist extends Component {
                                 :
                                 <div className="playlist-panel-name">
                                     {item.name}
-                                    <i className="fas fa-pencil-alt cursor-pointer" onClick={() => this.setState({ editId: item.playlistId, editedName: item.name })} title="Edit Playlist Name"></i>
+                                    <i className="fas fa-pencil-alt cursor-pointer" onClick={() => this.setState({ editId: item._id, editedName: item.name })} title="Edit Playlist Name"></i>
                                 </div>
                             }
                         </div>
                         <div className="playlist-panel-options">
                             <div className="p-options">
                                 <div className="p-options-icon-holder">
-                                    <i className="fas fa-play cursor-pointer" onClick={() => this.props.push(`/playlist/user/${item.playlistId}?autoplay=true`)} title="Play"></i>
+                                    <i className="fas fa-play cursor-pointer" onClick={() => this.props.push(`/playlist/user/${item._id}?autoplay=true`)} title="Play"></i>
                                 </div>
                                 <div className="p-options-icon-holder">
                                     <i className="fas fa-random cursor-pointer" onClick={() => this.props.featureNotify()} title="Shuffle Play"></i>
@@ -104,8 +104,8 @@ const mapDispatchToProps = dispatch => {
         deleteUserPlaylist: (pId) => {
             playlistManipulatorActions.deleteUserPlaylist(pId);
         },
-        changeUserPlaylistName: (playlistId, playlistName) => {
-            return playlistManipulatorActions.changeUserPlaylistName(playlistId, playlistName);
+        changeUserPlaylistName: (_id, playlistName) => {
+            return playlistManipulatorActions.changeUserPlaylistName(_id, playlistName);
         },
     };
 };
