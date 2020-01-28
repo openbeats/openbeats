@@ -4,5 +4,5 @@
     "dev": "http://localhost:2000",
     "production": "http://obs-server:2000"
   },
-  "isDev": true
+  "isDev": false
 }
