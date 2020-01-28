@@ -41,7 +41,7 @@ class TopCharts extends Component {
                             <div className="playlist-panel-image cursor-pointer" title="Play All songs!" onClick={() => this.props.push(`/playlist/charts/${item._id}?autoplay=true`)} style={{ backgroundImage: `url(${item.thumbnail ? item.thumbnail : musicDummy})` }}>
                                 <div className="playlist-total-songs-display">
                                     <img src={playlistSvg} alt="" srcSet="" />
-                                    <p>{10}</p>
+                                    <p>{item.totalSongs}</p>
                                 </div>
                             </div>
                             <div className="playlist-panel-name">
