@@ -1,17 +1,12 @@
 import express from "express";
 import UserPlaylist from "../models/UserPlaylist";
-import User from "../models/User";
-import uuid from "uuid";
 
 const router = express.Router();
 
 // create empty Playlist
 router.post("/create", async (req, res) => {
 	try {
-		const {
-			name,
-			userId
-		} = req.body;
+		const { name, userId } = req.body;
 
 		const userPlaylist = new UserPlaylist({
 			name,
@@ -35,10 +30,7 @@ router.post("/create", async (req, res) => {
 // add songs into Playlist
 router.post("/addsongs", async (req, res) => {
 	try {
-		const {
-			songs,
-			playlistId
-		} = req.body;
+		const { songs, playlistId } = req.body;
 
 		const playlist = await UserPlaylist.findOne({
 			_id: playlistId,
@@ -49,7 +41,7 @@ router.post("/addsongs", async (req, res) => {
 		await playlist.updateOne({
 			updatedAt: Date.now(),
 			totalSongs: playlist.songs.length,
-			thumbnail: songs[0].thumbnail
+			thumbnail: songs[0].thumbnail,
 		});
 
 		const savedSongs = await playlist.save();
@@ -58,7 +50,6 @@ router.post("/addsongs", async (req, res) => {
 			status: true,
 			data: savedSongs,
 		});
-
 	} catch (error) {
 		res.send({
 			status: false,
@@ -72,14 +63,17 @@ router.get("/getallplaylistmetadata/:uid", async (req, res) => {
 	try {
 		const uid = req.params.uid;
 
-		const metaData = await UserPlaylist.find({
-			createdBy: uid
-		}, {
-			_id: true,
-			name: 1,
-			thumbnail: 2,
-			totalSongs: 3,
-		})
+		const metaData = await UserPlaylist.find(
+			{
+				createdBy: uid,
+			},
+			{
+				_id: true,
+				name: 1,
+				thumbnail: 2,
+				totalSongs: 3,
+			},
+		);
 		res.send({
 			status: true,
 			data: metaData,
@@ -115,27 +109,26 @@ router.get("/getplaylist/:id", async (req, res) => {
 // delete songs from playlist
 router.post("/deletesong", async (req, res) => {
 	try {
-		const {
-			playlistId,
-			songId
-		} = req.body;
+		const { playlistId, songId } = req.body;
 
 		await UserPlaylist.findByIdAndUpdate(playlistId, {
 			$pull: {
 				songs: {
-					_id: songId
-				}
-			}
+					_id: songId,
+				},
+			},
 		});
 
 		const playlist = await UserPlaylist.findOne({
-			_id: playlistId
-		})
+			_id: playlistId,
+		});
 
 		await playlist.updateOne({
 			updatedAt: Date.now(),
 			totalSongs: playlist.songs.length,
-			thumbnail: playlist.songs.length ? playlist.songs[playlist.songs.length - 1].thumbnail : "https://openbeats.live/static/media/dummy_music_holder.a3d0de2e.jpg"
+			thumbnail: playlist.songs.length
+				? playlist.songs[playlist.songs.length - 1].thumbnail
+				: "https://openbeats.live/static/media/dummy_music_holder.a3d0de2e.jpg",
 		});
 
 		await playlist.save();
@@ -144,7 +137,6 @@ router.post("/deletesong", async (req, res) => {
 			status: true,
 			data: "Song has been deleted successfully",
 		});
-
 	} catch (error) {
 		res.send({
 			status: false,
@@ -156,10 +148,7 @@ router.post("/deletesong", async (req, res) => {
 // update name of the playlist
 router.post("/updatename", async (req, res) => {
 	try {
-		const {
-			name,
-			playlistId
-		} = req.body;
+		const { name, playlistId } = req.body;
 
 		const playlist = await UserPlaylist.findOne({
 			_id: playlistId,
