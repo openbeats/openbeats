@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { playerdownload, playerplay, master, playlistadd, playerpause, } from "../images";
-import Loader from 'react-loader-spinner'
+import Loader from 'react-loader-spinner';
 import "../css/result.css"
 import { variables } from '../config'
 import { connect } from "react-redux"

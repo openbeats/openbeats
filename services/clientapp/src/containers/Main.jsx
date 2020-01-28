@@ -10,6 +10,7 @@ import NowPlaying from "./NowPlaying";
 import Result from "./Result";
 import PlaylistManipulator from "./PlaylistManipulator";
 import YourPlaylist from "./YourPlaylist";
+import TopCharts from "./TopCharts";
 
 class Main extends Component {
   componentDidMount() {
@@ -65,6 +66,7 @@ class Main extends Component {
                 }
               }} />
               <Route path="/search" component={Result} />
+              <Route path="/topcharts" component={TopCharts} />
             </Switch>
           </section>
         </main>

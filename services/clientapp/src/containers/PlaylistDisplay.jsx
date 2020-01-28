@@ -26,7 +26,6 @@ class PlaylistDisplay extends Component {
         }
         this.state = { ...this.initialState };
         this.videoId = []
-        this.locationChange = this.locationChange.bind(this);
     }
 
 
@@ -39,10 +38,6 @@ class PlaylistDisplay extends Component {
 
     }
 
-    locationChange() {
-        console.log("location changed")
-    }
-
     async playlistFetchHandler() {
         await this.setState({ ...this.initialState })
         const {
@@ -51,7 +46,6 @@ class PlaylistDisplay extends Component {
         } = this.props.match.params
         if (type === "user") {
             const data = await this.props.fetchUserPlaylist(id);
-            console.log(data);
             if (data && data.status) {
                 await this.setState({
                     type,
@@ -66,8 +60,24 @@ class PlaylistDisplay extends Component {
                 this.props.notify("Invalid Playlist!");
                 this.props.push("/");
             }
+        } else if (type === "charts") {
+            const data = await this.props.fetchChartsPlaylist(id);
+            if (data && data.status) {
+                await this.setState({
+                    type,
+                    playlistId: id,
+                    playlistName: data.chart.name,
+                    playlistThumbnail: data.chart.thumbnail ? data.chart.thumbnail : musicDummy,
+                    playlistItems: data.chart.songs,
+                    isLoading: false,
+                })
+            } else {
+                this.props.notify("Invalid Playlist!");
+                this.props.push("/");
+            }
         }
     }
+
 
     initQueue(key = 0) {
         if (this.state.playlistItems.length > 0) {
@@ -159,8 +169,8 @@ class PlaylistDisplay extends Component {
                                         <i className="fas fa-trash-alt cursor-pointer" title="Delete Playlist" onClick={() => this.props.deleteUserPlaylist(this.state.playlistId)}></i>
                                     </Fragment> :
                                     <Fragment>
-                                        <i className="fas fa-heart cursor-pointer"></i>
-                                        <i className="fas fa-bookmark cursor-pointer"></i>
+                                        {/* <i className="fas fa-heart cursor-pointer"></i>
+                                        <i className="fas fa-bookmark cursor-pointer"></i> */}
                                     </Fragment>
                                 }
                             </div>
@@ -269,12 +279,22 @@ class PlaylistDisplay extends Component {
                                     </div>
                                 </Fragment>
                             )) :
-                                <div className="text-align-center width-100 height-100 d-flex align-items-center justify-content-center">
-                                    Your Playlist is Empty!
-                                    <br />
-                                    <br />
-                                    You can search and add songs to your Playlist!
-                                </div>
+                                <Fragment>
+
+                                    {this.state.type === "user" &&
+                                        <div className="text-align-center width-100 height-100 d-flex align-items-center justify-content-center">
+                                            Your Playlist is Empty!
+                                            <br />
+                                            <br />
+                                            You can search and add songs to your Playlist!
+                                        </div>}
+                                    {this.state.type === "charts" && <div className="text-align-center width-100 height-100 d-flex align-items-center justify-content-center">
+                                        This Top Chart is Empty!
+                                        <br />
+                                        <br />
+                                        Stay Tuned!!!
+                                        </div>}
+                                </Fragment>
                             }
                         </div>
                     </Fragment>
@@ -322,6 +342,9 @@ const mapDispatchToProps = (dispatch) => {
         },
         fetchUserPlaylist: (playlistId) => {
             return playlistManipulatorActions.fetchUserPlaylist(playlistId);
+        },
+        fetchChartsPlaylist: (playlistId) => {
+            return playlistManipulatorActions.fetchChartsPlaylist(playlistId);
         },
         changeUserPlaylistName: (playlistId, playlistName) => {
             return playlistManipulatorActions.changeUserPlaylistName(playlistId, playlistName);
