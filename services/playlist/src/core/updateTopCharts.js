@@ -41,7 +41,7 @@ export default async (chartName, chartId, language) => {
 				};
 				let chart = await TopChart.findById(chartId);
 				if (Object.is(rank, "01")) {
-					chart.thumbnail = thumbnail;
+					chart.topchartThumbnail = thumbnail;
 				}
 				chart.songs.push(temp);
 				await chart.save();
@@ -88,7 +88,7 @@ async function coreFallback(title, language, rank, chartId) {
 			};
 			let chart = await TopChart.findById(chartId);
 			if (Object.is(rank, "01")) {
-				chart.thumbnail = thumbnail;
+				chart.topchartThumbnail = thumbnail;
 			}
 			chart.songs.push(temp);
 			await chart.save();

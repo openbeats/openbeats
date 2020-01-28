@@ -7,7 +7,7 @@ export default mongoose.model(
 			type: String,
 			required: true,
 		},
-		thumbnail: {
+		topchartThumbnail: {
 			type: String,
 			//required: true,
 		},
@@ -33,6 +33,10 @@ export default mongoose.model(
 		createdBy: {
 			type: String,
 			required: true,
+		},
+		totalSongs: {
+			type: Number,
+			default: 0,
 		},
 	}),
 );
