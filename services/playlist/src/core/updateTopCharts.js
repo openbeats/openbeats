@@ -68,12 +68,14 @@ async function coreFallback(title, language, rank, chartId) {
 	let isSuccess = false;
 	const baseurl = config.get("baseurl").production;
 	try {
-		const result = await axios.get(`${baseurl}/ytcat`, {
+		const result = await axios.get(`obs-server/ytcat`, {
 			params: {
 				q: encodeURIComponent(title + " " + language),
 				fr: true,
 			},
 		});
+		console.log(baseurl)
+		console.log(result)
 		if (result.data["data"].length != 0) {
 			const response = result.data["data"][0];
 			const videoId = response.videoId;
