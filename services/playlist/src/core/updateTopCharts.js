@@ -67,17 +67,10 @@ export default async (chartName, chartId, language) => {
 
 async function coreFallback(title, language, rank, chartId) {
 	let isSuccess = false;
-	const baseurl = config.get("baseurl").production;
+	const baseurl = config.get("isDev") ? config.get("baseurl").dev : config.get("baseurl").production;
 	try {
-		// const result = await axios.get(`obs-server/ytcat`, {
-		// 	params: {
-		// 		q: encodeURIComponent(title + " " + language),
-		// 		fr: true,
-		// 	},
-		// });
-		const data = await fetch(`http://obs-server:2000/ytcat?q=${encodeURIComponent(title + " " + language)}&fr=${true}`)
+		const data = await fetch(`${baseurl}/ytcat?q=${encodeURIComponent(title + " " + language)}&fr=${true}`)
 		const result = await data.json()
-		console.log(result)
 		if (result.data.length) {
 			const response = result.data[0];
 			const videoId = response.videoId;
