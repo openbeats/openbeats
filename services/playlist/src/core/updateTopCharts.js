@@ -75,7 +75,7 @@ async function coreFallback(title, language, rank, chartId) {
 		// 		fr: true,
 		// 	},
 		// });
-		const data = await fetch(`https://api.openbeats.live/ytcat?q=${encodeURIComponent(title + " " + language)}&fr=${true}`)
+		const data = await fetch(`http://obs-server:2000/ytcat?q=${encodeURIComponent(title + " " + language)}&fr=${true}`)
 		const result = await data.json()
 		console.log(result)
 		if (result.data.length) {
