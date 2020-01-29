@@ -2,8 +2,6 @@ import fetchRetry from "./refetch";
 import cheerio from "cheerio";
 import TopChart from "../models/TopChart";
 import config from "config";
-// import axios from "axios";
-import fetch from "node-fetch";
 
 export default async (chartName, chartId, language) => {
 	try {
@@ -42,7 +40,7 @@ export default async (chartName, chartId, language) => {
 				};
 				let chart = await TopChart.findById(chartId);
 				if (Object.is(rank, "01")) {
-					chart.topchartThumbnail = thumbnail;
+					chart.thumbnail = thumbnail;
 				}
 				chart.songs.push(temp);
 				await chart.save();
@@ -67,10 +65,17 @@ export default async (chartName, chartId, language) => {
 
 async function coreFallback(title, language, rank, chartId) {
 	let isSuccess = false;
-	const baseurl = config.get("isDev") ? config.get("baseurl").dev : config.get("baseurl").production;
+	const baseurl = config.get("isDev")
+		? config.get("baseurl").dev
+		: config.get("baseurl").production;
 	try {
-		const data = await fetch(`${baseurl}/ytcat?q=${encodeURIComponent(title + " " + language)}&fr=${true}`)
-		const result = await data.json()
+		const data = await fetchRetry(
+			`${baseurl}/ytcat?q=${encodeURIComponent(
+				title + " " + language + " " + "audio",
+			)}&fr=${true}`,
+			2,
+		);
+		const result = await data.json();
 		if (result.data.length) {
 			const response = result.data[0];
 			const videoId = response.videoId;
