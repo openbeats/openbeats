@@ -3,10 +3,7 @@ import express from "express";
 import dbconfig from "./config/db";
 import userPlaylistRoutes from "./routes/userPlaylist";
 import topcharts from "./routes/topcharts";
-import {
-	fetchTopCharts,
-	arrangeTopCharts
-} from "./core/topCharts";
+import { fetchTopCharts, arrangeTopCharts } from "./core/topCharts";
 import cron from "node-cron";
 
 dbconfig();
@@ -32,7 +29,6 @@ middleware(app);
 
 app.use("/userplaylist", userPlaylistRoutes);
 app.use("/topcharts", topcharts);
-
 
 app.listen(PORT, () => {
 	console.log(`openbeats playlist service up and running on ${PORT}!`);
