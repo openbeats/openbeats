@@ -166,12 +166,22 @@ param: playlist id ( get from playlist metadata endpoint or playlist endpoint *u
 
 ---
 
-<!-- **getcharts**
+**TopCharts**
 
-to get all charts
+Get all charts metadata
 
-> https://api.openbeats.live/getcharts
+> https://api.openbeats.live/playlist/topcharts/metadata
 
-to get chart in specified language
+```
+method: GET
 
-> https://api.openbeats.live/getcharts?lang=<-language-> -->
+```
+
+Get chart Songs
+
+> https://api.openbeats.live/playlist/topcharts/<-CHART-ID->
+```
+method: POST
+params: CHART-ID can be obtained from top charts metadata.
+
+```
