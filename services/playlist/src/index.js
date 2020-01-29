@@ -22,7 +22,7 @@ cron.schedule("2 0 * * 0", async () => {
 fetchTopCharts();
 setTimeout(() => {
 	arrangeTopCharts();
-}, 120000);
+}, 150000);
 
 const PORT = process.env.PORT || 2000;
 
@@ -32,6 +32,7 @@ middleware(app);
 
 app.use("/userplaylist", userPlaylistRoutes);
 app.use("/topcharts", topcharts);
+
 
 app.listen(PORT, () => {
 	console.log(`openbeats playlist service up and running on ${PORT}!`);
