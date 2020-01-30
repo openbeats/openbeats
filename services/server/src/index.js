@@ -21,9 +21,12 @@ app.get("/", (req, res) => {
 });
 
 app.get("/opencc/:id", async (req, res) => {
+	console.log("req received")
 	const videoID = req.params.id;
 	try {
+		console.log("info start")
 		const info = await ytdl.getInfo(videoID);
+		console.log("info", info)
 		let audioFormats = ytdl.filterFormats(info.formats, "audioonly");
 		if (!audioFormats[0].contentLength) {
 			audioFormats = ytdl.filterFormats(info.formats, "audioandvideo");

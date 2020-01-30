@@ -6,5 +6,5 @@
   },
   "jwtSecret": "WeAreAwesome",
   "saltRound": 10,
-  "isDev": true
+  "isDev": false
 }
