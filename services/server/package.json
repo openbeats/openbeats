@@ -4,7 +4,7 @@
     "description": "openbeats server",
     "main": "index.js",
     "scripts": {
-        "start": "nodemon index.js --ignore localdb.json"
+        "start": "nodemon index.js"
     },
     "keywords": [
         "openbeats"
