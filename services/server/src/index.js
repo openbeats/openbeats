@@ -23,22 +23,17 @@ app.get("/", (req, res) => {
 });
 
 app.get("/opencc/:id", async (req, res) => {
-	console.log("req received")
 	const videoID = req.params.id;
 	try {
 		const proxy = "http://lum-customer-hl_b2084710-zone-static_res-route_err-pass_dyn-country-in:5olhwmb9fyab@zproxy.lum-superproxy.io:22225";
 		// const proxy = "http://101.109.255.246:52279";
 		// const proxy = "https://api.proxyorbit.com/v1/?token=J0XAus0eRldTAZ17q0RF9QkxFKsTZoaU340Jz1omYO4&youtube=true";
 		const agent = new HttpsProxyAgent(proxy);
-
-		console.log("info start", agent)
 		const info = await ytdl.getInfo(`https://www.youtube.com/watch?v=${videoID}`, {
 			requestOptions: {
 				agent: agent
 			}
 		});
-		
-		console.log("info", info)
 		let audioFormats = ytdl.filterFormats(info.formats, "audioonly");
 		if (!audioFormats[0].contentLength) {
 			audioFormats = ytdl.filterFormats(info.formats, "audioandvideo");
@@ -73,7 +68,7 @@ app.get("/ytcat", async (req, res) => {
 			data: data,
 		});
 	} catch (error) {
-		console.log(error.message);
+		console.log(error);
 		res.send({
 			status: false,
 			error: error.message,
