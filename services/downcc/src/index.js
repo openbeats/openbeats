@@ -36,15 +36,16 @@ app.get("/:id", async (req, res) => {
 			.replace(" ", "_")
 			.replace(/[^\w]/gi, "_")}@openbeats`;
 
-		let contentLength =
-			audioFormats[0].contentLength ||
-			info.length_seconds * audioFormats[0].audioBitrate * 125;
+		// let contentLength =
+		// 	audioFormats[0].contentLength ||
+		// 	info.length_seconds * audioFormats[0].audioBitrate * 125;
+
 		res.setHeader(
 			"Content-disposition",
 			"attachment; filename=" + downloadTitle + ".mp3",
 		);
 		res.setHeader("Content-Type", "audio/mpeg");
-		res.setHeader("Content-Length", contentLength);
+		// res.setHeader("Content-Length", contentLength);
 		ffmpeg({
 				source: sourceUrl
 			})
