@@ -2,7 +2,10 @@ import middleware from "./config/middleware";
 import express from "express";
 import ytdl from "ytdl-core";
 import ffmpeg from "fluent-ffmpeg";
-import { path } from "@ffmpeg-installer/ffmpeg";
+import {
+	path
+} from "@ffmpeg-installer/ffmpeg";
+import HttpsProxyAgent from "https-proxy-agent";
 
 // import dbconfig from "./config/db";
 // dbconfig();
@@ -14,7 +17,15 @@ middleware(app);
 app.get("/:id", async (req, res) => {
 	const videoID = req.params.id;
 	try {
-		const info = await ytdl.getInfo(videoID);
+		const proxy = "http://lum-customer-hl_b2084710-zone-static_res-route_err-pass_dyn-country-in:5olhwmb9fyab@zproxy.lum-superproxy.io:22225";
+		// const proxy = "http://101.109.255.246:52279";
+		// const proxy = "https://api.proxyorbit.com/v1/?token=J0XAus0eRldTAZ17q0RF9QkxFKsTZoaU340Jz1omYO4&youtube=true";
+		const agent = new HttpsProxyAgent(proxy);
+		const info = await ytdl.getInfo(`https://www.youtube.com/watch?v=${videoID}`, {
+			requestOptions: {
+				agent: agent
+			}
+		});
 		let audioFormats = ytdl.filterFormats(info.formats, "audioonly");
 		if (!audioFormats[0].clen) {
 			audioFormats = ytdl.filterFormats(info.formats, "audioandvideo");
@@ -34,7 +45,9 @@ app.get("/:id", async (req, res) => {
 		);
 		res.setHeader("Content-Type", "audio/mpeg");
 		res.setHeader("Content-Length", contentLength);
-		ffmpeg({ source: sourceUrl })
+		ffmpeg({
+				source: sourceUrl
+			})
 			.setFfmpegPath(path)
 			.withAudioCodec("libmp3lame")
 			.audioBitrate(audioFormats[0].audioBitrate)
@@ -44,6 +57,7 @@ app.get("/:id", async (req, res) => {
 				end: true,
 			});
 	} catch (error) {
+		console.log(error);
 		let link = null;
 		let status = 404;
 		if (ytdl.validateID(videoID)) {
@@ -54,7 +68,9 @@ app.get("/:id", async (req, res) => {
 				"attachment; filename=" + videoID + ".mp3",
 			);
 			res.setHeader("Content-Type", "audio/mpeg");
-			ffmpeg({ source: link })
+			ffmpeg({
+					source: link
+				})
 				.setFfmpegPath(ffmpegPath)
 				.withAudioCodec("libmp3lame")
 				.audioBitrate(128)

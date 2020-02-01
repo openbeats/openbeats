@@ -24,6 +24,7 @@
     "cors": "^2.8.5",
     "express": "^4.17.1",
     "fluent-ffmpeg": "^2.1.2",
+    "https-proxy-agent": "^4.0.0",
     "mongoose": "^5.7.13",
     "morgan": "^1.9.1",
     "ytdl-core": "^1.0.3"
