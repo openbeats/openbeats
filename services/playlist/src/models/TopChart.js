@@ -16,10 +16,16 @@ export default mongoose.model(
 			required: true,
 		},
 		songs: [{
-			title: String,
 			rank: String,
+			title: String,
 			thumbnail: String,
+			duration: String,
 			videoId: String,
+			channelName: String,
+			channelId: String,
+			uploadedOn: String,
+			views: String,
+			description: String,
 		}, ],
 		createdAt: {
 			type: Date,
