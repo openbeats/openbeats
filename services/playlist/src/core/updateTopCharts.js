@@ -71,7 +71,7 @@ async function coreFallback(title, language, rank, chartId) {
 	try {
 		const data = await fetchRetry(
 			`${baseurl}/ytcat?q=${encodeURIComponent(
-				title + " " + language + " " + "audio",
+				title + " " + language,
 			)}&fr=${true}`,
 			2,
 		);

@@ -27,7 +27,7 @@ app.get("/:id", async (req, res) => {
 			}
 		});
 		let audioFormats = ytdl.filterFormats(info.formats, "audioonly");
-		if (!audioFormats[0].clen) {
+		if (!audioFormats[0].contentLength) {
 			audioFormats = ytdl.filterFormats(info.formats, "audioandvideo");
 		}
 		let sourceUrl = audioFormats[0].url;
