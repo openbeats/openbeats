@@ -21,15 +21,12 @@ app.get("/:id", async (req, res) => {
 			if (value) {
 				console.log("exists")
 				let sourceUrl = value;
-				let downloadTitle = `${info.title
-								.trim()
-								.replace(" ", "_")
-								.replace(/[^\w]/gi, "_")}@openbeats`;
+				let downloadTitle = `${req.query.title ? req.query.title : videoID}`;
+				downloadTitle = `${downloadTitle.trim().replace(" ", "_").replace(/[^\w]/gi, "_")}@openbeats`
 
 				// let contentLength =
 				// 	audioFormats[0].contentLength ||
 				// 	info.length_seconds * audioFormats[0].audioBitrate * 125;
-
 
 				res.setHeader(
 					"Content-disposition",
@@ -65,10 +62,7 @@ app.get("/:id", async (req, res) => {
 						})
 					}
 				});
-				let downloadTitle = `${info.title
-					.trim()
-					.replace(" ", "_")
-					.replace(/[^\w]/gi, "_")}@openbeats`;
+				let downloadTitle = `${info.title.trim().replace(" ", "_").replace(/[^\w]/gi, "_")}@openbeats`;
 
 				// let contentLength =
 				// 	audioFormats[0].contentLength ||
