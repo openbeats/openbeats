@@ -23,9 +23,9 @@
         "cors": "^2.8.5",
         "express": "^4.17.1",
         "express-validator": "^6.3.0",
-        "https-proxy-agent": "^4.0.0",
         "mongoose": "^5.7.13",
         "morgan": "^1.9.1",
+        "node-fetch": "^2.6.0",
         "ytdl-core": "^1.0.3"
     }
 }
