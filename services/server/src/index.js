@@ -7,7 +7,7 @@ import {
 } from "./core";
 import ytdl from "ytdl-core";
 import fetch from 'node-fetch';
-import redis from "./config/redis"
+import redis from "./config/redis";
 
 
 // import dbconfig from "./config/db";
@@ -42,7 +42,12 @@ app.get("/opencc/:id", async (req, res) => {
 				}
 				let sourceUrl = audioFormats[0].url;
 				redis.set(videoID, sourceUrl, (err) => {
-					if (err) console.log(err)
+					if (err) console.error(err)
+					else {
+						redis.expire(videoID, 20000, (err) => {
+							if (err) console.error(err)
+						})
+					}
 				});
 				res.send({
 					status: true,
