@@ -233,12 +233,12 @@ class PlaylistDisplay extends Component {
                                                     e.preventDefault()
                                                     this.videoId.push(item.videoId)
                                                     this.setState({ videoId: this.videoId })
-                                                    await fetch(`${variables.baseUrl}/downcc/${item.videoId}`)
+                                                    await fetch(`${variables.baseUrl}/downcc/${item.videoId}?title=${encodeURI(item.title)}`)
                                                         .then(res => {
                                                             if (res.status === 200) {
                                                                 this.videoId.splice(this.videoId.indexOf(item.videoId), 1)
                                                                 this.setState({ videoId: this.videoId })
-                                                                window.open(`${variables.baseUrl}/downcc/${item.videoId}`, '_self')
+                                                                window.open(`${variables.baseUrl}/downcc/${item.videoId}?title=${encodeURI(item.title)}`, '_self')
                                                             } else {
                                                                 this.videoId.splice(this.videoId.indexOf(item.videoId), 1)
                                                                 this.setState({ videoId: this.videoId })
@@ -250,7 +250,7 @@ class PlaylistDisplay extends Component {
                                                             this.props.notify("Requested content not available right now!, try downloading alternate songs!");
                                                         })
                                                 }}
-                                                className="t-none cursor-pointer" href={`${variables.baseUrl}/downcc/${item.videoId}`}>
+                                                className="t-none cursor-pointer" href={`${variables.baseUrl}/downcc/${item.videoId}?title=${encodeURI(item.title)}`}>
                                                 {this.state.videoId.includes(item.videoId) ?
                                                     <Loader
                                                         type="Oval"
