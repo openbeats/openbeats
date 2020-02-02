@@ -7,6 +7,7 @@ import {
 } from "./core";
 import ytdl from "ytdl-core";
 import fetch from 'node-fetch';
+import redis from "./config/redis"
 
 
 // import dbconfig from "./config/db";
@@ -25,16 +26,30 @@ app.get("/", (req, res) => {
 app.get("/opencc/:id", async (req, res) => {
 	const videoID = req.params.id;
 	try {
-		const info = await (await fetch(`https://jkj2ip878k.execute-api.us-east-1.amazonaws.com/default/ytdl?vid=${videoID}`)).json();
-		let audioFormats = ytdl.filterFormats(info.formats, "audioonly");
-		if (!audioFormats[0].contentLength) {
-			audioFormats = ytdl.filterFormats(info.formats, "audioandvideo");
-		}
-		let sourceUrl = audioFormats[0].url;
-		res.send({
-			status: true,
-			link: sourceUrl,
-		});
+		redis.get(videoID, async (err, value) => {
+			if (value) {
+				console.log("exists")
+				let sourceUrl = value;
+				res.send({
+					status: true,
+					link: sourceUrl,
+				});
+			} else {
+				const info = await (await fetch(`https://jkj2ip878k.execute-api.us-east-1.amazonaws.com/default/ytdl?vid=${videoID}`)).json();
+				let audioFormats = ytdl.filterFormats(info.formats, "audioonly");
+				if (!audioFormats[0].contentLength) {
+					audioFormats = ytdl.filterFormats(info.formats, "audioandvideo");
+				}
+				let sourceUrl = audioFormats[0].url;
+				redis.set(videoID, sourceUrl, (err) => {
+					if (err) console.log(err)
+				});
+				res.send({
+					status: true,
+					link: sourceUrl,
+				});
+			}
+		})
 	} catch (error) {
 		console.log(error)
 		let link = null;

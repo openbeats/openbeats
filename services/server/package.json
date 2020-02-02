@@ -30,6 +30,7 @@
         "morgan": "^1.9.1",
         "node-cron": "^2.0.3",
         "node-fetch": "^2.6.0",
+        "redis": "^2.8.0",
         "ytdl-core": "^1.0.3"
     }
 }
