@@ -25,7 +25,7 @@ app.get("/", (req, res) => {
 app.get("/opencc/:id", async (req, res) => {
 	const videoID = req.params.id;
 	try {
-		const data = await (await fetch(`https://jkj2ip878k.execute-api.us-east-1.amazonaws.com/default/ytdl?vid=${videoID}`)).json();
+		const info = await (await fetch(`https://jkj2ip878k.execute-api.us-east-1.amazonaws.com/default/ytdl?vid=${videoID}`)).json();
 		let audioFormats = ytdl.filterFormats(info.formats, "audioonly");
 		if (!audioFormats[0].contentLength) {
 			audioFormats = ytdl.filterFormats(info.formats, "audioandvideo");
