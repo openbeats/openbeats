@@ -23,11 +23,6 @@ app.get("/:id", async (req, res) => {
 				let sourceUrl = value;
 				let downloadTitle = `${req.query.title ? req.query.title : videoID}`;
 				downloadTitle = `${downloadTitle.trim().replace(" ", "_").replace(/[^\w]/gi, "_")}@openbeats`
-
-				// let contentLength =
-				// 	audioFormats[0].contentLength ||
-				// 	info.length_seconds * audioFormats[0].audioBitrate * 125;
-
 				res.setHeader(
 					"Content-disposition",
 					"attachment; filename=" + downloadTitle + ".mp3",
@@ -39,7 +34,6 @@ app.get("/:id", async (req, res) => {
 					})
 					.setFfmpegPath(path)
 					.withAudioCodec("libmp3lame")
-					.audioBitrate(audioFormats[0].audioBitrate)
 					.toFormat("mp3")
 					.on("error", err => console.log(err.message))
 					.pipe(res, {
@@ -67,7 +61,6 @@ app.get("/:id", async (req, res) => {
 				// let contentLength =
 				// 	audioFormats[0].contentLength ||
 				// 	info.length_seconds * audioFormats[0].audioBitrate * 125;
-
 
 				res.setHeader(
 					"Content-disposition",
