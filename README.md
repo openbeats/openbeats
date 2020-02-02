@@ -150,7 +150,16 @@ param: playlist id ( get from playlist metadata endpoint or playlist endpoint *u
 
 **downcc**
 
-> https://api.openbeats.live/downcc/<-audio-id->
+> https://api.openbeats.live/downcc/<-audio-id->?title=<-song-title->
+
+```
+**song-title**(query param)
+due to redis integration , only stream url can be fetchef from redis
+title can't be fetched, so send title in query to give user meaningful downloaded file.
+**note:**
+song-title should be uriencoded before appending it to query param to avoid spacing conflicts.
+
+```
 
 ---
 
