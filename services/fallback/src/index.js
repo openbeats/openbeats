@@ -1,7 +1,7 @@
 import middleware from "./config/middleware";
 import express from "express";
 import ytdl from "ytdl-core";
-import http from "https";
+import axios from 'axios'
 import fetch from "node-fetch";
 // import dbconfig from "./config/db";
 // dbconfig();
@@ -14,7 +14,6 @@ app.get("/:id", async (req, res) => {
 	const videoID = req.params.id;
 	try {
 		const info = await (await fetch(`https://jkj2ip878k.execute-api.us-east-1.amazonaws.com/default/ytdl?vid=${videoID}`)).json();
-
 		let audioFormats = ytdl.filterFormats(info.formats, "audioonly");
 		if (!audioFormats[0].contentLength) {
 			audioFormats = ytdl.filterFormats(info.formats, "audioandvideo");
@@ -23,22 +22,28 @@ app.get("/:id", async (req, res) => {
 		const range = req.headers.range;
 		//when seeked range comes in header
 		if (range) {
-			http.get(
-				sourceUrl, {
+			axios({
+					method: 'get',
+					url: sourceUrl,
+					responseType: 'stream',
 					headers: {
-						Range: req.headers.range,
-					},
-				},
-				function (response) {
-					res.writeHead(206, response.headers);
-					response.pipe(res);
-				},
-			);
+						Range: range
+					}
+				})
+				.then(function (response) {
+					res.writeHead(206, response.headers)
+					response.data.pipe(res)
+				});
 		} else {
-			http.get(sourceUrl, function (response) {
-				res.writeHead(200, response.headers);
-				response.pipe(res);
-			});
+			axios({
+					method: 'get',
+					url: sourceUrl,
+					responseType: 'stream'
+				})
+				.then(function (response) {
+					res.writeHead(200, response.headers)
+					response.data.pipe(res)
+				});
 		}
 	} catch (error) {
 		console.error(error);
