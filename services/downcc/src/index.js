@@ -7,6 +7,7 @@ import {
 } from "@ffmpeg-installer/ffmpeg";
 import fetch from "node-fetch";
 import redis from "./config/redis";
+import config from "config";
 // import dbconfig from "./config/db";
 // dbconfig();
 const PORT = process.env.PORT || 2000;
@@ -19,7 +20,6 @@ app.get("/:id", async (req, res) => {
 	try {
 		redis.get(videoID, async (err, value) => {
 			if (value) {
-				console.log("exists")
 				let sourceUrl = value;
 				let downloadTitle = `${req.query.title ? req.query.title : videoID}`;
 				downloadTitle = `${downloadTitle.trim().replace(" ", "_").replace(/[^\w]/gi, "_")}@openbeats`
@@ -41,7 +41,7 @@ app.get("/:id", async (req, res) => {
 					});
 			} else {
 
-				const info = await (await fetch(`https://jkj2ip878k.execute-api.us-east-1.amazonaws.com/default/ytdl?vid=${videoID}`)).json();
+				const info = await (await fetch(`${config.get("lambda")}${videoID}`)).json();
 
 				let audioFormats = ytdl.filterFormats(info.formats, "audioonly");
 				if (!audioFormats[0].contentLength) {

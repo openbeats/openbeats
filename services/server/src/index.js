@@ -8,6 +8,7 @@ import {
 import ytdl from "ytdl-core";
 import fetch from 'node-fetch';
 import redis from "./config/redis";
+import config from "config";
 
 
 // import dbconfig from "./config/db";
@@ -35,7 +36,7 @@ app.get("/opencc/:id", async (req, res) => {
 					link: sourceUrl,
 				});
 			} else {
-				const info = await (await fetch(`https://jkj2ip878k.execute-api.us-east-1.amazonaws.com/default/ytdl?vid=${videoID}`)).json();
+				const info = await (await fetch(`${config.get("lambda")}${videoID}`)).json();
 				let audioFormats = ytdl.filterFormats(info.formats, "audioonly");
 				if (!audioFormats[0].contentLength) {
 					audioFormats = ytdl.filterFormats(info.formats, "audioandvideo");
