@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { playerdownload, playerplay, master, playlistadd, playerpause, } from "../images";
+import { playerdownload, playerplay, master, playlistadd, playerpause, pQueueRed, } from "../images";
 import Loader from 'react-loader-spinner';
 import "../css/result.css"
 import { variables } from '../config'
@@ -71,12 +71,12 @@ class Result extends Component {
                                                     this.videoId.push(item.videoId)
                                                     this.setState({ videoId: this.videoId })
                                                     e.preventDefault()
-                                                    await fetch(`${variables.baseUrl}/downcc/${item.videoId}?${encodeURI(item.title)}`)
+                                                    await fetch(`${variables.baseUrl}/downcc/${item.videoId}?title=${encodeURI(item.title)}`)
                                                         .then(res => {
                                                             if (res.status === 200) {
                                                                 this.videoId.splice(this.videoId.indexOf(item.videoId), 1)
                                                                 this.setState({ videoId: this.videoId })
-                                                                window.open(`${variables.baseUrl}/downcc/${item.videoId}?${encodeURI(item.title)}`, "_self")
+                                                                window.open(`${variables.baseUrl}/downcc/${item.videoId}?title=${encodeURI(item.title)}`, "_self")
                                                             } else {
                                                                 this.videoId.splice(this.videoId.indexOf(item.videoId), 1)
                                                                 this.setState({ videoId: this.videoId })
@@ -102,9 +102,14 @@ class Result extends Component {
                                             </a>
                                             <img onClick={
                                                 () => {
+                                                    this.props.featureNotify();
+                                                }
+                                            } className="action-image-size cursor-pointer queue-icon-result" title="Add to Queue" src={pQueueRed} alt="" />
+                                            <img onClick={
+                                                () => {
                                                     this.props.showAddPlaylistDialog(item)
                                                 }
-                                            } className="action-image-size cursor-pointer" src={playlistadd} alt="" />
+                                            } className="action-image-size cursor-pointer" title="Add to playlist" src={playlistadd} alt="" />
                                         </div>
                                     </div>
                                 </div>

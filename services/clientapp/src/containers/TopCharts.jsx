@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import Loader from 'react-loader-spinner';
-import { playlistSvg, musicDummy } from '../images';
+import { playlistSvg, musicDummy, pQueueWhite } from '../images';
 import { push } from 'connected-react-router';
 import { toastActions, coreActions, playlistManipulatorActions } from '../actions';
 import { connect } from 'react-redux';
@@ -56,6 +56,9 @@ class TopCharts extends Component {
                                     </div>
                                     <div className="p-options-icon-holder">
                                         <i className="fas fa-random cursor-pointer" onClick={() => this.props.featureNotify()} title="Shuffle Play"></i>
+                                    </div>
+                                    <div className="p-options-icon-holder">
+                                        <img className="cursor-pointer action-image-size" title="Add to Queue" onClick={() => this.props.featureNotify()} src={pQueueWhite} alt="" srcset="" />
                                     </div>
                                 </div>
                             </div>
