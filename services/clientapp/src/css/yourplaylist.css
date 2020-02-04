@@ -72,6 +72,9 @@
 .p-options>div:nth-child(1) {
     margin-right: 25px;
 }
+.p-options>div:nth-child(3) {
+    margin-left: 25px;
+}
 
 .playlist-panel-edit-name {
     position: relative;

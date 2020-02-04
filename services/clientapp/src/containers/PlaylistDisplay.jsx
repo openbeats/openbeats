@@ -3,7 +3,7 @@ import "../css/playlistdisplay.css";
 import { toastActions, coreActions, nowPlayingActions, playerActions, playlistManipulatorActions, searchActions } from "../actions";
 import { connect } from "react-redux";
 import { push } from "connected-react-router";
-import { musicDummy, playerdownload } from '../images';
+import { musicDummy, playerdownload, pQueueWhite } from '../images';
 import Loader from 'react-loader-spinner';
 import { variables } from '../config';
 import queryString from 'query-string';
@@ -142,29 +142,28 @@ class PlaylistDisplay extends Component {
                                 {`( ${this.state.playlistItems.length} Songs )`}
                             </div>
                             <div className="playlist-display-play-pause-holder">
-                                {this.props.playlistId !== this.state.playlistId ?
-                                    <div onClick={() => {
-                                        this.initQueue();
-                                    }}>
-                                        <i className="fas fa-play"></i> Play
-                        </div>
-                                    :
-                                    this.props.isMusicPlaying ?
-                                        <div onClick={() => { this.props.playPauseToggle() }}>
-                                            <i className="fas fa-pause"></i> pause
-                                    </div>
+                                {
+                                    this.props.playlistId !== this.state.playlistId ?
+                                        <div onClick={() => { this.initQueue(); }}>
+                                            <i className="fas fa-play"></i> Play
+                                        </div>
                                         :
-                                        <div onClick={() => { this.props.playPauseToggle() }}>
-                                            <i className="fas fa-play"></i> play
-                                </div>
+                                        this.props.isMusicPlaying ?
+                                            <div onClick={() => { this.props.playPauseToggle() }}>
+                                                <i className="fas fa-pause"></i> pause
+                                            </div>
+                                            :
+                                            <div onClick={() => { this.props.playPauseToggle() }}>
+                                                <i className="fas fa-play"></i> play
+                                            </div>
                                 }
-
                             </div>
                             <div className="playlist-display-miscellanious-holder">
                                 {this.state.type === 'user' ?
                                     <Fragment>
                                         {/* <i className="fas fa-unlock cursor-pointer"></i> */}
                                         {/* <i className="fas fa-globe-americas cursor-pointer" title="Make Playlist Public"></i> */}
+                                        <img className="cursor-pointer" title="Add to Queue" src={pQueueWhite} alt="" srcset="" />
                                         <i className="fas fa-lock cursor-pointer" title="Make Playlist Private"></i>
                                         <i className="fas fa-trash-alt cursor-pointer" title="Delete Playlist" onClick={() => this.props.deleteUserPlaylist(this.state.playlistId)}></i>
                                     </Fragment> :
