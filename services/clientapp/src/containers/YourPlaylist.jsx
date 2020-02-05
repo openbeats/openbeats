@@ -62,7 +62,7 @@ class YourPlaylist extends Component {
                                     <i className="fas fa-random cursor-pointer" onClick={() => this.props.featureNotify()} title="Shuffle Play"></i>
                                 </div>
                                 <div className="p-options-icon-holder">
-                                    <img className="cursor-pointer action-image-size" title="Add to Queue" onClick={() => this.props.featureNotify()} src={pQueueWhite} alt="" srcset="" />
+                                    <img className="cursor-pointer action-image-size" title="Add to Queue" onClick={() => this.props.featureNotify()} src={pQueueWhite} alt="" srcSet="" />
                                 </div>
                             </div>
                             <div className="p-options">

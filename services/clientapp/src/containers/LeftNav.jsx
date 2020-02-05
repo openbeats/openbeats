@@ -15,7 +15,8 @@ import {
   navplus,
   hamburger,
   navclose,
-  mainsearch
+  mainsearch,
+  playerqueue
 } from "../images";
 
 class LeftNav extends Component {
@@ -97,6 +98,15 @@ class LeftNav extends Component {
                   <img className="nav-menu-icon-size" src={mainsearch} alt="" />
                 </div>
                 <p className="nav-menu-text">Search</p>
+              </div>
+              <div
+                className="nav-menu"
+                onClick={() => this.props.push("/nowplaying")}
+              >
+                <div className="nav-menu-icon-holder">
+                  <img className="nav-menu-icon-size" src={playerqueue} alt="" />
+                </div>
+                <p className="nav-menu-text">Queue</p>
               </div>
               <div
                 className="nav-menu"
