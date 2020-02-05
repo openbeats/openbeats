@@ -6,6 +6,8 @@ import {
 	path
 } from "@ffmpeg-installer/ffmpeg";
 import fetch from "node-fetch";
+import redis from "./config/redis";
+import config from "config";
 // import dbconfig from "./config/db";
 // dbconfig();
 const PORT = process.env.PORT || 2000;
@@ -16,40 +18,69 @@ middleware(app);
 app.get("/:id", async (req, res) => {
 	const videoID = req.params.id;
 	try {
-		const info = await (await fetch(`https://jkj2ip878k.execute-api.us-east-1.amazonaws.com/default/ytdl?vid=${videoID}`)).json();
+		redis.get(videoID, async (err, value) => {
+			if (value) {
+				let sourceUrl = value;
+				let downloadTitle = `${req.query.title ? req.query.title : videoID}`;
+				downloadTitle = `${downloadTitle.trim().replace(" ", "_").replace(/[^\w]/gi, "_")}@openbeats`
+				res.setHeader(
+					"Content-disposition",
+					"attachment; filename=" + downloadTitle + ".mp3",
+				);
+				res.setHeader("Content-Type", "audio/mpeg");
+				// res.setHeader("Content-Length", contentLength);
+				ffmpeg({
+						source: sourceUrl
+					})
+					.setFfmpegPath(path)
+					.withAudioCodec("libmp3lame")
+					.toFormat("mp3")
+					.on("error", err => console.log(err.message))
+					.pipe(res, {
+						end: true,
+					});
+			} else {
 
-		let audioFormats = ytdl.filterFormats(info.formats, "audioonly");
-		if (!audioFormats[0].contentLength) {
-			audioFormats = ytdl.filterFormats(info.formats, "audioandvideo");
-		}
-		let sourceUrl = audioFormats[0].url;
-		let downloadTitle = `${info.title
-			.trim()
-			.replace(" ", "_")
-			.replace(/[^\w]/gi, "_")}@openbeats`;
+				const info = await (await fetch(`${config.get("lambda")}${videoID}`)).json();
 
-		// let contentLength =
-		// 	audioFormats[0].contentLength ||
-		// 	info.length_seconds * audioFormats[0].audioBitrate * 125;
+				let audioFormats = ytdl.filterFormats(info.formats, "audioonly");
+				if (!audioFormats[0].contentLength) {
+					audioFormats = ytdl.filterFormats(info.formats, "audioandvideo");
+				}
+				let sourceUrl = audioFormats[0].url;
+				redis.set(videoID, sourceUrl, (err) => {
+					if (err) console.error(err)
+					else {
+						redis.expire(videoID, 20000, (err) => {
+							if (err) console.error(err)
+						})
+					}
+				});
+				let downloadTitle = `${info.title.trim().replace(" ", "_").replace(/[^\w]/gi, "_")}@openbeats`;
 
+				// let contentLength =
+				// 	audioFormats[0].contentLength ||
+				// 	info.length_seconds * audioFormats[0].audioBitrate * 125;
 
-		res.setHeader(
-			"Content-disposition",
-			"attachment; filename=" + downloadTitle + ".mp3",
-		);
-		res.setHeader("Content-Type", "audio/mpeg");
-		// res.setHeader("Content-Length", contentLength);
-		ffmpeg({
-				source: sourceUrl
-			})
-			.setFfmpegPath(path)
-			.withAudioCodec("libmp3lame")
-			.audioBitrate(audioFormats[0].audioBitrate)
-			.toFormat("mp3")
-			.on("error", err => console.log(err.message))
-			.pipe(res, {
-				end: true,
-			});
+				res.setHeader(
+					"Content-disposition",
+					"attachment; filename=" + downloadTitle + ".mp3",
+				);
+				res.setHeader("Content-Type", "audio/mpeg");
+				// res.setHeader("Content-Length", contentLength);
+				ffmpeg({
+						source: sourceUrl
+					})
+					.setFfmpegPath(path)
+					.withAudioCodec("libmp3lame")
+					.audioBitrate(audioFormats[0].audioBitrate)
+					.toFormat("mp3")
+					.on("error", err => console.log(err.message))
+					.pipe(res, {
+						end: true,
+					});
+			}
+		})
 	} catch (error) {
 		console.log(error);
 		let link = null;

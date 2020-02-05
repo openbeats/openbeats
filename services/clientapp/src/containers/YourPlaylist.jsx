@@ -3,7 +3,7 @@ import "../css/yourplaylist.css";
 import { push } from "connected-react-router";
 import { connect } from "react-redux";
 import { toastActions, coreActions, playlistManipulatorActions } from "../actions";
-import { musicDummy, playlistSvg } from "../images";
+import { musicDummy, playlistSvg, pQueueWhite } from "../images";
 
 class YourPlaylist extends Component {
 
@@ -60,6 +60,9 @@ class YourPlaylist extends Component {
                                 </div>
                                 <div className="p-options-icon-holder">
                                     <i className="fas fa-random cursor-pointer" onClick={() => this.props.featureNotify()} title="Shuffle Play"></i>
+                                </div>
+                                <div className="p-options-icon-holder">
+                                    <img className="cursor-pointer action-image-size" title="Add to Queue" onClick={() => this.props.featureNotify()} src={pQueueWhite} alt="" srcset="" />
                                 </div>
                             </div>
                             <div className="p-options">
