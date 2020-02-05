@@ -1,0 +1,19 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: obs-redis
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      type: db
+      service: obs-redis
+  template:
+    metadata:
+      labels:
+        type: db
+        service: obs-redis
+    spec:
+      containers:
+      - name: container
+        image: redis

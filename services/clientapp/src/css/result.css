@@ -104,10 +104,14 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  width: 65%;
+  width: 75%;
 }
 
 .play-icon-result {
+  margin-bottom: 3px;
+}
+
+.queue-icon-result {
   margin-bottom: 3px;
 }
 

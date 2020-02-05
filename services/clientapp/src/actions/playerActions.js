@@ -1,7 +1,16 @@
-import { toastActions, nowPlayingActions } from "../actions";
-import { store } from "../store";
-import { variables } from "../config";
-import { musicDummy } from "../images"
+import {
+    toastActions,
+    nowPlayingActions
+} from "../actions";
+import {
+    store
+} from "../store";
+import {
+    variables
+} from "../config";
+import {
+    musicDummy
+} from "../images"
 
 export function playPauseToggle() {
     const playerRef = document.getElementById("music-player");
@@ -30,12 +39,18 @@ export function muteToggle() {
     const playerRef = document.getElementById("music-player");
     playerRef.muted = !playerRef.muted
     if (playerRef.muted) {
-        payload = { isMuted: true, playerVolume: 0 }
+        payload = {
+            isMuted: true,
+            playerVolume: 0
+        }
     } else {
         if (playerRef.volume === 0) {
             playerRef.volume += 0.1
         }
-        payload = { isMuted: false, playerVolume: playerRef.volume }
+        payload = {
+            isMuted: false,
+            playerVolume: playerRef.volume
+        }
     }
     return {
         type: "MUTE_TOGGLE",
@@ -137,10 +152,18 @@ export function playerTimeUpdater(e) {
     let cursecs = Math.floor(currentTime - curmins * 60);
     let durmins = Math.floor(duration / 60);
     let dursecs = Math.floor(duration - durmins * 60);
-    if (cursecs < 10) { cursecs = "0" + cursecs; }
-    if (dursecs < 10) { dursecs = "0" + dursecs; }
-    if (curmins < 10) { curmins = "0" + curmins; }
-    if (durmins < 10) { durmins = "0" + durmins; }
+    if (cursecs < 10) {
+        cursecs = "0" + cursecs;
+    }
+    if (dursecs < 10) {
+        dursecs = "0" + dursecs;
+    }
+    if (curmins < 10) {
+        curmins = "0" + curmins;
+    }
+    if (durmins < 10) {
+        durmins = "0" + durmins;
+    }
     payload = {
         currentProgress: currentTime * (100 / duration),
         currentTimeText: curmins + ":" + cursecs,
@@ -221,7 +244,8 @@ export async function initPlayer(audioData, playMusic = true) {
                     await store.dispatch({
                         type: "LOAD_AUDIO_DATA",
                         payload: {
-                            masterUrl: res.link, fallBackUrl
+                            masterUrl: res.link,
+                            fallBackUrl
                         }
                     })
                     await startPlayer(playMusic)
@@ -233,7 +257,10 @@ export async function initPlayer(audioData, playMusic = true) {
                             if (await store.getState().nowPlayingReducer.currentPlaying.videoId === audioData.videoId) {
                                 await store.dispatch({
                                     type: "LOAD_AUDIO_DATA",
-                                    payload: { masterUrl: res.link, fallBackUrl }
+                                    payload: {
+                                        masterUrl: res.link,
+                                        fallBackUrl
+                                    }
                                 })
                                 await startPlayer(playMusic)
                             }
@@ -253,8 +280,7 @@ export async function initPlayer(audioData, playMusic = true) {
         .catch(async err => {
             if (String(err).indexOf("AbortError:") > -1) {
                 // toastActions.showMessage("Slow and Steady Wins the Race!")
-            }
-            else {
+            } else {
                 toastActions.showMessage("Requested audio is not availabe right now! " + String(err))
                 await store.dispatch(await resetPlayer());
                 nowPlayingActions.clearQueue();
@@ -276,7 +302,10 @@ export async function startPlayer(shallIPlay = true) {
     }
     await store.dispatch({
         type: "LOAD_AUDIO_DATA",
-        payload: { isMusicPlaying: shallIPlay, isAudioBuffering: false }
+        payload: {
+            isMusicPlaying: shallIPlay,
+            isAudioBuffering: false
+        }
     })
     return true
 }
@@ -298,7 +327,7 @@ export function playerDownloadHandler(e) {
             }
         })
     } else {
-        fetch(`${variables.baseUrl}/downcc/${state.id}`)
+        fetch(`${variables.baseUrl}/downcc/${state.id}?title=${encodeURI(state.songTitle)}`)
             .then(res => {
                 if (res.status === 200) {
                     store.dispatch({
@@ -307,7 +336,7 @@ export function playerDownloadHandler(e) {
                             downloadProcess: false
                         }
                     })
-                    window.open(`${variables.baseUrl}/downcc/${state.id}`, "_self")
+                    window.open(`${variables.baseUrl}/downcc/${state.id}?title=${encodeURI(state.songTitle)}`, "_self")
                 } else {
                     store.dispatch({
                         type: "PLAYER_DOWNLOAD_HANDLE",
