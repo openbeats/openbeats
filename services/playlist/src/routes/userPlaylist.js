@@ -36,6 +36,17 @@ router.post("/addsongs", async (req, res) => {
 			_id: playlistId,
 		});
 
+		const newSongVideoId = songs[0].videoId;
+
+		if (
+			playlist.songs.filter(song => song.videoId === newSongVideoId).length != 0
+		) {
+			return res.json({
+				status: false,
+				data: "It looks like you have already added that songs.",
+			});
+		}
+
 		await playlist.songs.push(...songs);
 
 		await playlist.updateOne({
