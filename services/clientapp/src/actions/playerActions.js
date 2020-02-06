@@ -200,10 +200,12 @@ export async function resetPlayer() {
     const player = document.getElementById("music-player");
     const source1 = document.getElementById("audio-source-1");
     const source2 = document.getElementById("audio-source-2");
-    await player.pause()
-    player.currentTime = 0;
-    source1.src = ""
-    source2.src = ""
+    if (player) {
+        await player.pause()
+        player.currentTime = 0;
+        source1.src = ""
+        source2.src = ""
+    }
     payload = {
         masterUrl: null,
         fallBackUrl: null,

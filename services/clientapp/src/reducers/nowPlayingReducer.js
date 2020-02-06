@@ -29,6 +29,12 @@ const nowPlayingReducer = (state = initialState, action) => {
                 ...action.payload
             };
             break;
+        case "UPDATE_PREVIOUS_NEXT":
+            state = {
+                ...state,
+                ...action.payload
+            };
+            break;
         case "RESET_NOW_PLAYING":
             state = initialState
             break;

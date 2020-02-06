@@ -163,7 +163,7 @@ class PlaylistDisplay extends Component {
                                     <Fragment>
                                         {/* <i className="fas fa-unlock cursor-pointer"></i> */}
                                         {/* <i className="fas fa-globe-americas cursor-pointer" title="Make Playlist Public"></i> */}
-                                        <img className="cursor-pointer" title="Add to Queue" src={pQueueWhite} alt="" srcset="" />
+                                        <img className="cursor-pointer" title="Add to Queue" src={pQueueWhite} alt="" srcSet="" />
                                         <i className="fas fa-lock cursor-pointer" title="Make Playlist Private"></i>
                                         <i className="fas fa-trash-alt cursor-pointer" title="Delete Playlist" onClick={() => this.props.deleteUserPlaylist(this.state.playlistId)}></i>
                                     </Fragment> :
