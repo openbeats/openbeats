@@ -1,15 +1,10 @@
 import middleware from "./config/middleware";
 import express from "express";
-import {
-	ytcat,
-	suggestbeat,
-	copycat
-} from "./core";
+import { ytcat, suggestbeat, copycat } from "./core";
 import ytdl from "ytdl-core";
-import fetch from 'node-fetch';
+import fetch from "node-fetch";
 import redis from "./config/redis";
 import config from "config";
-
 
 // import dbconfig from "./config/db";
 // dbconfig();
@@ -29,25 +24,27 @@ app.get("/opencc/:id", async (req, res) => {
 	try {
 		redis.get(videoID, async (err, value) => {
 			if (value) {
-				console.log("exists")
+				console.log("exists");
 				let sourceUrl = value;
 				res.send({
 					status: true,
 					link: sourceUrl,
 				});
 			} else {
-				const info = await (await fetch(`${config.get("lambda")}${videoID}`)).json();
+				const info = await (
+					await fetch(`${config.get("lambda")}${videoID}`)
+				).json();
 				let audioFormats = ytdl.filterFormats(info.formats, "audioonly");
 				if (!audioFormats[0].contentLength) {
 					audioFormats = ytdl.filterFormats(info.formats, "audioandvideo");
 				}
 				let sourceUrl = audioFormats[0].url;
-				redis.set(videoID, sourceUrl, (err) => {
-					if (err) console.error(err)
+				redis.set(videoID, sourceUrl, err => {
+					if (err) console.error(err);
 					else {
-						redis.expire(videoID, 20000, (err) => {
-							if (err) console.error(err)
-						})
+						redis.expire(videoID, 20000, err => {
+							if (err) console.error(err);
+						});
 					}
 				});
 				res.send({
@@ -55,9 +52,9 @@ app.get("/opencc/:id", async (req, res) => {
 					link: sourceUrl,
 				});
 			}
-		})
+		});
 	} catch (error) {
-		console.log(error)
+		console.log(error);
 		let link = null;
 		let status = 404;
 		if (ytdl.validateID(videoID)) {

@@ -1,4 +1,4 @@
-import updateTopCharts from "./updateTopCharts";
+import { updateTopCharts } from "./updateTopCharts";
 import TopChart from "../models/TopChart";
 
 export const fetchTopCharts = async () => {
@@ -18,7 +18,7 @@ export const fetchTopCharts = async () => {
 			let language = chartName.substring(0, chartName.indexOf("-"));
 			language == "mirchi" ? (language = "hindi") : null;
 			const chart = await TopChart.findOne({
-				name: chartName
+				name: chartName,
 			});
 			if (!chart) {
 				chart = new TopChart({
@@ -56,7 +56,7 @@ export const arrangeTopCharts = async () => {
 	try {
 		for (let chartName of fetchlist) {
 			const chart = await TopChart.findOne({
-				name: chartName
+				name: chartName,
 			});
 			chart.songs.sort((x, y) => {
 				if (parseInt(x.rank) < parseInt(y.rank)) {
@@ -72,3 +72,29 @@ export const arrangeTopCharts = async () => {
 		console.error(error.message);
 	}
 };
+
+// export const fetchEnglishCharts = async () => {
+// 	try {
+// 		const language = "English";
+// 		const chart = await TopChart.findOne({
+// 			name: "Top 20 English",
+// 		});
+// 		if (!chart) {
+// 			chart = new TopChart({
+// 				name: "Top 20 English",
+// 				language,
+// 				songs: [],
+// 				createdBy: "Openbeats",
+// 			});
+// 			await chart.save();
+// 		} else {
+// 			chart.songs = [];
+// 			chart.updatedAt = Date.now();
+// 			await chart.save();
+// 		}
+// 		const chartId = chart.id;
+// 		await updateEnglishTopCharts(chartId);
+// 	} catch (error) {
+// 		console.error(error.message);
+// 	}
+// };

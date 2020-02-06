@@ -3,7 +3,7 @@ import cheerio from "cheerio";
 import TopChart from "../models/TopChart";
 import config from "config";
 
-export default async (chartName, chartId, language) => {
+export const updateTopCharts = async (chartName, chartId, language) => {
 	try {
 		let playres = await fetchRetry(
 			`https://www.radiomirchi.com/more/${chartName}/`,
@@ -63,11 +63,24 @@ export default async (chartName, chartId, language) => {
 	}
 };
 
+// export const updateEnglishTopCharts = async chartId => {
+// 	try {
+// 		let playres = await fetchRetry(
+// 			`https://www.officialcharts.com/charts/singles-chart//`,
+// 			2,
+// 		);
+// 		playres = await playres.text();
+// 		const $ = cheerio.load(playres.trim());
+// 	} catch (error) {
+// 		console.error(error.message);
+// 	}
+// };
+
 async function coreFallback(title, language, rank, chartId) {
 	let isSuccess = false;
-	const baseurl = config.get("isDev") ?
-		config.get("baseurl").dev :
-		config.get("baseurl").production;
+	const baseurl = config.get("isDev")
+		? config.get("baseurl").dev
+		: config.get("baseurl").production;
 	try {
 		const data = await fetchRetry(
 			`${baseurl}/ytcat?q=${encodeURIComponent(
@@ -80,8 +93,8 @@ async function coreFallback(title, language, rank, chartId) {
 			let response = result.data[0];
 			response = {
 				rank,
-				...response
-			}
+				...response,
+			};
 			let chart = await TopChart.findById(chartId);
 			if (Object.is(rank, "01")) {
 				chart.thumbnail = response.thumbnail;
