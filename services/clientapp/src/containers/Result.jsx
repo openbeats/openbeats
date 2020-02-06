@@ -22,6 +22,10 @@ class Result extends Component {
         this.props.setCurrentAction("Search Result");
     }
 
+    addSongToQueue(song) {
+        this.props.addSongsToQueue([song]);
+    }
+
     render() {
         return (
             !this.props.isSearching ?
@@ -102,7 +106,7 @@ class Result extends Component {
                                             </a>
                                             <img onClick={
                                                 () => {
-                                                    this.props.featureNotify();
+                                                    this.addSongToQueue(item);
                                                 }
                                             } className="action-image-size cursor-pointer queue-icon-result" title="Add to Queue" src={pQueueRed} alt="" />
                                             <img onClick={
@@ -165,6 +169,9 @@ const mapDispatchToProps = (dispatch) => {
         },
         showAddPlaylistDialog: (song) => {
             playlistManipulatorActions.showAddPlaylistDialog(song)
+        },
+        addSongsToQueue: (song) => {
+            nowPlayingActions.addSongsToQueue(song);
         }
     }
 }
