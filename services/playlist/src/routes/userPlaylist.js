@@ -36,16 +36,27 @@ router.post("/addsongs", async (req, res) => {
 			_id: playlistId,
 		});
 
-		const newSongVideoId = songs[0].videoId;
-
-		if (
-			playlist.songs.filter(song => song.videoId === newSongVideoId).length != 0
-		) {
-			return res.json({
-				status: false,
-				data: "It looks like you have already added that songs.",
+				if (playlist) {
+			const checkPlaylist = await UserPlaylist.findOne({
+				_id: playlistId,
+				"songs.videoId": songs[0].videoId,
 			});
+			if (checkPlaylist) {
+				return res.json({
+					status: false,
+					data: "Song already added",
+				});
+			}
 		}
+
+		// if (
+		// 	playlist.songs.filter(song => song.videoId === newSongVideoId).length != 0
+		// ) {
+		// 	return res.json({
+		// 		status: false,
+		// 		data: "It looks like you have already added that songs.",
+		// 	});
+		// }
 
 		await playlist.songs.push(...songs);
 
