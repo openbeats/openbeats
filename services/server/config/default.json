@@ -9,4 +9,4 @@
   "lambda": "https://orvpax9d6b.execute-api.ap-south-1.amazonaws.com/default/obs-core?vid=",
   "redis": "obs-redis",
   "isDev": false
-}
+} 
