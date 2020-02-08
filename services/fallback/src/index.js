@@ -17,7 +17,6 @@ app.get("/:id", async (req, res) => {
 	try {
 		redis.get(videoID, async (err, value) => {
 			if (value) {
-				console.log("exists");
 				let sourceUrl = value;
 				const range = req.headers.range;
 				//when seeked range comes in header
@@ -29,7 +28,7 @@ app.get("/:id", async (req, res) => {
 						headers: {
 							Range: range,
 						},
-					}).then(function(response) {
+					}).then(function (response) {
 						res.writeHead(206, response.headers);
 						response.data.pipe(res);
 					});
@@ -38,11 +37,12 @@ app.get("/:id", async (req, res) => {
 						method: "get",
 						url: sourceUrl,
 						responseType: "stream",
-					}).then(function(response) {
+					}).then(function (response) {
 						res.writeHead(200, response.headers);
 						response.data.pipe(res);
 					});
 				}
+
 			} else {
 				const info = await (
 					await fetch(`${config.get("lambda")}${videoID}`)
@@ -70,7 +70,7 @@ app.get("/:id", async (req, res) => {
 						headers: {
 							Range: range,
 						},
-					}).then(function(response) {
+					}).then(function (response) {
 						res.writeHead(206, response.headers);
 						response.data.pipe(res);
 					});
@@ -79,7 +79,7 @@ app.get("/:id", async (req, res) => {
 						method: "get",
 						url: sourceUrl,
 						responseType: "stream",
-					}).then(function(response) {
+					}).then(function (response) {
 						res.writeHead(200, response.headers);
 						response.data.pipe(res);
 					});

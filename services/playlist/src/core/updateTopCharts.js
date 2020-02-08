@@ -3,7 +3,7 @@ import cheerio from "cheerio";
 import TopChart from "../models/TopChart";
 import config from "config";
 
-export const updateTopCharts = async (chartName, chartId, language) => {
+export const updateTopCharts = async (chartName, chartId) => {
 	try {
 		let playres = await fetchRetry(
 			`https://www.radiomirchi.com/more/${chartName}/`,
@@ -17,11 +17,23 @@ export const updateTopCharts = async (chartName, chartId, language) => {
 				.find(".place")
 				.find(".circle")
 				.text();
+
+			rank = parseInt(rank);
 			let title = $(el)
 				.children(".pannel02")
 				.find(".header")
 				.find("h2")
 				.text();
+
+			let movie = $(el)
+				.children(".pannel02")
+				.find(".header")
+				.find("h3")
+				.text();
+			let movieArr = movie.split("\n");
+			let movieName = movieArr[0].trim();
+			//let artistName = movieArr[1].trim();
+			const query = `${title} ${movieName}`;
 			// let thumbnail = $(el)
 			// 	.children(".pannel03")
 			// 	.find(".movieImg")
@@ -48,7 +60,7 @@ export const updateTopCharts = async (chartName, chartId, language) => {
 			let n = 0;
 			while (true) {
 				if (n < 2) {
-					if (await coreFallback(title, language, rank, chartId)) {
+					if (await coreFallback(query, title, rank, chartId)) {
 						break;
 					}
 				} else {
@@ -76,21 +88,20 @@ export const updateTopCharts = async (chartName, chartId, language) => {
 // 	}
 // };
 
-async function coreFallback(title, language, rank, chartId) {
+async function coreFallback(query, title, rank, chartId) {
 	let isSuccess = false;
-	const baseurl = config.get("isDev")
-		? config.get("baseurl").dev
-		: config.get("baseurl").production;
+	const baseurl = config.get("isDev") ?
+		config.get("baseurl").dev :
+		config.get("baseurl").production;
 	try {
 		const data = await fetchRetry(
-			`${baseurl}/ytcat?q=${encodeURIComponent(
-				title + " " + language,
-			)}&fr=${true}`,
+			`${baseurl}/ytcat?q=${encodeURIComponent(query)}&fr=${true}`,
 			2,
 		);
 		const result = await data.json();
 		if (result.data.length) {
 			let response = result.data[0];
+			response.title = title;
 			response = {
 				rank,
 				...response,

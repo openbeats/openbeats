@@ -9,7 +9,11 @@ import {
 } from "express-validator";
 import gravatar from "gravatar";
 import bcrypt from "bcryptjs";
-import auth from "../config/auth";
+import nodemailer from "nodemailer";
+import crypto from "crypto";
+
+
+
 
 const router = express.Router();
 
@@ -17,12 +21,12 @@ router.post("/login", (req, res, next) => {
   passport.authenticate("local", (error, user, info) => {
     if (error) {
       console.error(error.message);
-      res.status(500).send({
+      res.send({
         error: "Internal Server Error"
       });
     }
     if (info !== undefined) {
-      res.status(400).send({
+      res.send({
         error: info.message
       });
     } else {
@@ -33,9 +37,7 @@ router.post("/login", (req, res, next) => {
       };
       jwt.sign(
         payload,
-        config.get("jwtSecret"), {
-          expiresIn: 360000
-        },
+        config.get("jwtSecret"),
         (err, token) => {
           try {
             if (err) throw error;
@@ -47,7 +49,7 @@ router.post("/login", (req, res, next) => {
               avatar: user.avatar
             });
           } catch (error) {
-            res.status(500).send({
+            res.send({
               error: "Internal Server Error"
             });
           }
@@ -97,7 +99,6 @@ router.post(
       });
       if (user) {
         return res
-          .status(400)
           .send({
             error: "User with that email id already exist"
           });
@@ -140,7 +141,7 @@ router.post(
               avatar: user.avatar
             });
           } catch (error) {
-            res.status(500).send({
+            res.send({
               error: "Internal Server Error"
             });
           }
@@ -148,39 +149,151 @@ router.post(
       );
     } catch (error) {
       console.error(error.message);
-      res.status(500).send({
+      res.send({
         error: "Internal Server Error"
       });
     }
   }
 );
 
-router.post("/reset-password", [
+router.post("/forgetpassword", [
   check("email", "Please include a valid email").isEmail(),
 ], async (req, res) => {
-  const errors = validationResult(req);
-  if (!errors.isEmpty()) {
-    let msg = "";
-    if (errors.errors.length > 0) {
-      errors.errors.forEach(element => {
-        msg += element.msg + "\n";
+  try {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      let msg = "";
+      if (errors.errors.length > 0) {
+        errors.errors.forEach(element => {
+          msg += element.msg + "\n";
+        });
+      }
+      return res.send({
+        msg
       });
     }
+
+    const {
+      email
+    } = req.body;
+
+    const user = await User.findOne({
+      email
+    });
+
+    if (!user) {
+      return res.send({
+        "msg": "No user exist with that email address."
+      })
+    };
+
+    const supportEmail = config.get("support.email");
+    const supportPassword = config.get("support.password");
+
+    const smtpTransport = nodemailer.createTransport({
+      service: 'Gmail',
+      auth: {
+        user: supportEmail,
+        pass: supportPassword
+      }
+    });
+
+    let randToken = crypto.randomBytes(20);
+    randToken = randToken.toString('hex');
+
+    user.reset_password = randToken;
+    await user.save();
+
+    const payload = {
+      token: randToken
+    };
+
+    const token = jwt.sign(
+      payload,
+      config.get("jwtSecret"), {
+        expiresIn: 60 * 60
+      });
+
+    const url = `https://openbeats.live/auth/reset/${token}`;
+
+
+    const data = {
+      to: user.email,
+      from: supportEmail,
+      template: 'forgot-password-email',
+      subject: 'Password help has arrived!',
+      html: `<!DOCTYPE html>
+            <html>
+            <head>
+                <title>Forget Password Email</title>
+            </head>
+            <body>
+                <div>
+                    <h3>Dear ${user.name},</h3>
+                    <p>You requested
+                    for a password reset, kindly use this <a href="${url}"> link </a> to reset your password</p>
+                    <br>
+                    <p>Cheers!</p>
+                </div>
+            </body>
+            </html>`
+    };
+
+    setTimeout(function () {
+      smtpTransport.sendMail(data, function (err, info) {
+        if (err) throw err
+        console.log(info.response);
+      });
+    }, 0);
+
     return res.send({
-      msg
+      msg: 'Kindly check your email for further instructions'
+    });
+  } catch (error) {
+    console.error(error.message);
+    return res.send({
+      msg: 'Something went wrong.'
     });
   }
-  const {
-    email
-  } = req.body;
-  let user = await User.findOne({
-    email
-  });
-  if (!user) {
-    return res.send({
-      "msg": "No user exist with that email address."
-    })
-  }
 });
+
+router.post('/resetpassword', async (req, res) => {
+  try {
+    const {
+      reset_password,
+      password
+    } = req.body;
+    const user = await User.findOne({
+      reset_password
+    });
+    if (!user) {
+      return res.send({
+        "msg": "No user exist with that email address."
+      })
+    };
+    const salt = await bcrypt.genSalt(config.get("saltRound"));
+    user.password = await bcrypt.hash(password, salt);
+    user.reset_password = "";
+    await user.save()
+    res.send({
+      "msg": "Password reseted successfully."
+    });
+  } catch (error) {
+    console.log(error.message);
+    res.send({
+      status: false,
+      msg: "Internal Server Error"
+    });
+
+  }
+
+});
+
+router.get("/verify/:xtoken", (req, res) => {
+  const xtoken = req.params.xtoken;
+  const decoded = jwt.verify(xtoken, config.get("jwtSecret"));
+  res.send(decoded);
+})
+
 
 export default router;
