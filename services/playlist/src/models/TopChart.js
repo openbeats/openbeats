@@ -16,7 +16,7 @@ export default mongoose.model(
 			required: true,
 		},
 		songs: [{
-			rank: String,
+			rank: Number,
 			title: String,
 			thumbnail: String,
 			duration: String,

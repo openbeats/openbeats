@@ -5,9 +5,9 @@ export default async (queryString, first = false) => {
 	let searchResults = [];
 	const baseQuery = ".yt-lockup-video";
 	const removables = [".yt-lockup-channel", ".feed-item-container"];
-	let query = queryString.trim().replace(/ /g, "+");
+	let query = decodeURIComponent(queryString);
 	const searchLink = `https://www.youtube.com/results?search_query=${query}`;
-	await fetchRetry(searchLink, 2)
+	await fetch(searchLink)
 		.then(async res => await res.text())
 		.then(res => {
 			let $ = cheerio.load(res.trim());
@@ -54,8 +54,8 @@ export default async (queryString, first = false) => {
 				let views = "";
 				if (
 					$(el)
-						.find(".yt-lockup-meta-info")
-						.find("li").length == 2
+					.find(".yt-lockup-meta-info")
+					.find("li").length == 2
 				) {
 					uploadedOn = $(el)
 						.find(".yt-lockup-meta-info")
@@ -70,8 +70,8 @@ export default async (queryString, first = false) => {
 						.trim();
 				} else if (
 					$(el)
-						.find(".yt-lockup-meta-info")
-						.find("li").length == 1
+					.find(".yt-lockup-meta-info")
+					.find("li").length == 1
 				) {
 					let temp = $(el)
 						.find(".yt-lockup-meta-info")
@@ -90,9 +90,9 @@ export default async (queryString, first = false) => {
 				let description = "";
 				if ($(el).find(".yt-lockup-description").length > 0)
 					description = $(el)
-						.find(".yt-lockup-description")
-						.text()
-						.trim();
+					.find(".yt-lockup-description")
+					.text()
+					.trim();
 
 				let temp = {
 					title: title,

@@ -1,4 +1,6 @@
-import { updateTopCharts } from "./updateTopCharts";
+import {
+	updateTopCharts
+} from "./updateTopCharts";
 import TopChart from "../models/TopChart";
 
 export const fetchTopCharts = async () => {
@@ -17,12 +19,16 @@ export const fetchTopCharts = async () => {
 		for (let chartName of fetchlist) {
 			let language = chartName.substring(0, chartName.indexOf("-"));
 			language == "mirchi" ? (language = "hindi") : null;
+			let name = chartName.replace(/-/g, " ").toUpperCase();
+			if (name === "MIRCHI TOP 20") {
+				name = "HINDHI TOP 20"
+			}
 			const chart = await TopChart.findOne({
-				name: chartName,
+				name,
 			});
 			if (!chart) {
 				chart = new TopChart({
-					name: chartName,
+					name,
 					language,
 					songs: [],
 					createdBy: "Openbeats",
@@ -34,7 +40,7 @@ export const fetchTopCharts = async () => {
 				await chart.save();
 			}
 			const chartId = chart.id;
-			await updateTopCharts(chartName, chartId, language);
+			await updateTopCharts(chartName, chartId);
 		}
 	} catch (error) {
 		console.error(error.message);
@@ -55,11 +61,15 @@ export const arrangeTopCharts = async () => {
 	];
 	try {
 		for (let chartName of fetchlist) {
+			let name = chartName.replace(/-/g, " ").toUpperCase();
+			if (name === "MIRCHI TOP 20") {
+				name = "HINDHI TOP 20"
+			}
 			const chart = await TopChart.findOne({
-				name: chartName,
+				name,
 			});
 			chart.songs.sort((x, y) => {
-				if (parseInt(x.rank) < parseInt(y.rank)) {
+				if (x.rank < y.rank) {
 					return -1;
 				} else {
 					return 1;
