@@ -14,6 +14,7 @@ import {
   playerdownload,
   playerqueue
 } from "../images";
+import { store } from "../store";
 
 class Player extends Component {
   constructor(props) {
@@ -22,13 +23,19 @@ class Player extends Component {
       listenerStore: null
     };
     this.listenerFunction = this.listenerFunction.bind(this);
+    this.updatePlayerPlayState = this.updatePlayerPlayState.bind(this);
+    this.updatePlayerPauseState = this.updatePlayerPauseState.bind(this);
   }
   componentDidMount() {
     this.initListeners();
   }
 
   componentWillUnmount() {
+    const playerRef = document.getElementById("music-player");
     document.removeEventListener("keydown", this.listenerFunction);
+    playerRef.removeEventListener("play", this.updatePlayerPlayState)
+    playerRef.removeEventListener("pause", this.updatePlayerPauseState)
+    this.props.resetPlayer()
   }
 
   initListeners() {
@@ -38,9 +45,25 @@ class Player extends Component {
 
     document.addEventListener("keydown", this.listenerFunction);
 
+    playerRef.addEventListener("play", this.updatePlayerPlayState)
+    playerRef.addEventListener("pause", this.updatePlayerPauseState)
+
     playerRef.onvolumechange = e => {
       localStorage.setItem("playerVolume", e.target.volume);
     };
+  }
+
+  updatePlayerPlayState() {
+    store.dispatch({
+      type: "PLAY_PAUSE_TOGGLE",
+      payload: true
+    })
+  }
+  updatePlayerPauseState() {
+    store.dispatch({
+      type: "PLAY_PAUSE_TOGGLE",
+      payload: false
+    })
   }
 
   listenerFunction(e) {
@@ -325,6 +348,26 @@ const mapDispatchToProps = dispatch => {
     },
     playPreviousSong: () => {
       nowPlayingActions.playPreviousSong();
+    },
+    resetPlayer: async () => {
+      await dispatch({
+        type: "RESET_NOW_PLAYING",
+        payload: {
+          reset: true
+        }
+      })
+      await dispatch({
+        type: "RESET_PLAYER",
+        payload: {
+          reset: true
+        }
+      })
+      await dispatch({
+        type: "RESET_PLAYLIST_MANIPULATOR",
+        payload: {
+          reset: true
+        }
+      })
     }
   };
 };
