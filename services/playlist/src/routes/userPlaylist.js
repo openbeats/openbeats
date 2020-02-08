@@ -6,7 +6,10 @@ const router = express.Router();
 // create empty Playlist
 router.post("/create", async (req, res) => {
 	try {
-		const { name, userId } = req.body;
+		const {
+			name,
+			userId
+		} = req.body;
 
 		const userPlaylist = new UserPlaylist({
 			name,
@@ -30,13 +33,16 @@ router.post("/create", async (req, res) => {
 // add songs into Playlist
 router.post("/addsongs", async (req, res) => {
 	try {
-		const { songs, playlistId } = req.body;
+		const {
+			songs,
+			playlistId
+		} = req.body;
 
 		const playlist = await UserPlaylist.findOne({
 			_id: playlistId,
 		});
 
-				if (playlist) {
+		if (playlist) {
 			const checkPlaylist = await UserPlaylist.findOne({
 				_id: playlistId,
 				"songs.videoId": songs[0].videoId,
@@ -85,17 +91,14 @@ router.get("/getallplaylistmetadata/:uid", async (req, res) => {
 	try {
 		const uid = req.params.uid;
 
-		const metaData = await UserPlaylist.find(
-			{
-				createdBy: uid,
-			},
-			{
-				_id: true,
-				name: 1,
-				thumbnail: 2,
-				totalSongs: 3,
-			},
-		);
+		const metaData = await UserPlaylist.find({
+			createdBy: uid,
+		}, {
+			_id: true,
+			name: 1,
+			thumbnail: 2,
+			totalSongs: 3,
+		}, );
 		res.send({
 			status: true,
 			data: metaData,
@@ -131,7 +134,10 @@ router.get("/getplaylist/:id", async (req, res) => {
 // delete songs from playlist
 router.post("/deletesong", async (req, res) => {
 	try {
-		const { playlistId, songId } = req.body;
+		const {
+			playlistId,
+			songId
+		} = req.body;
 
 		await UserPlaylist.findByIdAndUpdate(playlistId, {
 			$pull: {
@@ -148,9 +154,8 @@ router.post("/deletesong", async (req, res) => {
 		await playlist.updateOne({
 			updatedAt: Date.now(),
 			totalSongs: playlist.songs.length,
-			thumbnail: playlist.songs.length
-				? playlist.songs[playlist.songs.length - 1].thumbnail
-				: "https://openbeats.live/static/media/dummy_music_holder.a3d0de2e.jpg",
+			thumbnail: playlist.songs.length ?
+				playlist.songs[playlist.songs.length - 1].thumbnail : "https://openbeats.live/static/media/dummy_music_holder.a3d0de2e.jpg",
 		});
 
 		await playlist.save();
@@ -170,7 +175,10 @@ router.post("/deletesong", async (req, res) => {
 // update name of the playlist
 router.post("/updatename", async (req, res) => {
 	try {
-		const { name, playlistId } = req.body;
+		const {
+			name,
+			playlistId
+		} = req.body;
 
 		const playlist = await UserPlaylist.findOne({
 			_id: playlistId,
