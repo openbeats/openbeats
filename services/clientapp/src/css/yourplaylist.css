@@ -51,6 +51,7 @@
 .playlist-panel-name {
     font-size: 15px;
     margin-top: 10px;
+    text-transform: capitalize;
 }
 
 .playlist-panel-name>i {
@@ -72,6 +73,7 @@
 .p-options>div:nth-child(1) {
     margin-right: 25px;
 }
+
 .p-options>div:nth-child(3) {
     margin-left: 25px;
 }
@@ -103,7 +105,7 @@
 .playlist-panel-edit-options>button:nth-child(1) {
     margin-right: 25px;
 }
+
 .playlist-panel-edit-options>button:nth-child(2) {
     margin-right: 2px;
 }
-

@@ -90,8 +90,8 @@ const mapDispatchToProps = dispatch => {
         },
         addSongsToQueue: async (pId) => {
             const data = await playlistManipulatorActions.fetchChartsPlaylist(pId);
-            if (data && data.status && data.chart.songs.length) {
-                nowPlayingActions.addSongsToQueue(data.chart.songs);
+            if (data && data.status && data.data.songs.length) {
+                nowPlayingActions.addSongsToQueue(data.data.songs);
             } else {
                 toastActions.showMessage("Playlist you tried to add to the queue.. seems to be empty!")
             }
