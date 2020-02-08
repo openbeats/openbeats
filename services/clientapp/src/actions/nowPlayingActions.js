@@ -15,7 +15,7 @@ export function updateCurrentPlaying(audioData, playMusic = true) {
         payload: {
             currentPlaying: audioData,
             currentIndex: 0,
-            playerQueue: [],
+            playerQueue: [audioData],
             playlistId: null,
             isPlaylist: false,
             playlistName: null,
@@ -33,7 +33,6 @@ export async function updatePlayerQueue(playlistData, key = 0) {
     const playlistName = playlistData.playlistName;
     const playlistThumbnail = playlistData.playlistThumbnail;
     const isNextAvailable = playerQueue.length - 1 > 0 ? true : false
-    console.log(isNextAvailable)
     const isPreviousAvailable = false
     await store.dispatch({
         type: "UPDATE_PLAYER_QUEUE",
@@ -120,10 +119,8 @@ export async function selectFromPlaylist(key) {
     let audioData = state.playerQueue[key];
 
     let isNextAvailable = state.playerQueue.length - key > 1 ? true : false;
-    console.log(state.playerQueue.length, key)
 
     let isPreviousAvailable = key > 0 ? true : false
-
 
     await store.dispatch({
         type: "UPDATE_PLAYER_QUEUE",
@@ -155,21 +152,20 @@ export async function addSongsToQueue(songs) {
     }
 
     let state = store.getState().nowPlayingReducer;
-    console.log("songs in queue", state.playerQueue)
     let queueIds = state.playerQueue.map(item => item.videoId)
     let songsToBeAdded = songs.filter(item => !queueIds.includes(item.videoId))
-    console.log("songstobeadded", songsToBeAdded)
     store.dispatch({
         type: "UPDATE_PLAYER_QUEUE",
         payload: {
             playerQueue: [...state.playerQueue, ...songsToBeAdded],
+            isPlaylist: true
         }
     })
     if (!state.currentPlaying.videoId)
         await selectFromPlaylist(0)
 
     updatePreviousNext();
-    toastActions.showMessage("Song added to queue!")
+    toastActions.showMessage("Songs added to queue!")
 }
 
 function updatePreviousNext() {

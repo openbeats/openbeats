@@ -7,6 +7,7 @@ import { musicDummy, playerdownload, pQueueWhite } from '../images';
 import Loader from 'react-loader-spinner';
 import { variables } from '../config';
 import queryString from 'query-string';
+import { store } from '../store';
 
 class PlaylistDisplay extends Component {
 
@@ -35,7 +36,6 @@ class PlaylistDisplay extends Component {
         const queryValues = await queryString.parse(this.props.location.search)
         if (queryValues.autoplay && queryValues.autoplay === "true")
             this.initQueue()
-
     }
 
     async playlistFetchHandler() {
@@ -163,11 +163,16 @@ class PlaylistDisplay extends Component {
                                     <Fragment>
                                         {/* <i className="fas fa-unlock cursor-pointer"></i> */}
                                         {/* <i className="fas fa-globe-americas cursor-pointer" title="Make Playlist Public"></i> */}
-                                        <img className="cursor-pointer" title="Add to Queue" src={pQueueWhite} alt="" srcSet="" />
-                                        <i className="fas fa-lock cursor-pointer" title="Make Playlist Private"></i>
+                                        <img onClick={() => this.props.addSongsToQueue(this.state.type, this.state.playlistId)} className="cursor-pointer" title="Add to Queue" src={pQueueWhite} alt="" srcSet="" />
+                                        <i className="fas fa-lock cursor-pointer pl-3 pr-3" title="Make Playlist Private"></i>
                                         <i className="fas fa-trash-alt cursor-pointer" title="Delete Playlist" onClick={() => this.props.deleteUserPlaylist(this.state.playlistId)}></i>
                                     </Fragment> :
                                     <Fragment>
+                                        <div onClick={() => this.props.addSongsToQueue(this.state.type, this.state.playlistId)} className="d-flex align-items-center justify-content-center cursor-pointer">
+                                            <img title="Add to Queue" src={pQueueWhite} alt="" srcSet="" />
+                                            <span className="pl-2 f-s-16">Add to Queue!</span>
+                                        </div>
+
                                         {/* <i className="fas fa-heart cursor-pointer"></i>
                                         <i className="fas fa-bookmark cursor-pointer"></i> */}
                                     </Fragment>
@@ -230,6 +235,11 @@ class PlaylistDisplay extends Component {
                                             <a download
                                                 onClick={async (e) => {
                                                     e.preventDefault()
+                                                    if (!this.props.isAuthenticated) {
+                                                        toastActions.showMessage("Please Login to use this feature!")
+                                                        store.dispatch(push("/auth"))
+                                                        return
+                                                    }
                                                     this.videoId.push(item.videoId)
                                                     this.setState({ videoId: this.videoId })
                                                     await fetch(`${variables.baseUrl}/downcc/${item.videoId}?title=${encodeURI(item.title)}`)
@@ -263,14 +273,16 @@ class PlaylistDisplay extends Component {
                                                 }
                                             </a>
                                         </span>
-                                        <span>
-                                            <i className="fas fa-trash-alt playlist-display-songs-icon cursor-pointer"
-                                                onClick={async () => {
-                                                    await this.props.removeSongFromPlaylist(this.state.playlistId, item._id)
-                                                    await this.playlistFetchHandler()
-                                                }}
-                                            ></i>
-                                        </span>
+                                        {this.state.type === 'user' &&
+                                            <span>
+                                                <i className="fas fa-trash-alt playlist-display-songs-icon cursor-pointer"
+                                                    onClick={async () => {
+                                                        await this.props.removeSongFromPlaylist(this.state.playlistId, item._id)
+                                                        await this.playlistFetchHandler()
+                                                    }}
+                                                ></i>
+                                            </span>
+                                        }
                                         <span>
                                             <div className="playlist-display-songs-title">{item.title}</div>
                                             <div className="playlist-display-songs-duration">{item.duration}</div>
@@ -311,6 +323,7 @@ const mapStateToProps = (state) => {
         playlistId: state.nowPlayingReducer.playlistId,
         currentPlaying: state.nowPlayingReducer.currentPlaying,
         isPlaylist: state.nowPlayingReducer.isPlaylist,
+        isAuthenticated: state.authReducer.isAuthenticated
     }
 }
 
@@ -329,6 +342,11 @@ const mapDispatchToProps = (dispatch) => {
             dispatch(coreActions.setCurrentAction(action))
         },
         updatePlayerQueue: (playlistData, key) => {
+            if (!store.getState().authReducer.isAuthenticated) {
+                toastActions.showMessage("Please Login to use this feature!")
+                store.dispatch(push("/auth"))
+                return
+            }
             nowPlayingActions.updatePlayerQueue(playlistData, key);
         },
         selectFromPlaylist: (key) => {
@@ -357,6 +375,25 @@ const mapDispatchToProps = (dispatch) => {
         },
         removeSongFromPlaylist: async (playlistId, songId) => {
             await playlistManipulatorActions.removeSongFromPlaylist(playlistId, songId);
+        },
+        addSongsToQueue: async (type, pId) => {
+            if (!store.getState().authReducer.isAuthenticated) {
+                toastActions.showMessage("Please Login to use this feature!")
+                store.dispatch(push("/auth"))
+                return
+            }
+
+            let data = { status: false, data: {} }
+            if (type === "user") {
+                data = await playlistManipulatorActions.fetchUserPlaylist(pId);
+            } else if (type === "charts") {
+                data = await playlistManipulatorActions.fetchChartsPlaylist(pId);
+            }
+            if (data && data.status && data.data.songs.length) {
+                nowPlayingActions.addSongsToQueue(data.data.songs);
+            } else {
+                toastActions.showMessage("Playlist you tried to add to the queue.. seems to be empty!")
+            }
         }
     }
 }
