@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import "../css/yourplaylist.css";
 import { push } from "connected-react-router";
 import { connect } from "react-redux";
-import { toastActions, coreActions, playlistManipulatorActions } from "../actions";
+import { toastActions, coreActions, playlistManipulatorActions, nowPlayingActions } from "../actions";
 import { musicDummy, playlistSvg, pQueueWhite } from "../images";
 
 class YourPlaylist extends Component {
@@ -25,7 +25,7 @@ class YourPlaylist extends Component {
             <div className="your-playlist-wrapper">
                 {this.props.userPlaylistMetaData.map((item, key) => (
                     <div className="playlist-panel-wrapper" key={key}>
-                        <div className="playlist-panel-image cursor-pointer" title="Play All songs!" onClick={() => this.props.push(`/playlist/user/${item._id}?autoplay=true`)} style={{ backgroundImage: `url(${item.thumbnail ? item.thumbnail : musicDummy})` }}>
+                        <div className="playlist-panel-image cursor-pointer" title="Play All songs!" onClick={() => this.props.push(`/playlist/user/${item._id}`)} style={{ backgroundImage: `url(${item.thumbnail ? item.thumbnail : musicDummy})` }}>
                             <div className="playlist-total-songs-display">
                                 <img src={playlistSvg} alt="" srcSet="" />
                                 <p>{item.totalSongs}</p>
@@ -62,7 +62,7 @@ class YourPlaylist extends Component {
                                     <i className="fas fa-random cursor-pointer" onClick={() => this.props.featureNotify()} title="Shuffle Play"></i>
                                 </div>
                                 <div className="p-options-icon-holder">
-                                    <img className="cursor-pointer action-image-size" title="Add to Queue" onClick={() => this.props.featureNotify()} src={pQueueWhite} alt="" srcSet="" />
+                                    <img className="cursor-pointer action-image-size" title="Add to Queue" onClick={() => this.props.addSongsToQueue(item._id)} src={pQueueWhite} alt="" srcSet="" />
                                 </div>
                             </div>
                             <div className="p-options">
@@ -110,8 +110,16 @@ const mapDispatchToProps = dispatch => {
         changeUserPlaylistName: (_id, playlistName) => {
             return playlistManipulatorActions.changeUserPlaylistName(_id, playlistName);
         },
-    };
-};
+        addSongsToQueue: async (pId) => {
+            const data = await playlistManipulatorActions.fetchUserPlaylist(pId);
+            if (data && data.status && data.data.songs.length) {
+                nowPlayingActions.addSongsToQueue(data.data.songs);
+            } else {
+                toastActions.showMessage("Playlist you tried to add to the queue.. seems to be empty!")
+            }
+        }
+    }
+}
 
 export default connect(mapStateToProps, mapDispatchToProps)(YourPlaylist);
 

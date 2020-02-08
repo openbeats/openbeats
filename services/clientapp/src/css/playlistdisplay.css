@@ -100,12 +100,11 @@
 .playlist-display-miscellanious-holder {
     margin-top: 20px;
     font-size: 18px;
-    width: 100px;
+    width: auto;
     display: flex;
     align-items: center;
     justify-content: space-between;
 }
-
 
 .playlist-display-right-section-wrapper {
     width: 60%;
