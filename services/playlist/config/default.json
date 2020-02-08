@@ -4,5 +4,6 @@
     "dev": "https://api.openbeats.live",
     "production": "http://obs-server:2000"
   },
+  "lastFmAPIKey": "d2b6c4283a7958e1d107005ac85d59db",
   "isDev": false
 }
