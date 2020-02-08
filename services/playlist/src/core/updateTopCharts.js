@@ -2,9 +2,6 @@ import fetchRetry from "./refetch";
 import cheerio from "cheerio";
 import TopChart from "../models/TopChart";
 import config from "config";
-import {
-	arrangeTopCharts
-} from "./topCharts";
 
 export const updateTopCharts = async (chartName, chartId) => {
 	try {
@@ -14,7 +11,6 @@ export const updateTopCharts = async (chartName, chartId) => {
 		);
 		playres = await playres.text();
 		const $ = cheerio.load(playres.trim());
-		const totalSongs = $(".top01").length;
 		let promises = []
 		$(".top01").each(async (i, el) => {
 			let rank = $(el)
@@ -64,7 +60,7 @@ async function coreFallback(query, title, rank, chartId, movieName, artistName) 
 		const result = await data.json();
 		if (result.data.length) {
 			let response = result.data[0];
-			response.title = title + " " + movieName + " | " + artistName;
+			response.title = title + " | " + movieName + " | " + artistName;
 			response = {
 				rank,
 				...response,
@@ -82,3 +78,30 @@ async function coreFallback(query, title, rank, chartId, movieName, artistName) 
 	}
 	return isSuccess;
 }
+
+
+const arrangeTopCharts = async (chartName) => {
+	try {
+		let name = chartName.replace(/-/g, " ");
+
+		if (name === "mirchi top 20") {
+			name = "hindi top 20"
+		}
+
+		const chart = await TopChart.findOne({
+			name,
+		});
+
+		chart.songs.sort((x, y) => {
+			if (x.rank < y.rank) {
+				return -1;
+			} else {
+				return 1;
+			}
+		});
+		chart.totalSongs = chart.songs.length;
+		await chart.save();
+	} catch (error) {
+		console.error(error.message);
+	}
+};
