@@ -268,7 +268,7 @@ router.post('/resetpassword', async (req, res) => {
     });
     if (!user) {
       return res.send({
-        "msg": "No user exist with that email address."
+        "msg": "Invalid Link."
       })
     };
     const salt = await bcrypt.genSalt(config.get("saltRound"));
