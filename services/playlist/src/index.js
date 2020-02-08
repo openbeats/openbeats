@@ -9,6 +9,7 @@ import {
 } from "./core/topCharts";
 import cron from "node-cron";
 
+
 dbconfig();
 
 cron.schedule("0 0 * * 0", async () => {
