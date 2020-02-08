@@ -2,6 +2,9 @@ import fetchRetry from "./refetch";
 import cheerio from "cheerio";
 import TopChart from "../models/TopChart";
 import config from "config";
+import {
+	arrangeTopCharts
+} from "./topCharts";
 
 export const updateTopCharts = async (chartName, chartId) => {
 	try {
@@ -11,6 +14,8 @@ export const updateTopCharts = async (chartName, chartId) => {
 		);
 		playres = await playres.text();
 		const $ = cheerio.load(playres.trim());
+		const totalSongs = $(".top01").length;
+		let promises = []
 		$(".top01").each(async (i, el) => {
 			let rank = $(el)
 				.find(".pannel01")
@@ -35,35 +40,16 @@ export const updateTopCharts = async (chartName, chartId) => {
 			let movieName = movieArr[0].trim();
 			let artistName = movieArr[1].trim();
 			const query = `${title} ${movieName}`;
-			let n = 0;
-			while (true) {
-				if (n < 2) {
-					if (await coreFallback(query, title, rank, chartId, movieName, artistName)) {
-						break;
-					}
-				} else {
-					break;
-				}
-				n++;
-			}
+			promises.push(coreFallback(query, title, rank, chartId, movieName, artistName))
 		});
+		Promise.all(promises).then(() => {
+			arrangeTopCharts(chartName);
+		});
+
 	} catch (error) {
 		console.error(error);
 	}
 };
-
-// export const updateEnglishTopCharts = async chartId => {
-// 	try {
-// 		let playres = await fetchRetry(
-// 			`https://www.officialcharts.com/charts/singles-chart//`,
-// 			2,
-// 		);
-// 		playres = await playres.text();
-// 		const $ = cheerio.load(playres.trim());
-// 	} catch (error) {
-// 		console.error(error.message);
-// 	}
-// };
 
 async function coreFallback(query, title, rank, chartId, movieName, artistName) {
 	let isSuccess = false;
@@ -87,7 +73,7 @@ async function coreFallback(query, title, rank, chartId, movieName, artistName) 
 			if (Object.is(rank, 1)) {
 				chart.thumbnail = response.thumbnail;
 			}
-			chart.songs.push(response);
+			await chart.songs.push(response);
 			await chart.save();
 			isSuccess = true;
 		}

@@ -4,8 +4,7 @@ import dbconfig from "./config/db";
 import userPlaylistRoutes from "./routes/userPlaylist";
 import topcharts from "./routes/topcharts";
 import {
-	fetchTopCharts,
-	arrangeTopCharts
+	fetchTopCharts
 } from "./core/topCharts";
 import cron from "node-cron";
 
@@ -16,14 +15,7 @@ cron.schedule("0 0 * * 0", async () => {
 	fetchTopCharts();
 });
 
-cron.schedule("2 0 * * 0", async () => {
-	arrangeTopCharts();
-});
-
 fetchTopCharts();
-setTimeout(() => {
-	arrangeTopCharts();
-}, 150000);
 
 const PORT = process.env.PORT || 2000;
 
