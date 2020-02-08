@@ -18,10 +18,10 @@ export const fetchTopCharts = async () => {
 		];
 		for (let chartName of fetchlist) {
 			let language = chartName.substring(0, chartName.indexOf("-"));
-			language == "mirchi" ? (language = "hindi") : null;
-			let name = chartName.replace(/-/g, " ").toUpperCase();
-			if (name === "MIRCHI TOP 20") {
-				name = "HINDHI TOP 20"
+			language = language == "mirchi" ? "hindi" : language;
+			let name = chartName.replace(/-/g, " ");
+			if (name === "mirchi top 20") {
+				name = "hindi top 20"
 			}
 			const chart = await TopChart.findOne({
 				name,
@@ -61,9 +61,9 @@ export const arrangeTopCharts = async () => {
 	];
 	try {
 		for (let chartName of fetchlist) {
-			let name = chartName.replace(/-/g, " ").toUpperCase();
-			if (name === "MIRCHI TOP 20") {
-				name = "HINDHI TOP 20"
+			let name = chartName.replace(/-/g, " ");
+			if (name === "mirchi top 20") {
+				name = "hindi top 20"
 			}
 			const chart = await TopChart.findOne({
 				name,

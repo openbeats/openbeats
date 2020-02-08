@@ -19,6 +19,7 @@ export const updateTopCharts = async (chartName, chartId) => {
 				.text();
 
 			rank = parseInt(rank);
+
 			let title = $(el)
 				.children(".pannel02")
 				.find(".header")
@@ -32,35 +33,12 @@ export const updateTopCharts = async (chartName, chartId) => {
 				.text();
 			let movieArr = movie.split("\n");
 			let movieName = movieArr[0].trim();
-			//let artistName = movieArr[1].trim();
+			let artistName = movieArr[1].trim();
 			const query = `${title} ${movieName}`;
-			// let thumbnail = $(el)
-			// 	.children(".pannel03")
-			// 	.find(".movieImg")
-			// 	.find("img")
-			// 	.attr("src");
-			// let videoId = null;
-			// if (thumbnail.includes("http://img.youtube.com")) {
-			// 	videoId = thumbnail.replace("https://", "").split("/")[4];
-			// }
-			// if (videoId) {
-			// 	const temp = {
-			// 		videoId,
-			// 		rank,
-			// 		title,
-			// 		thumbnail,
-			// 	};
-			// 	let chart = await TopChart.findById(chartId);
-			// 	if (Object.is(rank, "01")) {
-			// 		chart.thumbnail = thumbnail;
-			// 	}
-			// 	chart.songs.push(temp);
-			// 	await chart.save();
-			// } else {
 			let n = 0;
 			while (true) {
 				if (n < 2) {
-					if (await coreFallback(query, title, rank, chartId)) {
+					if (await coreFallback(query, title, rank, chartId, movieName, artistName)) {
 						break;
 					}
 				} else {
@@ -68,7 +46,6 @@ export const updateTopCharts = async (chartName, chartId) => {
 				}
 				n++;
 			}
-			// }
 		});
 	} catch (error) {
 		console.error(error);
@@ -88,7 +65,7 @@ export const updateTopCharts = async (chartName, chartId) => {
 // 	}
 // };
 
-async function coreFallback(query, title, rank, chartId) {
+async function coreFallback(query, title, rank, chartId, movieName, artistName) {
 	let isSuccess = false;
 	const baseurl = config.get("isDev") ?
 		config.get("baseurl").dev :
@@ -101,13 +78,13 @@ async function coreFallback(query, title, rank, chartId) {
 		const result = await data.json();
 		if (result.data.length) {
 			let response = result.data[0];
-			response.title = title;
+			response.title = title + " " + movieName + " | " + artistName;
 			response = {
 				rank,
 				...response,
 			};
 			let chart = await TopChart.findById(chartId);
-			if (Object.is(rank, "01")) {
+			if (Object.is(rank, 1)) {
 				chart.thumbnail = response.thumbnail;
 			}
 			chart.songs.push(response);

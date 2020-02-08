@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { Route, Switch } from "react-router";
-import { Auth, Main } from "./containers";
+import { Auth, Main } from "./components";
 import { Provider } from "react-redux";
 import { store } from "./store";
 

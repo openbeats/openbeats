@@ -35,6 +35,7 @@
     font-size: 22px;
     padding: 0 10px 0 10px;
     margin-bottom: 8px;
+    text-transform: capitalize;
 }
 
 .playlist-display-title-holder>input {
