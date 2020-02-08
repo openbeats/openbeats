@@ -70,7 +70,7 @@ export const englishTopCharts = async () => {
 			engChart.updatedAt = Date.now();
 			await engChart.save();
 		}
-		const url = `http://ws.audioscrobbler.com/2.0/?method=chart.gettoptracks&api_key=${config.get("lastFmAPIKey")}&format=json&perPage=20&limit=20`;
+		const url = `http://ws.audioscrobbler.com/2.0/?method=chart.gettoptracks&api_key=${config.get("lastFmAPIKey")}&format=json&perPage=20`;
 		const engTop = await (await fetchRetry(`${url}`, 2)).json();
 		const trackArray = engTop.tracks.track;
 		const baseurl = config.get("isDev") ?
@@ -80,7 +80,7 @@ export const englishTopCharts = async () => {
 		for (let track of trackArray) {
 			let name = track.name;
 			let artist = track.artist.name;
-			let query = `${name} ${artist} music`;
+			let query = `${name} ${artist} audio`;
 			const data = await fetchRetry(
 				`${baseurl}/ytcat?q=${encodeURIComponent(query)}&fr=${true}`,
 				2,
