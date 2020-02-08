@@ -7,6 +7,7 @@ import redis from "./config/redis";
 import config from "config";
 // import dbconfig from "./config/db";
 // dbconfig();
+
 const PORT = process.env.PORT || 2000;
 
 const app = express();
