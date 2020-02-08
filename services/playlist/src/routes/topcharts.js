@@ -6,13 +6,13 @@ const router = express.Router();
 router.get("/metadata", async (req, res) => {
 	try {
 		const metachart = await TopChart.find().select("-songs");
-		res.status(200).send({
+		res.send({
 			status: true,
 			allcharts: metachart
 		});
 	} catch (error) {
 		console.error(error.message);
-		res.status(200).send({
+		res.send({
 			status: false,
 			error: "Internal Server Error."
 		});
