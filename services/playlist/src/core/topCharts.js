@@ -2,6 +2,8 @@ import {
 	updateTopCharts
 } from "./updateTopCharts";
 import TopChart from "../models/TopChart";
+import fetchRetry from "./refetch";
+import config from "config";
 
 export const fetchTopCharts = async () => {
 	try {
@@ -40,36 +42,68 @@ export const fetchTopCharts = async () => {
 				await chart.save();
 			}
 			const chartId = chart.id;
-			await updateTopCharts(chartName, chartId);
+			updateTopCharts(chartName, chartId);
 		}
 	} catch (error) {
 		console.error(error.message);
 	}
 };
 
-export const arrangeTopCharts = async (chartName) => {
-	console.log("arrange Top Charts Cron started", chartName);
+export const englishTopCharts = async () => {
+	console.log("English topcharts started");
 	try {
-		let name = chartName.replace(/-/g, " ");
-
-		if (name === "mirchi top 20") {
-			name = "hindi top 20"
-		}
-
-		const chart = await TopChart.findOne({
+		const name = "English Top 20";
+		const language = "English";
+		let engChart = await TopChart.findOne({
 			name,
 		});
-
-		chart.songs.sort((x, y) => {
-			if (x.rank < y.rank) {
-				return -1;
-			} else {
-				return 1;
+		if (!engChart) {
+			engChart = new TopChart({
+				name,
+				language,
+				songs: [],
+				createdBy: "Openbeats",
+			});
+			await engChart.save();
+		} else {
+			engChart.songs = [];
+			engChart.updatedAt = Date.now();
+			await engChart.save();
+		}
+		const url = `http://ws.audioscrobbler.com/2.0/?method=chart.gettoptracks&api_key=${config.get("lastFmAPIKey")}&format=json&perPage=20&limit=20`;
+		const engTop = await (await fetchRetry(`${url}`, 2)).json();
+		const trackArray = engTop.tracks.track;
+		const baseurl = config.get("isDev") ?
+			config.get("baseurl").dev :
+			config.get("baseurl").production;
+		let rank = 1;
+		for (let track of trackArray) {
+			let name = track.name;
+			let artist = track.artist.name;
+			let query = `${name} ${artist} music`;
+			const data = await fetchRetry(
+				`${baseurl}/ytcat?q=${encodeURIComponent(query)}&fr=${true}`,
+				2,
+			);
+			const result = await data.json();
+			if (result.data.length) {
+				let response = result.data[0];
+				response = {
+					rank,
+					...response,
+				};
+				if (Object.is(rank, 1)) {
+					engChart.thumbnail = response.thumbnail;
+				}
+				engChart.songs.push(response);
+				await engChart.save();
 			}
-		});
-		chart.totalSongs = chart.songs.length;
-		await chart.save();
+			rank = rank + 1;
+		}
+		engChart.totalSongs = trackArray.length;
+		engChart.save();
 	} catch (error) {
-		console.error(error.message);
+		console.log(error);
+
 	}
 };
