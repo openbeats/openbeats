@@ -41,6 +41,33 @@ JSON-Structure:
 }
 
 ```
+*Forget Password*
+>https://api.openbeats.live/auth/forgetpassword
+
+```
+method: post,
+bodyType: JSON
+JSON-Structure:
+
+{
+    "email": "email@email.com",
+}
+
+```
+*Reset Password*
+>https://api.openbeats.live/auth/resetpassword
+
+```
+method: post,
+bodyType: JSON
+JSON-Structure:
+
+{
+    "reset_password":"<reset_password>",
+    "password":"<new_password>"
+}
+
+```
 
 **User Playlist Endpoints**
 
@@ -128,7 +155,7 @@ structure:
 ```
 *Delete Entire playlist*
 
->https://api.openbeats.live/playlist/userplaylist//delete/<-PLAYLIST-ID->
+>https://api.openbeats.live/playlist/userplaylist/delete/<-PLAYLIST-ID->
 ```language
 method: GET
 param: playlist id ( get from playlist metadata endpoint or playlist endpoint *userPlaylist* )
