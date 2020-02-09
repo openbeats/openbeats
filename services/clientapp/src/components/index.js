@@ -1,5 +1,5 @@
-import Main from "./Main";
 import Home from "./Home";
+import Main from "./Main";
 import LeftNav from "./LeftNav";
 import Player from "./Player";
 import Auth from "./Auth";
@@ -9,6 +9,8 @@ import NowPlaying from "./NowPlaying";
 import PlaylistDisplay from "./PlaylistDisplay";
 import PlaylistManipulator from "./PlaylistManipulator";
 import YourPlaylist from "./YourPlaylist";
+import Forget from "./Forget";
+import Reset from "./Reset";
 
 export {
 	Main,
@@ -21,5 +23,7 @@ export {
 	NowPlaying,
 	PlaylistDisplay,
 	PlaylistManipulator,
-	YourPlaylist
+	YourPlaylist,
+	Forget,
+	Reset
 };
