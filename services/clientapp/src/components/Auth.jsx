@@ -18,12 +18,18 @@ class Auth extends Component {
     this.Register = this.Register.bind(this);
   }
 
+  componentWillMount() {
+    if (this.props.isAuthenticated) {
+      store.dispatch(push("/"))
+    }
+  }
+
   Login() {
     return (
       <form
         className={`login-holder ${
           this.state.displayRegister ? "hide-me" : ""
-        }`}
+          }`}
         onSubmit={e => {
           e.preventDefault();
           let element = e.target.elements;
@@ -75,7 +81,7 @@ class Auth extends Component {
       <form
         className={`register-holder ${
           !this.state.displayRegister ? "hide-me" : ""
-        }`}
+          }`}
         onSubmit={e => {
           e.preventDefault();
           let element = e.target.elements;
@@ -141,7 +147,7 @@ class Auth extends Component {
       <div
         className={`toggle-slider ${
           this.state.displayRegister ? "display-register" : ""
-        }`}
+          }`}
       >
         {this.state.displayRegister ? (
           <div className="toggle-content-holder">
@@ -172,34 +178,34 @@ class Auth extends Component {
             </button>
           </div>
         ) : (
-          <div className="toggle-content-holder">
-            <img
-              className="music-master-logo"
-              src={masterLogo}
-              alt=""
-              srcSet=""
-            />
-            <img
-              className="music-illustration"
-              src={musicIllustration}
-              alt=""
-              srcSet=""
-            />
-            <div className="toggler-content-holder">
-              Don't have a OpenBeats Account Yet?
+            <div className="toggle-content-holder">
+              <img
+                className="music-master-logo"
+                src={masterLogo}
+                alt=""
+                srcSet=""
+              />
+              <img
+                className="music-illustration"
+                src={musicIllustration}
+                alt=""
+                srcSet=""
+              />
+              <div className="toggler-content-holder">
+                Don't have a OpenBeats Account Yet?
             </div>
-            <button
-              onClick={() =>
-                this.setState({
-                  displayRegister: !this.state.displayRegister
-                })
-              }
-              className="toggler-login-register-button cursor-pointer"
-            >
-              Register
+              <button
+                onClick={() =>
+                  this.setState({
+                    displayRegister: !this.state.displayRegister
+                  })
+                }
+                className="toggler-login-register-button cursor-pointer"
+              >
+                Register
             </button>
-          </div>
-        )}
+            </div>
+          )}
       </div>
     );
   }
