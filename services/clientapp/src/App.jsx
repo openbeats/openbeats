@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { Route, Switch } from "react-router";
-import { Auth, Main, Forget, Reset } from "./components";
+import { Auth, Main, Reset, Forgot } from "./components";
 import { Provider } from "react-redux";
 import { store } from "./store";
 
@@ -10,8 +10,8 @@ class App extends Component {
       <Provider store={store}>
         <Switch>
           <Route exact path="/auth" component={Auth} />
-          <Route path="/auth/forget" component={Forget} />
-          <Route path="/auth/reset" component={Reset} />
+          <Route path="/auth/forget" component={Forgot} />
+          <Route path="/auth/reset/:token" component={Reset} />
           <Route path="/" component={Main} />
         </Switch>
       </Provider>

@@ -12,9 +12,6 @@ import bcrypt from "bcryptjs";
 import nodemailer from "nodemailer";
 import crypto from "crypto";
 
-
-
-
 const router = express.Router();
 
 router.post("/login", (req, res, next) => {
@@ -59,9 +56,7 @@ router.post("/login", (req, res, next) => {
   })(req, res, next);
 });
 
-router.post(
-  "/register",
-  [
+router.post("/register", [
     check("name", "Name is required")
     .not()
     .isEmpty(),
@@ -156,7 +151,7 @@ router.post(
   }
 );
 
-router.post("/forgetpassword", [
+router.post("/forgotpassword", [
   check("email", "Please include a valid email").isEmail(),
 ], async (req, res) => {
   try {
@@ -183,7 +178,8 @@ router.post("/forgetpassword", [
 
     if (!user) {
       return res.send({
-        "msg": "No user exist with that email address."
+        status: false,
+        data: "No user exist with that email address."
       })
     };
 
@@ -201,7 +197,7 @@ router.post("/forgetpassword", [
     let randToken = crypto.randomBytes(20);
     randToken = randToken.toString('hex');
 
-    user.reset_password = randToken;
+    user.reset_password_token = randToken;
     await user.save();
 
     const payload = {
@@ -247,12 +243,14 @@ router.post("/forgetpassword", [
     }, 0);
 
     return res.send({
-      msg: 'Kindly check your email for further instructions'
+      status: true,
+      data: 'Kindly check your email for further instructions'
     });
   } catch (error) {
     console.error(error.message);
     return res.send({
-      msg: 'Something went wrong.'
+      status: false,
+      data: 'Something went wrong.'
     });
   }
 });
@@ -260,23 +258,25 @@ router.post("/forgetpassword", [
 router.post('/resetpassword', async (req, res) => {
   try {
     const {
-      reset_password,
+      reset_password_token,
       password
     } = req.body;
     const user = await User.findOne({
-      reset_password
+      reset_password_token
     });
     if (!user) {
       return res.send({
-        "msg": "Invalid Link."
+        status: false,
+        data: "Invalid Link."
       })
     };
     const salt = await bcrypt.genSalt(config.get("saltRound"));
     user.password = await bcrypt.hash(password, salt);
-    user.reset_password = "";
+    user.reset_password_token = "";
     await user.save()
     res.send({
-      "msg": "Password has been reseted successfully."
+      status: true,
+      data: "Password has been reseted successfully."
     });
   } catch (error) {
     console.log(error.message);

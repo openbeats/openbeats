@@ -15,7 +15,7 @@ export default mongoose.model(
 		password: {
 			type: String,
 		},
-		reset_password: {
+		reset_password_token: {
 			type: String,
 		},
 		avatar: {
@@ -49,10 +49,6 @@ export default mongoose.model(
 		recentlyPlayedSongs: {
 			type: Array,
 			default: [],
-		},
-		isAdmin: {
-			type: Boolean,
-			default: false
-		},
+		}
 	}),
 );

@@ -9,7 +9,7 @@ import NowPlaying from "./NowPlaying";
 import PlaylistDisplay from "./PlaylistDisplay";
 import PlaylistManipulator from "./PlaylistManipulator";
 import YourPlaylist from "./YourPlaylist";
-import Forget from "./Forget";
+import Forgot from "./Forgot";
 import Reset from "./Reset";
 
 export {
@@ -24,6 +24,6 @@ export {
 	PlaylistDisplay,
 	PlaylistManipulator,
 	YourPlaylist,
-	Forget,
+	Forgot,
 	Reset
 };
