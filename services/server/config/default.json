@@ -2,7 +2,7 @@
   "mongoURI_DEV": "mongodb://127.0.0.1:27017/obs-db",
   "jwtSecret": "WeAreAwesome",
   "saltRound": 10,
-  "lambda": "https://orvpax9d6b.execute-api.ap-south-1.amazonaws.com/default/obs-core?vid=",
   "redis": "obs-redis",
+  "lambda": "https://orvpax9d6b.execute-api.ap-south-1.amazonaws.com/default/obs-core?vid=",
   "isDev": false
 }
