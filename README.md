@@ -42,7 +42,7 @@ JSON-Structure:
 
 ```
 *Forget Password*
->https://api.openbeats.live/auth/forgetpassword
+>https://api.openbeats.live/auth/forgotpassword
 
 ```
 method: post,
@@ -63,7 +63,7 @@ bodyType: JSON
 JSON-Structure:
 
 {
-    "reset_password":"<reset_password>",
+    "reset_password_token":"<reset_password_token>",
     "password":"<new_password>"
 }
 

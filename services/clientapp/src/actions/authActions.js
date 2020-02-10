@@ -11,6 +11,7 @@ import {
 import {
   variables
 } from "../config";
+import Axios from "axios";
 
 export function loginHandler(email, password) {
   setAuthLoader(true);
@@ -113,6 +114,28 @@ function setAuthLoader(val) {
       isAuthLoading: val
     }
   });
+}
+
+export async function resetPassword(password, token) {
+  try {
+    const {
+      data
+    } = await Axios.post(`${variables.baseUrl}/auth/resetpassword`, {
+      data: {
+        password,
+        reset_password_token: token
+      }
+    })
+    if (data && data.status) {
+      toastActions.showMessage(data.data.toString());
+      store.dispatch(push("/auth"));
+    } else {
+      toastActions.showMessage(data.data.toString());
+    }
+  } catch (error) {
+    console.error(error)
+    toastActions.showMessage(error.message.toString())
+  }
 }
 
 export async function logoutHandler() {
