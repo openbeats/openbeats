@@ -63,106 +63,104 @@ router.post("/login", (req, res, next) => {
 });
 
 router.post("/register", [
-    check("name", "Name is required")
-    .not()
-    .isEmpty(),
-    check("email", "Please include a valid email").isEmail(),
-    check(
-      "password",
-      "Please enter a password with 6 or more characters"
-    ).isLength({
-      min: 6
-    })
-  ],
-  async (req, res) => {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      let msg = "";
-      if (errors.errors.length > 0) {
-        errors.errors.forEach(element => {
-          msg += element.msg + "\n";
-        });
-      }
-      return res.send({
-        status: false,
-        data: msg
+  check("name", "Name is required")
+  .not()
+  .isEmpty(),
+  check("email", "Please include a valid email").isEmail(),
+  check(
+    "password",
+    "Please enter a password with 6 or more characters"
+  ).isLength({
+    min: 6
+  })
+], async (req, res) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    let msg = "";
+    if (errors.errors.length > 0) {
+      errors.errors.forEach(element => {
+        msg += element.msg + "\n";
       });
     }
+    return res.send({
+      status: false,
+      data: msg
+    });
+  }
 
-    const {
+  const {
+    name,
+    email,
+    password
+  } = req.body;
+
+  try {
+    let user = await User.findOne({
+      email
+    });
+    if (user) {
+      return res
+        .send({
+          status: false,
+          data: "User with that email id already exist"
+        });
+    }
+
+    const avatar = gravatar.url(email, {
+      s: "200",
+      r: "pg",
+      d: "mm"
+    });
+
+    user = new User({
       name,
       email,
-      password
-    } = req.body;
+      password,
+      avatar
+    });
 
-    try {
-      let user = await User.findOne({
-        email
-      });
-      if (user) {
-        return res
-          .send({
-            status: false,
-            data: "User with that email id already exist"
-          });
+    const salt = await bcrypt.genSalt(config.get("saltRound"));
+    user.password = await bcrypt.hash(password, salt);
+    await user.save();
+    const payload = {
+      user: {
+        id: user.id
       }
-
-      const avatar = gravatar.url(email, {
-        s: "200",
-        r: "pg",
-        d: "mm"
-      });
-
-      user = new User({
-        name,
-        email,
-        password,
-        avatar
-      });
-
-      const salt = await bcrypt.genSalt(config.get("saltRound"));
-      user.password = await bcrypt.hash(password, salt);
-      await user.save();
-      const payload = {
-        user: {
-          id: user.id
+    };
+    jwt.sign(
+      payload,
+      config.get("jwtSecret"), {
+        expiresIn: 360000
+      },
+      (err, token) => {
+        try {
+          if (err) throw err;
+          res.send({
+            status: true,
+            data: {
+              token,
+              name: user.name,
+              email: user.email,
+              id: user.id,
+              avatar: user.avatar
+            }
+          });
+        } catch (error) {
+          res.send({
+            status: false,
+            data: "Internal Server Error"
+          });
         }
-      };
-      jwt.sign(
-        payload,
-        config.get("jwtSecret"), {
-          expiresIn: 360000
-        },
-        (err, token) => {
-          try {
-            if (err) throw err;
-            res.send({
-              status: true,
-              data: {
-                token,
-                name: user.name,
-                email: user.email,
-                id: user.id,
-                avatar: user.avatar
-              }
-            });
-          } catch (error) {
-            res.send({
-              status: false,
-              data: "Internal Server Error"
-            });
-          }
-        }
-      );
-    } catch (error) {
-      console.error(error.message);
-      res.send({
-        status: false,
-        data: "Internal Server Error"
-      });
-    }
+      }
+    );
+  } catch (error) {
+    console.error(error.message);
+    res.send({
+      status: false,
+      data: "Internal Server Error"
+    });
   }
-);
+});
 
 router.post("/forgotpassword", [
   check("email", "Please include a valid email").isEmail(),
@@ -301,6 +299,33 @@ router.post('/resetpassword', async (req, res) => {
 
   }
 
+});
+
+router.post('/validateresettoken', async (req, res) => {
+  try {
+    const {
+      reset_password_token,
+    } = req.body;
+    const user = await User.findOne({
+      reset_password_token
+    });
+    if (!user) {
+      return res.send({
+        status: false,
+        data: "Invalid Link."
+      })
+    };
+    res.send({
+      status: true,
+      data: "valid token"
+    });
+  } catch (error) {
+    console.log(error.message);
+    res.send({
+      status: false,
+      data: "Internal Server Error"
+    });
+  }
 });
 
 export default router;

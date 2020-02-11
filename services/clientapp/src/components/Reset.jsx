@@ -21,7 +21,7 @@ class Reset extends Component {
     }
 
 
-    componentDidMount() {
+    async componentDidMount() {
         const token = this.props.match.params.token;
         if (!token) {
             toastActions.showMessage("You tried to access invalid link!..");
@@ -36,7 +36,11 @@ class Reset extends Component {
             store.dispatch(push("/"))
             return
         }
-
+        if (await this.props.validateResetToken(decoded.token)) {
+            toastActions.showMessage("You tried to access invalid link!..");
+            store.dispatch(push("/"))
+            return
+        }
     }
 
     componentWillUnmount() {

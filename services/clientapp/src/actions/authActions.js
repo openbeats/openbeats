@@ -27,8 +27,12 @@ export function loginHandler(email, password) {
       })
     })
     .then(async res => {
-      let data = await res.json();
-      if (res.status !== 400) {
+      let resData = await res.json();
+      const {
+        status,
+        data
+      } = resData;
+      if (status !== false) {
         let userDetails = {
           name: data.name,
           email: data.email,
@@ -47,8 +51,7 @@ export function loginHandler(email, password) {
         setAuthLoader(false);
         store.dispatch(push("/"));
       } else {
-        let err = data.error;
-        toastActions.showMessage(err.toString());
+        toastActions.showMessage(data.toString());
         setAuthLoader(false);
       }
     })
@@ -75,8 +78,13 @@ export function registerHandler(name, email, password) {
       })
     })
     .then(async res => {
-      let data = await res.json();
-      if (res.status !== 400) {
+      let resData = await res.json();
+      const {
+        status,
+        data
+      } = resData;
+
+      if (status !== false) {
         let userDetails = {
           name: data.name,
           email: data.email,
@@ -95,8 +103,7 @@ export function registerHandler(name, email, password) {
         setAuthLoader(false);
         store.dispatch(push("/"));
       } else {
-        let err = data.error;
-        toastActions.showMessage(err.toString());
+        toastActions.showMessage(data.toString());
         setAuthLoader(false);
       }
     })
@@ -199,4 +206,23 @@ export async function logoutHandler() {
     }
   })
   await store.dispatch(push("/"))
+}
+
+export async function validateResetToken(token) {
+  try {
+    const {
+      data
+    } = await Axios.post(`${variables.baseUrl}/auth/validateresettoken`, {
+      reset_password_token: token
+    })
+    if (data && data.status) {
+      return true;
+    } else {
+      return false;
+    }
+  } catch (error) {
+    console.error(error)
+    return false;
+  }
+
 }
