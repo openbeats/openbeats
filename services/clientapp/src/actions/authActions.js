@@ -133,14 +133,17 @@ export async function resetPassword(password, token) {
     })
     if (data && data.status) {
       toastActions.showMessage(data.data.toString());
-      store.dispatch(push("/auth"));
+      return true;
+      // store.dispatch(push("/auth"));
     } else {
       toastActions.showMessage(data.data.toString());
       store.dispatch(push("/auth"))
+      return false
     }
   } catch (error) {
     console.error(error)
     toastActions.showMessage(error.message.toString())
+    return false
   }
 }
 
