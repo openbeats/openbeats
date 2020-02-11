@@ -9,7 +9,8 @@ import {
 } from "express-validator";
 import gravatar from "gravatar";
 import bcrypt from "bcryptjs";
-import nodemailer from "nodemailer";
+import axios from "axios";
+import qs from "querystring";
 import crypto from "crypto";
 
 const router = express.Router();
@@ -157,14 +158,15 @@ router.post("/forgotpassword", [
   try {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      let msg = "";
+      let data = "";
       if (errors.errors.length > 0) {
         errors.errors.forEach(element => {
-          msg += element.msg + "\n";
+          data += element.msg;
         });
       }
       return res.send({
-        msg
+        status: false,
+        data
       });
     }
 
@@ -182,17 +184,6 @@ router.post("/forgotpassword", [
         data: "No user exist with that email address."
       })
     };
-
-    const supportEmail = config.get("support.email");
-    const supportPassword = config.get("support.password");
-
-    const smtpTransport = nodemailer.createTransport({
-      service: 'Gmail',
-      auth: {
-        user: supportEmail,
-        pass: supportPassword
-      }
-    });
 
     let randToken = crypto.randomBytes(20);
     randToken = randToken.toString('hex');
@@ -214,11 +205,9 @@ router.post("/forgotpassword", [
 
 
     const data = {
-      to: user.email,
-      from: supportEmail,
-      template: 'forgot-password-email',
-      subject: 'Password help has arrived!',
-      html: `<!DOCTYPE html>
+      userMail: user.email,
+      mailSubject: 'Password help has arrived!',
+      mailBody: `<!DOCTYPE html>
             <html>
             <head>
                 <title>Forget Password Email</title>
@@ -226,26 +215,33 @@ router.post("/forgotpassword", [
             <body>
                 <div>
                     <h3>Dear ${user.name},</h3>
-                    <p>You requested
+                    <p>You had requested
                     for a password reset, kindly use this <a href="${url}"> link </a> to reset your password</p>
-                    <br>
+                    <br/>
                     <p>Cheers!</p>
                 </div>
             </body>
-            </html>`
+            </html>`,
+      isHTMLBody: true
     };
 
-    setTimeout(function () {
-      smtpTransport.sendMail(data, function (err, info) {
-        if (err) throw err
-        console.log(info.response);
-      });
+    const options = {
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded"
+      },
+    };
+    setTimeout(async () => {
+      const response = await axios.post("https://yagemserver.000webhostapp.com/", qs.stringify(data), options);
+
     }, 0);
 
-    return res.send({
+
+
+    res.send({
       status: true,
-      data: 'Kindly check your email for further instructions'
+      data: "An email has been sent with reset link. Please check your email and proceed."
     });
+
   } catch (error) {
     console.error(error.message);
     return res.send({
