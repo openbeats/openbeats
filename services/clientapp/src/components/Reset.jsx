@@ -36,7 +36,7 @@ class Reset extends Component {
             store.dispatch(push("/"))
             return
         }
-        if (await this.props.validateResetToken(decoded.token)) {
+        if (!await this.props.validateResetToken(decoded.token)) {
             toastActions.showMessage("You tried to access invalid link!..");
             store.dispatch(push("/"))
             return
@@ -101,6 +101,9 @@ const mapDispatchToProps = (dispatch) => {
     return {
         resetPassword: (password, token) => {
             return authActions.resetPassword(password, token);
+        },
+        validateResetToken: (token) => {
+            return authActions.validateResetToken(token);
         }
     }
 }
