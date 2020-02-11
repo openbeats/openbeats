@@ -60,7 +60,7 @@ class Auth extends Component {
           Forgot password?
         </div>
         <div className="responsive-link-creator">
-          Don't have a OpenBeats Accont yet?{" "}
+          Don't have a OpenBeats Account yet?{" "}
         </div>
         <div
           onClick={() =>
@@ -126,7 +126,7 @@ class Auth extends Component {
           Register
         </button>
         <div className="responsive-link-creator">
-          Already have a OpenBeats Accont?
+          Already have a OpenBeats Account?
         </div>
         <div
           onClick={() =>

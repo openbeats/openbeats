@@ -71,7 +71,7 @@ class Forgot extends Component {
                             Please Check your email inbox to reset your password!
                         </div>
                         <div className="mt-4">
-                            <button onClick={() => this.props.push("/auth")} className="native-login-button mt-4 cursor-pointer" >Login</button>
+                            <div onClick={() => this.props.push("/auth")} className="responsive-custom-link mt-4 cursor-pointer" >Login</div>
                         </div>
                     </div>
                 :

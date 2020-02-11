@@ -136,6 +136,14 @@ hr {
   margin-top: 20px;
 }
 
+.mt-5 {
+  margin-top: 25px;
+}
+
+.mt-6 {
+  margin-top: 30px;
+}
+
 .f-s-14 {
   font-size: 14px;
 }

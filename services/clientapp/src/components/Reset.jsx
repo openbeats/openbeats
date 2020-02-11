@@ -16,7 +16,8 @@ class Reset extends Component {
             isLoading: true,
             token: null,
             password: "",
-            rePassword: ""
+            rePassword: "",
+            isResetDone: false
         }
     }
 
@@ -47,7 +48,8 @@ class Reset extends Component {
             isLoading: true,
             token: null,
             password: "",
-            rePassword: ""
+            rePassword: "",
+            isResetDone: false
         })
     }
 
@@ -55,27 +57,45 @@ class Reset extends Component {
     render() {
         return (
             !this.state.isLoading ?
-                <div className="reset-wrapper">
-                    <div className="reset-logo-holder">
-                        <img src={master} alt="" srcSet="" />
-                        <h1 className="ml-2">OpenBeats</h1>
+                !this.state.isResetDone ?
+                    < div className="reset-wrapper" >
+                        <div className="reset-logo-holder">
+                            <img src={master} alt="" srcSet="" />
+                            <h1 className="ml-2">OpenBeats</h1>
+                        </div>
+                        <div className="reset-title mt-4 f-s-19 ml-4 font-weight-bold">Reset Password</div>
+                        <form className="native-login-input reset-form" onSubmit={async (e) => {
+                            e.preventDefault();
+                            this.setState({ isLoading: true })
+                            if (this.state.password < 3 || this.state.password !== this.state.rePassword) {
+                                toastActions.showMessage("password doesn't match!")
+                                this.setState({ isLoading: false })
+                                return;
+                            }
+                            if (await this.props.resetPassword(this.state.password, this.state.token))
+                                this.setState({
+                                    isLoading: false,
+                                    isResetDone: true
+                                })
+                        }}>
+                            <input required className="mb-2 mt-2" value={this.state.password} onChange={(e) => this.setState({ password: e.target.value })} placeholder="Enter Password" type="password" />
+                            <input required className="mt-2 mb-4" value={this.state.rePassword} onChange={(e) => this.setState({ rePassword: e.target.value })} placeholder="Re-Enter Password" type="password" />
+                            <button className="native-login-button mt-4 cursor-pointer" type="submit">Reset</button>
+                        </form>
+                    </div >
+                    :
+                    <div className="reset-wrapper">
+                        <div className="reset-logo-holder">
+                            <img src={master} alt="" srcSet="" />
+                            <h1 className="ml-2">OpenBeats</h1>
+                        </div>
+                        <div className="mt-4">
+                            Your Password has been reset successfully!
                     </div>
-                    <div className="reset-title mt-4 f-s-19 ml-4 font-weight-bold">Reset Password</div>
-                    <form className="native-login-input reset-form" onSubmit={async (e) => {
-                        e.preventDefault();
-                        this.setState({ isLoading: true })
-                        if (this.state.password < 3 || this.state.password !== this.state.rePassword) {
-                            toastActions.showMessage("password doesn't match!")
-                            this.setState({ isLoading: false })
-                            return;
-                        }
-                        await this.props.resetPassword(this.state.password, this.state.token);
-                    }}>
-                        <input required className="mb-2 mt-2" value={this.state.password} onChange={(e) => this.setState({ password: e.target.value })} placeholder="Enter Password" type="password" />
-                        <input required className="mt-2 mb-4" value={this.state.rePassword} onChange={(e) => this.setState({ rePassword: e.target.value })} placeholder="Re-Enter Password" type="password" />
-                        <button className="native-login-button mt-4 cursor-pointer" type="submit">Reset</button>
-                    </form>
-                </div>
+                        <div className="mt-6">
+                            <a href="https://openbeats.live/auth" className="native-login-anchor cursor-pointer" >Continue Login!</a>
+                        </div>
+                    </div>
                 :
                 <div className="reset-wrapper">
                     <Loader
