@@ -121,20 +121,41 @@ export async function resetPassword(password, token) {
     const {
       data
     } = await Axios.post(`${variables.baseUrl}/auth/resetpassword`, {
-      data: {
-        password,
-        reset_password_token: token
-      }
+      password,
+      reset_password_token: token
     })
     if (data && data.status) {
       toastActions.showMessage(data.data.toString());
       store.dispatch(push("/auth"));
     } else {
       toastActions.showMessage(data.data.toString());
+      store.dispatch(push("/auth"))
     }
   } catch (error) {
     console.error(error)
     toastActions.showMessage(error.message.toString())
+  }
+}
+
+export async function resetEmailHandler(email) {
+  try {
+    const {
+      data
+    } = await Axios.post(`${variables.baseUrl}/auth/forgotpassword`, {
+      email
+    })
+    console.log(data)
+    if (data && data.status) {
+      toastActions.showMessage(data.data.toString());
+      return true;
+    } else {
+      toastActions.showMessage(data.data.toString());
+      return false;
+    }
+  } catch (error) {
+    console.error(error)
+    toastActions.showMessage(error.message.toString())
+    return false;
   }
 }
 

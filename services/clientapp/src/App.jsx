@@ -10,7 +10,7 @@ class App extends Component {
       <Provider store={store}>
         <Switch>
           <Route exact path="/auth" component={Auth} />
-          <Route path="/auth/forget" component={Forgot} />
+          <Route path="/auth/forgot" component={Forgot} />
           <Route path="/auth/reset/:token" component={Reset} />
           <Route path="/" component={Main} />
         </Switch>

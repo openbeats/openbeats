@@ -30,7 +30,7 @@ class Reset extends Component {
         }
         const decoded = jwtDecode(token);
         if (Math.ceil(new Date().getTime() / 1000) < decoded.exp) {
-            this.setState({ isLoading: false, token: token })
+            this.setState({ isLoading: false, token: decoded.token })
         } else {
             toastActions.showMessage("You tried to access invalid link!");
             store.dispatch(push("/"))
@@ -67,10 +67,9 @@ class Reset extends Component {
                             return;
                         }
                         await this.props.resetPassword(this.state.password, this.state.token);
-                        this.setState({ isLoading: false })
                     }}>
-                        <input className="mb-2 mt-2" value={this.state.password} onChange={(e) => this.setState({ password: e.target.value })} placeholder="Enter Password" type="password" />
-                        <input className="mt-2 mb-4" value={this.state.rePassword} onChange={(e) => this.setState({ rePassword: e.target.value })} placeholder="Re-Enter Password" type="password" />
+                        <input required className="mb-2 mt-2" value={this.state.password} onChange={(e) => this.setState({ password: e.target.value })} placeholder="Enter Password" type="password" />
+                        <input required className="mt-2 mb-4" value={this.state.rePassword} onChange={(e) => this.setState({ rePassword: e.target.value })} placeholder="Re-Enter Password" type="password" />
                         <button className="native-login-button mt-4 cursor-pointer" type="submit">Reset</button>
                     </form>
                 </div>
