@@ -19,12 +19,14 @@ router.post("/login", (req, res, next) => {
     if (error) {
       console.error(error.message);
       res.send({
-        error: "Internal Server Error"
+        status: false,
+        data: "Internal Server Error"
       });
     }
     if (info !== undefined) {
       res.send({
-        error: info.message
+        status: false,
+        data: info.message
       });
     } else {
       const payload = {
@@ -39,15 +41,19 @@ router.post("/login", (req, res, next) => {
           try {
             if (err) throw error;
             res.send({
-              token,
-              name: user.name,
-              email: user.email,
-              id: user.id,
-              avatar: user.avatar
+              status: true,
+              data: {
+                token,
+                name: user.name,
+                email: user.email,
+                id: user.id,
+                avatar: user.avatar
+              }
             });
           } catch (error) {
             res.send({
-              error: "Internal Server Error"
+              status: false,
+              data: "Internal Server Error"
             });
           }
         }
@@ -77,8 +83,9 @@ router.post("/register", [
           msg += element.msg + "\n";
         });
       }
-      return res.status(400).send({
-        msg
+      return res.send({
+        status: false,
+        data: msg
       });
     }
 
@@ -95,7 +102,8 @@ router.post("/register", [
       if (user) {
         return res
           .send({
-            error: "User with that email id already exist"
+            status: false,
+            data: "User with that email id already exist"
           });
       }
 
@@ -129,15 +137,19 @@ router.post("/register", [
           try {
             if (err) throw err;
             res.send({
-              token,
-              name: user.name,
-              email: user.email,
-              id: user.id,
-              avatar: user.avatar
+              status: true,
+              data: {
+                token,
+                name: user.name,
+                email: user.email,
+                id: user.id,
+                avatar: user.avatar
+              }
             });
           } catch (error) {
             res.send({
-              error: "Internal Server Error"
+              status: false,
+              data: "Internal Server Error"
             });
           }
         }
@@ -145,7 +157,8 @@ router.post("/register", [
     } catch (error) {
       console.error(error.message);
       res.send({
-        error: "Internal Server Error"
+        status: false,
+        data: "Internal Server Error"
       });
     }
   }
@@ -164,7 +177,8 @@ router.post("/forgotpassword", [
         });
       }
       return res.send({
-        msg
+        status: false,
+        data: msg
       });
     }
 
@@ -282,18 +296,11 @@ router.post('/resetpassword', async (req, res) => {
     console.log(error.message);
     res.send({
       status: false,
-      msg: "Internal Server Error"
+      data: "Internal Server Error"
     });
 
   }
 
 });
-
-router.get("/verify/:xtoken", (req, res) => {
-  const xtoken = req.params.xtoken;
-  const decoded = jwt.verify(xtoken, config.get("jwtSecret"));
-  res.send(decoded);
-})
-
 
 export default router;
