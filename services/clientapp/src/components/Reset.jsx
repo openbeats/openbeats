@@ -29,9 +29,7 @@ class Reset extends Component {
             return
         }
         const decoded = jwtDecode(token);
-        if (Math.ceil(new Date().getTime() / 1000) < decoded.exp) {
-            this.setState({ isLoading: false, token: decoded.token })
-        } else {
+        if (!(Math.ceil(new Date().getTime() / 1000) < decoded.exp)) {
             toastActions.showMessage("You tried to access invalid link!");
             store.dispatch(push("/"))
             return
@@ -41,6 +39,7 @@ class Reset extends Component {
             store.dispatch(push("/"))
             return
         }
+        this.setState({ isLoading: false, token: decoded.token })
     }
 
     componentWillUnmount() {
