@@ -20,10 +20,10 @@ def buildAndAddNewServiceToCluster(String buildDir, String dockerImageName, Stri
 
 pipeline {
     environment {
-        BRANCH_TO_BUILD = "master"
+        BRANCH_TO_BUILD = "donotbuild"
         USER_CREDENTIALS = credentials('dockerhub-credentials')
-        HAS_NEW_SERVICE_TO_ADD = "false"
-        NEW_SERVICE_NAME = "nothing"
+        HAS_NEW_SERVICE_TO_ADD = "true"
+        NEW_SERVICE_NAME = "core"
     }
     agent any
     stages {
@@ -56,13 +56,13 @@ pipeline {
                         buildAndUpdateCluster("services/captainapp/", "obs-captainapp", "obs-captainapp")
                     }
                 }
-                stage('server') {
+                stage('core') {
                     when {
-                        changeset "services/server/**"
+                        changeset "services/core/**"
                     }
                     steps {
-                        echo 'building server...'
-                        buildAndUpdateCluster("services/server/", "obs-server", "obs-server")
+                        echo 'building core...'
+                        buildAndUpdateCluster("services/core/", "obs-core", "obs-core")
                     }
                 }
                 stage('fallback') {
