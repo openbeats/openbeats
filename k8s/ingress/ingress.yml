@@ -53,7 +53,7 @@ spec:
         paths:
           - path: /
             backend:
-              serviceName: obs-server
+              serviceName: obs-core
               servicePort: 2000
 
 ---
