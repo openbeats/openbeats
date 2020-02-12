@@ -22,15 +22,17 @@ pipeline {
     environment {
         BRANCH_TO_BUILD = "master"
         USER_CREDENTIALS = credentials('dockerhub-credentials')
+
         HAS_NEW_SERVICE_TO_ADD = "false"
         NEW_SERVICE_NAME = "nothing"
+
         forceBuild_clientapp = "false"
         forceBuild_captainapp = "false"
-        forceBuild_core = "true"
-        forceBuild_fallback = "false"
-        forceBuild_downcc = "false"
-        forceBuild_auth = "true"
-        forceBuild_playlist = "false"
+        forceBuild_core = "false"
+        forceBuild_fallback = "true"
+        forceBuild_downcc = "true"
+        forceBuild_auth = "false"
+        forceBuild_playlist = "true"
     }
     agent any
     stages {
