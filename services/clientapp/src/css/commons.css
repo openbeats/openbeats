@@ -200,3 +200,8 @@ hr {
 .font-weight-bold {
   font-weight: bold;
 }
+
+
+.display-block {
+  display: block !important;
+}
