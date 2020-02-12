@@ -22,14 +22,14 @@ pipeline {
     environment {
         BRANCH_TO_BUILD = "master"
         USER_CREDENTIALS = credentials('dockerhub-credentials')
-        HAS_NEW_SERVICE_TO_ADD = "true"
-        NEW_SERVICE_NAME = "core"
-        forceBuild_clientapp = "true"
+        HAS_NEW_SERVICE_TO_ADD = "false"
+        NEW_SERVICE_NAME = "nothing"
+        forceBuild_clientapp = "false"
         forceBuild_captainapp = "false"
-        forceBuild_core = "false"
+        forceBuild_core = "true"
         forceBuild_fallback = "false"
         forceBuild_downcc = "false"
-        forceBuild_auth = "false"
+        forceBuild_auth = "true"
         forceBuild_playlist = "false"
     }
     agent any
@@ -59,7 +59,11 @@ pipeline {
                 }
                 stage('captainapp') {
                     when {
-                        changeset "services/captainapp/**"
+                        anyOf{
+                            changeset "services/captainapp/**"
+                            expression { forcebuild_captainapp == "true"}
+
+                        }
                     }
                     steps {
                         echo 'building captainapp...'
@@ -68,7 +72,11 @@ pipeline {
                 }
                 stage('core') {
                     when {
-                        changeset "services/core/**"
+                        anyOf{
+                            changeset "services/core/**"
+                            expression { forcebuild_core == "true"}
+
+                        }
                     }
                     steps {
                         echo 'building core...'
@@ -77,7 +85,11 @@ pipeline {
                 }
                 stage('fallback') {
                     when {
-                        changeset "services/fallback/**"
+                        anyOf{
+                            changeset "services/fallback/**"
+                            expression { forcebuild_fallback == "true"}
+
+                        }
                     }
                     steps {
                         echo 'building fallback...'
@@ -86,7 +98,11 @@ pipeline {
                 }
                 stage('downcc') {
                     when {
-                        changeset "services/downcc/**"
+                        anyOf{
+                            changeset "services/downcc/**"
+                            expression { forcebuild_downcc == "true"}
+
+                        }
                     }
                     steps {
                         echo 'building downcc...'
@@ -95,7 +111,11 @@ pipeline {
                 }
                 stage('auth') {
                     when {
-                        changeset "services/auth/**"
+                        anyOf{
+                            changeset "services/auth/**"
+                            expression { forcebuild_auth == "true"}
+
+                        }
                     }
                     steps {
                         echo 'building downcc...'
@@ -104,7 +124,11 @@ pipeline {
                 }
                 stage('playlist') {
                     when {
-                        changeset "services/playlist/**"
+                        anyOf{
+                            changeset "services/playlist/**"
+                            expression { forcebuild_playlist == "true"}
+
+                        }
                     }
                     steps {
                         echo 'building playlist...'
