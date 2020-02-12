@@ -20,10 +20,17 @@ def buildAndAddNewServiceToCluster(String buildDir, String dockerImageName, Stri
 
 pipeline {
     environment {
-        BRANCH_TO_BUILD = "donotbuild"
+        BRANCH_TO_BUILD = "master"
         USER_CREDENTIALS = credentials('dockerhub-credentials')
         HAS_NEW_SERVICE_TO_ADD = "true"
         NEW_SERVICE_NAME = "core"
+        forceBuild_clientapp = "true"
+        forceBuild_captainapp = "false"
+        forceBuild_core = "false"
+        forceBuild_fallback = "false"
+        forceBuild_downcc = "false"
+        forceBuild_auth = "false"
+        forceBuild_playlist = "false"
     }
     agent any
     stages {
@@ -40,7 +47,10 @@ pipeline {
             stages{
                 stage('clientapp') {
                     when {
-                        changeset "services/clientapp/**"
+                        anyOf{
+                            changeset "services/clientapp/**"
+                            expression { forceBuild_clientapp == "true" }
+                        }
                     }
                     steps {
                         echo 'building clientapp...'
