@@ -1,11 +1,11 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: obs-server
+  name: obs-core
 spec:
   type: NodePort
   ports:
   - port: 2000
   selector:
     type: backend
-    service: obs-server
+    service: obs-core
