@@ -1,10 +1,10 @@
 {
-  "mongoURI_DEV": "mongodb://127.0.0.1:27017/obs-db",
+  "mongoURI_DEV": "mongodb+srv://immi98:One2333@1968@devconnet-gzhfz.mongodb.net/test?retryWrites=true&w=majority",
   "jwtSecret": "WeAreAwesome",
   "saltRound": 10,
   "support": {
     "email": "openbeatsyag@gmail.com",
     "password": "9Ve7nQr4sZDd=5mYW9_r"
   },
-  "isDev": false 
+  "isDev": true
 }
