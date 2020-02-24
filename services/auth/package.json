@@ -14,7 +14,6 @@
   "author": "ImmI",
   "license": "ISC",
   "dependencies": {
-    "axios": "^0.19.2",
     "babel-polyfill": "^6.26.0",
     "babel-preset-env": "^1.7.0",
     "babel-preset-stage-0": "^6.24.1",
@@ -28,9 +27,10 @@
     "jsonwebtoken": "^8.5.1",
     "mongoose": "^5.8.3",
     "morgan": "^1.9.1",
+    "node-fetch": "^2.6.0",
+    "nodemailer": "^6.4.3",
     "passport": "^0.4.1",
-    "passport-local": "^1.0.0",
-    "querystring": "^0.2.0"
+    "passport-local": "^1.0.0"
   },
   "devDependencies": {
     "nodemon": "^2.0.2"
