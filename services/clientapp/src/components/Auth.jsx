@@ -18,7 +18,7 @@ class Auth extends Component {
     this.Register = this.Register.bind(this);
   }
 
-  componentWillMount() {
+  componentDidMount() {
     if (this.props.isAuthenticated) {
       store.dispatch(push("/"))
     }
@@ -56,11 +56,11 @@ class Auth extends Component {
         <button type="submit" className="native-login-button cursor-pointer">
           Login
         </button>
-        <div className="forgot-password-holder cursor-pointer">
+        <div onClick={() => this.props.push("/auth/forgot")} className="forgot-password-holder cursor-pointer">
           Forgot password?
         </div>
         <div className="responsive-link-creator">
-          Don't have a OpenBeats Accont yet?{" "}
+          Don't have a OpenBeats Account yet?{" "}
         </div>
         <div
           onClick={() =>
@@ -126,7 +126,7 @@ class Auth extends Component {
           Register
         </button>
         <div className="responsive-link-creator">
-          Already have a OpenBeats Accont?
+          Already have a OpenBeats Account?
         </div>
         <div
           onClick={() =>

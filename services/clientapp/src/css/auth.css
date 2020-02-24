@@ -18,6 +18,7 @@
   right: 50%;
   transition: all 0.1s linear;
 }
+
 .music-illustration {
   width: 30%;
   margin-bottom: 60px;
@@ -91,7 +92,7 @@
   margin-bottom: 30px;
 }
 
-.native-login-input > input {
+.native-login-input>input {
   font-size: 14px;
   text-align: center;
   letter-spacing: 5px;
@@ -102,6 +103,20 @@
   outline: none;
 }
 
+.native-login-anchor,
+.native-login-anchor:active,
+.native-login-anchor:focus {
+  text-decoration: none;
+  padding: 10px 30px;
+  font-size: 15px;
+  border-radius: 20px;
+  letter-spacing: 5px;
+  background: var(--main-master-color);
+  border: none;
+  outline: none;
+  color: white;
+}
+
 .remaind-me {
   margin-bottom: 20px;
   display: flex;
@@ -109,7 +124,7 @@
   font-size: 14px;
 }
 
-.remaind-me > input {
+.remaind-me>input {
   margin-right: 10px;
   transform: scale(1);
   border: none;
@@ -145,7 +160,7 @@
   color: white;
 }
 
-.google-oauth-button > i {
+.google-oauth-button>i {
   margin-right: 20px;
 }
 
@@ -191,13 +206,15 @@
   .responsive-link-creator {
     display: block;
   }
+
   .responsive-custom-link {
     display: block;
   }
+
   .toggle-slider {
     display: none;
   }
-  
+
   .hide-me {
     display: none;
   }
@@ -205,6 +222,7 @@
   .auth-wrapper {
     grid-template-columns: auto;
   }
+
   .responsive-master-logo {
     display: block;
   }
