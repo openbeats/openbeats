@@ -2,7 +2,6 @@ import {
     Router
 } from "express";
 import User from "../models/User";
-import fetch from "node-fetch";
 import auth from "../config/auth"
 
 
@@ -21,7 +20,7 @@ router.post("/recentlyplayed", async (req, res) => {
                 msg: "User not found."
             });
         }
-        while (!(user.recentlyPlayedSongs.length <= 20)) {
+        while (!(user.recentlyPlayedSongs.length <= 30)) {
             user.recentlyPlayedSongs.pop();
         }
         for (let i = 0; i < user.recentlyPlayedSongs.length; i++) {
@@ -52,15 +51,20 @@ router.post("/recentlyplayed", async (req, res) => {
     }
 });
 
-router.get("recentlyplayed", auth, async (req, res) => {
+router.get("/recentlyplayed", auth, async (req, res) => {
     try {
         const user = await User.findById(req.user.id);
-        const payloadPromise = user.recentlyPlayedSongs.map(song => {
-            return fetch(`http://localhost:2001/ytcat?q=${song.videoId}=true`);
+        const data = user.recentlyPlayedSongs;
+        res.send({
+            status: true,
+            data
         });
-
     } catch (error) {
-
+        res.send({
+            status: false,
+            msg: "Internal server error."
+        });
+        console.error(error.message);
     }
 });
 
