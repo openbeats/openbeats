@@ -9,21 +9,24 @@ export default async (req, res, next) => {
 	if (!token) {
 		return next();
 	}
-
 	try {
 		const decoded = jwt.verify(token, config.get("jwtSecret"));
 		const userId = decoded.user.id;
 		const videoId = req.params.id;
+		const info = req.query.info;
 		let baseUrl;
 		if (config.get("isDev")) {
 			baseUrl = config.get("authbaseurl").dev;
 		} else {
 			baseUrl = config.get("authbaseurl").production;
 		}
+
 		const body = {
 			userId,
-			videoId
+			videoId,
+			info
 		};
+
 		const response = await (await fetch(baseUrl + "/metadata/recentlyplayed", {
 			method: 'post',
 			body: JSON.stringify(body),
