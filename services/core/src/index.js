@@ -13,7 +13,7 @@ import dbconfig from "./config/db";
 import addtorecentlyplayed from "./config/addtorecentlyplayed";
 dbconfig();
 
-const PORT = process.env.PORT || 2001;
+const PORT = process.env.PORT || 2000;
 
 const app = express();
 
