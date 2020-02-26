@@ -15,6 +15,9 @@ import {
 import {
     push
 } from "connected-react-router";
+import {
+    Base64
+} from 'js-base64';
 
 export function playPauseToggle() {
     const playerRef = document.getElementById("music-player");
@@ -238,7 +241,7 @@ export async function initPlayer(audioData, playMusic = true) {
         options.headers = {
             "x-auth-token": token
         };
-        const audioDataB64 = btoa(JSON.stringify(audioData));
+        const audioDataB64 = Base64.encode(JSON.stringify(audioData));
         masterUrl = `${variables.baseUrl}/opencc/${audioData.videoId.trim()}?info=${audioDataB64}`;
     }
 
