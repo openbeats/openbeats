@@ -230,6 +230,18 @@ export async function resetPlayer() {
 }
 
 export async function initPlayer(audioData, playMusic = true) {
+    const isAuthenticated = await store.getState().authReducer.isAuthenticated;
+    const options = {};
+    let masterUrl = `${variables.baseUrl}/opencc/${audioData.videoId.trim()}`;
+    if (isAuthenticated) {
+        const token = await store.getState().authReducer.userDetails.token;
+        options.headers = {
+            "x-auth-token": token
+        };
+        const audioDataB64 = btoa(JSON.stringify(audioData));
+        masterUrl = `${variables.baseUrl}/opencc/${audioData.videoId.trim()}?info=${audioDataB64}`;
+    }
+
     await store.dispatch(await resetPlayer())
     await store.dispatch({
         type: 'LOAD_AUDIO_DATA',
@@ -240,9 +252,11 @@ export async function initPlayer(audioData, playMusic = true) {
             isAudioBuffering: true
         }
     })
-    const masterUrl = `${variables.baseUrl}/opencc/${audioData.videoId.trim()}`
+
     const fallBackUrl = `${variables.baseUrl}/fallback/${audioData.videoId.trim()}`
-    await fetch(masterUrl)
+    console.log(masterUrl);
+
+    await fetch(masterUrl, options)
         .then(res => res.json())
         .then(async res => {
             if (res.status) {
