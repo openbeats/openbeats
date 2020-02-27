@@ -7,6 +7,7 @@ import Result from "./Result";
 import TopNav from "./TopNav";
 import NowPlaying from "./NowPlaying";
 import PlaylistDisplay from "./PlaylistDisplay";
+import RecentlyPlayed from "./RecentlyPlayed";
 import PlaylistManipulator from "./PlaylistManipulator";
 import YourPlaylist from "./YourPlaylist";
 import Forgot from "./Forgot";
@@ -25,5 +26,6 @@ export {
 	PlaylistManipulator,
 	YourPlaylist,
 	Forgot,
-	Reset
+	Reset,
+	RecentlyPlayed
 };
