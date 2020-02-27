@@ -51,6 +51,7 @@ router.get("/recentlyplayed", auth, async (req, res) => {
         const user = await User.findById(req.user.id);
         const data = user.recentlyPlayedSongs;
         res.send({
+            id: req.user.id,
             status: true,
             data
         });

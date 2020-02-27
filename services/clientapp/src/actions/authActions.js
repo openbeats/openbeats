@@ -15,7 +15,7 @@ import Axios from "axios";
 
 export function loginHandler(email, password) {
   setAuthLoader(true);
-  fetch(`${variables.baseUrl}/auth/login`, {
+  fetch(`http://localhost:2000/login`, {
       method: "POST",
       headers: {
         Accept: "application/json",
@@ -64,7 +64,7 @@ export function loginHandler(email, password) {
 
 export function registerHandler(name, email, password) {
   setAuthLoader(true);
-  fetch(`${variables.baseUrl}/auth/register`, {
+  fetch(`http://localhost:2000/register`, {
       method: "POST",
       headers: {
         Accept: "application/json",
