@@ -15,11 +15,12 @@ import Axios from "axios";
 
 export function loginHandler(email, password) {
   setAuthLoader(true);
-  fetch(`http://localhost:2000/login`, {
+  fetch(`${variables.baseUrl}/auth/login`, {
       method: "POST",
       headers: {
         Accept: "application/json",
-        "Content-Type": "application/json"
+        "Content-Type": "application/json",
+        "Access-Control-Allow-Origin": "*"
       },
       body: JSON.stringify({
         email,
@@ -64,7 +65,7 @@ export function loginHandler(email, password) {
 
 export function registerHandler(name, email, password) {
   setAuthLoader(true);
-  fetch(`http://localhost:2000/register`, {
+  fetch(`${variables.baseUrl}/auth/register`, {
       method: "POST",
       headers: {
         Accept: "application/json",
