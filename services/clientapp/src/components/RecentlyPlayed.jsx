@@ -20,9 +20,9 @@ class RecentlyPlayed extends Component {
             downloadProcess: false,
             videoId: [],
             isLoading: true,
-        }
+        };
         this.state = { ...this.initialState };
-        this.videoId = []
+        this.videoId = [];
     }
 
 
@@ -32,32 +32,15 @@ class RecentlyPlayed extends Component {
     }
 
     async playlistFetchHandler() {
-        this.setState({ ...this.initialState })
-        // if (type === "user") {
-        //     const data = await this.props.fetchUserPlaylist(id);
-        //     if (data && data.status) {
-        //         await this.setState({
-        //             type,
-        //             playlistId: id,
-        //             playlistName: data.data.name,
-        //             playlistThumbnail: data.data.thumbnail ? data.data.thumbnail : musicDummy,
-        //             editedName: data.data.name,
-        //             playlistItems: data.data.songs,
-        //             isLoading: false,
-        //         })
-        //     } else {
-        //         this.props.notify("Invalid Playlist!");
-        //         this.props.push("/");
-        //     }
-
+        this.setState({ ...this.initialState });
         const data = await this.props.getRecentlyPlayed();
         if (data && data.status) {
             this.setState({
                 playlistId: data.id,
-                playlistThumbnail: musicDummy,
+                playlistThumbnail: data.data.length > 0 && data.data[0].thumbnail ? data.data[0].thumbnail : musicDummy,
                 playlistItems: data.data,
                 isLoading: false,
-            })
+            });
             console.log(data.data);
 
         } else {
@@ -220,16 +203,6 @@ class RecentlyPlayed extends Component {
                                                 }
                                             </a>
                                         </span>
-                                        {this.state.type === 'user' &&
-                                            <span>
-                                                <i className="fas fa-trash-alt playlist-display-songs-icon cursor-pointer"
-                                                    onClick={async () => {
-                                                        await this.props.removeSongFromPlaylist(this.state.playlistId, item._id)
-                                                        await this.playlistFetchHandler()
-                                                    }}
-                                                ></i>
-                                            </span>
-                                        }
                                         <span>
                                             <div className="playlist-display-songs-title">{item.title}</div>
                                             <div className="playlist-display-songs-duration">{item.duration}</div>
@@ -238,20 +211,12 @@ class RecentlyPlayed extends Component {
                                 </Fragment>
                             )) :
                                 <Fragment>
-
-                                    {this.state.type === "user" &&
-                                        <div className="text-align-center width-100 height-100 d-flex align-items-center justify-content-center">
-                                            Your Playlist is Empty!
-                                          <br />
-                                            <br />
-                                            You can search and add songs to your Playlist!
-                                      </div>}
-                                    {this.state.type === "charts" && <div className="text-align-center width-100 height-100 d-flex align-items-center justify-content-center">
-                                        This Top Chart is Empty!
-                                      <br />
+                                    <div className="text-align-center width-100 height-100 d-flex align-items-center justify-content-center">
+                                        It seems like you haven't listened to any music yet.
                                         <br />
-                                        Stay Tuned!!!
-                                      </div>}
+                                        <br />
+                                        Start listening today..It's free!!!
+                                    </div>}
                                 </Fragment>
                             }
                         </div>

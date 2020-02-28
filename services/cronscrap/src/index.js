@@ -34,5 +34,5 @@ cron.schedule("0 0 * * 0", async () => {
 
 
 app.listen(PORT, () => {
-  console.log(`openbeats cronscrap server server up and running on port ${PORT}.`);
+  console.log(`openbeats cronscrap service up and running on ${PORT}!`);
 });

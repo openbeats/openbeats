@@ -13,7 +13,7 @@ import dbconfig from "./config/db";
 import addtorecentlyplayed from "./config/addtorecentlyplayed";
 dbconfig();
 
-const PORT = process.env.PORT || 2001;
+const PORT = process.env.PORT || 2000;
 
 const app = express();
 
@@ -99,5 +99,5 @@ app.get("/suggester", async (req, res) => {
 });
 
 app.listen(PORT, () => {
-	console.log("openbeats server up and running!");
+	console.log(`openbeats core service up and running on ${PORT}!`);
 });

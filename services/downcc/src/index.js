@@ -114,5 +114,5 @@ app.get("/:id", async (req, res) => {
 });
 
 app.listen(PORT, () => {
-	console.log("openbeats downcc service up and running!");
+	console.log(`openbeats downcc service up and running on ${PORT}!`);
 });

@@ -61,7 +61,7 @@ class Main extends Component {
                   return <YourPlaylist />
                 else {
                   this.props.notify("please login to use this feature!!!")
-                  this.props.push("/auth")
+                  this.props.push("/")
                   return null
                 }
               }} />
@@ -70,7 +70,7 @@ class Main extends Component {
                   return <RecentlyPlayed />
                 else {
                   this.props.notify("please login to use this feature!!!")
-                  this.props.push("/auth")
+                  this.props.push("/")
                   return null
                 }
               }} />

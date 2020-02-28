@@ -8,7 +8,7 @@ import {
 
 const router = Router();
 
-router.get("/init_topcharts", (req, res) => {
+router.get("/inittopcharts", (req, res) => {
   setTimeout(() => {
     fetchTopCharts();
     englishTopCharts();
