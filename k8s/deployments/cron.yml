@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: obs-cron
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      type: backend
+      service: obs-cron
+  template:
+    metadata:
+      labels:
+        type: backend
+        service: obs-cron
+    spec:
+      containers:
+        - name: container
+          image: thayalangr/obs-cron
+          env:
+            - name: DB
+              value: obs-db:27017

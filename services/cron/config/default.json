@@ -1,0 +1,8 @@
+{
+  "urls": {
+    "topcharts": "http://obs-playlist:2000/topcharts/inittopcharts"
+  },
+  "mongoURI_DEV": "mongodb://127.0.0.1:27017/obs-db",
+  "lastFmAPIKey": "d2b6c4283a7958e1d107005ac85d59db",
+  "isDev": false
+}
