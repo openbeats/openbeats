@@ -1,0 +1,20 @@
+custom playlist
+===========================================================
+_id: id of the playlist
+songs: [
+    collection of songs (gets default songs schema)
+]
+totalSongs: no of songs 
+artist: artistname | others
+album: albumname | others
+movie: [movienames| others]
+language: language | mix | others
+genre: Rock | Folk | Melody | Jazz | instrumental | pop | others
+tags: [related tags for search purpose]
+isActive: true | false
+createdBy: _id of created person
+createdAt: date of creation
+updatedAt: date of updation
+
+
+
