@@ -1,15 +1,15 @@
-def buildAndUpdateCluster(String buildDir, String dockerImageName, String deploymentName) {
-    String buildImageName = "thayalangr/" + dockerImageName + ":" + env.BUILD_NUMBER
-    sh "docker build ${buildDir} -t ${buildImageName}"
+def buildAndUpdateCluster(String svcName) {
+    String buildImageName = "thayalangr/obs-" + svcName + ":" + env.BUILD_NUMBER
+    sh "docker build services/${buildDir}/ -t ${buildImageName}"
     sh "docker push ${buildImageName}"
     withKubeConfig([credentialsId: 'kubeconfig']) {
-        sh "kubectl set image deployments/${deploymentName} container=${buildImageName} -n default"
-    }
+        sh "kubectl set image deployments/obs-${svcName} container=${buildImageName} -n default"
+    }        
 }
 
-def buildAndAddNewServiceToCluster(String buildDir, String dockerImageName, String deploymentName, String svcName) {
-    String buildImageName = "thayalangr/" + dockerImageName
-    sh "docker build ${buildDir} -t ${buildImageName}"
+def buildAndAddNewServiceToCluster(String svcName) {
+    String buildImageName = "thayalangr/obs-" + svcName
+    sh "docker build services/${svcName} -t ${buildImageName}"
     sh "docker push ${buildImageName}"
     withKubeConfig([credentialsId: 'kubeconfig']) {
         sh "kubectl apply -f k8s/deployments/${svcName}.yml -n default"
@@ -23,8 +23,8 @@ pipeline {
         BRANCH_TO_BUILD = "donotbuild"
         USER_CREDENTIALS = credentials('dockerhub-credentials')
 
-        HAS_NEW_SERVICE_TO_ADD = "false"
-        NEW_SERVICE_NAME = "nothing"
+        HAS_NEW_SERVICE_TO_ADD = "true"
+        NEW_SERVICE_NAME = "cron"
 
         forceBuild_clientapp = "false"
         forceBuild_captainapp = "false"
@@ -33,6 +33,7 @@ pipeline {
         forceBuild_downcc = "false"
         forceBuild_auth = "false"
         forceBuild_playlist = "false"
+        forceBuild_cron = "false"
     }
     agent any
     stages {
@@ -56,7 +57,7 @@ pipeline {
                     }
                     steps {
                         echo 'building clientapp...'
-                        buildAndUpdateCluster("services/clientapp/", "obs-clientapp", "obs-clientapp")
+                        buildAndUpdateCluster("clientapp")
                     }
                 }
                 stage('captainapp') {
@@ -69,7 +70,7 @@ pipeline {
                     }
                     steps {
                         echo 'building captainapp...'
-                        buildAndUpdateCluster("services/captainapp/", "obs-captainapp", "obs-captainapp")
+                        buildAndUpdateCluster("captainapp")
                     }
                 }
                 stage('core') {
@@ -82,7 +83,7 @@ pipeline {
                     }
                     steps {
                         echo 'building core...'
-                        buildAndUpdateCluster("services/core/", "obs-core", "obs-core")
+                        buildAndUpdateCluster("core")
                     }
                 }
                 stage('fallback') {
@@ -95,7 +96,7 @@ pipeline {
                     }
                     steps {
                         echo 'building fallback...'
-                        buildAndUpdateCluster("services/fallback/", "obs-fallback", "obs-fallback")
+                        buildAndUpdateCluster("fallback")
                     }
                 }
                 stage('downcc') {
@@ -108,7 +109,7 @@ pipeline {
                     }
                     steps {
                         echo 'building downcc...'
-                        buildAndUpdateCluster("services/downcc/", "obs-downcc", "obs-downcc")
+                        buildAndUpdateCluster("downcc")
                     }
                 }
                 stage('auth') {
@@ -121,7 +122,7 @@ pipeline {
                     }
                     steps {
                         echo 'building downcc...'
-                        buildAndUpdateCluster("services/auth/", "obs-auth", "obs-auth")
+                        buildAndUpdateCluster("auth")
                     }
                 }
                 stage('playlist') {
@@ -134,7 +135,19 @@ pipeline {
                     }
                     steps {
                         echo 'building playlist...'
-                        buildAndUpdateCluster("services/playlist/", "obs-playlist", "obs-playlist")
+                        buildAndUpdateCluster("playlist")
+                    }
+                }
+                stage('cron') {
+                    when {
+                        anyOf{
+                            changeset "services/cron/**"
+                            expression { forcebuild_cron == "true"}
+                        }
+                    }
+                    steps {
+                        echo 'building cron...'
+                        buildAndUpdateCluster("cron")
                     }
                 }
             }
@@ -147,7 +160,7 @@ pipeline {
                 stage("Build And Deploy New Service to cluster"){
                     steps {
                         echo 'Building and Adding new Service to the cluster...'
-                        buildAndAddNewServiceToCluster("services/$NEW_SERVICE_NAME/", "obs-$NEW_SERVICE_NAME", "obs-$NEW_SERVICE_NAME", "$NEW_SERVICE_NAME")
+                        buildAndAddNewServiceToCluster("$NEW_SERVICE_NAME")
                     }
                 }
             }

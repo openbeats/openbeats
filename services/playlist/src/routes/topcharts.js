@@ -1,5 +1,9 @@
 import express from "express";
 import TopChart from "../models/TopChart";
+import {
+	fetchTopCharts,
+	englishTopCharts
+} from "../core/topCharts";
 
 const router = express.Router();
 
@@ -35,6 +39,17 @@ router.get("/:toplistId", async (req, res) => {
 			error: error.message
 		});
 	}
+});
+
+router.get("/inittopcharts", (req, res) => {
+	setTimeout(() => {
+		fetchTopCharts();
+		englishTopCharts();
+	}, 0);
+	res.send({
+		status: true,
+		msg: "Topcharts fetch initiated"
+	});
 });
 
 export default router;
