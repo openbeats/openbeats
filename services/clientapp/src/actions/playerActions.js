@@ -1,7 +1,7 @@
 import {
     toastActions,
     nowPlayingActions,
-    playerActions
+    // playerActions
 } from "../actions";
 import {
     store
@@ -12,9 +12,9 @@ import {
 import {
     musicDummy
 } from "../images"
-import {
-    push
-} from "connected-react-router";
+// import {
+//     push
+// } from "connected-react-router";
 import {
     Base64
 } from 'js-base64';
@@ -337,8 +337,8 @@ export async function startPlayer(shallIPlay = true) {
 export function playerDownloadHandler(e) {
     if (!store.getState().authReducer.isAuthenticated) {
         toastActions.showMessage("Please Login to use this feature!");
-        playerActions.resetPlayer();
-        store.dispatch(push("/auth"));
+        // playerActions.resetPlayer();
+        // store.dispatch(push("/auth"));
         return;
     }
     let state = store.getState().playerReducer;

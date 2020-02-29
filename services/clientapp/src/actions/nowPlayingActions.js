@@ -5,9 +5,9 @@ import {
 import {
     store
 } from "../store";
-import {
-    push
-} from "connected-react-router";
+// import {
+//     push
+// } from "connected-react-router";
 
 export function updateCurrentPlaying(audioData, playMusic = true) {
     store.dispatch({
@@ -147,7 +147,7 @@ export function clearQueue() {
 export async function addSongsToQueue(songs) {
     if (!store.getState().authReducer.isAuthenticated) {
         toastActions.showMessage("Please Login to use this feature!")
-        store.dispatch(push("/auth"))
+        // store.dispatch(push("/auth"))
         return
     }
 

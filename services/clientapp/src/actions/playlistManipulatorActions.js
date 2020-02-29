@@ -8,9 +8,9 @@ import {
 import {
     toastActions
 } from ".";
-import {
-    push
-} from "connected-react-router";
+// import {
+//     push
+// } from "connected-react-router";
 
 export async function showAddPlaylistDialog(song) {
     const isAuthenticated = await store.getState().authReducer.isAuthenticated;
@@ -24,7 +24,7 @@ export async function showAddPlaylistDialog(song) {
         })
     else {
         toastActions.showMessage("Please Login to use this feature!!!")
-        store.dispatch(push("/auth"))
+        // store.dispatch(push("/auth"))
     }
     return true;
 }

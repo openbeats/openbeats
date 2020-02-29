@@ -237,7 +237,7 @@ class PlaylistDisplay extends Component {
                                                     e.preventDefault()
                                                     if (!this.props.isAuthenticated) {
                                                         toastActions.showMessage("Please Login to use this feature!")
-                                                        store.dispatch(push("/auth"))
+                                                        // store.dispatch(push("/auth"))
                                                         return
                                                     }
                                                     this.videoId.push(item.videoId)
@@ -344,7 +344,7 @@ const mapDispatchToProps = (dispatch) => {
         updatePlayerQueue: (playlistData, key) => {
             if (!store.getState().authReducer.isAuthenticated) {
                 toastActions.showMessage("Please Login to use this feature!")
-                store.dispatch(push("/auth"))
+                // store.dispatch(push("/auth"))
                 return
             }
             nowPlayingActions.updatePlayerQueue(playlistData, key);
@@ -379,7 +379,7 @@ const mapDispatchToProps = (dispatch) => {
         addSongsToQueue: async (type, pId) => {
             if (!store.getState().authReducer.isAuthenticated) {
                 toastActions.showMessage("Please Login to use this feature!")
-                store.dispatch(push("/auth"))
+                // store.dispatch(push("/auth"))
                 return
             }
 
