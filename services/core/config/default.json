@@ -1,5 +1,9 @@
 {
   "mongoURI_DEV": "mongodb://127.0.0.1:27017/obs-db",
+  "authbaseurl": {
+    "dev": "http://localhost:2000",
+    "production": "http://obs-auth:2000"
+  },
   "jwtSecret": "WeAreAwesome",
   "saltRound": 10,
   "redis": "obs-redis",

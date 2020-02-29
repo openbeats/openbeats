@@ -6,7 +6,10 @@ export default (req, res, next) => {
 	const token = req.header("x-auth-token");
 
 	if (!token) {
-		return res.status(401).json({ msg: "No token, authorization denied" });
+		return res.json({
+			status: false,
+			data: "No token, authorization denied"
+		});
 	}
 
 	try {
@@ -14,6 +17,9 @@ export default (req, res, next) => {
 		req.user = decoded.user;
 		next();
 	} catch (error) {
-		res.status(401).json({ msg: "Token is not valid" });
+		res.json({
+			status: false,
+			data: "Token is not valid"
+		});
 	}
 };

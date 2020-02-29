@@ -1,12 +1,17 @@
 import middleware from "./config/middleware";
 import express from "express";
-import { ytcat, suggestbeat, copycat } from "./core";
+import {
+	ytcat,
+	suggestbeat,
+	copycat
+} from "./core";
 import ytdl from "ytdl-core";
 import fetch from "node-fetch";
 import redis from "./config/redis";
 import config from "config";
-// import dbconfig from "./config/db";
-// dbconfig();
+import dbconfig from "./config/db";
+import addtorecentlyplayed from "./config/addtorecentlyplayed";
+dbconfig();
 
 const PORT = process.env.PORT || 2000;
 
@@ -18,7 +23,7 @@ app.get("/", (req, res) => {
 	res.send("Welcome to OpenBeats! Enjoy Unlimited music for free! ");
 });
 
-app.get("/opencc/:id", async (req, res) => {
+app.get("/opencc/:id", addtorecentlyplayed, async (req, res) => {
 	const videoID = req.params.id;
 	try {
 		redis.get(videoID, async (err, value) => {
@@ -94,5 +99,5 @@ app.get("/suggester", async (req, res) => {
 });
 
 app.listen(PORT, () => {
-	console.log("openbeats server up and running!");
+	console.log(`openbeats core service up and running on ${PORT}!`);
 });
