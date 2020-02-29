@@ -32,7 +32,7 @@ class RecentlyPlayed extends Component {
     }
 
     async playlistFetchHandler() {
-        this.setState({ ...this.initialState });
+        await this.setState({ ...this.initialState });
         const data = await this.props.getRecentlyPlayed();
         if (data && data.status) {
             this.setState({
@@ -41,8 +41,6 @@ class RecentlyPlayed extends Component {
                 playlistItems: data.data,
                 isLoading: false,
             });
-            console.log(data.data);
-
         } else {
             this.props.notify("Invalid Playlist!");
             this.props.push("/");
@@ -152,7 +150,7 @@ class RecentlyPlayed extends Component {
                                                 :
                                                 <i
                                                     onClick={() => {
-                                                        if (this.props.playlistId) {
+                                                        if (this.props.playlistId === this.state.playlistId) {
                                                             this.props.selectFromPlaylist(key)
                                                         } else {
                                                             this.initQueue(key)
