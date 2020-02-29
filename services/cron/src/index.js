@@ -4,10 +4,7 @@ import cron from "node-cron";
 import fetch from "node-fetch";
 import config from "config";
 
-
-dbconfig();
 const PORT = 2000 || process.env.PORT;
-
 
 const app = express();
 middleware(app);
