@@ -185,7 +185,7 @@ class PlaylistDisplay extends Component {
                                     <div className={`playlist-display-songs-holder ${this.props.isPlaylist && this.props.currentPlaying.videoId === item.videoId ? 'highlight-active' : ''}`} >
                                         <span className="playlist-display-songs-serial-no">
                                             {key + 1}.
-                                </span>
+                                        </span>
                                         <span
                                             className="cursor-pointer"
                                         >
@@ -222,7 +222,7 @@ class PlaylistDisplay extends Component {
                                                 :
                                                 <i
                                                     onClick={() => {
-                                                        if (this.props.playlistId) {
+                                                        if (this.props.playlistId === this.state.playlistId) {
                                                             this.props.selectFromPlaylist(key)
                                                         } else {
                                                             this.initQueue(key)
