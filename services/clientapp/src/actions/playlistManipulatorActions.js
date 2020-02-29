@@ -185,7 +185,7 @@ export async function getRecentlyPlayed() {
             const {
                 status,
                 data
-            } = await axios.get(`http://localhost:2000/metadata/recentlyplayed`, options);
+            } = await axios.get(`${variables.baseUrl}/auth/metadata/recentlyplayed`, options);
             if (status) {
                 return data;
             } else {
