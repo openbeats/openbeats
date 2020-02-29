@@ -46,9 +46,17 @@ export default mongoose.model(
 			name: String,
 			playlistId: String,
 		}, ],
-		recentlyPlayedSongs: {
-			type: Array,
-			default: [],
-		}
+		recentlyPlayedSongs: [{
+			title: String,
+			thumbnail: String,
+			duration: String,
+			videoId: String,
+			channelName: String,
+			channelId: String,
+			uploadedOn: String,
+			views: String,
+			description: String,
+			count: Number,
+		}]
 	}),
 );

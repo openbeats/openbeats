@@ -240,7 +240,7 @@ router.post("/forgotpassword", [
                     <h3>Dear ${user.name},</h3>
                     <p>You requested
                     for a password reset, kindly use this <a href="${url}"> link </a> to reset your password</p>
-                    <br>
+                    <br/>
                     <p>Cheers!</p>
                 </div>
             </body>

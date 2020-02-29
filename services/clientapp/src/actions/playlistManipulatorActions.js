@@ -171,3 +171,31 @@ export async function changeUserPlaylistName(playlistId, name) {
         return false;
     }
 }
+
+export async function getRecentlyPlayed() {
+    try {
+        const isAuthenticated = await store.getState().authReducer.isAuthenticated;
+        if (isAuthenticated) {
+            const token = await store.getState().authReducer.userDetails.token;
+            const options = {
+                headers: {
+                    'x-auth-token': token
+                }
+            };
+            const {
+                status,
+                data
+            } = await axios.get(`http://localhost:2000/metadata/recentlyplayed`, options);
+            if (status) {
+                return data;
+            } else {
+                return [];
+            }
+        } else {
+            return [];
+        }
+    } catch (error) {
+        console.error(error)
+        return [];
+    }
+};

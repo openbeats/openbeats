@@ -97,5 +97,5 @@ app.get("/:id", async (req, res) => {
 });
 
 app.listen(PORT, () => {
-	console.log("openbeats fallback service up and running!");
+	console.log(`openbeats fallback service up and running on ${PORT}!`);
 });
