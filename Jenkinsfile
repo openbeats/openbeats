@@ -1,6 +1,6 @@
 def buildAndUpdateCluster(String svcName) {
     String buildImageName = "thayalangr/obs-" + svcName + ":" + env.BUILD_NUMBER
-    sh "docker build services/${buildDir}/ -t ${buildImageName}"
+    sh "docker build services/${svcName}/ -t ${buildImageName}"
     sh "docker push ${buildImageName}"
     withKubeConfig([credentialsId: 'kubeconfig']) {
         sh "kubectl set image deployments/obs-${svcName} container=${buildImageName} -n default"
