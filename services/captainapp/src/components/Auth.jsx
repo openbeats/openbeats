@@ -19,23 +19,25 @@ class Auth extends Component {
 
     async authHandler() {
         const authUrl = `${variables.baseUrl}/auth/login?admin=true`;
-        const { data } = await axios.post(authUrl, {
+        let { data } = await axios.post(authUrl, {
             email: this.state.userEmail,
             password: this.state.password
         })
+        data = data.data;
         if (data && data.admin && data.admin.status) {
             toast.success("Login succes redirecting to your dashboard!")
             const authData = {
-                status: true,
+                isAuthenticated: true,
                 userEmail: data.email,
                 userName: data.name,
                 token: data.token,
-                avatar: data.avatar
+                avatar: data.avatar,
+                userId: data.id
             };
             await this.props.setAuthDetails(authData);
             this.props.history.push("/");
         } else {
-            toast.error("userEmail or password is incorrect - this incidence will be reported to administrator!");
+            toast.error("userEmail or password is incorrect - or you don't have admin privilages!");
         }
     }
 

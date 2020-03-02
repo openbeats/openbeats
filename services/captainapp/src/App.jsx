@@ -18,8 +18,8 @@ class App extends Component {
     super(props);
     this.initialState = {
       isAuthenticated: false,
+      userName: '',
       userEmail: '',
-      password: '',
       avatar: '',
       token: '',
       userId: ''
