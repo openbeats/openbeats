@@ -1,20 +1,22 @@
 import User from "../models/User";
 import passport from "passport";
-import { Strategy as localStrategy } from "passport-local";
+import {
+  Strategy as localStrategy
+} from "passport-local";
 import bcrypt from "bcryptjs";
 
 export default () => {
   passport.use(
-    new localStrategy(
-      {
+    new localStrategy({
         usernameField: "email",
         passwordField: "password",
         session: false
       },
       async (email, password, done) => {
         try {
-          console.log(email);
-          const user = await User.findOne({ email });
+          const user = await User.findOne({
+            email
+          });
 
           if (!user) {
             return done(null, false, {
@@ -31,7 +33,8 @@ export default () => {
             id: user.id,
             name: user.name,
             email: user.email,
-            avatar: user.avatar
+            avatar: user.avatar,
+            admin: user.admin
           });
         } catch (error) {
           return done(error);
