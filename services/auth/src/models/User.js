@@ -57,6 +57,12 @@ export default mongoose.model(
 			views: String,
 			description: String,
 			count: Number,
-		}]
+		}],
+		admin: {
+			status: {
+				type: Boolean,
+				default: false
+			}
+		}
 	}),
 );

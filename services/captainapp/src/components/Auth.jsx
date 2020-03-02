@@ -3,37 +3,45 @@ import { MDBInput, MDBBtn, MDBCard, MDBCardBody } from 'mdbreact';
 import { logo } from '../assets/images';
 import { withRouter } from 'react-router';
 import { toast } from 'react-toastify';
+import { variables } from '../config';
+import axios from "axios";
 
 class Auth extends Component {
+
     constructor(props) {
         super(props);
-        this.state = {
-            userName: '',
+        this.initialState = {
+            email: '',
             password: ''
-        }
+        };
+        this.state = { ...this.initialState };
     }
 
     async authHandler() {
-        if (this.state.userName.trim() === "admin" && this.state.password.trim() === "admin") {
+        const authUrl = `${variables.baseUrl}/auth/login?admin=true`;
+        const { data } = await axios.post(authUrl, {
+            email: this.state.userEmail,
+            password: this.state.password
+        })
+        if (data && data.admin && data.admin.status) {
             toast.success("Login succes redirecting to your dashboard!")
-            await this.props.setAuthDetails({
+            const authData = {
                 status: true,
-                userName: 'ThayalanGR',
-                mail: 'grthayalan18@gmail.com'
-            })
-            this.props.history.push("/")
+                userEmail: data.email,
+                userName: data.name,
+                token: data.token,
+                avatar: data.avatar
+            };
+            await this.props.setAuthDetails(authData);
+            this.props.history.push("/");
         } else {
-            toast.error("Username or password is incorrect - this incidence will be reported to administrator!")
+            toast.error("userEmail or password is incorrect - this incidence will be reported to administrator!");
         }
     }
 
     componentWillUnmount() {
-        this.setState({
-            userName: '',
-            password: ''
-        })
+        this.setState({ ...this.initialState });
     }
-
 
     render() {
         return (
@@ -47,19 +55,19 @@ class Auth extends Component {
                             <p className="h4 text-center py-1 d-flex align-items-center justify-content-center"><img className="rounded-circle" alt="logo" style={{ height: "100px" }} src={logo} /></p>
                             <div className="grey-text">
                                 <MDBInput
-                                    label="user name"
-                                    icon="user"
+                                    label="Your email"
+                                    icon="envelope"
                                     group
-                                    onChange={e => this.setState({ userName: e.target.value })}
-                                    value={this.state.userName}
-                                    type="text"
+                                    onChange={e => this.setState({ userEmail: e.target.value })}
+                                    value={this.state.userEmail}
+                                    type="email"
                                     validate
                                     error="wrong"
                                     success="right"
                                     required
                                 />
                                 <MDBInput
-                                    label="Password"
+                                    label="Your password"
                                     icon="lock"
                                     required
                                     value={this.state.password}
@@ -80,6 +88,7 @@ class Auth extends Component {
             </div >
         )
     }
+
 }
 
 export default withRouter(Auth);

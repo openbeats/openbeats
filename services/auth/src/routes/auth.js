@@ -15,6 +15,7 @@ import crypto from "crypto";
 const router = express.Router();
 
 router.post("/login", (req, res, next) => {
+
   passport.authenticate("local", (error, user, info) => {
     if (error) {
       console.error(error.message);
@@ -40,15 +41,18 @@ router.post("/login", (req, res, next) => {
         (err, token) => {
           try {
             if (err) throw error;
+            const data = {
+              token,
+              name: user.name,
+              email: user.email,
+              id: user.id,
+              avatar: user.avatar
+            };
+            if (req.query.admin)
+              data["admin"] = user.admin;
             res.send({
               status: true,
-              data: {
-                token,
-                name: user.name,
-                email: user.email,
-                id: user.id,
-                avatar: user.avatar
-              }
+              data
             });
           } catch (error) {
             res.send({
@@ -60,6 +64,8 @@ router.post("/login", (req, res, next) => {
       );
     }
   })(req, res, next);
+
+
 });
 
 router.post("/register", [
