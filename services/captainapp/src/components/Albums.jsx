@@ -1,10 +1,10 @@
 import React, { Component } from 'react'
 
-export default class SideNav extends Component {
+export default class Albums extends Component {
     render() {
         return (
             <div>
-                SideNav
+                Albums
             </div>
         )
     }
