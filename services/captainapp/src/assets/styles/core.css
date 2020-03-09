@@ -1,0 +1,19 @@
+* {
+    padding: 0;
+    margin: 0;
+    vertical-align: baseline;
+}
+
+:root {
+    --bg-leftnav: #322C2C;
+    --text-leftnav: #898282;
+    --text-main: black;
+    --bg-main: #f3f3f3;
+}
+
+.core-wrapper {
+    width: 100vw;
+    height: 100vh;
+    box-sizing: border-box;
+    overflow: hidden;
+}
