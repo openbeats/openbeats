@@ -23,6 +23,17 @@ router.get("/metadata", async (req, res) => {
 	}
 });
 
+router.get("/inittopcharts", (req, res) => {
+	setTimeout(() => {
+		fetchTopCharts();
+		englishTopCharts();
+	}, 0);
+	res.send({
+		status: true,
+		msg: "Topcharts fetch initiated"
+	});
+});
+
 router.get("/:toplistId", async (req, res) => {
 	try {
 		const toplistId = req.params.toplistId;
@@ -39,17 +50,6 @@ router.get("/:toplistId", async (req, res) => {
 			error: error.message
 		});
 	}
-});
-
-router.get("/inittopcharts", (req, res) => {
-	setTimeout(() => {
-		fetchTopCharts();
-		englishTopCharts();
-	}, 0);
-	res.send({
-		status: true,
-		msg: "Topcharts fetch initiated"
-	});
 });
 
 export default router;
