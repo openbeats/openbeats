@@ -1,0 +1,12 @@
+.main-wrapper {
+    width: 100%;
+    height: 100%;
+    display: grid;
+    grid-template-columns: 65px auto;
+    background: var(--main-bg);
+    color: var(--text-main);
+}
+
+.main-view {
+    padding: 10px;
+}
