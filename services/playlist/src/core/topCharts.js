@@ -2,6 +2,7 @@ import {
 	updateTopCharts
 } from "./updateTopCharts";
 import TopChart from "../models/TopChart";
+import MissedFetch from "../models/MissedFetch";
 import fetchRetry from "./refetch";
 import config from "config";
 
@@ -79,35 +80,97 @@ export const englishTopCharts = async () => {
 			config.get("baseurl").dev :
 			config.get("baseurl").production;
 		let rank = 1;
-		let songs = []
+		const fetchList = [];
 		for (let track of trackArray) {
-			let name = track.name;
-			let artist = track.artist.name;
-			let query = `${name} ${artist} audio`;
-			const data = await fetchRetry(
-				`${baseurl}/ytcat?q=${encodeURIComponent(query)}&fr=${true}`,
-				2,
-			);
-
-			const result = await data.json();
-			if (result.data.length) {
-				let response = result.data[0];
-				response = {
-					rank,
-					...response,
-				};
-				if (Object.is(rank, 1)) {
-					engChart.thumbnail = response.thumbnail;
-				}
-				songs.push(response);
-			}
+			let fetchObj = {};
+			let query = `${track.name} ${track.artist.name} audio`;
+			fetchObj.url = `${baseurl}/ytcat?q=${encodeURIComponent(query)}&fr=${true}`;
+			fetchObj.title = `${track.name} | ${track.artist.name}`;
+			fetchObj.rank = rank;
+			fetchList.push(fetchObj);
 			rank = rank + 1;
 		}
-		engChart.songs.push(...songs);
-		engChart.totalSongs = songs.length;
-		engChart.save();
+		Promise.all(fetchList.map(async (urlObj) => {
+				try {
+					let response = await (await fetchRetry(
+						urlObj.url,
+						2,
+					)).json();
+					if (response.data.length && response.data.length !== 0) {
+						let song = response.data[0];
+						if (Object.is(urlObj.rank, 1)) {
+							engChart.thumbnail = song.thumbnail;
+						}
+						return {
+							rank: urlObj.rank,
+							...song,
+							title: urlObj.title
+						}
+					}
+					const missedsong = new MissedFetch({
+						...urlObj,
+						topchartid: engChart._id
+					});
+					await missedsong.save();
+				} catch (error) {
+					console.log(error);
+				}
+				return {
+					rank: urlObj.rank,
+					title: urlObj.title
+				};
+			})).then(async (data) => {
+				engChart.songs = data;
+				await engChart.save();
+				engChart.totalSongs = engChart.songs.length;
+				await engChart.save();
+				fetchMissedSongs();
+			})
+			.catch((err) => {
+				console.log(err.message);
+			});
 	} catch (error) {
-		console.log(error);
+		console.log(error.message);
+	}
+};
 
+export const fetchMissedSongs = async (forcerun = false) => {
+	console.log("Missed songs fetch started.");
+	try {
+		const missedSongs = await MissedFetch.find();
+		if (missedSongs.length > 0) {
+			const successfullFullFetch = [];
+			for (let missedSong of missedSongs) {
+				const response = await (await fetchRetry(
+					missedSong.url,
+					2
+				)).json();
+				const topChart = await TopChart.findById(missedSong.topchartid);
+				if (response.data && response.data.length !== 0) {
+					topChart.songs[missedSong.rank - 1] = {
+						...response.data[0],
+						title: missedSong.title,
+						rank: missedSong.rank
+					};
+					if (Object.is(missedSong.rank, 1)) {
+						topChart.thumbnail = response.data[0].thumbnail;
+					}
+					await topChart.save();
+					if (forcerun) {
+						topChart.totalSongs = topChart.songs.length;
+						await topChart.save();
+					}
+					successfullFullFetch.push(missedSong._id);
+				} else {
+					topChart.totalSongs -= 1;
+					await topChart.save();
+				}
+			}
+			for (let id of successfullFullFetch) {
+				await MissedFetch.findByIdAndDelete(id);
+			}
+		}
+	} catch (error) {
+		console.error(error.message);
 	}
 };
