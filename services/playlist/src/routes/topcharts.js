@@ -2,8 +2,10 @@ import express from "express";
 import TopChart from "../models/TopChart";
 import {
 	fetchTopCharts,
-	englishTopCharts
+	englishTopCharts,
+	fetchMissedSongs
 } from "../core/topCharts";
+import MissedFetch from "../models/MissedFetch";
 
 const router = express.Router();
 
@@ -26,22 +28,55 @@ router.get("/metadata", async (req, res) => {
 router.get("/inittopcharts", (req, res) => {
 	setTimeout(() => {
 		fetchTopCharts();
-		englishTopCharts();
 	}, 0);
+	setTimeout(() => {
+		englishTopCharts();
+	}, 9000);
 	res.send({
 		status: true,
 		msg: "Topcharts fetch initiated"
 	});
 });
 
+router.get("/inittopcharts/missedsongs", async (req, res) => {
+	if (req.query.forcerun && req.query.forcerun === "true") {
+		setTimeout(() => {
+			fetchMissedSongs(true);
+		}, 0);
+	}
+	const data = await MissedFetch.find();
+	res.send({
+		status: true,
+		data,
+	});
+});
+
 router.get("/:toplistId", async (req, res) => {
 	try {
 		const toplistId = req.params.toplistId;
-		const chart = await TopChart.findById(toplistId);
-		if (!chart) throw new Error("Not found..");
+		const {
+			name,
+			thumbnail,
+			language,
+			songs,
+			createdAt,
+			updatedAt,
+			createdBy,
+			totalSongs
+		} = await TopChart.findById(toplistId);
+		if (!name) throw new Error("Not found..");
 		res.status(200).send({
 			status: true,
-			data: chart
+			data: {
+				name,
+				thumbnail,
+				language,
+				songs: songs.filter(song => song.videoId),
+				createdAt,
+				updatedAt,
+				createdBy,
+				totalSongs
+			}
 		});
 	} catch (error) {
 		console.error(error.message);
