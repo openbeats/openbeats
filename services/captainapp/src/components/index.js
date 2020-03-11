@@ -1,9 +1,15 @@
 import Auth from './Auth';
 import Home from './Home';
-import SideNav from './SideNav';
+import LeftNav from './LeftNav';
+import Albums from './Albums';
+import Artists from './Artists';
+import Languages from './Languages';
 
 export {
     Auth,
     Home,
-    SideNav
+    LeftNav,
+    Albums,
+    Artists,
+    Languages
 }

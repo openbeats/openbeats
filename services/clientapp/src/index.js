@@ -2,7 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import App from './App';
 import { Provider } from "react-redux";
-import { history, store, ConnectedRouter } from "./store"
+import { history, store, ConnectedRouter } from "./store";
 import { toastConfig } from "./config";
 
 toastConfig();

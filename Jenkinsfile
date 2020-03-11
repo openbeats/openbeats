@@ -20,7 +20,7 @@ def buildAndAddNewServiceToCluster(String svcName) {
 
 pipeline {
     environment {
-        BRANCH_TO_BUILD = "master"
+        BRANCH_TO_BUILD = "donotbuild"
         USER_CREDENTIALS = credentials('dockerhub-credentials')
 
         HAS_NEW_SERVICE_TO_ADD = "false"

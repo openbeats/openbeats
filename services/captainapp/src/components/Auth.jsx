@@ -1,10 +1,8 @@
 import React, { Component } from 'react'
 import { MDBInput, MDBBtn, MDBCard, MDBCardBody } from 'mdbreact';
 import { logo } from '../assets/images';
-import { withRouter } from 'react-router';
-import { toast } from 'react-toastify';
-import { variables } from '../config';
-import axios from "axios";
+import { connect } from "react-redux";
+import { authActions } from '../actions';
 
 class Auth extends Component {
 
@@ -15,30 +13,6 @@ class Auth extends Component {
             password: ''
         };
         this.state = { ...this.initialState };
-    }
-
-    async authHandler() {
-        const authUrl = `${variables.baseUrl}/auth/login?admin=true`;
-        let { data } = await axios.post(authUrl, {
-            email: this.state.userEmail,
-            password: this.state.password
-        })
-        data = data.data;
-        if (data && data.admin && data.admin.status) {
-            toast.success("Login succes redirecting to your dashboard!")
-            const authData = {
-                isAuthenticated: true,
-                userEmail: data.email,
-                userName: data.name,
-                token: data.token,
-                avatar: data.avatar,
-                userId: data.id
-            };
-            await this.props.setAuthDetails(authData);
-            this.props.history.push("/");
-        } else {
-            toast.error("userEmail or password is incorrect - or you don't have admin privilages!");
-        }
     }
 
     componentWillUnmount() {
@@ -52,7 +26,7 @@ class Auth extends Component {
                     <MDBCardBody>
                         <form onSubmit={e => {
                             e.preventDefault();
-                            this.authHandler();
+                            this.props.loginHandler(this.state.email, this.state.password);
                         }}>
                             <p className="h4 text-center py-1 d-flex align-items-center justify-content-center"><img className="rounded-circle" alt="logo" style={{ height: "100px" }} src={logo} /></p>
                             <div className="grey-text">
@@ -60,8 +34,8 @@ class Auth extends Component {
                                     label="Your email"
                                     icon="envelope"
                                     group
-                                    onChange={e => this.setState({ userEmail: e.target.value })}
-                                    value={this.state.userEmail}
+                                    onChange={e => this.setState({ email: e.target.value })}
+                                    value={this.state.email}
                                     type="email"
                                     validate
                                     error="wrong"
@@ -93,4 +67,19 @@ class Auth extends Component {
 
 }
 
-export default withRouter(Auth);
+const mapStateToProps = (state) => {
+    return {
+        isAuthenticated: state.auth.isAuthenticated,
+        isAuthLoading: state.auth.isAuthLoading
+    };
+}
+
+const mapDispatchToProps = (dispatch) => {
+    return {
+        loginHandler: (email, password) => {
+            authActions.loginHandler(email, password)
+        }
+    }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(Auth);
