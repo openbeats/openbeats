@@ -162,7 +162,7 @@ export const fetchMissedSongs = async (forcerun = false) => {
 					}
 					successfullFullFetch.push(missedSong._id);
 				} else {
-					topChart.totalSongs -= 1;
+					topChart.totalSongs = topChart.totalSongs - 1;
 					await topChart.save();
 				}
 			}
