@@ -2,8 +2,8 @@ import fetchRetry from "./refetch"
 import cheerio from "cheerio";
 
 export default async (queryString, first = false) => {
+	let searchResults = [];
 	try {
-		let searchResults = [];
 		const baseQuery = ".yt-lockup-video";
 		const removables = [".yt-lockup-channel", ".feed-item-container"];
 		let query = decodeURIComponent(queryString);
