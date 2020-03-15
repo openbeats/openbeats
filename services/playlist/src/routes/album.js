@@ -36,6 +36,28 @@ router.post("/create", async (req, res) => {
   }
 });
 
+router.get("/:id/getalbum", async (req, res) => {
+  try {
+    const album = await Album.findById(req.params.id);
+    if (!album) {
+      return res.json({
+        status: false,
+        data: "Album not found.",
+      });
+    }
+    res.send({
+      status: true,
+      data: album
+    });
+  } catch (error) {
+    console.log(error.message);
+    res.send({
+      status: false,
+      data: error.message,
+    });
+  }
+});
+
 router.post("/:id/addsongs", async (req, res) => {
   const {
     userId,
@@ -64,7 +86,6 @@ router.post("/:id/addsongs", async (req, res) => {
       status: true,
       data: album,
     });
-
   } catch (error) {
     console.log(error.message);
     res.send({
@@ -74,13 +95,6 @@ router.post("/:id/addsongs", async (req, res) => {
   }
 });
 
-router.get("/:id/read", async (req, res) => {
-  try {
-
-  } catch (error) {
-
-  }
-});
 
 router.put("/:id/update", async (req, res) => {
   try {
