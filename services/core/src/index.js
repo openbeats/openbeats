@@ -76,10 +76,9 @@ app.get("/ytcat", async (req, res) => {
 	try {
 		if (!req.query.q) throw new Error("Missing required query param q.");
 		const fr = (req.query.fr && true) || false;
-		const data = await ytcat(req.query.q, fr);
 		res.send({
 			status: true,
-			data: data,
+			data: await ytcat(req.query.q, fr),
 		});
 	} catch (error) {
 		console.log(error);

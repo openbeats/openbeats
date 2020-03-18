@@ -3,6 +3,7 @@ import express from "express";
 import dbconfig from "./config/db";
 import userPlaylistRoutes from "./routes/userPlaylist";
 import topcharts from "./routes/topcharts";
+import album from "./routes/album";
 
 dbconfig();
 
@@ -12,6 +13,7 @@ const app = express();
 
 middleware(app);
 
+app.use("/album", album);
 app.use("/userplaylist", userPlaylistRoutes);
 app.use("/topcharts", topcharts);
 
