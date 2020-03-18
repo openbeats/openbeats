@@ -5,6 +5,12 @@ import { logo } from "../assets/images";
 import "../assets/styles/leftnav.css";
 
 class LeftNav extends Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            itemName: "home"
+        }
+    }
     render() {
         return (
             <div className="leftnav-wrapper">
@@ -12,19 +18,19 @@ class LeftNav extends Component {
                     <a href="/" className="leftnav-item">
                         <img className="leftnav-logo-img" src={logo} alt="" srcSet="" />
                     </a>
-                    <Link to="/" className="leftnav-item" title="Home - view insights and more">
+                    <Link to="/" onClick={() => this.setState({ itemName: "home" })} className={`leftnav-item ${this.state.itemName === "home" ? "item-active" : ""}`} title="Home - view insights and more">
                         <i className="far fa-home"></i>
                         <span>Home</span>
                     </Link>
-                    <Link to="/albums" className="leftnav-item" title="Create, View and Update Albums">
+                    <Link to="/albums" onClick={() => this.setState({ itemName: "albums" })} className={`leftnav-item ${this.state.itemName === "albums" ? "item-active" : ""}`} title="Create, View and Update Albums">
                         <i className="fas fa-album-collection"></i>
                         <span>Albums</span>
                     </Link>
-                    <Link to="/artists" className="leftnav-item" title="Add, Update and delete Artists">
+                    <Link to="/artists" onClick={() => this.setState({ itemName: "artists" })} className={`leftnav-item ${this.state.itemName === "artists" ? "item-active" : ""}`} title="Add, Update and delete Artists">
                         <i className="fas fa-user-music"></i>
                         <span>Artists</span>
                     </Link>
-                    <Link to="languages" className="leftnav-item" title="Add, Update and Delete Languages">
+                    <Link to="languages" onClick={() => this.setState({ itemName: "languages" })} className={`leftnav-item ${this.state.itemName === "languages" ? "item-active" : ""}`} title="Add, Update and Delete Languages">
                         <i className="fas fa-language"></i>
                         <span>Tounge</span>
                     </Link>
