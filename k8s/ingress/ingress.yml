@@ -15,7 +15,7 @@ spec:
         - jenkins.openbeats.live
         - captain.openbeats.live
         - api.openbeats.live
-      secretName: openbeats-ingress-tls
+      secretName: obs-ingress-tls
   rules:
     - host: openbeats.live
       http:
@@ -70,7 +70,7 @@ spec:
   tls:
     - hosts:
         - api.openbeats.live
-      secretName: openbeats-backend-tls
+      secretName: obs-backend-tls
   rules:
     - host: api.openbeats.live
       http:
