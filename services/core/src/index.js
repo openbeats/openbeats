@@ -33,6 +33,9 @@ app.get("/opencc/:id", addtorecentlyplayed, async (req, res) => {
 			try {
 				if (value) {
 					let sourceUrl = value;
+					setTimeout(() => {
+						addSongInDeAttachedMode(videoID)
+					}, 0);
 					res.send({
 						status: true,
 						link: sourceUrl,
@@ -42,6 +45,9 @@ app.get("/opencc/:id", addtorecentlyplayed, async (req, res) => {
 						await fetch(`${config.get("lambda")}${videoID}`)
 					).json();
 					if (info.formats) {
+						setTimeout(() => {
+							addSongInDeAttachedMode(videoID)
+						}, 0);
 						let audioFormats = ytdl.filterFormats(info.formats, "audioonly");
 						if (!audioFormats[0].contentLength) {
 							audioFormats = ytdl.filterFormats(info.formats, "audioandvideo");
@@ -68,6 +74,10 @@ app.get("/opencc/:id", addtorecentlyplayed, async (req, res) => {
 				let status = 404;
 				if (ytdl.validateID(videoID)) {
 					link = await copycat(videoID);
+					if (link)
+						setTimeout(() => {
+							addSongInDeAttachedMode(videoID)
+						}, 0);
 					status = 200;
 				}
 				res.send({
@@ -108,6 +118,25 @@ app.get("/suggester", async (req, res) => {
 		data: data,
 	});
 });
+
+// add song to collection in deattached mod
+const addSongInDeAttachedMode = async (videoId) => {
+	try {
+		const findSong = await Song.findOne({
+			_id: videoId
+		});
+		if (!findSong) {
+			let item = (await ytcat(videoId, true))[0];
+			item["_id"] = item.videoId;
+			await Song.insertMany([item], {
+				ordered: false
+			});
+		}
+	} catch (error) {
+		console.log(error)
+	}
+
+}
 
 // song crud operation
 app.post("/addsongs", async (req, res) => {
