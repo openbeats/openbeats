@@ -11,7 +11,7 @@ import redis from "./config/redis";
 import config from "config";
 import dbconfig from "./config/db";
 import addtorecentlyplayed from "./config/addtorecentlyplayed";
-import Song from "./model/Song";
+import Song from "./models/Song";
 dbconfig();
 
 const PORT = process.env.PORT || 2000;
