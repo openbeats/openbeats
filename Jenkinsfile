@@ -32,7 +32,7 @@ pipeline {
         forceBuild_fallback = "false"
         forceBuild_downcc = "false"
         forceBuild_auth = "false"
-        forceBuild_playlist = "true"
+        forceBuild_playlist = "false"
         forceBuild_cron = "false"
     }
     agent any
