@@ -24,50 +24,61 @@ app.get("/", (req, res) => {
 });
 
 app.get("/opencc/:id", addtorecentlyplayed, async (req, res) => {
-	const videoID = req.params.id;
 	try {
+		const videoID = req.params.id;
+		if (!ytdl.validateID(videoID))
+			throw new Error("INvalid id")
 		redis.get(videoID, async (err, value) => {
-			if (value) {
-				console.log("exists");
-				let sourceUrl = value;
-				res.send({
-					status: true,
-					link: sourceUrl,
-				});
-			} else {
-				const info = await (
-					await fetch(`${config.get("lambda")}${videoID}`)
-				).json();
-				let audioFormats = ytdl.filterFormats(info.formats, "audioonly");
-				if (!audioFormats[0].contentLength) {
-					audioFormats = ytdl.filterFormats(info.formats, "audioandvideo");
-				}
-				let sourceUrl = audioFormats[0].url;
-				redis.set(videoID, sourceUrl, err => {
-					if (err) console.error(err);
-					else {
-						redis.expire(videoID, 20000, err => {
+			try {
+				if (value) {
+					let sourceUrl = value;
+					res.send({
+						status: true,
+						link: sourceUrl,
+					});
+				} else {
+					const info = await (
+						await fetch(`${config.get("lambda")}${videoID}`)
+					).json();
+					if (info.formats) {
+						let audioFormats = ytdl.filterFormats(info.formats, "audioonly");
+						if (!audioFormats[0].contentLength) {
+							audioFormats = ytdl.filterFormats(info.formats, "audioandvideo");
+						}
+						let sourceUrl = audioFormats[0].url;
+						redis.set(videoID, sourceUrl, err => {
 							if (err) console.error(err);
+							else {
+								redis.expire(videoID, 20000, err => {
+									if (err) console.error(err);
+								});
+							}
 						});
+						res.send({
+							status: true,
+							link: sourceUrl,
+						});
+					} else {
+						throw new Error("Cannot Fetch the requested song");
 					}
-				});
+				}
+			} catch (error) {
+				let link = null;
+				let status = 404;
+				if (ytdl.validateID(videoID)) {
+					link = await copycat(videoID);
+					status = 200;
+				}
 				res.send({
-					status: true,
-					link: sourceUrl,
+					status: status === 200 ? true : false,
+					link: link,
 				});
 			}
 		});
 	} catch (error) {
-		console.log(error);
-		let link = null;
-		let status = 404;
-		if (ytdl.validateID(videoID)) {
-			link = await copycat(videoID);
-			status = 200;
-		}
-		res.status(status).send({
-			status: status === 200 ? true : false,
-			link: link,
+		res.send({
+			status: false,
+			link: null
 		});
 	}
 });
