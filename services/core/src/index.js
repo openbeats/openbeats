@@ -11,7 +11,7 @@ import redis from "./config/redis";
 import config from "config";
 import dbconfig from "./config/db";
 import addtorecentlyplayed from "./config/addtorecentlyplayed";
-import song from "./model/song";
+import Song from "./model/Song";
 dbconfig();
 
 const PORT = process.env.PORT || 2000;
@@ -109,6 +109,7 @@ app.get("/suggester", async (req, res) => {
 	});
 });
 
+// song crud operation
 app.post("/addsongs", async (req, res) => {
 	try {
 		let songs = req.body.songs;
@@ -117,7 +118,7 @@ app.post("/addsongs", async (req, res) => {
 			item["_id"] = elem.videoId;
 			return item;
 		})
-		await song.insertMany(songs, {
+		await Song.insertMany(songs, {
 			ordered: false
 		});
 		res.send({
@@ -132,6 +133,23 @@ app.post("/addsongs", async (req, res) => {
 	}
 })
 
+app.delete("/deletesong/:id", async (req, res) => {
+	try {
+		await Song.findOneAndDelete({
+			_id: req.params.id
+		})
+		res.send({
+			status: true,
+			data: "Song Deleted successfully!"
+		})
+
+	} catch (error) {
+		res.send({
+			status: false,
+			data: error.message
+		})
+	}
+})
 
 app.listen(PORT, () => {
 	console.log(`openbeats core service up and running on ${PORT}!`);
