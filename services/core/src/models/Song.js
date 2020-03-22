@@ -1,10 +1,7 @@
-import {
-    Schema,
-    model
-} from "mongoose";
+import mongoose from "mongoose";
 
 
-export default model("Song", new Schema({
+export default mongoose.model("Song", new mongoose.Schema({
     _id: String,
     title: String,
     thumbnail: String,
