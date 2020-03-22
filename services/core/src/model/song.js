@@ -4,7 +4,7 @@ import {
 } from "mongoose";
 
 
-export default model("song", new Schema({
+export default model("Song", new Schema({
     _id: String,
     title: String,
     thumbnail: String,
