@@ -11,6 +11,7 @@ import redis from "./config/redis";
 import config from "config";
 import dbconfig from "./config/db";
 import addtorecentlyplayed from "./config/addtorecentlyplayed";
+import Song from "./models/Song";
 dbconfig();
 
 const PORT = process.env.PORT || 2000;
@@ -24,50 +25,71 @@ app.get("/", (req, res) => {
 });
 
 app.get("/opencc/:id", addtorecentlyplayed, async (req, res) => {
-	const videoID = req.params.id;
 	try {
+		const videoID = req.params.id;
+		if (!ytdl.validateID(videoID))
+			throw new Error("INvalid id")
 		redis.get(videoID, async (err, value) => {
-			if (value) {
-				console.log("exists");
-				let sourceUrl = value;
-				res.send({
-					status: true,
-					link: sourceUrl,
-				});
-			} else {
-				const info = await (
-					await fetch(`${config.get("lambda")}${videoID}`)
-				).json();
-				let audioFormats = ytdl.filterFormats(info.formats, "audioonly");
-				if (!audioFormats[0].contentLength) {
-					audioFormats = ytdl.filterFormats(info.formats, "audioandvideo");
-				}
-				let sourceUrl = audioFormats[0].url;
-				redis.set(videoID, sourceUrl, err => {
-					if (err) console.error(err);
-					else {
-						redis.expire(videoID, 20000, err => {
+			try {
+				if (value) {
+					let sourceUrl = value;
+					setTimeout(() => {
+						addSongInDeAttachedMode(videoID)
+					}, 0);
+					res.send({
+						status: true,
+						link: sourceUrl,
+					});
+				} else {
+					const info = await (
+						await fetch(`${config.get("lambda")}${videoID}`)
+					).json();
+					if (info.formats) {
+						setTimeout(() => {
+							addSongInDeAttachedMode(videoID)
+						}, 0);
+						let audioFormats = ytdl.filterFormats(info.formats, "audioonly");
+						if (!audioFormats[0].contentLength) {
+							audioFormats = ytdl.filterFormats(info.formats, "audioandvideo");
+						}
+						let sourceUrl = audioFormats[0].url;
+						redis.set(videoID, sourceUrl, err => {
 							if (err) console.error(err);
+							else {
+								redis.expire(videoID, 20000, err => {
+									if (err) console.error(err);
+								});
+							}
 						});
+						res.send({
+							status: true,
+							link: sourceUrl,
+						});
+					} else {
+						throw new Error("Cannot Fetch the requested song");
 					}
-				});
+				}
+			} catch (error) {
+				let link = null;
+				let status = 404;
+				if (ytdl.validateID(videoID)) {
+					link = await copycat(videoID);
+					if (link)
+						setTimeout(() => {
+							addSongInDeAttachedMode(videoID)
+						}, 0);
+					status = 200;
+				}
 				res.send({
-					status: true,
-					link: sourceUrl,
+					status: status === 200 ? true : false,
+					link: link,
 				});
 			}
 		});
 	} catch (error) {
-		console.log(error);
-		let link = null;
-		let status = 404;
-		if (ytdl.validateID(videoID)) {
-			link = await copycat(videoID);
-			status = 200;
-		}
-		res.status(status).send({
-			status: status === 200 ? true : false,
-			link: link,
+		res.send({
+			status: false,
+			link: null
 		});
 	}
 });
@@ -96,6 +118,67 @@ app.get("/suggester", async (req, res) => {
 		data: data,
 	});
 });
+
+// add song to collection in deattached mod
+const addSongInDeAttachedMode = async (videoId) => {
+	try {
+		const findSong = await Song.findOne({
+			_id: videoId
+		});
+		if (!findSong) {
+			let item = (await ytcat(videoId, true))[0];
+			item["_id"] = item.videoId;
+			await Song.insertMany([item], {
+				ordered: false
+			});
+		}
+	} catch (error) {
+		console.log(error)
+	}
+
+}
+
+// song crud operation
+app.post("/addsongs", async (req, res) => {
+	try {
+		let songs = req.body.songs;
+		songs = songs.map(elem => {
+			let item = elem;
+			item["_id"] = elem.videoId;
+			return item;
+		})
+		await Song.insertMany(songs, {
+			ordered: false
+		});
+		res.send({
+			status: true,
+			data: "Songs Added successfully!"
+		});
+	} catch (error) {
+		res.send({
+			status: true,
+			data: "some of the songs already exists in the collection!"
+		});
+	}
+})
+
+app.delete("/deletesong/:id", async (req, res) => {
+	try {
+		await Song.findOneAndDelete({
+			_id: req.params.id
+		})
+		res.send({
+			status: true,
+			data: "Song Deleted successfully!"
+		})
+
+	} catch (error) {
+		res.send({
+			status: false,
+			data: error.message
+		})
+	}
+})
 
 app.listen(PORT, () => {
 	console.log(`openbeats core service up and running on ${PORT}!`);
