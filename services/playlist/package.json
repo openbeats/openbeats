@@ -12,7 +12,7 @@
   "author": "ThayalanGR",
   "license": "ISC",
   "devDependencies": {
-    "nodemon": "^1.19.4"
+    "nodemon": "^2.0.2"
   },
   "dependencies": {
     "babel-polyfill": "^6.26.0",

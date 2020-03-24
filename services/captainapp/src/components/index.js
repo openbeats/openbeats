@@ -4,6 +4,7 @@ import LeftNav from './LeftNav';
 import Albums from './Albums';
 import Artists from './Artists';
 import Languages from './Languages';
+import AlbumsDash from './AlbumsDash';
 
 export {
     Auth,
@@ -11,5 +12,6 @@ export {
     LeftNav,
     Albums,
     Artists,
-    Languages
+    Languages,
+    AlbumsDash
 }
