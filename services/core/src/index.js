@@ -14,8 +14,7 @@ import addtorecentlyplayed from "./config/addtorecentlyplayed";
 import Song from "./models/Song";
 dbconfig();
 
-const PORT = process.env.PORT || 2000;
-
+const PORT = process.env.PORT || config.get("isDev") ? config.get("port").dev : config.get("port").prod;
 const app = express();
 
 middleware(app);
@@ -172,6 +171,25 @@ app.delete("/deletesong/:id", async (req, res) => {
 			data: "Song Deleted successfully!"
 		})
 
+	} catch (error) {
+		res.send({
+			status: false,
+			data: error.message
+		})
+	}
+})
+
+// get song
+app.get("/getsong/:id", async (req, res) => {
+	try {
+		const songData = await Song.findById(req.params.id);
+		if (songData)
+			res.send({
+				status: true,
+				data: songData
+			})
+		else
+			throw new Error("Song Not found!")
 	} catch (error) {
 		res.send({
 			status: false,

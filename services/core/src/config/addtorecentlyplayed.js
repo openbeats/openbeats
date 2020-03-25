@@ -18,7 +18,7 @@ export default async (req, res, next) => {
 		if (config.get("isDev")) {
 			baseUrl = config.get("authbaseurl").dev;
 		} else {
-			baseUrl = config.get("authbaseurl").production;
+			baseUrl = config.get("authbaseurl").prod;
 		}
 
 		const body = {
