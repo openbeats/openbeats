@@ -5,16 +5,8 @@ export default mongoose.model(
 	new mongoose.Schema({
 		name: String,
 		songs: [{
-			title: String,
-			thumbnail: String,
-			duration: String,
-			videoId: String,
-			channelName: String,
-			channelId: String,
-			uploadedOn: String,
-			views: String,
-			description: String,
-		}, ],
+			type: String
+		}],
 		createdAt: {
 			type: Date,
 			default: Date.now(),

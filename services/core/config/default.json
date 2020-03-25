@@ -2,13 +2,16 @@
   "mongoURI_DEV": "mongodb://127.0.0.1:27017/obs-db",
   "authbaseurl": {
     "dev": "http://localhost:2000",
-    "production": "http://obs-auth:2000"
-
+    "prod": "http://obs-auth:2000"
   },
   "jwtSecret": "WeAreAwesome",
   "saltRound": 10,
   "redis": "obs-redis",
   "redis-local": "localhost",
   "lambda": "https://orvpax9d6b.execute-api.ap-south-1.amazonaws.com/default/obs-core?vid=",
-  "isDev": false
+  "isDev": true,
+  "port": {
+    "dev": 3000,
+    "prod": 2000
+  }
 }
