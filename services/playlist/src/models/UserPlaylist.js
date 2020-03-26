@@ -15,7 +15,10 @@ export default mongoose.model(
 			type: Date,
 			default: Date.now(),
 		},
-		createdBy: String,
+		createdBy: {
+			type: mongoose.Schema.Types.ObjectId,
+			ref: "User"
+		},
 		metaDataId: String,
 		thumbnail: {
 			type: String,

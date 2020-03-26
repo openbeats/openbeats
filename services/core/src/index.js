@@ -198,6 +198,29 @@ app.get("/getsong/:id", async (req, res) => {
 	}
 })
 
+// get multiple songs at a time
+app.post("/getsongs", async (req, res) => {
+	const {
+		songIds
+	} = req.body;
+	try {
+		const songs = await Song.find({
+			'_id': {
+				$in: [...songIds]
+			}
+		});
+		res.send({
+			status: true,
+			data: songs
+		})
+	} catch (error) {
+		res.send({
+			status: false,
+			data: error.message
+		});
+	}
+})
+
 app.listen(PORT, () => {
 	console.log(`openbeats core service up and running on ${PORT}!`);
 });

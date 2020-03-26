@@ -48,25 +48,22 @@ router.post("/addsongs", async (req, res) => {
 		});
 
 		// yet to hit obs-core addsongs endpoint
-		const addSongsCoreUrl = `${config.get("isDev") ? config.get("dev") : config.get("prod")}/addsongs`;
+		const addSongsCoreUrl = `${config.get("isDev") ? config.get("baseurl").dev : config.get("baseurl").prod}/addsongs`;
 
 		if (playlist && songs.length) {
 			const availableSongs = playlist.songs;
-			console.log(availableSongs, "available songs");
 			const songIds = songs.map(song => song.videoId)
 			let newSongsList = [...songIds, ...availableSongs];
 			newSongsList = uniq(newSongsList);
-			console.log("new song list", newSongsList)
 			axios.post(addSongsCoreUrl, {
 				songs: [...songs]
 			})
 			const updateObj = {
 				updatedAt: Date.now(),
-				totalSongs: playlist.songs.length,
+				totalSongs: newSongsList.length,
 				thumbnail: songs[0].thumbnail,
+				songs: newSongsList
 			};
-			if (newSongsList)
-				updateObj['songs'] = newSongsList;
 			await playlist.updateOne(updateObj);
 			res.send({
 				status: true,
@@ -109,22 +106,30 @@ router.get("/getallplaylistmetadata/:uid", async (req, res) => {
 	}
 });
 
-// get user playlist
+// get user playlist -  yet to implement song playlist
 router.get("/getplaylist/:id", async (req, res) => {
 	try {
 		const playlistId = req.params.id;
 		const data = await UserPlaylist.findOne({
 			_id: playlistId,
 		});
-
+		const songsDataFetchUrl = `${config.get("isDev") ? config.get("baseurl").dev : config.get("baseurl").prod}/getsongs`;
+		const songIds = data.songs;
+		const songs = (await axios.post(songsDataFetchUrl, {
+			songIds
+		})).data.data;
+		let tempData = {
+			...data['_doc'],
+			songs: [...songs],
+		}
 		res.send({
 			status: true,
-			data,
+			data: tempData,
 		});
 	} catch (error) {
 		res.send({
 			status: false,
-			data: error.toString(),
+			data: error.message
 		});
 	}
 });
