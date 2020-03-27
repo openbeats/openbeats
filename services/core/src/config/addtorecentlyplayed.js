@@ -18,7 +18,7 @@ export default async (req, res, next) => {
 		if (config.get("isDev")) {
 			baseUrl = config.get("authbaseurl").dev;
 		} else {
-			baseUrl = config.get("authbaseurl").production;
+			baseUrl = config.get("authbaseurl").prod;
 		}
 
 		const body = {
@@ -34,7 +34,6 @@ export default async (req, res, next) => {
 				'Content-Type': 'application/json'
 			},
 		})).json()
-		console.log(response.status);
 		next();
 	} catch (error) {
 		console.error(error.message);

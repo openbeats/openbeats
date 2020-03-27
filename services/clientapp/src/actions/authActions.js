@@ -155,7 +155,6 @@ export async function resetEmailHandler(email) {
     } = await Axios.post(`${variables.baseUrl}/auth/forgotpassword`, {
       email
     })
-    console.log(data)
     if (data && data.status) {
       toastActions.showMessage(data.data.toString());
       return true;
