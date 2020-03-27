@@ -9,9 +9,9 @@
   "redis": "obs-redis",
   "redis-local": "localhost",
   "lambda": "https://orvpax9d6b.execute-api.ap-south-1.amazonaws.com/default/obs-core?vid=",
-  "isDev": true,
   "port": {
     "dev": 3000,
     "prod": 2000
-  }
+  },
+  "isDev": false
 }
