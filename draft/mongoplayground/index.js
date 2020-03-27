@@ -1,9 +1,9 @@
 var mongo = require('mongodb');
 var url = "mongodb://localhost:27017";
-var mydb = null;
-var dbNameString = "mydb";
+var dbNameString = "migrationtest";
 var songsCollectionString = "songs";
 var userPlaylistCollectionString = "userPlaylists";
+var mydb = null;
 
 const songsCol = async (songs) => {
     try {
