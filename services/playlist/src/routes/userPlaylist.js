@@ -113,7 +113,9 @@ router.get("/getplaylist/:id", async (req, res) => {
 		const data = await UserPlaylist.findOne({
 			_id: playlistId,
 		});
+		console.log(data, "data")
 		const songsDataFetchUrl = `${config.get("isDev") ? config.get("baseurl").dev : config.get("baseurl").prod}/getsongs`;
+		console.log(songsDataFetchUrl, "fetch url")
 		const songIds = data.songs;
 		const songs = (await axios.post(songsDataFetchUrl, {
 			songIds
