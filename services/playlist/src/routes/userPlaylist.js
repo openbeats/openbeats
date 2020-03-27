@@ -1,5 +1,10 @@
 import express from "express";
 import UserPlaylist from "../models/UserPlaylist";
+import axios from "axios";
+import {
+	uniq
+} from "lodash";
+import config from "config";
 
 const router = express.Router();
 
@@ -42,38 +47,36 @@ router.post("/addsongs", async (req, res) => {
 			_id: playlistId,
 		});
 
+		// yet to hit obs-core addsongs endpoint
+		const addSongsCoreUrl = `${config.get("isDev") ? config.get("baseurl").dev : config.get("baseurl").prod}/addsongs`;
 
-		if (playlist) {
-			const checkPlaylist = await UserPlaylist.findOne({
-				_id: playlistId,
-				"songs.videoId": songs[0].videoId,
+		if (playlist && songs.length) {
+			const availableSongs = playlist.songs;
+			const songIds = songs.map(song => song.videoId)
+			let newSongsList = [...songIds, ...availableSongs];
+			newSongsList = uniq(newSongsList);
+			axios.post(addSongsCoreUrl, {
+				songs: [...songs]
+			})
+			const updateObj = {
+				updatedAt: Date.now(),
+				totalSongs: newSongsList.length,
+				thumbnail: songs[0].thumbnail,
+				songs: newSongsList
+			};
+			await playlist.updateOne(updateObj);
+			res.send({
+				status: true,
+				data: "songs successfully added!",
 			});
-			if (checkPlaylist) {
-				return res.json({
-					status: false,
-					data: "Song already added",
-				});
-			}
+		} else {
+			throw new Error("something went wrong!")
 		}
 
-		await playlist.songs.push(...songs);
-
-		await playlist.updateOne({
-			updatedAt: Date.now(),
-			totalSongs: playlist.songs.length,
-			thumbnail: songs[0].thumbnail,
-		});
-
-		const savedSongs = await playlist.save();
-
-		res.send({
-			status: true,
-			data: savedSongs,
-		});
 	} catch (error) {
 		res.send({
 			status: false,
-			data: error.toString(),
+			data: error.message,
 		});
 	}
 });
@@ -103,22 +106,30 @@ router.get("/getallplaylistmetadata/:uid", async (req, res) => {
 	}
 });
 
-// get user playlist
+// get user playlist -  yet to implement song playlist
 router.get("/getplaylist/:id", async (req, res) => {
 	try {
 		const playlistId = req.params.id;
 		const data = await UserPlaylist.findOne({
 			_id: playlistId,
 		});
-
+		const songsDataFetchUrl = `${config.get("isDev") ? config.get("baseurl").dev : config.get("baseurl").prod}/getsongs`;
+		const songIds = data.songs;
+		const songs = (await axios.post(songsDataFetchUrl, {
+			songIds
+		})).data.data;
+		let tempData = {
+			...data['_doc'],
+			songs: [...songs],
+		}
 		res.send({
 			status: true,
-			data,
+			data: tempData,
 		});
 	} catch (error) {
 		res.send({
 			status: false,
-			data: error.toString(),
+			data: error.message
 		});
 	}
 });
@@ -133,9 +144,7 @@ router.post("/deletesong", async (req, res) => {
 
 		await UserPlaylist.findByIdAndUpdate(playlistId, {
 			$pull: {
-				songs: {
-					_id: songId,
-				},
+				songs: songId,
 			},
 		});
 
@@ -143,11 +152,19 @@ router.post("/deletesong", async (req, res) => {
 			_id: playlistId,
 		});
 
+		const lastSongId = playlist.songs.length ? playlist.songs[playlist.songs.length - 1] : null;
+		let newThumbnail = `https://openbeats.live/static/media/dummy_music_holder.a3d0de2e.jpg`;
+		if (lastSongId !== null) {
+			const songsCoreUrl = `${config.get("isDev") ? config.get("baseurl").dev : config.get("baseurl").prod}/getsong/${lastSongId}`;
+			const newThumbData = (await axios.get(songsCoreUrl)).data;
+			if (newThumbData.status) {
+				newThumbnail = newThumbData.data.thumbnail
+			}
+		}
 		await playlist.updateOne({
 			updatedAt: Date.now(),
 			totalSongs: playlist.songs.length,
-			thumbnail: playlist.songs.length ?
-				playlist.songs[playlist.songs.length - 1].thumbnail : "https://openbeats.live/static/media/dummy_music_holder.a3d0de2e.jpg",
+			thumbnail: newThumbnail,
 		});
 
 		await playlist.save();

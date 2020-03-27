@@ -78,7 +78,7 @@ export const englishTopCharts = async () => {
 		const trackArray = engTop.tracks.track;
 		const baseurl = config.get("isDev") ?
 			config.get("baseurl").dev :
-			config.get("baseurl").production;
+			config.get("baseurl").prod;
 		let rank = 1;
 		const fetchList = [];
 		for (let track of trackArray) {
