@@ -34,7 +34,6 @@ export default async (req, res, next) => {
 				'Content-Type': 'application/json'
 			},
 		})).json()
-		console.log(response.status);
 		next();
 	} catch (error) {
 		console.error(error.message);
