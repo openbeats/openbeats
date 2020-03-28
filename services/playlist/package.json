@@ -12,9 +12,10 @@
   "author": "ThayalanGR",
   "license": "ISC",
   "devDependencies": {
-    "nodemon": "^1.19.4"
+    "nodemon": "^2.0.2"
   },
   "dependencies": {
+    "axios": "^0.19.2",
     "babel-polyfill": "^6.26.0",
     "babel-preset-env": "^1.7.0",
     "babel-preset-stage-0": "^6.24.1",

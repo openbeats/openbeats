@@ -15,7 +15,7 @@ export const updateTopCharts = async (chartName, chartId) => {
 		let fetchurls = [];
 		const baseurl = config.get("isDev") ?
 			config.get("baseurl").dev :
-			config.get("baseurl").production;
+			config.get("baseurl").prod;
 		let chart = await TopChart.findById(chartId);
 		$(".top01").each(async (i, el) => {
 			let fetchobj = {};
