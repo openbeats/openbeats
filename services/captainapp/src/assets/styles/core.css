@@ -12,6 +12,10 @@
     --bg-main: #f3f3f3;
 }
 
+.base-color {
+    color: var(--base-color);
+}
+
 .core-wrapper {
     width: 100vw;
     height: 100vh;
@@ -21,4 +25,13 @@
 
 .active {
     opacity: 0.7;
+}
+
+
+.cursor-pointer {
+    cursor: pointer;
+}
+
+.p-events-none {
+    pointer-events: none;
 }

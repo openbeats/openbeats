@@ -1,5 +1,11 @@
+import {
+    SET_CURRENT_NAV_ITEM,
+    LOADING_STATE_TOGGLER
+} from "../types";
+
 const initialState = {
-    isLoading: false
+    isLoading: false,
+    currentNavItem: "home"
 }
 
 export const core = (state = initialState, action) => {
@@ -8,6 +14,12 @@ export const core = (state = initialState, action) => {
             state = {
                 ...state,
                 isLoading: action.payload
+            };
+            break;
+        case SET_CURRENT_NAV_ITEM:
+            state = {
+                ...state,
+                currentNavItem: action.payload
             };
             break;
         default:
