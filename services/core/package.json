@@ -12,7 +12,7 @@
     "author": "ThayalanGR",
     "license": "ISC",
     "devDependencies": {
-        "nodemon": "^1.19.4"
+        "nodemon": "^2.0.2"
     },
     "dependencies": {
         "babel-polyfill": "^6.26.0",
@@ -21,17 +21,17 @@
         "babel-register": "^6.26.0",
         "bcryptjs": "^2.4.3",
         "cheerio": "^1.0.0-rc.3",
-        "config": "^3.2.4",
+        "config": "^3.3.0",
         "cors": "^2.8.5",
         "express": "^4.17.1",
         "form-data": "^3.0.0",
         "jsonwebtoken": "^8.5.1",
         "lowdb": "^1.0.0",
-        "mongoose": "^5.7.13",
-        "morgan": "^1.9.1",
+        "mongoose": "^5.9.5",
+        "morgan": "^1.10.0",
         "node-cron": "^2.0.3",
         "node-fetch": "^2.6.0",
-        "redis": "^2.8.0",
-        "ytdl-core": "^1.0.3"
+        "redis": "^3.0.2",
+        "ytdl-core": "^2.0.1"
     }
 }
