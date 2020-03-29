@@ -19,6 +19,8 @@
 .core-wrapper {
     width: 100vw;
     height: 100vh;
+    max-width: 100vw;
+    max-height: 100vh;
     box-sizing: border-box;
     overflow: hidden;
 }
@@ -30,6 +32,10 @@
 
 .cursor-pointer {
     cursor: pointer;
+}
+
+.cursor-pointer:hover {
+    opacity: 0.8;
 }
 
 .p-events-none {
