@@ -64,7 +64,7 @@ class LeftNav extends Component {
                     </Link>
                     <Link to="searchtags" onClick={() => this.props.setCurrentNavItem("searchtags")} className={`leftnav-item`} title="Add, Update and Delete Search Tags">
                         <div className={`content ${this.props.currentNavItem === "searchtags" ? "item-active" : ""}`}>
-                            <i class="fas fa-tags"></i>
+                            <i className="fas fa-tags"></i>
                             <span>Tags</span>
                         </div>
                     </Link>
