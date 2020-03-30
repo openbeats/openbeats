@@ -1,28 +1,51 @@
 import React, { Component } from 'react';
 import "../assets/styles/albumsdash.css";
-import Chips from "react-chips";
+// import axios from "axios";
 
 export default class AlbumsDash extends Component {
     constructor(props) {
         super(props);
         this.state = {
             artistChips: [],
-            searchChips: []
+            searchChips: [],
+            artistSuggestion: [],
+            searchSuggestion: [],
+            artistTagSearchString: '',
+            searchTagSearchString: ''
         }
+        this.artistSuggestionBlockRef = null;
     }
 
-    artistOnChange = (chips) => {
-        this.setState({ artistChips: chips })
+    artistOnChange = async () => {
+        document.removeEventListener("click", this.clearArtisStringAndListener);
+        document.removeEventListener("keyup", this.clearArtisStringAndListener);
+        this.setState({ artistSuggestion: ["Anirudh", "A R Rahman", "Lorem", "Paris"] });
+        document.addEventListener("click", this.clearArtisStringAndListener);
+        document.addEventListener("keyup", this.clearArtisStringAndListener);
 
     }
-    searchOnChange = (chips) => {
-        this.setState({ searchChips: chips })
+
+    searchOnChange = () => {
 
     }
 
-    fetchArtistSuggestion = async (value) => {
-        console.log(value, "artist suggestion")
-        return true;
+    deleteArtistChip = (index) => {
+        let newChips = this.state.artistChips.filter((i, k) => k !== index)
+        this.setState({ artistChips: newChips })
+    }
+
+    addArtisChip = (index) => {
+        let addedNewChip = this.state.artistChips;
+        addedNewChip.push(this.state.artistSuggestion[index]);
+        this.setState({ artistChips: addedNewChip, artistSuggestion: [], artistTagSearchString: '' })
+    }
+
+    clearArtisStringAndListener = (event) => {
+        if (event.keyCode === 27 || !this.artistSuggestionBlockRef.contains(event.target)) {
+            this.setState({ artistSuggestion: [], artistTagSearchString: "" })
+            document.removeEventListener("click", this.clearArtisStringAndListener);
+            document.removeEventListener("keyup", this.clearArtisStringAndListener);
+        }
     }
 
 
@@ -52,15 +75,32 @@ export default class AlbumsDash extends Component {
                             </div>
                             <div className="albumdash-artist-tags-holder mt-2">
                                 <div className="artist-tags-title font-weight-bold">Artist Tags</div>
-                                <div className="artist-tags-title">Artist Tags</div>
-                                <Chips
-
-                                    value={this.state.artistChips}
-                                    onChange={this.artistOnChange}
-                                    suggestions={["Your", "Data", "Here"]}
-                                    fetchSuggestions={(value) => { this.fetchArtistSuggestion(value) }}
-                                // theme={}
-                                />
+                                <div className="artist-tags-title-desc">(Please add only one artist, if you want this album to comes under specific Artist)</div>
+                                <div className="tag-input-holder mt-1"
+                                    ref={d => this.artistSuggestionBlockRef = d}
+                                >
+                                    <div className="tags-chips-container">
+                                        {this.state.artistChips.map((item, key) => {
+                                            return <div className="chip-container" key={key}>
+                                                <span>{item}</span>
+                                                <div className="chip-container-cancel-button cursor-pointer" onClick={() => this.deleteArtistChip(key)}><i className="fas fa-times text-white"></i></div>
+                                            </div>
+                                        })}
+                                    </div>
+                                    <div className="tag-input-container"
+                                    >
+                                        <input type="text" placeholder="Search Artist Here..."
+                                            onChange={async (e) => {
+                                                await this.setState({ artistTagSearchString: e.target.value })
+                                                this.artistOnChange();
+                                            }} value={this.state.artistTagSearchString} name="" id="" />
+                                        <div className="tag-suggestion-string-holder" >
+                                            {this.state.artistSuggestion.map((item, key) => {
+                                                return <div className="suggestion-string-node" key={key} onClick={e => this.addArtisChip(key)}>{item}</div>
+                                            })}
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
