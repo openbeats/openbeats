@@ -30,7 +30,7 @@ const initialState = {
     adminDetails: adminDetails
 };
 
-const auth = (state = initialState, action) => {
+export const auth = (state = initialState, action) => {
     switch (action.type) {
         case LOGIN_USER:
             state = {
@@ -53,5 +53,3 @@ const auth = (state = initialState, action) => {
 
     return state;
 };
-
-export default auth;

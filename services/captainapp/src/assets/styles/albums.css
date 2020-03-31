@@ -1,0 +1,193 @@
+.albums-wrapper {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    display: grid;
+    grid-template-rows: 40px auto;
+    box-sizing: border-box;
+}
+
+.albums-header {
+    width: 100%;
+    height: 100%;
+    display: block;
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 5px 0 5px;
+    font-size: 14px;
+}
+
+.album-indicator {
+    pointer-events: none;
+}
+
+.right-angel {
+    font-size: 20px;
+}
+
+.create-album-link {
+    background: #38D817;
+    color: #FFFFFF;
+    padding: 5px 10px;
+    border-radius: 5px;
+}
+
+.album-search-input {
+    width: 400px;
+    position: relative;
+    display: flex;
+    align-items: center;
+    border: 1px solid var(--base-color);
+    padding: 5px;
+    padding-left: 15px;
+    padding-right: 10px;
+    border-radius: 20px;
+}
+
+.album-search-input>input {
+    width: 100%;
+    border: none;
+    outline: none;
+}
+
+.album-search-input>i {
+    margin-left: 5px;
+}
+
+
+.albums-container {
+    width: 100%;
+    height: 100%;
+    overflow-y: auto;
+    box-sizing: border-box;
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: row;
+    padding: 10px;
+}
+
+/* width */
+.albums-container::-webkit-scrollbar {
+    width: 8px;
+    border-radius: 10px;
+}
+
+/* Track */
+.albums-container::-webkit-scrollbar-track {
+    background: var(--text-leftnav);
+    border-radius: 10px;
+}
+
+/* Handle */
+.albums-container::-webkit-scrollbar-thumb {
+    background: var(--base-color);
+    border-radius: 20px;
+    cursor: pointer;
+}
+
+/* Handle on hover */
+.albums-container::-webkit-scrollbar-thumb:hover {
+    background: var(--base-color);
+    opacity: 0.5;
+}
+
+.album-holder {
+    height: 300px;
+    width: 270px;
+    box-sizing: border-box;
+    background: black;
+    border-radius: 10px;
+    box-shadow: 0 0 5px 0 gray;
+    position: relative;
+    margin: 5px;
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+    position: relative;
+}
+
+.album-holder::after {
+    position: absolute;
+    width: 100%;
+    height: 50%;
+    left: 0;
+    bottom: 0;
+    content: '';
+    border-bottom-left-radius: 10px;
+    border-bottom-right-radius: 10px;
+    background: rgb(0, 0, 0);
+    background: linear-gradient(180deg, rgba(0, 0, 0, 0) 20%, rgba(0, 0, 0, 0.4881302862942052) 41%, rgba(0, 0, 0, 0.9839286056219363) 88%, rgba(0, 0, 0, 0.9839286056219363) 98%);
+}
+
+.album-btn-rounded {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: block;
+    position: relative;
+    z-index: 10;
+    box-shadow: 0 0 10px 0 black;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #C1CCCC;
+
+}
+
+.album-edit-button {
+    position: absolute;
+    background: #4451FD;
+    right: 10px;
+    top: 10px;
+}
+
+.album-edit-button>I {
+    margin-left: 4px;
+    font-weight: bold;
+    color: white;
+}
+
+.album-delete-button {
+    position: absolute;
+    background: #F32C2C;
+    right: 10px;
+    top: 60px;
+    font-weight: bold;
+    color: white;
+}
+
+.album-song-count {
+    position: absolute;
+    background: #343131;
+    bottom: 15px;
+    right: 10px;
+    z-index: 15;
+    font-size: 14px;
+    color: #C1CCCC;
+    font-weight: bold;
+}
+
+.album-description {
+    color: white;
+    z-index: 12;
+    position: absolute;
+    bottom: 15px;
+    left: 10px;
+}
+
+.album-title {
+    font-size: 14px;
+    font-weight: bold;
+}
+
+.album-creation-date {
+    font-size: 13px;
+    margin-top: 2px;
+}
+
+.album-created-by {
+    font-size: 12px;
+    margin-top: 2px;
+}

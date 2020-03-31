@@ -1,8 +1,16 @@
-import { Router } from "express";
+import {
+	Router
+} from "express";
 import User from "../models/User";
 import auth from "../config/auth";
 import config from "config";
 import axios from "axios";
+import {
+	uniq
+} from "lodash";
+import {
+	Query
+} from "mongoose";
 
 const router = Router();
 
@@ -19,13 +27,13 @@ router.post("/recentlyplayed", async (req, res) => {
 		try {
 			const user = await User.findById(userId);
 			if (user) {
-				while (!(user.recentlyPlayedSongs.length <= 30)) {
-					user.recentlyPlayedSongs.pop();
-				}
-				user.recentlyPlayedSongs = user.recentlyPlayedSongs.filter(
-					vId => vId != videoId,
-				);
-				user.recentlyPlayedSongs.unshift(videoId);
+				let recentlyPlayedIds = user.recentlyPlayedSongs;
+				if (recentlyPlayedIds.indexOf(videoId) !== -1)
+					recentlyPlayedIds = recentlyPlayedIds.splice(recentlyPlayedIds.indexOf(videoId), 1);
+				recentlyPlayedIds.unshift(videoId);
+				recentlyPlayedIds = uniq(recentlyPlayedIds);
+				recentlyPlayedIds = recentlyPlayedIds.slice(0, 30);
+				user.recentlyPlayedSongs = recentlyPlayedIds;
 				await user.save();
 			}
 		} catch (error) {

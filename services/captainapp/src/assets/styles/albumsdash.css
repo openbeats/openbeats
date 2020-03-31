@@ -1,4 +1,92 @@
 .albumsdash-wrapper {
     width: 100%;
     height: 100%;
+    overflow: hidden;
+    display: grid;
+    grid-template-rows: 40px auto;
+    box-sizing: border-box;
+}
+
+.albumsdash-header {
+    width: 100%;
+    height: 100%;
+    display: block;
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 5px 0 5px;
+    font-size: 14px;
+}
+
+.albumdash-container {
+    height: 100%;
+    width: 100%;
+    display: grid;
+    grid-template-columns: 50% 50%;
+}
+
+.albumdash-container-left-pan {
+    width: 100%;
+    height: 100%;
+    padding: 10px;
+}
+
+.albumdash-container-right-pan {
+    width: 100%;
+    height: 100%;
+    display: grid;
+    grid-template-rows: 50% 50%;
+}
+
+.albumdash-album-content-holder {
+    width: 100%;
+    height: 100%;
+    box-shadow: 0 0 10px 0 gray;
+    border-radius: 10px;
+}
+
+.albumdash-search-holder {
+    margin: 10px;
+    box-shadow: 0 0 10px 0 gray;
+    background: #FF4B4B;
+    border-radius: 10px;
+}
+
+.albumdash-song-bucket-holder {
+    margin: 10px;
+    box-shadow: 0 0 10px 0 gray;
+    background: #322C2C;
+    border-radius: 10px;
+}
+
+.albumdash-name-holder>div:first-child {
+    font-size: 16px;
+}
+
+.albumdash-name-holder>div:nth-child(2) {
+    font-size: 13px;
+    color: gray;
+}
+
+.albumdash-name-holder>input {
+    height: 35px;
+    padding: 5px;
+    font-size: 14px;
+    font-weight: bold;
+}
+
+.albumdash-name-holder>input::placeholder {
+    color: gray;
+    opacity: 0.7;
+}
+
+.albumdash-artist-tags-holder>div:first-child {
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.albumdash-artist-tags-holder>div:nth-child(2) {
+    font-size: 13px;
+    color: gray;
 }
