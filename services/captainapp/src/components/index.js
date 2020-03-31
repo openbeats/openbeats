@@ -5,6 +5,7 @@ import Albums from './Albums';
 import Artists from './Artists';
 import Languages from './Languages';
 import AlbumsDash from './AlbumsDash';
+import ChipsInput from "./ChipsInput";
 
 export {
     Auth,
@@ -13,5 +14,6 @@ export {
     Albums,
     Artists,
     Languages,
-    AlbumsDash
+    AlbumsDash,
+    ChipsInput
 }
