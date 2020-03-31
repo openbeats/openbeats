@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import "../assets/styles/albums.css";
 import { coreActions } from '../actions';
 import { connect } from 'react-redux';
-import { albumDummySong, dummy } from "../assets/images"
+import { albumDummySong } from "../assets/images"
 
 class Albums extends Component {
     componentDidMount() {
@@ -24,7 +24,7 @@ class Albums extends Component {
                     <Link className="create-album-link font-weight-bold" to="/albums/dashyard"><i className="far fa-plus mr-1"></i>&nbsp;Create Album</Link>
                 </div>
                 <div className="albums-container">
-                    <div className="album-holder" style={{ backgroundImage: `url(${dummy})` }}>
+                    <div className="album-holder" style={{ backgroundImage: `url(${albumDummySong})` }}>
                         <div className="album-btn-rounded album-edit-button cursor-pointer">
                             <i className="fas fa-pencil-alt"></i>
                         </div>
