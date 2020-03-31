@@ -38,7 +38,7 @@ router.get(
 					data: "Please provide either artistId or startsWith as query params.",
 				});
 			}
-			const { artistId, startsWith } = req.query();
+			const { artistId, startsWith } = req.query;
 
 			if (artistId) {
 				const artist = await Artist.findById(tagId);
@@ -50,10 +50,10 @@ router.get(
 			if (startsWith) {
 				const artists = await Artist.find({
 					name: {
-						$regex: `^${name}`,
+						$regex: `^${startsWith}`,
 						$options: "i",
 					},
-				});
+				}).limit(10);
 				return res.send({
 					status: true,
 					data: artists,
@@ -73,7 +73,29 @@ router.get(
 	},
 );
 
-router.put("/id", async (req, res) => {
+router.get("/all", async (req, res) => {
+	try {
+		const artistAll = await Artist.find({});
+		if (!artistAll) {
+			return res.json({
+				status: false,
+				data: "No albums found.",
+			});
+		}
+		res.send({
+			status: true,
+			data: artistAll,
+		});
+	} catch (error) {
+		console.log(error.message);
+		res.send({
+			status: false,
+			data: error.message,
+		});
+	}
+});
+
+router.put("/:id", async (req, res) => {
 	try {
 		const { name, albumId, thumbnail } = req.body;
 
