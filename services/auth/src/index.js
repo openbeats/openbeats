@@ -2,7 +2,8 @@ import middleware from "./config/middleware";
 import express from "express";
 import dbconfig from "./config/db";
 import authRoutes from "./routes/auth";
-import usermetadata from "./routes/usermetadata"
+import usermetadata from "./routes/usermetadata";
+import config from "config";
 
 //Set up db connection
 dbconfig();
@@ -15,8 +16,11 @@ app.use("/", authRoutes);
 
 app.use("/metadata", usermetadata);
 
-const PORT = process.env.PORT || 2000;
+const PORT =
+	process.env.PORT || config.get("isDev")
+		? config.get("port").dev
+		: config.get("port").prod;
 
 app.listen(PORT, () => {
-  console.log(`openbeats auth service up and running on ${PORT}!`);
+	console.log(`openbeats auth service up and running on ${PORT}!`);
 });
