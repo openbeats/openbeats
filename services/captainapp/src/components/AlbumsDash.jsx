@@ -11,6 +11,18 @@ export default class AlbumsDash extends Component {
         }
     }
 
+    setArtistChips = (chips) => {
+        this.setState({ artistChips: chips });
+    }
+
+    setSearchChips = (chips) => {
+        this.setState({ searchChips: chips });
+    }
+
+    createNewArtist = (artistStringName) => {
+        console.log(artistStringName);
+    }
+
     render() {
         return (
             <div className="albumsdash-wrapper">
@@ -39,8 +51,9 @@ export default class AlbumsDash extends Component {
                                 <div className="artist-tags-title font-weight-bold">Artist Tags</div>
                                 <div className="artist-tags-title-desc">(Please add only one artist, if you want this album to comes under specific Artist)</div>
                                 <ChipsInput
-
-
+                                    setChipsCallback={this.setArtistChips}
+                                    suggestionFetchUrl={'url'}
+                                    createNewChipCallback={this.createNewArtist}
                                 />
                             </div>
                         </div>
