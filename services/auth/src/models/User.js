@@ -25,44 +25,44 @@ export default mongoose.model(
 			type: Date,
 			default: Date.now,
 		},
-		myPlaylists: [{
-			_id: String,
-			name: String,
-			playlistId: String,
-			thumbnail: {
+		myPlaylists: [
+			{
+				_id: String,
+				name: String,
+				playlistId: String,
+				thumbnail: {
+					type: String,
+					default:
+						"https://openbeats.live/static/media/dummy_music_holder.a3d0de2e.jpg",
+				},
+				totalSongs: {
+					type: Number,
+					default: 0,
+				},
+			},
+		],
+		playlistCollections: [
+			{
+				name: String,
+				playlistId: String,
+			},
+		],
+		likedPlaylists: [
+			{
+				name: String,
+				playlistId: String,
+			},
+		],
+		recentlyPlayedSongs: [
+			{
 				type: String,
-				default: "https://openbeats.live/static/media/dummy_music_holder.a3d0de2e.jpg",
 			},
-			totalSongs: {
-				type: Number,
-				default: 0,
-			},
-		}, ],
-		playlistCollections: [{
-			name: String,
-			playlistId: String,
-		}, ],
-		likedPlaylists: [{
-			name: String,
-			playlistId: String,
-		}, ],
-		recentlyPlayedSongs: [{
-			title: String,
-			thumbnail: String,
-			duration: String,
-			videoId: String,
-			channelName: String,
-			channelId: String,
-			uploadedOn: String,
-			views: String,
-			description: String,
-			count: Number,
-		}],
+		],
 		admin: {
 			status: {
 				type: Boolean,
-				default: false
-			}
-		}
+				default: false,
+			},
+		},
 	}),
 );

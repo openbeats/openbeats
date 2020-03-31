@@ -1,10 +1,6 @@
 import middleware from "./config/middleware";
 import express from "express";
-import {
-	ytcat,
-	suggestbeat,
-	copycat
-} from "./core";
+import { ytcat, suggestbeat, copycat } from "./core";
 import ytdl from "ytdl-core";
 import fetch from "node-fetch";
 import redis from "./config/redis";
@@ -14,7 +10,10 @@ import addtorecentlyplayed from "./config/addtorecentlyplayed";
 import Song from "./models/Song";
 dbconfig();
 
-const PORT = process.env.PORT || config.get("isDev") ? config.get("port").dev : config.get("port").prod;
+const PORT =
+	process.env.PORT || config.get("isDev")
+		? config.get("port").dev
+		: config.get("port").prod;
 const app = express();
 
 middleware(app);
@@ -26,14 +25,13 @@ app.get("/", (req, res) => {
 app.get("/opencc/:id", addtorecentlyplayed, async (req, res) => {
 	try {
 		const videoID = req.params.id;
-		if (!ytdl.validateID(videoID))
-			throw new Error("INvalid id")
+		if (!ytdl.validateID(videoID)) throw new Error("INvalid id");
 		redis.get(videoID, async (err, value) => {
 			try {
 				if (value) {
 					let sourceUrl = value;
 					setTimeout(() => {
-						addSongInDeAttachedMode(videoID)
+						addSongInDeAttachedMode(videoID, req.song);
 					}, 0);
 					res.send({
 						status: true,
@@ -45,7 +43,7 @@ app.get("/opencc/:id", addtorecentlyplayed, async (req, res) => {
 					).json();
 					if (info.formats) {
 						setTimeout(() => {
-							addSongInDeAttachedMode(videoID)
+							addSongInDeAttachedMode(videoID, req.song);
 						}, 0);
 						let audioFormats = ytdl.filterFormats(info.formats, "audioonly");
 						if (!audioFormats[0].contentLength) {
@@ -75,7 +73,7 @@ app.get("/opencc/:id", addtorecentlyplayed, async (req, res) => {
 					link = await copycat(videoID);
 					if (link)
 						setTimeout(() => {
-							addSongInDeAttachedMode(videoID)
+							addSongInDeAttachedMode(videoID, req.song);
 						}, 0);
 					status = 200;
 				}
@@ -88,7 +86,7 @@ app.get("/opencc/:id", addtorecentlyplayed, async (req, res) => {
 	} catch (error) {
 		res.send({
 			status: false,
-			link: null
+			link: null,
 		});
 	}
 });
@@ -119,23 +117,27 @@ app.get("/suggester", async (req, res) => {
 });
 
 // add song to collection in deattached mod
-const addSongInDeAttachedMode = async (videoId) => {
+const addSongInDeAttachedMode = async (videoId, song) => {
 	try {
 		const findSong = await Song.findOne({
-			_id: videoId
+			_id: videoId,
 		});
 		if (!findSong) {
-			let item = (await ytcat(videoId, true))[0];
+			let item = null;
+			if (!song) {
+				item = (await ytcat(videoId, true))[0];
+			} else {
+				item = { ...song };
+			}
 			item["_id"] = item.videoId;
 			await Song.insertMany([item], {
-				ordered: false
+				ordered: false,
 			});
 		}
 	} catch (error) {
-		console.log(error)
+		console.log(error);
 	}
-
-}
+};
 
 // song crud operation
 app.post("/addsongs", async (req, res) => {
@@ -145,39 +147,38 @@ app.post("/addsongs", async (req, res) => {
 			let item = elem;
 			item["_id"] = elem.videoId;
 			return item;
-		})
+		});
 		await Song.insertMany(songs, {
-			ordered: false
+			ordered: false,
 		});
 		res.send({
 			status: true,
-			data: "Songs Added successfully!"
+			data: "Songs Added successfully!",
 		});
 	} catch (error) {
 		res.send({
 			status: true,
-			data: "some of the songs already exists in the collection!"
+			data: "some of the songs already exists in the collection!",
 		});
 	}
-})
+});
 
 app.delete("/deletesong/:id", async (req, res) => {
 	try {
 		await Song.findOneAndDelete({
-			_id: req.params.id
-		})
+			_id: req.params.id,
+		});
 		res.send({
 			status: true,
-			data: "Song Deleted successfully!"
-		})
-
+			data: "Song Deleted successfully!",
+		});
 	} catch (error) {
 		res.send({
 			status: false,
-			data: error.message
-		})
+			data: error.message,
+		});
 	}
-})
+});
 
 // get song
 app.get("/getsong/:id", async (req, res) => {
@@ -186,40 +187,37 @@ app.get("/getsong/:id", async (req, res) => {
 		if (songData)
 			res.send({
 				status: true,
-				data: songData
-			})
-		else
-			throw new Error("Song Not found!")
+				data: songData,
+			});
+		else throw new Error("Song Not found!");
 	} catch (error) {
 		res.send({
 			status: false,
-			data: error.message
-		})
+			data: error.message,
+		});
 	}
-})
+});
 
 // get multiple songs at a time
 app.post("/getsongs", async (req, res) => {
-	const {
-		songIds
-	} = req.body;
+	const { songIds } = req.body;
 	try {
 		const songs = await Song.find({
-			'_id': {
-				$in: [...songIds]
-			}
+			_id: {
+				$in: [...songIds],
+			},
 		});
 		res.send({
 			status: true,
-			data: songs
-		})
+			data: songs,
+		});
 	} catch (error) {
 		res.send({
 			status: false,
-			data: error.message
+			data: error.message,
 		});
 	}
-})
+});
 
 app.listen(PORT, () => {
 	console.log(`openbeats core service up and running on ${PORT}!`);
