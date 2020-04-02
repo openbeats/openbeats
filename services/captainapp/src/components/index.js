@@ -6,6 +6,7 @@ import Artists from './Artists';
 import Languages from './Languages';
 import AlbumsDash from './AlbumsDash';
 import ChipsInput from "./ChipsInput";
+import ArtistAddDialog from "./ArtistAddDialog";
 
 export {
     Auth,
@@ -15,5 +16,6 @@ export {
     Artists,
     Languages,
     AlbumsDash,
-    ChipsInput
+    ChipsInput,
+    ArtistAddDialog
 }
