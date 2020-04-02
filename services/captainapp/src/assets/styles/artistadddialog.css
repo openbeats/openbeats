@@ -1,0 +1,99 @@
+.artist-add-dialog-container {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    left: 0;
+    top: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 0, 0, 0.3);
+    z-index: 1000;
+}
+
+.artist-add-dialog-wrapper {
+    width: 80%;
+    height: 80%;
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 0 5px 0 gray;
+    padding: 10px;
+    display: grid;
+    grid-template-rows: 50px auto;
+}
+
+.artist-add-dialog-header {
+    width: 100%;
+    height: 50px;
+    padding-left: 10px;
+    padding-right: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+
+.artist-add-dialog-header-left-items {
+    color: var(--base-color);
+    font-size: 16px;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+}
+
+.artist-add-dialog-header-right-items {
+    font-size: 14px;
+}
+
+.artist-add-dialog-content-holder {
+    display: grid;
+    grid-template-columns: 50% 50%;
+    width: 100%;
+    height: calc(100%-50px);
+    padding: 10px
+}
+
+.artist-add-dialog-content-holder>.artist-add-dialog-input-container {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px;
+    flex-direction: column;
+    font-size: 14px;
+}
+
+.artist-add-dialog-content-holder>.artist-add-dialog-image-display-container {
+    width: 100%;
+    height: 100%;
+    background: #f3f3f3;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.artist-name-input {
+    height: 70px;
+    width: 90%;
+    text-align: center;
+}
+
+.artist-name-input::placeholder {
+    color: gray;
+    opacity: 0.7;
+}
+
+.add-artist-input-title {
+    font-size: 16px;
+}
+
+.add-artist-image-display-panel {
+    width: 80%;
+    height: 80%;
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+    border-radius: 10px;
+    box-shadow: 0 0 5px 0 gray;
+}

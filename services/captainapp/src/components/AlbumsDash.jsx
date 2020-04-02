@@ -1,11 +1,16 @@
 import React, { Component } from 'react';
 import "../assets/styles/albumsdash.css";
 import { ChipsInput } from '.';
+import { connect } from 'react-redux';
+import { addArtistActions } from '../actions';
+import { store } from '../store';
+import { push } from 'connected-react-router';
 
-export default class AlbumsDash extends Component {
+class AlbumsDash extends Component {
     constructor(props) {
         super(props);
         this.state = {
+            albumName: '',
             artistChips: [],
             searchChips: [],
         }
@@ -20,7 +25,15 @@ export default class AlbumsDash extends Component {
     }
 
     createNewArtist = (artistStringName) => {
-        console.log(artistStringName);
+        this.props.toggleAddArtistDialog(artistStringName);
+    }
+
+    albumsDashCancelHandler = () => {
+        this.props.pushPath("/albums");
+    }
+
+    componentWillUnmount() {
+        this.setState({ albumName: '', artistChips: [], searchChips: [] })
     }
 
     render() {
@@ -32,7 +45,7 @@ export default class AlbumsDash extends Component {
                     </div>
                     <div className="d-flex">
                         <div className="create-album-link font-weight-bold mr-3 cursor-pointer" >save</div>
-                        <div className="create-album-link bg-danger font-weight-bold cursor-pointer" >cancel</div>
+                        <div className="create-album-link bg-danger font-weight-bold cursor-pointer" onClick={this.albumsDashCancelHandler} >cancel</div>
                     </div>
                 </div>
                 <div className="albumdash-container">
@@ -67,3 +80,23 @@ export default class AlbumsDash extends Component {
         )
     }
 }
+
+const mapStateToProps = (state) => {
+    return {
+
+    }
+}
+
+
+const mapDispatchToProps = (dispatch) => {
+    return {
+        pushPath: (path) => {
+            store.dispatch(push(path));
+        },
+        toggleAddArtistDialog: (artistName) => {
+            addArtistActions.toggleAddArtistDialog(true, artistName);
+        }
+    }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(AlbumsDash);
