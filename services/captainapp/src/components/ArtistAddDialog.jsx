@@ -13,12 +13,11 @@ class ArtistAddDialog extends Component {
         }
     }
 
-    saveActionHandler = () => {
-
-    }
-
-    cancelActionHanlder = () => {
-
+    saveActionHandler = async () => {
+        const addArtistResult = await this.props.addArtistHandler(this.state.artistName, this.state.artistImageUrl);
+        if (addArtistResult) {
+            this.props.toggleAddArtistDialog(false);
+        }
     }
 
     componentWillUnmount() {
@@ -40,7 +39,7 @@ class ArtistAddDialog extends Component {
                         </div>
                         <div className="artist-add-dialog-header-right-items">
                             <div className="d-flex">
-                                <div className="create-album-link font-weight-bold mr-3 cursor-pointer" >save</div>
+                                <div className="create-album-link font-weight-bold mr-3 cursor-pointer" onClick={this.saveActionHandler}>save</div>
                                 <div className="create-album-link bg-danger font-weight-bold cursor-pointer" onClick={this.props.toggleAddArtistDialog} >cancel</div>
                             </div>
                         </div>
@@ -51,13 +50,13 @@ class ArtistAddDialog extends Component {
                                 <div className="font-weight-bold mb-2 add-artist-input-title">
                                     Artist Name
                                 </div>
-                                <input className="input input-sm rounded artist-name-input" value={this.state.artistName} onChange={(e) => this.setState({ artistName: e.target.value })} placeholder="Anirudh Ravichandar" type="text" name="" id="" />
+                                <input className="input input-sm rounded artist-name-input" required value={this.state.artistName} onChange={(e) => this.setState({ artistName: e.target.value })} placeholder="Anirudh Ravichandar" type="text" />
                             </div>
                             <div className="artist-name-input d-flex flex-column align-items-center justify-content-center mt-4">
                                 <div className="font-weight-bold mb-2 add-artist-input-title">
                                     Artist Image Url
                                 </div>
-                                <input className="input input-sm rounded artist-name-input" value={this.state.artistImageUrl} onChange={(e) => this.setState({ artistImageUrl: e.target.value })} placeholder="https://imageurl.com/image.jpg" type="text" name="" id="" />
+                                <input className="input input-sm rounded artist-name-input" required value={this.state.artistImageUrl} onChange={(e) => this.setState({ artistImageUrl: e.target.value })} placeholder="https://imageurl.com/image.jpg" type="text" />
                             </div>
                         </div>
                         <div className="artist-add-dialog-image-display-container">
@@ -81,6 +80,9 @@ const mapDispatchToProps = (dispatch) => {
     return {
         toggleAddArtistDialog: () => {
             addArtistActions.toggleAddArtistDialog(false);
+        },
+        addArtistHandler: (name, url) => {
+            return addArtistActions.addArtistHandler(name, url);
         }
     }
 }
