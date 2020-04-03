@@ -297,7 +297,14 @@ router.put("/:id/deletesearchtag", async (req, res) => {
 				data: "Album not found.",
 			});
 		}
-		const { searchTag } = req.body;
+		const { searchTag, userId } = req.body;
+
+		if (!searchTag || !userId) {
+			return res.json({
+				status: false,
+				data: "Please pass both albumBy and userId in request body.",
+			});
+		}
 
 		await Album.findByIdAndUpdate(req.params.id, {
 			$pull: {
@@ -310,6 +317,8 @@ router.put("/:id/deletesearchtag", async (req, res) => {
 				albumTags: req.params.id,
 			},
 		});
+
+		await album.save();
 
 		res.send({
 			status: true,
@@ -333,7 +342,15 @@ router.put("/:id/deleteartisttag", async (req, res) => {
 				data: "Album not found.",
 			});
 		}
-		const { artistTag } = req.body;
+		const { artistTag, userId } = req.body;
+
+		if (!albumBy || !userId) {
+			return res.json({
+				status: false,
+				data: "Please pass both albumBy and userId in request body.",
+			});
+		}
+		album.updatedBy = userId;
 
 		await Album.findByIdAndUpdate(req.params.id, {
 			$pull: {
@@ -346,6 +363,8 @@ router.put("/:id/deleteartisttag", async (req, res) => {
 				featuringAlbums: req.params.id,
 			},
 		});
+
+		await album.save();
 
 		res.send({
 			status: true,
@@ -369,7 +388,15 @@ router.put("/:id/deletealbumby", async (req, res) => {
 				data: "Album not found.",
 			});
 		}
-		const { albumBy } = req.body;
+		const { albumBy, userId } = req.body;
+
+		if (!albumBy || !userId) {
+			return res.json({
+				status: false,
+				data: "Please pass both albumBy and userId in request body.",
+			});
+		}
+		album.updatedBy = userId;
 
 		await Album.findByIdAndUpdate(req.params.id, {
 			albumBy: null,
@@ -380,6 +407,8 @@ router.put("/:id/deletealbumby", async (req, res) => {
 				releasedAlbums: req.params.id,
 			},
 		});
+
+		await album.save();
 
 		res.send({
 			status: true,
@@ -448,8 +477,6 @@ router.put(
 			await album.save();
 
 			if (albumBy) {
-				console.log(albumBy);
-
 				await album.addAlbumBy(albumBy);
 			}
 

@@ -3,6 +3,7 @@
 OpenBeats is an open source Music streamer.
 
 # Deployment Details
+
 - microservices architecture
 - monorepo implementation
 - Kubernetes deployment
@@ -12,8 +13,9 @@ OpenBeats is an open source Music streamer.
 
 **Auth**
 
-*Register*
->https://api.openbeats.live/auth/register
+_Register_
+
+> https://api.openbeats.live/auth/register
 
 ```
 method: post,
@@ -23,12 +25,14 @@ JSON-Structure:
 {
     "name": "name",
     "email": "email@email.com",
-    "password": "password" 
+    "password": "password"
 }
 
 ```
-*Login*
->https://api.openbeats.live/auth/login
+
+_Login_
+
+> https://api.openbeats.live/auth/login
 
 ```
 method: post,
@@ -37,12 +41,14 @@ JSON-Structure:
 
 {
     "email": "email@email.com",
-    "password": "password" 
+    "password": "password"
 }
 
 ```
-*Forget Password*
->https://api.openbeats.live/auth/forgotpassword
+
+_Forget Password_
+
+> https://api.openbeats.live/auth/forgotpassword
 
 ```
 method: post,
@@ -54,8 +60,10 @@ JSON-Structure:
 }
 
 ```
-*Reset Password*
->https://api.openbeats.live/auth/resetpassword
+
+_Reset Password_
+
+> https://api.openbeats.live/auth/resetpassword
 
 ```
 method: post,
@@ -71,9 +79,10 @@ JSON-Structure:
 
 **User Playlist Endpoints**
 
-*Create empty playlist*
+_Create empty playlist_
 
->https://api.openbeats.live/playlist/userplaylist/create
+> https://api.openbeats.live/playlist/userplaylist/create
+
 ```language
 method: POST
 bodyType: JSON
@@ -83,9 +92,11 @@ structure:
 	"userId": "user_id_get_from_auth"
 }
 ```
-*Add songs to playlist*
 
->https://api.openbeats.live/playlist/userplaylist/addsongs
+_Add songs to playlist_
+
+> https://api.openbeats.live/playlist/userplaylist/addsongs
+
 ```language
 method: POST
 bodyType: JSON
@@ -97,7 +108,7 @@ structure:
     ]
 }
 
-songs structure sample := 
+songs structure sample :=
 
 {
     "title": "Ed Sheeran - Shape of You [Official Video]",
@@ -112,25 +123,28 @@ songs structure sample :=
 }
 ```
 
-*Get All playlist metadata*
+_Get All playlist metadata_
 
->https://api.openbeats.live/playlist/userplaylist/getallplaylistmetadata/<-USER-ID-GET-FROM-AUTH>
+> https://api.openbeats.live/playlist/userplaylist/getallplaylistmetadata/<-USER-ID-GET-FROM-AUTH>
 
 ```language
 method: GET
 param: user id (get from auth)
 ```
-*Get songs from playlist*
 
->https://api.openbeats.live/playlist/userplaylist/getplaylist/<-PLAYLIST-ID-GET-FROM-PLAYLIST-METADATA>
+_Get songs from playlist_
+
+> https://api.openbeats.live/playlist/userplaylist/getplaylist/<-PLAYLIST-ID-GET-FROM-PLAYLIST-METADATA>
 
 ```language
 method: GET
 param: playlist id (get from playlist metadata endpoint *previous endpoint*)
 ```
-*Change name of the playlist*
 
->https://api.openbeats.live/playlist/userplaylist/updatename
+_Change name of the playlist_
+
+> https://api.openbeats.live/playlist/userplaylist/updatename
+
 ```language
 method: POST
 bodyType: JSON
@@ -141,9 +155,10 @@ structure:
 }
 ```
 
-*Delete song from playlist*
+_Delete song from playlist_
 
->https://api.openbeats.live/playlist/userplaylist/deletesong
+> https://api.openbeats.live/playlist/userplaylist/deletesong
+
 ```language
 method: POST
 bodyType: JSON
@@ -153,9 +168,11 @@ structure:
 	"songId": "<GET-FROM-PLAYLIST-ENDPOINT>"
 }
 ```
-*Delete Entire playlist*
 
->https://api.openbeats.live/playlist/userplaylist/delete/<-PLAYLIST-ID->
+_Delete Entire playlist_
+
+> https://api.openbeats.live/playlist/userplaylist/delete/<-PLAYLIST-ID->
+
 ```language
 method: GET
 param: playlist id ( get from playlist metadata endpoint or playlist endpoint *userPlaylist* )
@@ -216,8 +233,253 @@ method: GET
 Get chart Songs
 
 > https://api.openbeats.live/playlist/topcharts/<-CHART-ID->
+
 ```
-method: POST
+method: GET
 params: CHART-ID can be obtained from top charts metadata.
 
+```
+
+**Album Endpoints**
+
+_Create an album_
+
+> https://api.openbeats.live/playlist/album/create
+
+```language
+method: POST
+bodyType: JSON
+structure:
+{
+	"name": "<NAME-OF-AN-ALBUM>",
+	"userId": "<CAPTAINAPP-LOGINED-USER-ID>",
+    "searchTags": "<ARRAY-OF-SEARCH-TAG-ID>"(optional param),
+    "artistTags": "<ARRAY-OF-FEATURING-ARTIST-TAG-ID>"(optional param),
+    "albumBy": "<ARTIST-ID>"(If album is specific to a particular Artist)(optional param)
+}
+```
+
+_Get All album_
+
+> https://api.openbeats.live/playlist/album/all
+
+```language
+method: Get
+```
+
+_Get specific album_
+
+> https://api.openbeats.live/playlist/album/<:id>
+
+```language
+method: Get
+Route params: <ALBUM-ID>
+```
+
+_Add an array of songs_
+
+> https://api.openbeats.live/playlist/album/<:id>/addsongs
+
+```language
+method: PUT
+Route params: <ALBUM-ID>
+bodyType: JSON
+structure:
+{
+	"userId": "<CAPTAINAPP-LOGINED-USER-ID>",
+    "songs": "<ARRAY-OF-SONGS-OBJECT>",
+}
+```
+
+_Delete a song from album_
+
+> https://api.openbeats.live/playlist/album/<:id>/deletesong
+
+```language
+method: PUT
+Route params: <ALBUM-ID>
+bodyType: JSON
+structure:
+{
+	"userId": "<CAPTAINAPP-LOGINED-USER-ID>",
+    "songId": "<SONG OBJECT ID(VIDEO_ID)>",
+}
+```
+
+_Update an album_
+
+> https://api.openbeats.live/playlist/album/<:id>
+
+```language
+method: PUT
+Route params: <ALBUM-ID>
+bodyType: JSON
+structure:
+{
+	"name": "<NAME-OF-AN-ALBUM>",(optional param)
+	"userId": "<CAPTAINAPP-LOGINED-USER-ID>",
+    "searchTags": "<ARRAY-OF-SEARCH-TAG-ID>"(optional param),
+    "artistTags": "<ARRAY-OF-FEATURING-ARTIST-TAG-ID>"(optional param),
+    "albumBy": "<ARTIST-ID>"(If album is specific to a particular Artist)(optional param)
+}
+```
+
+_delete albumBy in album_
+
+> https://api.openbeats.live/playlist/album/<:id>/deletealbumby
+
+```language
+method: PUT
+Route params: <ALBUM-ID>
+bodyType: JSON
+structure:
+{
+	"userId": "<CAPTAINAPP-LOGINED-USER-ID>",
+    "albumBy": "<ARTIST-ID>"
+}
+```
+
+_delete a particular searchTag in album_
+
+> https://api.openbeats.live/playlist/album/<:id>/deletesearchtag
+
+```language
+method: PUT
+Route params: <ALBUM-ID>
+bodyType: JSON
+structure:
+{
+	"userId": "<CAPTAINAPP-LOGINED-USER-ID>",
+    "searchTag": "<SEARCH-TAG-ID-TO-BE-DELETED>"
+}
+```
+
+_delete a particular featuring artist in album_
+
+> https://api.openbeats.live/playlist/album/<:id>/deleteartisttag
+
+```language
+method: PUT
+Route params: <ALBUM-ID>
+bodyType: JSON
+structure:
+{
+	"userId": "<CAPTAINAPP-LOGINED-USER-ID>",
+    "artistTag": "<ARTIST-ID-TO-BE-DELETED>"
+}
+```
+
+_delete album_
+
+> https://api.openbeats.live/playlist/album/<:id>
+
+```language
+method: DELETE
+Route params: <ALBUM-ID>
+
+```
+
+**Artist Endpoints**
+
+_Create an artist_
+
+> https://api.openbeats.live/playlist/artist/create
+
+```language
+method: POST
+bodyType: JSON
+structure:
+{
+	"name": "<NAME-OF-AN-ARTIST>",
+	"thumbnail": "<IMAGE-URL-OF-ARTIST>"
+}
+```
+
+_Fetch an artist by artistId or startsWith(return 10 docs only)_
+
+> https://api.openbeats.live/playlist/artist/fetch
+
+```language
+method: GET
+query param: artistId or startsWith(string-not case sensitive)
+```
+
+_Get All artist_
+
+> https://api.openbeats.live/playlist/artist/all
+
+```language
+method: Get
+```
+
+_Update an artist_
+
+> https://api.openbeats.live/playlist/artist/:id
+
+```language
+method: PUT
+Route params: <ARTIST-ID>
+bodyType: JSON
+structure:
+{
+	"name": "<NAME-OF-AN-ARTIST>",(optional)
+	"thumbnail": "<IMAGE-URL-OF-ARTIST>",(optional)
+    "albumTags": "<PUSH-ALBUM-ID-IN-FEATURING-ALBUM-LIST"(optional)
+}
+```
+
+_delete album_
+
+> https://api.openbeats.live/playlist/artist/<:id>
+
+```language
+method: DELETE
+Route params: <ARTIST-ID>
+```
+
+**SearchTag Endpoints**
+
+_Create an SearchTag_
+
+> https://api.openbeats.live/playlist/searchtag/create
+
+```language
+method: POST
+bodyType: JSON
+structure:
+{
+	"searchVal": "<VALUE-OR-KEYWORD-TO-SEARCH>",
+}
+```
+
+_Fetch seaechtag by seaechtagID or startsWith(return 10 docs only)_
+
+> https://api.openbeats.live/playlist/searchtag/fetch
+
+```language
+method: GET
+query param: searchId or startsWith(string-not case sensitive)
+```
+
+_Update an artist_
+
+> https://api.openbeats.live/playlist/searchtag/:id
+
+```language
+method: PUT
+Route params: <ARTIST-ID>
+bodyType: JSON
+structure:
+{
+    "searchVal": "<VALUE-OR-KEYWORD-TO-SEARCH>",
+    "albumId":<ALBUM-ID-TO-BE-ADDED-IN-ALBUMTAGS>
+```
+
+_delete album_
+
+> https://api.openbeats.live/playlist/searchtag/<:id>
+
+```language
+method: DELETE
+Route params: <ARTIST-ID>
 ```
