@@ -5,6 +5,7 @@ import { connect } from 'react-redux';
 import { addArtistActions } from '../actions';
 import { store } from '../store';
 import { push } from 'connected-react-router';
+import { CLEAR_LAST_UPDATED_ARTIST } from '../types';
 
 class AlbumsDash extends Component {
     constructor(props) {
@@ -17,7 +18,9 @@ class AlbumsDash extends Component {
     }
 
     setArtistChips = (chips) => {
-        this.setState({ artistChips: chips });
+        const chipsId = chips.map(item => item._id);
+        console.log(chipsId);
+        this.setState({ artistChips: chipsId });
     }
 
     setSearchChips = (chips) => {
@@ -58,7 +61,7 @@ class AlbumsDash extends Component {
                                 <div className="mb-1">
                                     (max 30 Characters)
                                 </div>
-                                <input className="rounded w-100" placeholder="This is Yuvan Shankar Raja" type="text" name="" id="" />
+                                <input className="rounded w-100" placeholder="This is Yuvan Shankar Raja" type="text" />
                             </div>
                             <div className="albumdash-artist-tags-holder mt-2">
                                 <div className="artist-tags-title font-weight-bold">Artist Tags</div>
@@ -82,9 +85,7 @@ class AlbumsDash extends Component {
 }
 
 const mapStateToProps = (state) => {
-    return {
-
-    }
+    return {}
 }
 
 
@@ -95,6 +96,9 @@ const mapDispatchToProps = (dispatch) => {
         },
         toggleAddArtistDialog: (artistName) => {
             addArtistActions.toggleAddArtistDialog(true, artistName);
+        },
+        clearLastAddedArtist: () => {
+            dispatch({ type: CLEAR_LAST_UPDATED_ARTIST });
         }
     }
 }
