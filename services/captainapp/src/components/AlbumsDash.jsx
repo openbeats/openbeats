@@ -2,10 +2,10 @@ import React, { Component } from 'react';
 import "../assets/styles/albumsdash.css";
 import { ChipsInput } from '.';
 import { connect } from 'react-redux';
-import { addArtistActions } from '../actions';
+import { addArtistActions, addSearchTagActions } from '../actions';
 import { store } from '../store';
 import { push } from 'connected-react-router';
-import { CLEAR_LAST_UPDATED_ARTIST } from '../types';
+import { variables } from '../config';
 
 class AlbumsDash extends Component {
     constructor(props) {
@@ -19,16 +19,22 @@ class AlbumsDash extends Component {
 
     setArtistChips = (chips) => {
         const chipsId = chips.map(item => item._id);
-        console.log(chipsId);
         this.setState({ artistChips: chipsId });
     }
 
     setSearchChips = (chips) => {
-        this.setState({ searchChips: chips });
+        const chipsId = chips.map(item => item._id);
+        this.setState({ searchChips: chipsId });
     }
 
-    createNewArtist = (artistStringName) => {
-        this.props.toggleAddArtistDialog(artistStringName);
+    createNewArtist = async (artistStringName) => {
+        const data = await this.props.toggleAddArtistDialog(artistStringName);
+        return data;
+    }
+
+    createNewSearchTag = async (searchString) => {
+        const data = await this.props.addSearchTagHandler(searchString);
+        return data;
     }
 
     albumsDashCancelHandler = () => {
@@ -67,9 +73,24 @@ class AlbumsDash extends Component {
                                 <div className="artist-tags-title font-weight-bold">Artist Tags</div>
                                 <div className="artist-tags-title-desc">(Please add only one artist, if you want this album to comes under specific Artist)</div>
                                 <ChipsInput
+                                    chipTitle={'Artist'}
                                     setChipsCallback={this.setArtistChips}
-                                    suggestionFetchUrl={'url'}
+                                    suggestionFetchUrl={`${variables.baseUrl}/playlist/artist/fetch?startsWith=`}
+                                    suggestionNameField={'name'}
                                     createNewChipCallback={this.createNewArtist}
+                                    placeholder={"Search Artist Here..."}
+                                />
+                            </div>
+                            <div className="albumdash-artist-tags-holder mt-2">
+                                <div className="artist-tags-title font-weight-bold">Artist Tags</div>
+                                <div className="artist-tags-title-desc">(Please add only one artist, if you want this album to comes under specific Artist)</div>
+                                <ChipsInput
+                                    chipTitle={'Search Tag'}
+                                    setChipsCallback={this.setSearchChips}
+                                    suggestionFetchUrl={`${variables.baseUrl}/playlist/searchtag/fetch?startsWith=`}
+                                    suggestionNameField={'searchVal'}
+                                    createNewChipCallback={this.createNewSearchTag}
+                                    placeholder={"Search Search Tags Here..."}
                                 />
                             </div>
                         </div>
@@ -82,6 +103,7 @@ class AlbumsDash extends Component {
             </div>
         )
     }
+
 }
 
 const mapStateToProps = (state) => {
@@ -95,10 +117,10 @@ const mapDispatchToProps = (dispatch) => {
             store.dispatch(push(path));
         },
         toggleAddArtistDialog: (artistName) => {
-            addArtistActions.toggleAddArtistDialog(true, artistName);
+            return addArtistActions.toggleAddArtistDialog(true, artistName);
         },
-        clearLastAddedArtist: () => {
-            dispatch({ type: CLEAR_LAST_UPDATED_ARTIST });
+        addSearchTagHandler: (searchVal) => {
+            return addSearchTagActions.addSearchTagHandler(searchVal);
         }
     }
 }

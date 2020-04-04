@@ -16,8 +16,14 @@ class ArtistAddDialog extends Component {
     saveActionHandler = async () => {
         const addArtistResult = await this.props.addArtistHandler(this.state.artistName, this.state.artistImageUrl);
         if (addArtistResult) {
+            if (this.props.addArtistCallBack) this.props.addArtistCallBack(addArtistResult);
             this.props.toggleAddArtistDialog(false);
         }
+    }
+
+    cancelActionHandler = () => {
+        if (this.props.addArtistCallBack) this.props.addArtistCallBack({ status: false, data: "cancelled" });
+        this.props.toggleAddArtistDialog(false);
     }
 
     componentWillUnmount() {
@@ -40,7 +46,7 @@ class ArtistAddDialog extends Component {
                         <div className="artist-add-dialog-header-right-items">
                             <div className="d-flex">
                                 <div className="create-album-link font-weight-bold mr-3 cursor-pointer" onClick={this.saveActionHandler}>save</div>
-                                <div className="create-album-link bg-danger font-weight-bold cursor-pointer" onClick={this.props.toggleAddArtistDialog} >cancel</div>
+                                <div className="create-album-link bg-danger font-weight-bold cursor-pointer" onClick={this.cancelActionHandler} >cancel</div>
                             </div>
                         </div>
                     </div>
@@ -71,15 +77,16 @@ class ArtistAddDialog extends Component {
 
 const mapStateToProps = (state) => {
     return {
-        addArtistInitName: state.addArtist.artistName
+        addArtistInitName: state.addArtist.artistName,
+        addArtistCallBack: state.addArtist.addArtistCallBack
     }
 }
 
 
 const mapDispatchToProps = (dispatch) => {
     return {
-        toggleAddArtistDialog: () => {
-            addArtistActions.toggleAddArtistDialog(false);
+        toggleAddArtistDialog: (value) => {
+            addArtistActions.toggleAddArtistDialog(value);
         },
         addArtistHandler: (name, url) => {
             return addArtistActions.addArtistHandler(name, url);
