@@ -69,7 +69,8 @@ class ChipsInput extends Component {
         } else if (event.keyCode === 38) {
             this.setState({ suggestionCurrentIndex: (this.state.suggestionCurrentIndex - 1) >= 0 ? this.state.suggestionCurrentIndex - 1 : this.state.chipSuggestion.length - 1 })
         } else if (event.keyCode === 13) {
-            this.addChip(this.state.suggestionCurrentIndex);
+            if (this.state.chipSuggestion.length && this.state.chipSuggestion[0] !== undefined)
+                this.addChip(this.state.suggestionCurrentIndex);
         }
     }
 

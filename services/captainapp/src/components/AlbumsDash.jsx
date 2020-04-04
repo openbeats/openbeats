@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import "../assets/styles/albumsdash.css";
-import { ChipsInput } from '.';
+import { ChipsInput, SongSearcher, SongsBucket } from '.';
 import { connect } from 'react-redux';
 import { addArtistActions, addSearchTagActions } from '../actions';
 import { store } from '../store';
@@ -14,6 +14,10 @@ class AlbumsDash extends Component {
             albumName: '',
             artistChips: [],
             searchChips: [],
+            songsCollection: [],
+            songsSearchCollection: [],
+            isUpdate: false,
+            updateAlbumId: null
         }
     }
 
@@ -82,8 +86,8 @@ class AlbumsDash extends Component {
                                 />
                             </div>
                             <div className="albumdash-artist-tags-holder mt-2">
-                                <div className="artist-tags-title font-weight-bold">Artist Tags</div>
-                                <div className="artist-tags-title-desc">(Please add only one artist, if you want this album to comes under specific Artist)</div>
+                                <div className="artist-tags-title font-weight-bold">Search Tags</div>
+                                <div className="artist-tags-title-desc">(Please add Search Tags related to this album)</div>
                                 <ChipsInput
                                     chipTitle={'Search Tag'}
                                     setChipsCallback={this.setSearchChips}
@@ -96,8 +100,15 @@ class AlbumsDash extends Component {
                         </div>
                     </div>
                     <div className="albumdash-container-right-pan">
-                        <div className="albumdash-search-holder"></div>
-                        <div className="albumdash-song-bucket-holder"></div>
+                        <div className="albumdash-search-holder">
+                            <SongSearcher
+                                searchStringSuggestionFetchUrl={"https://api.openbeats.live/suggester?k="}
+                                songSuggestionFetchUrl={"https://api.openbeats.live/ytcat?q="}
+                            />
+                        </div>
+                        <div className="albumdash-song-bucket-holder">
+                            <SongsBucket />
+                        </div>
                     </div>
                 </div>
             </div>
