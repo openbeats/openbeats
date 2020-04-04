@@ -1,13 +1,11 @@
 import {
     TOGGLE_ADD_ARTIST_DIALOG,
-    SET_LAST_UPDATED_ARTIST,
-    CLEAR_LAST_UPDATED_ARTIST
 } from "../types";
 
 const initialState = {
     isOpened: false,
     artistName: "home",
-    lastAddedArtist: null
+    addArtistCallBack: null
 }
 
 export const addArtist = (state = initialState, action) => {
@@ -16,20 +14,8 @@ export const addArtist = (state = initialState, action) => {
             state = {
                 ...state,
                 isOpened: action.payload.isOpened,
-                artistName: action.payload.artistName
-            };
-            break;
-
-        case SET_LAST_UPDATED_ARTIST:
-            state = {
-                ...state,
-                lastAddedArtist: action.payload
-            };
-            break;
-        case CLEAR_LAST_UPDATED_ARTIST:
-            state = {
-                ...state,
-                lastAddedArtist: null
+                artistName: action.payload.artistName,
+                addArtistCallBack: action.payload.addArtistCallBack
             };
             break;
         default:

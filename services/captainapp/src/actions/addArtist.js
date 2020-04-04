@@ -3,7 +3,6 @@ import {
 } from "../store";
 import {
     TOGGLE_ADD_ARTIST_DIALOG,
-    SET_LAST_UPDATED_ARTIST
 } from "../types";
 import axios from "axios";
 import {
@@ -14,13 +13,25 @@ import {
 } from "react-toastify";
 
 export const toggleAddArtistDialog = (isOpened, artistName = '') => {
+    let promiseResolve;
+    const promise = new Promise(function (resolve, reject) {
+        promiseResolve = resolve;
+    });
+
+    const callBack = (data) => {
+        promiseResolve(data);
+    }
+
     store.dispatch({
         type: TOGGLE_ADD_ARTIST_DIALOG,
         payload: {
             isOpened,
-            artistName
+            artistName,
+            addArtistCallBack: callBack
         }
     })
+
+    return promise;
 }
 
 export const addArtistHandler = async (name, url) => {
@@ -30,13 +41,17 @@ export const addArtistHandler = async (name, url) => {
         thumbnail: url
     })).data;
     if (resultData.status) {
-        await store.dispatch({
-            type: SET_LAST_UPDATED_ARTIST,
-            payload: resultData.data
-        })
-        return true;
+        const data = {
+            status: true,
+            data: resultData.data
+        };
+        return data;
     } else {
         toast.error(resultData.data.toString())
-        return false;
+        const data = {
+            status: false,
+            data: resultData.data
+        };
+        return data;
     }
 }
