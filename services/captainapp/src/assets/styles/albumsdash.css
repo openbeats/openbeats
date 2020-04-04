@@ -1,15 +1,15 @@
 .albumsdash-wrapper {
     width: 100%;
     height: 100%;
-    overflow: hidden;
     display: grid;
     grid-template-rows: 40px auto;
     box-sizing: border-box;
+    position: relative;
 }
 
 .albumsdash-header {
     width: 100%;
-    height: 100%;
+    background: white;
     display: block;
     box-sizing: border-box;
     display: flex;
@@ -24,19 +24,14 @@
     width: 100%;
     display: grid;
     grid-template-columns: 50% 50%;
+    overflow-y: auto;
+    box-sizing: border-box;
 }
 
 .albumdash-container-left-pan {
     width: 100%;
     height: 100%;
     padding: 10px;
-}
-
-.albumdash-container-right-pan {
-    width: 100%;
-    height: 100%;
-    display: grid;
-    grid-template-rows: 50% 50%;
 }
 
 .albumdash-album-content-holder {
@@ -46,18 +41,25 @@
     border-radius: 10px;
 }
 
+.albumdash-container-right-pan {
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    display: grid;
+    grid-template-rows: 50%;
+}
+
+
 .albumdash-search-holder {
-    margin: 10px;
-    box-shadow: 0 0 10px 0 gray;
-    background: #FF4B4B;
-    border-radius: 10px;
+    height: 100%;
+    padding: 10px;
+    box-sizing: border-box;
 }
 
 .albumdash-song-bucket-holder {
-    margin: 10px;
-    box-shadow: 0 0 10px 0 gray;
-    background: #322C2C;
-    border-radius: 10px;
+    height: 100%;
+    box-sizing: border-box;
+    padding: 10px;
 }
 
 .albumdash-name-holder>div:first-child {
