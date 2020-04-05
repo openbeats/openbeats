@@ -1,10 +1,11 @@
 import React, { Component } from 'react';
-import { LeftNav, Albums, Artists, Languages, AlbumsDash } from '.';
+import { LeftNav, Albums, Artists, Languages, AlbumsDash, ArtistAddDialog } from '.';
 import { Switch, Route } from 'react-router';
 import Home from './Home';
 import "../assets/styles/main.css";
+import { connect } from 'react-redux';
 
-export default class Main extends Component {
+class Main extends Component {
     render() {
         return (
             <div className="main-wrapper">
@@ -17,8 +18,27 @@ export default class Main extends Component {
                         <Route path="/artists" component={Artists} />
                         <Route path="/languages" component={Languages} />
                     </Switch>
+                    {this.props.isAddArtistOpended && <ArtistAddDialog />}
                 </div>
             </div>
         )
     }
 }
+
+
+const mapStateToProps = (state) => {
+    return {
+        isAddArtistOpended: state.addArtist.isOpened
+    }
+}
+
+
+const mapDispatchToProps = (dispatch) => {
+    return {
+
+    }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(Main);
+
+

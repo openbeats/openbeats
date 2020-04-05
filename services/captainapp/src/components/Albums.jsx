@@ -21,7 +21,7 @@ class Albums extends Component {
                         <input className="input input-sm red-border" type="text" placeholder="Search Albums, Artists, Languages..." aria-label="Search" />
                         <i className="fas fa-search text-grey cursor-pointer" aria-hidden="true"></i>
                     </div>
-                    <Link className="create-album-link font-weight-bold" to="/albums/dashyard"><i className="far fa-plus mr-1"></i>&nbsp;Create Album</Link>
+                    <Link className="create-album-link font-weight-bold cursor-pointer text-white" to="/albums/dashyard"><i className="far fa-plus mr-1"></i>&nbsp;Create Album</Link>
                 </div>
                 <div className="albums-container">
                     <div className="album-holder" style={{ backgroundImage: `url(${albumDummySong})` }}>
