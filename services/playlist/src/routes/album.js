@@ -192,9 +192,7 @@ router.put(
 		.isEmpty(),
 		check("featuringArtists", "Please pass atleast one artist tag in array.")
 		.if(body("featuringArtists").exists())
-		.isArray()
-		.not()
-		.isEmpty(),
+		.isArray(),
 		check("searchTags", "Please pass atleast one search tag in array.")
 		.if(body("searchTags").exists())
 		.isArray()
