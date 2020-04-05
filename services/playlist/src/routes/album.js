@@ -1,12 +1,16 @@
 import express from "express";
 import Album from "../models/Album";
-import { check, body, validationResult } from "express-validator";
-import { uniq } from "lodash";
+import {
+	check,
+	body,
+	validationResult
+} from "express-validator";
 import config from "config";
 import axios from "axios";
-import { Error } from "mongoose";
-import SearchTag from "../models/SearchTag";
-import Artist from "../models/Artist";
+import {
+	Error
+} from "mongoose";
+import paginationMiddleware from "../config/paginationMiddleware"
 
 const router = express.Router();
 
@@ -18,22 +22,22 @@ const baseUrl = `${
 router.post(
 	"/create",
 	[
-		check("name", "Name is required")
-			.not()
-			.isEmpty(),
-		check("userId", "User Id is required.")
-			.not()
-			.isEmpty(),
-		check("artistTags", "Please pass atleast one artist tag in array.")
-			.if(body("artistTags").exists())
-			.isArray()
-			.not()
-			.isEmpty(),
+		check("name", "Name is required").not().isEmpty(),
+		check("userId", "User Id is required.").not().isEmpty(),
+		check("songs", "Please pass array of song objects to add.")
+		.isArray()
+		.not()
+		.isEmpty(),
+		check("featuringArtists", "Please pass atleast one artist tag in array.")
+		.if(body("featuringArtists").exists())
+		.isArray()
+		.not()
+		.isEmpty(),
 		check("searchTags", "Please pass atleast one search tag in array.")
-			.if(body("searchTags").exists())
-			.isArray()
-			.not()
-			.isEmpty(),
+		.if(body("searchTags").exists())
+		.isArray()
+		.not()
+		.isEmpty(),
 	],
 	async (req, res) => {
 		try {
@@ -44,42 +48,59 @@ router.post(
 					status: false,
 					data: errors
 						.array()
-						.map(ele => `${ele.param} - ${ele.msg} `)
+						.map((ele) => `${ele.param} - ${ele.msg} `)
 						.join("\n"),
 				});
 			}
 
-			const { name, artistTags, searchTags, userId, albumBy } = req.body;
+			const {
+				name,
+				featuringArtists,
+				searchTags,
+				userId,
+				albumBy,
+				songs
+			} = req.body;
 
-			if (!name || !userId) {
-				throw new Error("Pass name and  userId in request body.");
+			if (!name || !userId || !songs) {
+				throw new Error("Pass name, userId and songs in request body.");
 			}
 
+			const songIds = songs.map((song) => song.videoId);
 			const newAlbum = {};
 			newAlbum.name = name;
 			newAlbum.createdBy = userId;
 			newAlbum.updatedBy = userId;
+			newAlbum.songs = songIds;
+			newAlbum.totalSongs = songIds.length;
+
+			const addSongsCoreUrl = `${baseUrl}/addsongs`;
+			axios.post(addSongsCoreUrl, {
+				songs,
+			});
 
 			const album = new Album(newAlbum);
 			await album.addDefultSearchTags();
-			await album.save();
 
 			if (albumBy) {
-				album.addAlbumBy(albumBy);
+				album.albumBy = albumBy;
 			}
 
-			if (artistTags) {
-				await album.addfeaturingArtists(artistTags);
+			if (featuringArtists) {
+				album.featuringArtists = featuringArtists;
 			}
 
 			if (searchTags) {
-				await album.addSearchTags(searchTags);
+				album.searchTags = searchTags;
 			}
+
+			await album.save();
 
 			res.send({
 				status: true,
 				data: album,
 			});
+
 		} catch (error) {
 			console.log(error.message);
 			res.send({
@@ -90,26 +111,23 @@ router.post(
 	},
 );
 
-router.get("/all", async (req, res) => {
+router.get("/all", paginationMiddleware(Album, {
+	_id: true,
+	name: 1,
+	thumbnail: 2,
+	totalSongs: 3,
+}), async (req, res) => {
 	try {
-		const albumAll = await Album.find(
-			{},
-			{
-				_id: true,
-				name: 1,
-				thumbnail: 2,
-				totalSongs: 3,
-			},
-		);
-		if (!albumAll) {
-			return res.json({
-				status: false,
-				data: "No albums found.",
-			});
+		if (!res.paginatedResults) {
+			let data = "No albums found...";
+			if (res.pagnationError) {
+				data = res.pagnationError;
+			}
+			throw new Error(data);
 		}
 		res.send({
 			status: true,
-			data: albumAll,
+			data: res.paginatedResults,
 		});
 	} catch (error) {
 		console.log(error.message);
@@ -122,7 +140,15 @@ router.get("/all", async (req, res) => {
 
 router.get("/:id", async (req, res) => {
 	try {
-		const album = await Album.findById(req.params.id);
+		let album = null;
+		if (req.query.edit === "true") {
+			album = await Album.findById(req.params.id)
+				.populate("searchTags")
+				.populate("featuringArtists")
+				.populate("albumBy");
+		} else {
+			album = await Album.findById(req.params.id);
+		}
 		if (!album) {
 			return res.json({
 				status: false,
@@ -154,299 +180,28 @@ router.get("/:id", async (req, res) => {
 });
 
 router.put(
-	"/:id/addsongs",
-	[
-		check("userId", "User Id is required.")
-			.not()
-			.isEmpty(),
-		check("songs", "Please pass array of song objects to add.")
-			.isArray()
-			.not()
-			.isEmpty(),
-	],
-	async (req, res) => {
-		const errors = validationResult(req);
-		if (!errors.isEmpty()) {
-			return res.json({
-				status: false,
-				data: errors
-					.array()
-					.map(ele => `${ele.param} - ${ele.msg} `)
-					.join("\n"),
-			});
-		}
-
-		const { userId, songs } = req.body;
-
-		try {
-			const album = await Album.findById(req.params.id);
-			if (!album) {
-				return res.json({
-					status: false,
-					data: "Album not found.",
-				});
-			}
-			const addSongsCoreUrl = `${baseUrl}/addsongs`;
-			const availableSongs = album.songs;
-			const songIds = songs.map(song => song.videoId);
-			let newSongsList = [...songIds, ...availableSongs];
-			newSongsList = uniq(newSongsList);
-			axios.post(addSongsCoreUrl, {
-				songs: [...songs],
-			});
-			await album.updateOne({
-				songs: newSongsList,
-				updatedAt: Date.now(),
-				updatedBy: userId,
-				totalSongs: newSongsList.length,
-				thumbnail: songs[0].thumbnail,
-			});
-			res.send({
-				status: true,
-				data: "Songs added successfully.",
-			});
-		} catch (error) {
-			console.log(error);
-			res.send({
-				status: false,
-				data: error.message,
-			});
-		}
-	},
-);
-
-router.put(
-	"/:id/deletesong",
-	[
-		check("userId", "User Id is required.")
-			.not()
-			.isEmpty(),
-		check("songId", "Please pass on the song Id to delete.")
-			.not()
-			.isEmpty(),
-	],
-	async (req, res) => {
-		try {
-			const errors = validationResult(req);
-
-			if (!errors.isEmpty()) {
-				return res.json({
-					status: false,
-					data: errors
-						.array()
-						.map(ele => `${ele.param} - ${ele.msg} `)
-						.join("\n"),
-				});
-			}
-
-			const { userId, songId } = req.body;
-
-			await Album.findByIdAndUpdate(req.params.id, {
-				$pull: {
-					songs: songId,
-				},
-			});
-
-			const album = await Album.findById(req.params.id);
-
-			if (!album) {
-				return res.json({
-					status: false,
-					data: "Album not found.",
-				});
-			}
-			const lastSongId = album.songs.length
-				? album.songs[album.songs.length - 1]
-				: null;
-			let newThumbnail = `https://openbeats.live/static/media/dummy_music_holder.a3d0de2e.jpg`;
-			if (lastSongId !== null) {
-				const songsCoreUrl = `${baseUrl}/getsong/${lastSongId}`;
-				const newThumbData = (await axios.get(songsCoreUrl)).data;
-				if (newThumbData.status) {
-					newThumbnail = newThumbData.data.thumbnail;
-				}
-			}
-			await album.updateOne({
-				updatedAt: Date.now(),
-				updatedBy: userId,
-				totalSongs: album.songs.length,
-				thumbnail: newThumbnail,
-			});
-
-			res.send({
-				status: true,
-				data: "Song has been deleted successfully",
-			});
-		} catch (error) {
-			console.log(error.message);
-			res.send({
-				status: false,
-				data: error.message,
-			});
-		}
-	},
-);
-
-router.put("/:id/deletesearchtag", async (req, res) => {
-	try {
-		const album = await Album.findById(req.params.id);
-
-		if (!album) {
-			return res.json({
-				status: false,
-				data: "Album not found.",
-			});
-		}
-		const { searchTag, userId } = req.body;
-
-		if (!searchTag || !userId) {
-			return res.json({
-				status: false,
-				data: "Please pass both albumBy and userId in request body.",
-			});
-		}
-
-		await Album.findByIdAndUpdate(req.params.id, {
-			$pull: {
-				searchTags: searchTag,
-			},
-		});
-
-		await SearchTag.findByIdAndUpdate(searchTag, {
-			$pull: {
-				albumTags: req.params.id,
-			},
-		});
-
-		await album.save();
-
-		res.send({
-			status: true,
-			data: "Successfully removed the search tag.",
-		});
-	} catch (error) {
-		res.send({
-			status: false,
-			data: error.message,
-		});
-	}
-});
-
-router.put("/:id/deleteartisttag", async (req, res) => {
-	try {
-		const album = await Album.findById(req.params.id);
-
-		if (!album) {
-			return res.json({
-				status: false,
-				data: "Album not found.",
-			});
-		}
-		const { artistTag, userId } = req.body;
-
-		if (!albumBy || !userId) {
-			return res.json({
-				status: false,
-				data: "Please pass both albumBy and userId in request body.",
-			});
-		}
-		album.updatedBy = userId;
-
-		await Album.findByIdAndUpdate(req.params.id, {
-			$pull: {
-				featuringArtists: artistTag,
-			},
-		});
-
-		await Artist.findByIdAndUpdate(artistTag, {
-			$pull: {
-				featuringAlbums: req.params.id,
-			},
-		});
-
-		await album.save();
-
-		res.send({
-			status: true,
-			data: "Successfully removed the artist tag from.",
-		});
-	} catch (error) {
-		res.send({
-			status: false,
-			data: error.message,
-		});
-	}
-});
-
-router.put("/:id/deletealbumby", async (req, res) => {
-	try {
-		const album = await Album.findById(req.params.id);
-
-		if (!album) {
-			return res.json({
-				status: false,
-				data: "Album not found.",
-			});
-		}
-		const { albumBy, userId } = req.body;
-
-		if (!albumBy || !userId) {
-			return res.json({
-				status: false,
-				data: "Please pass both albumBy and userId in request body.",
-			});
-		}
-		album.updatedBy = userId;
-
-		await Album.findByIdAndUpdate(req.params.id, {
-			albumBy: null,
-		});
-
-		await Artist.findByIdAndUpdate(albumBy, {
-			$pull: {
-				releasedAlbums: req.params.id,
-			},
-		});
-
-		await album.save();
-
-		res.send({
-			status: true,
-			data: "Successfully removed the album's artist.",
-		});
-	} catch (error) {
-		res.send({
-			status: false,
-			data: error.message,
-		});
-	}
-});
-
-router.put(
 	"/:id",
 	[
-		check("name", "Name must not be empty.")
-			.if(body("name").exists())
-			.not()
-			.isEmpty(),
-		check("userId", "User Id is required.")
-			.not()
-			.isEmpty(),
-		check("artistTags", "Please pass atleast one artist tag in array.")
-			.if(body("artistTags").exists())
-			.isArray()
-			.not()
-			.isEmpty(),
+		check("name", "Name is required").not().isEmpty(),
+		check("userId", "User Id is required.").not().isEmpty(),
+		check("songs", "Please pass array of song objects to add.")
+		.isArray()
+		.not()
+		.isEmpty(),
+		check("featuringArtists", "Please pass atleast one artist tag in array.")
+		.if(body("featuringArtists").exists())
+		.isArray()
+		.not()
+		.isEmpty(),
 		check("searchTags", "Please pass atleast one search tag in array.")
-			.if(body("searchTags").exists())
-			.isArray()
-			.not()
-			.isEmpty(),
+		.if(body("searchTags").exists())
+		.isArray()
+		.not()
+		.isEmpty(),
 	],
 	async (req, res) => {
 		try {
 			const album = await Album.findById(req.params.id);
-
 			if (!album) {
 				return res.json({
 					status: false,
@@ -455,45 +210,60 @@ router.put(
 			}
 
 			const errors = validationResult(req);
-
 			if (!errors.isEmpty()) {
 				return res.json({
 					status: false,
 					data: errors
 						.array()
-						.map(ele => `${ele.param} - ${ele.msg} `)
+						.map((ele) => `${ele.param} - ${ele.msg} `)
 						.join("\n"),
 				});
 			}
 
-			const { name, artistTags, searchTags, userId, albumBy } = req.body;
+			const {
+				name,
+				featuringArtists,
+				songs,
+				searchTags,
+				userId,
+				albumBy
+			} = req.body;
 
-			album.updatedBy = userId;
-
-			if (name) {
-				album.name = name;
-				await album.addDefultSearchTags();
+			if (!name || !userId || !songs) {
+				throw new Error("Pass name, userId and songs in request body.");
 			}
-			await album.save();
+
+			const songIds = songs.map((song) => song.videoId);
+			album.name = name;
+			album.updatedBy = userId;
+			album.songs = songIds;
+			album.totalSongs = songIds.length;
+			const addSongsCoreUrl = `${baseUrl}/addsongs`;
+			axios.post(addSongsCoreUrl, {
+				songs,
+			});
 
 			if (albumBy) {
-				await album.addAlbumBy(albumBy);
+				album.albumBy = albumBy;
 			}
 
-			if (artistTags) {
-				await album.addfeaturingArtists(artistTags);
+			if (featuringArtists) {
+				album.featuringArtists = featuringArtists;
 			}
 
 			if (searchTags) {
-				await album.addSearchTags(searchTags);
+				album.searchTags = searchTags;
 			}
 
 			await album.save();
+
 			res.send({
 				status: true,
 				data: album,
 			});
+
 		} catch (error) {
+			console.log(error.message);
 			res.send({
 				status: false,
 				data: error.message,
@@ -517,5 +287,31 @@ router.delete("/:id", async (req, res) => {
 		});
 	}
 });
+
+router.get("/:searchtag/findbysearchtag", async (req, res) => {
+	try {
+		const relatedAlbum = await Album.find({
+			searchTags: {
+				"$in": [req.params.searchtag]
+			}
+		}, {
+			_id: true,
+			name: 1,
+			thumbnail: 2,
+			totalSongs: 3,
+		});
+		res.send({
+			status: true,
+			data: relatedAlbum,
+		});
+	} catch (error) {
+		console.log(error.message);
+		res.send({
+			status: false,
+			data: error.message,
+		});
+	}
+});
+
 
 export default router;
