@@ -38,6 +38,14 @@
     opacity: 0.8;
 }
 
+.grab-pointer {
+    cursor: grab;
+}
+
+.grab-pointer:hover {
+    opacity: 0.8;
+}
+
 .p-events-none {
     pointer-events: none;
 }

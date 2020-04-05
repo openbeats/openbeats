@@ -1,41 +1,62 @@
 import React, { Component } from 'react';
 import '../assets/styles/chipsinput.css';
+import axios from 'axios';
+import { intersectionBy, differenceBy } from "lodash"
+import { toast } from 'react-toastify';
 
-export default class ChipsInput extends Component {
+class ChipsInput extends Component {
     constructor(props) {
         super(props);
         this.state = {
             chips: [],
             chipSuggestion: [],
             suggestionString: '',
-            suggestionRequestUrl: null,
-            suggestionCurrentIndex: 0
+            suggestionRequestUrl: this.props.suggestionFetchUrl,
+            suggestionCurrentIndex: 0,
+            suggestionNameField: this.props.suggestionNameField
         }
         this.suggestionBlockRef = null;
+        this.inputRef = null;
     }
 
     chipSuggestionFetchHandler = async () => {
-        document.removeEventListener("click", this.clearSuggestionInputListener);
-        document.removeEventListener("keyup", this.clearSuggestionInputListener);
-
-        // this.setState({ chipSuggestion: ["Anirudh", "A R Rahman", "Lorem", "Paris"] });
-        this.setState({ chipSuggestion: ["undefined"] })
-
-        document.addEventListener("click", this.clearSuggestionInputListener);
-        document.addEventListener("keyup", this.clearSuggestionInputListener);
+        if (this.state.suggestionString) {
+            document.removeEventListener("click", this.clearSuggestionInputListener);
+            document.removeEventListener("keyup", this.clearSuggestionInputListener);
+            const chipSuggestionUrl = this.state.suggestionRequestUrl + this.state.suggestionString;
+            const chipsFromServer = (await axios.get(chipSuggestionUrl)).data;
+            if (chipsFromServer.status) {
+                if (chipsFromServer.data.length) {
+                    let setChips = [];
+                    setChips = intersectionBy(chipsFromServer.data, this.state.chips, "_id");
+                    setChips = differenceBy(chipsFromServer.data, setChips, "_id");
+                    this.setState({ chipSuggestion: [...setChips] });
+                } else {
+                    this.setState({ chipSuggestion: ["undefined"] });
+                }
+                document.addEventListener("click", this.clearSuggestionInputListener);
+                document.addEventListener("keyup", this.clearSuggestionInputListener);
+            } else {
+                console.error(chipsFromServer);
+                toast.error(chipsFromServer.data.toString());
+            }
+        } else {
+            this.setState({ chipSuggestion: [] })
+        }
     }
 
     deleteChip = (index) => {
         let newChips = this.state.chips.filter((i, k) => k !== index);
         this.setState({ chips: newChips });
-        this.props.setArtistChips(newChips);
+        this.props.setChipsCallback(newChips);
     }
 
     addChip = (index) => {
         let addedNewChip = this.state.chips;
         addedNewChip.push(this.state.chipSuggestion[index]);
         this.setState({ chips: addedNewChip, chipSuggestion: [], suggestionString: '', suggestionCurrentIndex: 0 });
-        this.props.setArtistChips(addedNewChip);
+        this.inputRef && this.inputRef.focus();
+        this.props.setChipsCallback(addedNewChip);
     }
 
     clearSuggestionInputListener = (event) => {
@@ -48,15 +69,20 @@ export default class ChipsInput extends Component {
         } else if (event.keyCode === 38) {
             this.setState({ suggestionCurrentIndex: (this.state.suggestionCurrentIndex - 1) >= 0 ? this.state.suggestionCurrentIndex - 1 : this.state.chipSuggestion.length - 1 })
         } else if (event.keyCode === 13) {
-            this.addChip(this.state.suggestionCurrentIndex);
+            if (this.state.chipSuggestion.length && this.state.chipSuggestion[0] !== undefined)
+                this.addChip(this.state.suggestionCurrentIndex);
         }
     }
 
-    createNewChipHandler = () => {
-        this.props.createNewChipCallback(this.state.suggestionString);
+    createNewChipHandler = async () => {
         this.setState({ suggestionString: '', chipSuggestion: [] });
         document.removeEventListener("click", this.clearSuggestionInputListener);
         document.removeEventListener("keyup", this.clearSuggestionInputListener);
+        const newChipData = await this.props.createNewChipCallback(this.state.suggestionString);
+        if (newChipData.status) {
+            await this.setState({ chipSuggestion: [newChipData.data] });
+            await this.addChip(0);
+        }
     }
 
     render() {
@@ -66,24 +92,26 @@ export default class ChipsInput extends Component {
             >
                 <div className="tags-chips-container">
                     {this.state.chips.map((item, key) => (<div className="chip-container" key={key}>
-                        <span>{item}</span>
+                        <span>{item[this.state.suggestionNameField]}</span>
                         <div className="chip-container-cancel-button cursor-pointer" onClick={() => this.deleteChip(key)}><i className="fas fa-times text-white"></i></div>
                     </div>
                     ))}
                 </div>
                 <div className="tag-input-container">
-                    <input type="text" placeholder="Search Artist Here..."
+                    <input
+                        ref={d => this.inputRef = d}
+                        type="text" placeholder={this.props.placeholder || ""}
                         onChange={async (e) => {
                             await this.setState({ suggestionString: e.target.value })
                             this.chipSuggestionFetchHandler();
-                        }} value={this.state.suggestionString} name="" id="" />
+                        }} value={this.state.suggestionString} />
                     <div className="tag-suggestion-string-holder" >
                         {this.state.chipSuggestion[0] && this.state.chipSuggestion[0] !== "undefined" && this.state.chipSuggestion.map((item, key) => {
-                            return <div className={`suggestion-string-node ${this.state.suggestionCurrentIndex === key ? 'bg-danger text-white' : ''}`} key={key} onClick={e => this.addChip(key)}>{item}</div>
+                            return <div className={`suggestion-string-node ${this.state.suggestionCurrentIndex === key ? 'bg-danger text-white' : ''}`} key={key} onClick={e => this.addChip(key)}>{item[this.state.suggestionNameField]}</div>
                         })}
                         {
-                            this.state.chipSuggestion[0] && this.state.chipSuggestion[0] === "undefined" && <div className={`text-center suggestion-string-node bg-warning text-white`} onClick={e => { }}>
-                                Cannot find the Artist you are looking for? <br /> <button onClick={this.createNewChipHandler} className="font-weight-bold  mt-1 btn btn-sm btn-success rounded">Create New Artist</button>
+                            this.state.chipSuggestion[0] && this.state.chipSuggestion[0] === "undefined" && <div className={`text-center suggestion-string-node bg-warning text-white`} >
+                                Cannot find the {this.props.chipTitle || ""} you are looking for? <br /> <button onClick={this.createNewChipHandler} className="font-weight-bold  mt-1 btn btn-sm btn-success rounded">Create New {this.props.chipTitle || ""}</button>
                             </div>
                         }
                     </div>
@@ -93,3 +121,5 @@ export default class ChipsInput extends Component {
     }
 
 }
+
+export default ChipsInput;

@@ -1,0 +1,183 @@
+.songsbucket-wrapper {
+    width: 100%;
+    height: 100%;
+    box-shadow: 0 0 10px 0 gray;
+    background: #322C2C;
+    border-radius: 10px;
+    display: grid;
+    grid-template-rows: 50px auto;
+}
+
+.songsbucket-header {
+    width: 100%;
+    height: 100%;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+    display: grid;
+    grid-template-columns: 80px auto 80px;
+}
+
+.songsbucket-total-song-count-holer {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.songsbucket-totalsongs {
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    background: gray;
+    font-size: 15px;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: rgb(212, 212, 212);
+}
+
+.songsbucket-title-holer {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.songsbucket-title-holer>i {
+    font-size: 20px;
+}
+
+.songsbucket-empty-action {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.songsbucket-empty-action>i {
+    font-size: 19px;
+}
+
+.songsbucket-body {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    overflow: auto;
+    padding-bottom: 10px;
+}
+
+/* width */
+.songsbucket-body::-webkit-scrollbar {
+    width: 8px;
+    border-radius: 10px;
+}
+
+/* Track */
+.songsbucket-body::-webkit-scrollbar-track {
+    background: var(--text-leftnav);
+    border-radius: 10px;
+}
+
+/* Handle */
+.songsbucket-body::-webkit-scrollbar-thumb {
+    background: #d8d5d5;
+    border-radius: 20px;
+    cursor: pointer;
+}
+
+/* Handle on hover */
+.songsbucket-body::-webkit-scrollbar-thumb:hover {
+    background: var(--base-color);
+    opacity: 0.5;
+}
+
+.songsbucket-empty-result-message {
+    font-size: 15px;
+    color: white;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.songsbucket-songs-holder {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: 100%;
+    padding-left: 20px;
+    padding-right: 20px;
+    padding-bottom: 10px;
+}
+
+
+
+.songsbucket-search-result-node {
+    width: 100%;
+    height: 50px;
+    border-bottom: 0.5px solid rgba(255, 255, 255, 0.8);
+    display: grid;
+    align-items: center;
+    grid-template-columns: 50px 50px 50px 80px auto;
+    color: white;
+    font-size: 14px;
+}
+
+.songsbucket-song-drag-handle-holder {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+}
+
+.songsbucket-song-current-position-indicator {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.songsbucket-song-current-position-indicator>div {
+    width: 25px;
+    height: 25px;
+    background: rgba(255, 255, 255, 0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    font-size: 14px;
+    color: white;
+    margin-right: 10px;
+}
+
+.songsbucket-song-thumbnail-holder {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.songsbucket-song-thumbnail {
+    width: 100%;
+    height: 30px;
+    border-radius: 5px;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: cover;
+}
+
+.songsbucket-actions {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+}
