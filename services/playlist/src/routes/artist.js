@@ -1,13 +1,26 @@
 import Artist from "../models/Artist";
-import { Router } from "express";
-
-import { check, oneOf, validationResult } from "express-validator";
+import Album from "../models/Album";
+import {
+	Router
+} from "express";
+import {
+	check,
+	oneOf,
+	validationResult
+} from "express-validator";
+import paginationMiddleware from "../config/paginationMiddleware";
 
 const router = Router();
 
 router.post("/create", async (req, res) => {
 	try {
-		const { name, thumbnail } = req.body;
+		const {
+			name,
+			thumbnail
+		} = req.body;
+		if (!name) {
+			throw new Error("name is required.");
+		}
 		const artist = new Artist({
 			name,
 			thumbnail,
@@ -28,7 +41,7 @@ router.post("/create", async (req, res) => {
 
 router.get(
 	"/fetch",
-	oneOf([check("artistId").exists(), check("startsWith").exists()]),
+	oneOf([check("tagId").exists(), check("startsWith").exists()]),
 	async (req, res) => {
 		try {
 			const errors = validationResult(req);
@@ -38,9 +51,12 @@ router.get(
 					data: "Please provide either artistId or startsWith as query params.",
 				});
 			}
-			const { artistId, startsWith } = req.query;
+			const {
+				tagId,
+				startsWith
+			} = req.query;
 
-			if (artistId) {
+			if (tagId) {
 				const artist = await Artist.findById(tagId);
 				return res.send({
 					status: true,
@@ -73,18 +89,18 @@ router.get(
 	},
 );
 
-router.get("/all", async (req, res) => {
+router.get("/all", paginationMiddleware(Artist), async (req, res) => {
 	try {
-		const artistAll = await Artist.find({});
-		if (!artistAll) {
-			return res.json({
-				status: false,
-				data: "No albums found.",
-			});
+		if (!res.paginatedResults) {
+			let data = "No artist found...";
+			if (res.pagnationError) {
+				data = res.pagnationError;
+			}
+			throw new Error(data);
 		}
 		res.send({
 			status: true,
-			data: artistAll,
+			data: res.paginatedResults,
 		});
 	} catch (error) {
 		console.log(error.message);
@@ -97,21 +113,24 @@ router.get("/all", async (req, res) => {
 
 router.put("/:id", async (req, res) => {
 	try {
-		const { name, albumId, thumbnail } = req.body;
-
 		const artist = await Artist.findById(req.params.id);
-		if (name) {
-			artist.name = name;
+		if (!artist) {
+			throw new Error("No artist found with given Id.");
 		}
-		if (albumId) {
-			artist.albumTags.push(albumId);
+		const {
+			name,
+			thumbnail
+		} = req.body;
+		if (!name) {
+			throw new Error("Name is required.");
 		}
+		artist.name = name;
 		if (thumbnail) {
 			artist.thumbnail = thumbnail;
 		}
 		await artist.save();
 		return res.send({
-			status: false,
+			status: true,
 			data: artist,
 		});
 	} catch (error) {
@@ -138,5 +157,58 @@ router.delete("/:id", async (req, res) => {
 		});
 	}
 });
+
+router.get("/:id/releases", async (req, res) => {
+	try {
+		const releasedAlbum = await Album.find({
+			albumBy: req.params.id
+		}, {
+			_id: true,
+			name: 1,
+			thumbnail: 2,
+			totalSongs: 3,
+		});
+		if (releasedAlbum.length > 0) {
+			return res.send({
+				status: true,
+				data: releasedAlbum,
+			});
+		} else {
+			throw new Error("No releases for requested artist.");
+		}
+	} catch (error) {
+		console.log(error.message);
+		res.send({
+			status: false,
+			data: error.message,
+		});
+	}
+});
+
+router.get("/:id/featuring", async (req, res) => {
+	try {
+		const featuringAlbum = await Album.find({
+			featuringArtists: {
+				"$in": [req.params.id]
+			}
+		}, {
+			_id: true,
+			name: 1,
+			thumbnail: 2,
+			totalSongs: 3,
+		});
+		res.send({
+			status: true,
+			data: featuringAlbum,
+		});
+	} catch (error) {
+		console.log(error.message);
+		res.send({
+			status: false,
+			data: error.message,
+		});
+	}
+});
+
 
 export default router;

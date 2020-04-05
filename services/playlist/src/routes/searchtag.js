@@ -1,13 +1,21 @@
 import SearchTag from "../models/SearchTag";
-import { Router } from "express";
-
-import { check, oneOf, validationResult } from "express-validator";
+import {
+	Router
+} from "express";
+import {
+	check,
+	oneOf,
+	validationResult
+} from "express-validator";
+import paginationMiddleware from "../config/paginationMiddleware";
 
 const router = Router();
 
 router.post("/create", async (req, res) => {
 	try {
-		let { searchVal } = req.body;
+		let {
+			searchVal
+		} = req.body;
 		searchVal = searchVal.toLowerCase();
 		const searchtag = new SearchTag({
 			searchVal,
@@ -38,9 +46,14 @@ router.get(
 					data: "Please provide either tagId or startsWith as query params.",
 				});
 			}
-			const { tagId, startsWith } = req.query;
+			const {
+				tagId,
+				startsWith
+			} = req.query;
 			if (tagId) {
 				const searchTag = await SearchTag.findById(tagId);
+				if (!searchTag)
+					throw new Error("Search tag not found.");
 				return res.send({
 					status: true,
 					data: searchTag,
@@ -72,16 +85,38 @@ router.get(
 	},
 );
 
+router.get("/all", paginationMiddleware(SearchTag), async (req, res) => {
+	try {
+		if (!res.paginatedResults) {
+			let data = "No searchtags found...";
+			if (res.pagnationError) {
+				data = res.pagnationError;
+			}
+			throw new Error(data);
+		}
+		res.send({
+			status: true,
+			data: res.paginatedResults,
+		});
+	} catch (error) {
+		console.log(error.message);
+		res.send({
+			status: false,
+			data: error.message,
+		});
+	}
+});
+
 router.put("/:id", async (req, res) => {
 	try {
-		const { newSearchVal, albumId } = req.body;
-
+		const {
+			searchVal
+		} = req.body;
 		const searchTag = await SearchTag.findById(req.params.id);
-		if (newSearchVal) {
-			searchTag.searchVal = newSearchVal;
-		} else {
-			searchTag.albumTags.push(albumId);
+		if (!searchVal) {
+			throw new Error("searchVal is required.");
 		}
+		searchTag.searchVal = searchVal;
 		await searchTag.save();
 		return res.send({
 			status: false,
