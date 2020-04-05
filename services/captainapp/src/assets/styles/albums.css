@@ -117,7 +117,6 @@
     content: '';
     border-bottom-left-radius: 10px;
     border-bottom-right-radius: 10px;
-    background: rgb(0, 0, 0);
     background: linear-gradient(180deg, rgba(0, 0, 0, 0) 20%, rgba(0, 0, 0, 0.4881302862942052) 41%, rgba(0, 0, 0, 0.9839286056219363) 88%, rgba(0, 0, 0, 0.9839286056219363) 98%);
 }
 

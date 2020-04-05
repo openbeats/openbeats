@@ -9,6 +9,7 @@ import ChipsInput from "./ChipsInput";
 import ArtistAddDialog from "./ArtistAddDialog";
 import SongSearcher from "./SongSearcher";
 import SongsBucket from "./SongsBucket";
+import HangingPlayer from "./HangingPlayer";
 
 export {
     Auth,
@@ -21,5 +22,6 @@ export {
     ChipsInput,
     ArtistAddDialog,
     SongSearcher,
-    SongsBucket
+    SongsBucket,
+    HangingPlayer
 }

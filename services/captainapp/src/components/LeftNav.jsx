@@ -3,7 +3,8 @@ import { connect } from 'react-redux';
 import { Link } from "react-router-dom";
 import { logo } from "../assets/images";
 import "../assets/styles/leftnav.css";
-import { authActions, coreActions } from '../actions';
+import { authActions, coreActions, hangingPlayerActions } from '../actions';
+import { HangingPlayer } from '.';
 
 class LeftNav extends Component {
     constructor(props) {
@@ -41,9 +42,10 @@ class LeftNav extends Component {
         return (
             <div className="leftnav-wrapper">
                 <ul className="leftnav-menu">
-                    <a href="/" className="leftnav-item">
-                        <img className="leftnav-logo-img" src={logo} alt="" srcSet="" />
-                    </a>
+                    <div className="leftnav-item hanging-music-player-holder">
+                        <img className="leftnav-logo-img cursor-pointer" onClick={() => this.props.toggleHangingPlayer(!this.props.showHangingPlayer)} src={logo} alt="" srcSet="" />
+                        <HangingPlayer />
+                    </div>
                     <Link to="/" onClick={() => this.props.setCurrentNavItem("home")} className={`leftnav-item`} title="Home - view insights and more">
                         <div className={`content ${this.props.currentNavItem === "home" ? "item-active" : ""}`} title="Home" >
                             <i className="far fa-home"></i>
@@ -97,8 +99,8 @@ class LeftNav extends Component {
 const mapStateToProps = (state) => {
     return {
         adminDetails: state.auth.adminDetails,
-        currentNavItem: state.core.currentNavItem
-
+        currentNavItem: state.core.currentNavItem,
+        showHangingPlayer: state.hangingPlayer.showHangingPlayer
     }
 }
 
@@ -109,6 +111,9 @@ const mapDispatchToProps = (dispatch) => {
         },
         setCurrentNavItem: (item) => {
             coreActions.setCurrentNavItem(item);
+        },
+        toggleHangingPlayer: (bool) => {
+            hangingPlayerActions.toggleHangingplayer(bool)
         }
     }
 }
