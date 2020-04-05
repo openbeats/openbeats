@@ -10,6 +10,7 @@ import { push } from 'connected-react-router';
 import { toast } from 'react-toastify';
 
 class Albums extends Component {
+
     constructor(props) {
         super(props);
         this.state = {
@@ -27,6 +28,8 @@ class Albums extends Component {
         const resultData = (await axios.get(albumsFetchUrl)).data;
         if (resultData.status) {
             this.setState({ albumsCollection: resultData.data.result })
+        } else {
+            this.setState({ albumsCollection: [] })
         }
     }
 
@@ -39,7 +42,10 @@ class Albums extends Component {
         const deleteAlbumId = this.state.albumsCollection[index]._id;
         const deleteAlbumUrl = `${variables.baseUrl}/playlist/album/${deleteAlbumId}`;
         const resultData = (await axios.delete(deleteAlbumUrl)).data;
-        if (resultData.status) toast.success("Album Deleted Successfully!");
+        if (resultData.status) {
+            toast.success("Album Deleted Successfully!");
+            this.fetchAlbums();
+        }
         else toast.error(resultData.data.toString());
     }
 
@@ -82,8 +88,8 @@ class Albums extends Component {
             </div>
         )
     }
-}
 
+}
 
 const mapStateToProps = (state) => {
     return {
