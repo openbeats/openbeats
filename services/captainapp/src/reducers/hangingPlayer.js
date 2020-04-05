@@ -33,6 +33,7 @@ export const hangingPlayer = (state = initialState, action) => {
             break;
         case RESET_HANGING_PLAYER:
             state = {
+                ...state,
                 showHangingPlayer: false,
                 songData: {}
             };

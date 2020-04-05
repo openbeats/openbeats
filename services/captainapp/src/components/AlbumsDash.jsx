@@ -31,15 +31,17 @@ class AlbumsDash extends Component {
     async componentDidMount() {
         const parsed = queryString.parse(window.location.search);
         if (parsed.editalbum !== undefined) {
-            const albumData = (await axios.get(`${variables.baseUrl}/playlist/album/${parsed.editalbum}`)).data;
+            const albumData = (await axios.get(`${variables.baseUrl}/playlist/album/${parsed.editalbum}?edit=true`)).data;
             if (albumData.status) {
                 this.setState({
                     isUpdate: true,
                     updateAlbumId: parsed.editalbum,
                     songsCollection: albumData.data.songs,
                     albumName: albumData.data.name,
-                    artistChips: albumData.data.artistTags,
-                    searchChips: albumData.data.searchTags
+                    artistChipsCollection: albumData.data.featuringArtists,
+                    searchChipsCollection: albumData.data.searchTags,
+                    artistChips: albumData.data.featuringArtists.map(item => item._id),
+                    searchChips: albumData.data.searchTags.map(item => item._id)
                 })
             } else {
                 toast.error("Something Went Wrong!");
@@ -50,33 +52,28 @@ class AlbumsDash extends Component {
 
     saveAlbum = async () => {
         if (this.state.albumName.length > 0 && this.state.songsCollection.length > 0 && this.state.artistChips.length > 0 && this.state.searchChips.length > 0) {
+            const preparedData = {
+                name: this.state.albumName,
+                userId: this.props.adminId,
+                searchTags: this.state.searchChips,
+                featuringArtists: this.state.artistChips.length === 1 ? [] : this.state.artistChips,
+                albumBy: this.state.artistChips.length === 1 ? this.state.artistChips[0] : null,
+                songs: this.state.songsCollection
+            };
+            console.log(preparedData);
             if (!this.state.isUpdate) {
-                const resultData = (await axios.post(`${variables.baseUrl}/playlist/album/create`, {
-                    name: this.state.albumName,
-                    userId: this.props.adminId,
-                    searchTags: this.state.searchChips,
-                    artistTags: this.state.isArtistOriented ? [] : this.state.artistChips,
-                    albumBy: this.state.isArtistOriented ? this.state.artistChips[0] : null,
-                    songs: this.state.songsCollection
-                })).data;
+                const resultData = (await axios.post(`${variables.baseUrl}/playlist/album/create`, preparedData)).data;
                 if (resultData.status) {
                     toast.success("Album Created Successfully");
                 } else {
-                    toast.success(resultData.data.toString());
+                    toast.error(resultData.data.toString());
                 }
             } else {
-                const resultData = (await axios.put(`${variables.baseUrl}/playlist/album/${this.state.updateAlbumId}`, {
-                    name: this.state.albumName,
-                    userId: this.props.adminId,
-                    searchTags: this.state.searchChips,
-                    artistTags: this.state.isArtistOriented ? [] : this.state.artistChips,
-                    albumBy: this.state.isArtistOriented ? this.state.artistChips[0] : null,
-                    songs: this.state.songsCollection
-                })).data;
+                const resultData = (await axios.put(`${variables.baseUrl}/playlist/album/${this.state.updateAlbumId}`, preparedData)).data;
                 if (resultData.status) {
                     toast.success("Album Saved Successfully");
                 } else {
-                    toast.success(resultData.data.toString());
+                    toast.error(resultData.data.toString());
                 }
             }
         } else {
