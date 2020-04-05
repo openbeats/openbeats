@@ -3,6 +3,7 @@ import "../assets/styles/songsearcher.css";
 import axios from "axios";
 
 export default class SongSearcher extends Component {
+
     constructor(props) {
         super(props);
         this.state = {
@@ -11,7 +12,6 @@ export default class SongSearcher extends Component {
             searchStringSuggestionFetchUrl: this.props.searchStringSuggestionFetchUrl || null,
             songSuggestionFetchUrl: this.props.songSuggestionFetchUrl || null,
             songsCollection: [],
-            songsBucketCopy: [],
             suggestionCurrentIndex: 0,
         }
         this.suggestionBlockRef = null;
@@ -38,14 +38,12 @@ export default class SongSearcher extends Component {
         }
     }
 
-
-
     playSongTrial = (index) => {
 
     }
 
     addSongToBucket = (index) => {
-
+        this.props.addSongsToTheBucketCallBack(this.state.songsCollection[index]);
     }
 
     clearSuggestionInputListener = (event) => {
@@ -84,7 +82,10 @@ export default class SongSearcher extends Component {
                         <i className="fas fa-search song-searcher-search-icon-holder"></i>
                         <div className="song-searcher-search-suggestion-holder" >
                             {this.state.suggestionStringArray.map((item, key) => {
-                                return key !== 0 && <div className={`song-searcher-search-suggestion-node ${this.state.suggestionCurrentIndex === key ? 'bg-dark text-white' : ''}`} key={key}>
+                                return key !== 0 && <div className={`song-searcher-search-suggestion-node cursor-pointer ${this.state.suggestionCurrentIndex === key ? 'bg-dark text-white' : ''}`} onClick={async () => {
+                                    await this.setState({ suggestionCurrentIndex: key });
+                                    this.fetchSongSuggestion();
+                                }} key={key}>
                                     {item[0]}
                                 </div>
                             })}
@@ -113,4 +114,5 @@ export default class SongSearcher extends Component {
             </div>
         )
     }
+
 }
