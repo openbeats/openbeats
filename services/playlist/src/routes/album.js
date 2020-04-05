@@ -243,26 +243,14 @@ router.put(
 			axios.post(addSongsCoreUrl, {
 				songs,
 			});
-
-			if (albumBy) {
-				album.albumBy = albumBy;
-			}
-
-			if (featuringArtists) {
-				album.featuringArtists = featuringArtists;
-			}
-
-			if (searchTags) {
-				album.searchTags = searchTags;
-			}
-
+			album.albumBy = albumBy;
+			album.featuringArtists = featuringArtists;
+			album.searchTags = searchTags;
 			await album.save();
-
 			res.send({
 				status: true,
 				data: album,
 			});
-
 		} catch (error) {
 			console.log(error.message);
 			res.send({

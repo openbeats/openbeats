@@ -65,11 +65,11 @@ class AlbumsDash extends Component {
                 albumBy: this.state.artistChips.length === 1 ? this.state.artistChips[0] : null,
                 songs: this.state.songsCollection
             };
-            console.log(preparedData);
             if (!this.state.isUpdate) {
                 const resultData = (await axios.post(`${variables.baseUrl}/playlist/album/create`, preparedData)).data;
                 if (resultData.status) {
                     toast.success("Album Created Successfully");
+                    this.props.pushPath("/albums");
                 } else {
                     toast.error(resultData.data.toString());
                 }
@@ -77,6 +77,7 @@ class AlbumsDash extends Component {
                 const resultData = (await axios.put(`${variables.baseUrl}/playlist/album/${this.state.updateAlbumId}`, preparedData)).data;
                 if (resultData.status) {
                     toast.success("Album Saved Successfully");
+                    this.props.pushPath("/albums");
                 } else {
                     toast.error(resultData.data.toString());
                 }
@@ -227,7 +228,6 @@ const mapStateToProps = (state) => {
         adminId: state.auth.adminDetails.id,
     }
 }
-
 
 const mapDispatchToProps = (dispatch) => {
     return {
