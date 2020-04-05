@@ -1,4 +1,4 @@
-export default (model, options = {}, query = {}, populateQuery = []) => {
+export default (model, query = {}, options = {}, populateQuery = []) => {
   return async (req, res, next) => {
     try {
       const page = parseInt(req.query.page);

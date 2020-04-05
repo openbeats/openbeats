@@ -12,6 +12,7 @@ import paginationMiddleware from "../config/paginationMiddleware";
 
 const router = Router();
 
+//artist creation
 router.post("/create", async (req, res) => {
 	try {
 		const {
@@ -39,6 +40,7 @@ router.post("/create", async (req, res) => {
 	}
 });
 
+//Get artist by Id or startsWith
 router.get(
 	"/fetch",
 	oneOf([check("tagId").exists(), check("startsWith").exists()]),
@@ -89,6 +91,7 @@ router.get(
 	},
 );
 
+//Get all artist (page and limit query param is required)
 router.get("/all", paginationMiddleware(Artist), async (req, res) => {
 	try {
 		if (!res.paginatedResults) {
@@ -111,6 +114,7 @@ router.get("/all", paginationMiddleware(Artist), async (req, res) => {
 	}
 });
 
+//update artist
 router.put("/:id", async (req, res) => {
 	try {
 		const artist = await Artist.findById(req.params.id);
@@ -142,6 +146,7 @@ router.put("/:id", async (req, res) => {
 	}
 });
 
+//delete artist
 router.delete("/:id", async (req, res) => {
 	try {
 		await Artist.findByIdAndDelete(req.params.id);
