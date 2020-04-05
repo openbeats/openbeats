@@ -19,6 +19,7 @@ const baseUrl = `${
 	config.get("isDev") ? config.get("baseurl").dev : config.get("baseurl").prod
 }`;
 
+// album creation
 router.post(
 	"/create",
 	[
@@ -30,9 +31,7 @@ router.post(
 		.isEmpty(),
 		check("featuringArtists", "Please pass atleast one artist tag in array.")
 		.if(body("featuringArtists").exists())
-		.isArray()
-		.not()
-		.isEmpty(),
+		.isArray(),
 		check("searchTags", "Please pass atleast one search tag in array.")
 		.if(body("searchTags").exists())
 		.isArray()
@@ -73,6 +72,7 @@ router.post(
 			newAlbum.updatedBy = userId;
 			newAlbum.songs = songIds;
 			newAlbum.totalSongs = songIds.length;
+			newAlbum.thumbnail = songs[0].thumbnail;
 
 			const addSongsCoreUrl = `${baseUrl}/addsongs`;
 			axios.post(addSongsCoreUrl, {
@@ -143,6 +143,7 @@ router.get("/all", paginationMiddleware(Album, {
 	}
 });
 
+// get album complete data
 router.get("/:id", async (req, res) => {
 	try {
 		let album = null;
@@ -184,6 +185,7 @@ router.get("/:id", async (req, res) => {
 	}
 });
 
+// album creation
 router.put(
 	"/:id",
 	[
@@ -195,9 +197,7 @@ router.put(
 		.isEmpty(),
 		check("featuringArtists", "Please pass atleast one artist tag in array.")
 		.if(body("featuringArtists").exists())
-		.isArray()
-		.not()
-		.isEmpty(),
+		.isArray(),
 		check("searchTags", "Please pass atleast one search tag in array.")
 		.if(body("searchTags").exists())
 		.isArray()
@@ -243,30 +243,19 @@ router.put(
 			album.updatedBy = userId;
 			album.songs = songIds;
 			album.totalSongs = songIds.length;
+			album.thumbnail = songs[0].thumbnail;
 			const addSongsCoreUrl = `${baseUrl}/addsongs`;
 			axios.post(addSongsCoreUrl, {
 				songs,
 			});
-
-			if (albumBy) {
-				album.albumBy = albumBy;
-			}
-
-			if (featuringArtists) {
-				album.featuringArtists = featuringArtists;
-			}
-
-			if (searchTags) {
-				album.searchTags = searchTags;
-			}
-
+			album.albumBy = albumBy;
+			album.featuringArtists = featuringArtists;
+			album.searchTags = searchTags;
 			await album.save();
-
 			res.send({
 				status: true,
 				data: album,
 			});
-
 		} catch (error) {
 			console.log(error.message);
 			res.send({

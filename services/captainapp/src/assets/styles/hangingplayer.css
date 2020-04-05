@@ -1,0 +1,84 @@
+.hanging-music-player-holder {
+    position: relative;
+}
+
+.hanging-music-player-container {
+    transition: all 1s ease;
+    position: absolute;
+    top: -200px;
+    left: 70px;
+    width: 300px;
+    height: 150px;
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 0 10px 0 gray;
+    padding: 10px;
+    background: #f1f3f4;
+    z-index: 1000;
+    overflow: hidden;
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+}
+
+
+.hanging-music-player-container::after {
+    content: "";
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    background: rgba(53, 55, 56, 0.6);
+}
+
+.hanginig-player-close-button {
+    position: absolute;
+    top: 2px;
+    right: 5px;
+    font-size: 20px;
+    z-index: 100;
+    font-weight: bold;
+    color: #f1f3f4;
+}
+
+.hanging-player-reset-button {
+    position: absolute;
+    top: 2px;
+    right: 35px;
+    font-size: 19px;
+    z-index: 100;
+    font-weight: bold;
+    color: #f1f3f4;
+}
+
+.hanging-music-player-container>audio {
+    position: absolute;
+    width: 100%;
+    height: 50px;
+    z-index: 100;
+    box-shadow: none;
+    bottom: 0;
+    left: 0;
+    background: #f1f3f4;
+}
+
+.hanging-music-player-thumbnail {
+    width: 100%;
+    height: 100%;
+    border-radius: 5px;
+}
+
+.hanging-music-player-song-title {
+    position: absolute;
+    top: 40px;
+    left: 10px;
+    font-size: 15px;
+    color: rgb(206, 206, 206);
+    font-weight: bold;
+    z-index: 100;
+}
+
+.show-hanging-player {
+    top: 0;
+}

@@ -2,14 +2,17 @@ import React, { Component } from 'react';
 import "../assets/styles/albumsdash.css";
 import { ChipsInput, SongSearcher, SongsBucket } from '.';
 import { connect } from 'react-redux';
-import { addArtistActions, addSearchTagActions } from '../actions';
+import { addArtistActions, addSearchTagActions, hangingPlayerActions } from '../actions';
 import { store } from '../store';
 import { push } from 'connected-react-router';
 import { variables } from '../config';
 import { findIndex } from 'lodash';
 import { toast } from 'react-toastify';
+import queryString from "query-string";
+import axios from "axios";
 
 class AlbumsDash extends Component {
+
     constructor(props) {
         super(props);
         this.state = {
@@ -17,19 +20,84 @@ class AlbumsDash extends Component {
             artistChips: [],
             searchChips: [],
             songsCollection: [],
+            isArtistOriented: false,
+            artistChipsCollection: [],
+            searchChipsCollection: [],
             isUpdate: false,
             updateAlbumId: null
         }
     }
 
+    async componentDidMount() {
+        const parsed = queryString.parse(window.location.search);
+        if (parsed.editalbum !== undefined) {
+            const albumData = (await axios.get(`${variables.baseUrl}/playlist/album/${parsed.editalbum}?edit=true`)).data;
+            if (albumData.status) {
+                let prepareData = {
+                    isUpdate: true,
+                    updateAlbumId: parsed.editalbum,
+                    songsCollection: albumData.data.songs,
+                    albumName: albumData.data.name,
+                    artistChipsCollection: albumData.data.featuringArtists,
+                    searchChipsCollection: albumData.data.searchTags,
+                    artistChips: albumData.data.featuringArtists.map(item => item._id),
+                    searchChips: albumData.data.searchTags.map(item => item._id)
+                };
+                if (albumData.data.albumBy !== null) {
+                    prepareData.artistChipsCollection = [albumData.data.albumBy];
+                    prepareData.artistChips = [albumData.data.albumBy._id];
+                }
+                this.setState({ ...prepareData })
+            } else {
+                toast.error("Something Went Wrong!");
+                this.props.pushPath("/albums");
+            }
+        }
+    }
+
+    saveAlbum = async () => {
+        if (this.state.albumName.length > 0 && this.state.songsCollection.length > 0 && this.state.artistChips.length > 0 && this.state.searchChips.length > 0) {
+            const preparedData = {
+                name: this.state.albumName,
+                userId: this.props.adminId,
+                searchTags: this.state.searchChips,
+                featuringArtists: this.state.artistChips.length === 1 ? [] : this.state.artistChips,
+                albumBy: this.state.artistChips.length === 1 ? this.state.artistChips[0] : null,
+                songs: this.state.songsCollection
+            };
+            if (!this.state.isUpdate) {
+                const resultData = (await axios.post(`${variables.baseUrl}/playlist/album/create`, preparedData)).data;
+                if (resultData.status) {
+                    toast.success("Album Created Successfully");
+                    this.props.pushPath("/albums");
+                } else {
+                    toast.error(resultData.data.toString());
+                }
+            } else {
+                const resultData = (await axios.put(`${variables.baseUrl}/playlist/album/${this.state.updateAlbumId}`, preparedData)).data;
+                if (resultData.status) {
+                    toast.success("Album Saved Successfully");
+                    this.props.pushPath("/albums");
+                } else {
+                    toast.error(resultData.data.toString());
+                }
+            }
+        } else {
+            this.state.albumName.length === 0 && toast.error("Album Name is Missing!");
+            this.state.songsCollection.length === 0 && toast.error("Songs Bucket is Empty!");
+            this.state.artistChips.length === 0 && toast.error("Artist Tags is Empty!");
+            this.state.searchChips.length === 0 && toast.error("Search Tags is Empty!");
+        }
+    }
+
     setArtistChips = (chips) => {
         const chipsId = chips.map(item => item._id);
-        this.setState({ artistChips: chipsId });
+        this.setState({ artistChipsCollection: chips, artistChips: chipsId });
     }
 
     setSearchChips = (chips) => {
         const chipsId = chips.map(item => item._id);
-        this.setState({ searchChips: chipsId });
+        this.setState({ searchChipsCollection: chips, searchChips: chipsId });
     }
 
     createNewArtist = async (artistStringName) => {
@@ -62,6 +130,7 @@ class AlbumsDash extends Component {
         else
             toast.error("Song is Already in the bucket!");
     }
+
     arrangeSongsCallBack = (songs) => {
         this.setState({ songsCollection: songs });
     }
@@ -70,6 +139,11 @@ class AlbumsDash extends Component {
         this.setState({ albumName: '', artistChips: [], searchChips: [] })
     }
 
+    songTrialTrigger = async (song) => {
+        await this.props.setHangingPlayerSongData(song);
+        await this.props.initHangingPlayer();
+        await this.props.toggleHangingPlayer(true);
+    }
 
     render() {
         return (
@@ -79,7 +153,7 @@ class AlbumsDash extends Component {
                         <i className="fas fa-angle-right mr-1 right-angel"></i>Albums Dash Yard
                     </div>
                     <div className="d-flex">
-                        <div className="create-album-link font-weight-bold mr-3 cursor-pointer" >save</div>
+                        <div className="create-album-link font-weight-bold mr-3 cursor-pointer" onClick={this.saveAlbum}>save</div>
                         <div className="create-album-link bg-danger font-weight-bold cursor-pointer" onClick={this.albumsDashCancelHandler} >cancel</div>
                     </div>
                 </div>
@@ -93,7 +167,7 @@ class AlbumsDash extends Component {
                                 <div className="mb-1">
                                     (max 30 Characters)
                                 </div>
-                                <input className="rounded w-100" placeholder="This is Yuvan Shankar Raja" type="text" />
+                                <input className="rounded w-100" value={this.state.albumName} onChange={e => this.setState({ albumName: e.target.value })} placeholder="This is Yuvan Shankar Raja" type="text" />
                             </div>
                             <div className="albumdash-artist-tags-holder mt-2">
                                 <div className="artist-tags-title font-weight-bold">Artist Tags<span className="text-danger">*</span></div>
@@ -105,6 +179,7 @@ class AlbumsDash extends Component {
                                     suggestionNameField={'name'}
                                     createNewChipCallback={this.createNewArtist}
                                     placeholder={"Search Artist Here..."}
+                                    chipCollection={this.state.artistChipsCollection}
                                 />
                             </div>
                             <div className="albumdash-artist-tags-holder mt-2">
@@ -117,6 +192,7 @@ class AlbumsDash extends Component {
                                     suggestionNameField={'searchVal'}
                                     createNewChipCallback={this.createNewSearchTag}
                                     placeholder={"Search Search Tags Here..."}
+                                    chipCollection={this.state.searchChipsCollection}
                                 />
                             </div>
                         </div>
@@ -127,6 +203,7 @@ class AlbumsDash extends Component {
                                 searchStringSuggestionFetchUrl={"https://api.openbeats.live/suggester?k="}
                                 songSuggestionFetchUrl={"https://api.openbeats.live/ytcat?q="}
                                 addSongsToTheBucketCallBack={this.addSongsToTheBucketCallBack}
+                                songTrialTrigger={this.songTrialTrigger}
                             />
                         </div>
                         <div className="albumdash-song-bucket-holder">
@@ -135,6 +212,7 @@ class AlbumsDash extends Component {
                                 removeSongFromBucketCallBack={this.removeSongFromBucketCallBack}
                                 emptyTheBucketCallBack={this.emptyTheBucketCallBack}
                                 arrangeSongsCallBack={this.arrangeSongsCallBack}
+                                songTrialTrigger={this.songTrialTrigger}
                             />
                         </div>
                     </div>
@@ -146,9 +224,10 @@ class AlbumsDash extends Component {
 }
 
 const mapStateToProps = (state) => {
-    return {}
+    return {
+        adminId: state.auth.adminDetails.id,
+    }
 }
-
 
 const mapDispatchToProps = (dispatch) => {
     return {
@@ -160,6 +239,15 @@ const mapDispatchToProps = (dispatch) => {
         },
         addSearchTagHandler: (searchVal) => {
             return addSearchTagActions.addSearchTagHandler(searchVal);
+        },
+        setHangingPlayerSongData: async (songData) => {
+            return await hangingPlayerActions.setHangingPlayerSongData(songData);
+        },
+        toggleHangingPlayer: (bool) => {
+            return hangingPlayerActions.toggleHangingplayer(bool);
+        },
+        initHangingPlayer: async () => {
+            return await hangingPlayerActions.initHangingPlayer();
         }
     }
 }
