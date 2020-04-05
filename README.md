@@ -240,6 +240,16 @@ params: CHART-ID can be obtained from top charts metadata.
 
 ```
 
+**Recently Played**
+
+_Get recently played for logged in user_
+
+> https://api.openbeats.live/auth/metadata/recentlyplayed
+
+```language
+method: Get
+```
+
 **Album Endpoints**
 
 _Create an album_
@@ -253,9 +263,10 @@ structure:
 {
 	"name": "<NAME-OF-AN-ALBUM>",
 	"userId": "<CAPTAINAPP-LOGINED-USER-ID>",
-    "searchTags": "<ARRAY-OF-SEARCH-TAG-ID>"(optional param),
-    "artistTags": "<ARRAY-OF-FEATURING-ARTIST-TAG-ID>"(optional param),
-    "albumBy": "<ARTIST-ID>"(If album is specific to a particular Artist)(optional param)
+    "songs": "<ARRAY-OF-SONG-OBJECT>"
+    "searchTags": "<ARRAY-OF-SEARCH-TAG-ID>",
+    "featuringArtists": "<ARRAY-OF-FEATURING-ARTIST-TAG-ID>",
+    "albumBy": "<ARTIST-ID>"(If album is specific to a particular Artist),
 }
 ```
 
@@ -265,6 +276,16 @@ _Get All album_
 
 ```language
 method: Get
+query param: page and limit
+```
+
+_Get All album by search tag_
+
+> https://api.openbeats.live/playlist/album/:searchtag/findbysearchtag
+
+```language
+method: Get
+Route params: searchtag
 ```
 
 _Get specific album_
@@ -274,36 +295,7 @@ _Get specific album_
 ```language
 method: Get
 Route params: <ALBUM-ID>
-```
-
-_Add an array of songs_
-
-> https://api.openbeats.live/playlist/album/<:id>/addsongs
-
-```language
-method: PUT
-Route params: <ALBUM-ID>
-bodyType: JSON
-structure:
-{
-	"userId": "<CAPTAINAPP-LOGINED-USER-ID>",
-    "songs": "<ARRAY-OF-SONGS-OBJECT>",
-}
-```
-
-_Delete a song from album_
-
-> https://api.openbeats.live/playlist/album/<:id>/deletesong
-
-```language
-method: PUT
-Route params: <ALBUM-ID>
-bodyType: JSON
-structure:
-{
-	"userId": "<CAPTAINAPP-LOGINED-USER-ID>",
-    "songId": "<SONG OBJECT ID(VIDEO_ID)>",
-}
+query params: edit=true(If called for update will populate searchTag and featuring artist and also album by)
 ```
 
 _Update an album_
@@ -316,56 +308,12 @@ Route params: <ALBUM-ID>
 bodyType: JSON
 structure:
 {
-	"name": "<NAME-OF-AN-ALBUM>",(optional param)
+	"name": "<NAME-OF-AN-ALBUM>",
 	"userId": "<CAPTAINAPP-LOGINED-USER-ID>",
-    "searchTags": "<ARRAY-OF-SEARCH-TAG-ID>"(optional param),
-    "artistTags": "<ARRAY-OF-FEATURING-ARTIST-TAG-ID>"(optional param),
-    "albumBy": "<ARTIST-ID>"(If album is specific to a particular Artist)(optional param)
-}
-```
-
-_delete albumBy in album_
-
-> https://api.openbeats.live/playlist/album/<:id>/deletealbumby
-
-```language
-method: PUT
-Route params: <ALBUM-ID>
-bodyType: JSON
-structure:
-{
-	"userId": "<CAPTAINAPP-LOGINED-USER-ID>",
-    "albumBy": "<ARTIST-ID>"
-}
-```
-
-_delete a particular searchTag in album_
-
-> https://api.openbeats.live/playlist/album/<:id>/deletesearchtag
-
-```language
-method: PUT
-Route params: <ALBUM-ID>
-bodyType: JSON
-structure:
-{
-	"userId": "<CAPTAINAPP-LOGINED-USER-ID>",
-    "searchTag": "<SEARCH-TAG-ID-TO-BE-DELETED>"
-}
-```
-
-_delete a particular featuring artist in album_
-
-> https://api.openbeats.live/playlist/album/<:id>/deleteartisttag
-
-```language
-method: PUT
-Route params: <ALBUM-ID>
-bodyType: JSON
-structure:
-{
-	"userId": "<CAPTAINAPP-LOGINED-USER-ID>",
-    "artistTag": "<ARTIST-ID-TO-BE-DELETED>"
+    "songs": "<ARRAY-OF-SONG-OBJECT>"
+    "searchTags": "<ARRAY-OF-SEARCH-TAG-ID>",
+    "featuringArtists": "<ARRAY-OF-FEATURING-ARTIST-TAG-ID>",
+    "albumBy": "<ARTIST-ID>"(If album is specific to a particular Artist),
 }
 ```
 
@@ -401,7 +349,7 @@ _Fetch an artist by artistId or startsWith(return 10 docs only)_
 
 ```language
 method: GET
-query param: artistId or startsWith(string-not case sensitive)
+query param: tagId or startsWith(string case insensitive)
 ```
 
 _Get All artist_
@@ -410,6 +358,7 @@ _Get All artist_
 
 ```language
 method: Get
+query param: page and limit
 ```
 
 _Update an artist_
@@ -422,18 +371,35 @@ Route params: <ARTIST-ID>
 bodyType: JSON
 structure:
 {
-	"name": "<NAME-OF-AN-ARTIST>",(optional)
-	"thumbnail": "<IMAGE-URL-OF-ARTIST>",(optional)
-    "albumTags": "<PUSH-ALBUM-ID-IN-FEATURING-ALBUM-LIST"(optional)
+	"name": "<NAME-OF-AN-ARTIST>",
+	"thumbnail": "<IMAGE-URL-OF-ARTIST>
 }
 ```
 
-_delete album_
+_delete artist_
 
 > https://api.openbeats.live/playlist/artist/<:id>
 
 ```language
 method: DELETE
+Route params: <ARTIST-ID>
+```
+
+_Album releases by an artist_
+
+> https://api.openbeats.live/playlist/artist/<:id>/releases
+
+```language
+method: GET
+Route params: <ARTIST-ID>
+```
+
+_Album featuring by an artist_
+
+> https://api.openbeats.live/playlist/artist/<:id>/featuring
+
+```language
+method: GET
 Route params: <ARTIST-ID>
 ```
 
@@ -458,11 +424,7 @@ _Get all SearchTag_
 
 ```language
 method: GET
-
-structure:
-{
-	"searchVal": "<VALUE-OR-KEYWORD-TO-SEARCH>",
-}
+query param: page and limit
 ```
 
 _Fetch seaechtag by seaechtagID or startsWith(return 10 docs only)_

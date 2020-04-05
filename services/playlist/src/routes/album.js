@@ -35,8 +35,6 @@ router.post(
 		check("searchTags", "Please pass atleast one search tag in array.")
 		.if(body("searchTags").exists())
 		.isArray()
-		.not()
-		.isEmpty(),
 	],
 	async (req, res) => {
 		try {
@@ -73,29 +71,15 @@ router.post(
 			newAlbum.songs = songIds;
 			newAlbum.totalSongs = songIds.length;
 			newAlbum.thumbnail = songs[0].thumbnail;
-
+			newAlbum.albumBy = albumBy;
+			newAlbum.featuringArtists = featuringArtists;
+			newAlbum.searchTags = searchTags;
 			const addSongsCoreUrl = `${baseUrl}/addsongs`;
 			axios.post(addSongsCoreUrl, {
 				songs,
 			});
-
 			const album = new Album(newAlbum);
 			await album.addDefultSearchTags();
-
-			if (albumBy) {
-				album.albumBy = albumBy;
-			}
-
-			if (featuringArtists) {
-				album.featuringArtists = featuringArtists;
-			}
-
-			if (searchTags) {
-				album.searchTags = searchTags;
-			}
-
-			await album.save();
-
 			res.send({
 				status: true,
 				data: album,
@@ -111,14 +95,15 @@ router.post(
 	},
 );
 
-router.get("/all", paginationMiddleware(Album, {
+//Get all albums
+router.get("/all", paginationMiddleware(Album, {}, {
 	_id: true,
 	name: 1,
 	thumbnail: 2,
 	totalSongs: 3,
 	createdAt: 4,
 	createdBy: 5
-}, {}, [{
+}, [{
 	path: 'createdBy',
 	select: 'name'
 }]), async (req, res) => {
@@ -143,7 +128,7 @@ router.get("/all", paginationMiddleware(Album, {
 	}
 });
 
-// get album complete data
+// get specific data
 router.get("/:id", async (req, res) => {
 	try {
 		let album = null;
@@ -185,7 +170,7 @@ router.get("/:id", async (req, res) => {
 	}
 });
 
-// album creation
+// updates Album
 router.put(
 	"/:id",
 	[
@@ -201,8 +186,6 @@ router.put(
 		check("searchTags", "Please pass atleast one search tag in array.")
 		.if(body("searchTags").exists())
 		.isArray()
-		.not()
-		.isEmpty(),
 	],
 	async (req, res) => {
 		try {
@@ -244,13 +227,13 @@ router.put(
 			album.songs = songIds;
 			album.totalSongs = songIds.length;
 			album.thumbnail = songs[0].thumbnail;
+			album.albumBy = albumBy;
+			album.featuringArtists = featuringArtists;
+			album.searchTags = searchTags;
 			const addSongsCoreUrl = `${baseUrl}/addsongs`;
 			axios.post(addSongsCoreUrl, {
 				songs,
 			});
-			album.albumBy = albumBy;
-			album.featuringArtists = featuringArtists;
-			album.searchTags = searchTags;
 			await album.save();
 			res.send({
 				status: true,
@@ -266,6 +249,7 @@ router.put(
 	},
 );
 
+//delete album
 router.delete("/:id", async (req, res) => {
 	try {
 		await Album.findByIdAndDelete(req.params.id);
@@ -282,6 +266,7 @@ router.delete("/:id", async (req, res) => {
 	}
 });
 
+//Find album related to searchtag
 router.get("/:searchtag/findbysearchtag", async (req, res) => {
 	try {
 		const relatedAlbum = await Album.find({
