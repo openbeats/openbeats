@@ -19,6 +19,7 @@ const baseUrl = `${
 	config.get("isDev") ? config.get("baseurl").dev : config.get("baseurl").prod
 }`;
 
+// album creation
 router.post(
 	"/create",
 	[
@@ -71,6 +72,7 @@ router.post(
 			newAlbum.updatedBy = userId;
 			newAlbum.songs = songIds;
 			newAlbum.totalSongs = songIds.length;
+			newAlbum.thumbnail = songs[0].thumbnail;
 
 			const addSongsCoreUrl = `${baseUrl}/addsongs`;
 			axios.post(addSongsCoreUrl, {
@@ -136,6 +138,7 @@ router.get("/all", paginationMiddleware(Album, {
 	}
 });
 
+// get album complete data
 router.get("/:id", async (req, res) => {
 	try {
 		let album = null;
@@ -177,6 +180,7 @@ router.get("/:id", async (req, res) => {
 	}
 });
 
+// album creation
 router.put(
 	"/:id",
 	[
@@ -236,6 +240,7 @@ router.put(
 			album.updatedBy = userId;
 			album.songs = songIds;
 			album.totalSongs = songIds.length;
+			album.thumbnail = songs[0].thumbnail;
 			const addSongsCoreUrl = `${baseUrl}/addsongs`;
 			axios.post(addSongsCoreUrl, {
 				songs,

@@ -3,7 +3,8 @@ import { Link } from 'react-router-dom';
 import "../assets/styles/albums.css";
 import { coreActions } from '../actions';
 import { connect } from 'react-redux';
-import { albumDummySong } from "../assets/images"
+import { albumDummySong } from "../assets/images";
+import axios from "axios";
 
 class Albums extends Component {
     componentDidMount() {
