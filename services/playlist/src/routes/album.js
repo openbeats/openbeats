@@ -140,7 +140,15 @@ router.get("/all", paginationMiddleware(Album, {
 
 router.get("/:id", async (req, res) => {
 	try {
-		const album = await Album.findById(req.params.id);
+		let album = null;
+		if (req.query.edit === "true") {
+			album = await Album.findById(req.params.id)
+				.populate("searchTags")
+				.populate("featuringArtists")
+				.populate("albumBy");
+		} else {
+			album = await Album.findById(req.params.id);
+		}
 		if (!album) {
 			return res.json({
 				status: false,
