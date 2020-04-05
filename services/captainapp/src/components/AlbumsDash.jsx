@@ -6,6 +6,8 @@ import { addArtistActions, addSearchTagActions } from '../actions';
 import { store } from '../store';
 import { push } from 'connected-react-router';
 import { variables } from '../config';
+import { findIndex } from 'lodash';
+import { toast } from 'react-toastify';
 
 class AlbumsDash extends Component {
     constructor(props) {
@@ -15,7 +17,6 @@ class AlbumsDash extends Component {
             artistChips: [],
             searchChips: [],
             songsCollection: [],
-            songsSearchCollection: [],
             isUpdate: false,
             updateAlbumId: null
         }
@@ -45,9 +46,30 @@ class AlbumsDash extends Component {
         this.props.pushPath("/albums");
     }
 
+    removeSongFromBucketCallBack = (index) => {
+        let editSongsCollection = this.state.songsCollection;
+        editSongsCollection.splice(index, 1);
+        this.setState({ songsCollection: editSongsCollection });
+    }
+
+    emptyTheBucketCallBack = () => {
+        this.setState({ songsCollection: [] })
+    }
+
+    addSongsToTheBucketCallBack = (song) => {
+        if (findIndex(this.state.songsCollection, song) === -1)
+            this.setState({ songsCollection: [...this.state.songsCollection, song] });
+        else
+            toast.error("Song is Already in the bucket!");
+    }
+    arrangeSongsCallBack = (songs) => {
+        this.setState({ songsCollection: songs });
+    }
+
     componentWillUnmount() {
         this.setState({ albumName: '', artistChips: [], searchChips: [] })
     }
+
 
     render() {
         return (
@@ -66,7 +88,7 @@ class AlbumsDash extends Component {
                         <div className="albumdash-album-content-holder p-4">
                             <div className="albumdash-name-holder">
                                 <div className="font-weight-bold">
-                                    Album Name
+                                    Album Name<span className="text-danger">*</span>
                                 </div>
                                 <div className="mb-1">
                                     (max 30 Characters)
@@ -74,7 +96,7 @@ class AlbumsDash extends Component {
                                 <input className="rounded w-100" placeholder="This is Yuvan Shankar Raja" type="text" />
                             </div>
                             <div className="albumdash-artist-tags-holder mt-2">
-                                <div className="artist-tags-title font-weight-bold">Artist Tags</div>
+                                <div className="artist-tags-title font-weight-bold">Artist Tags<span className="text-danger">*</span></div>
                                 <div className="artist-tags-title-desc">(Please add only one artist, if you want this album to comes under specific Artist)</div>
                                 <ChipsInput
                                     chipTitle={'Artist'}
@@ -86,7 +108,7 @@ class AlbumsDash extends Component {
                                 />
                             </div>
                             <div className="albumdash-artist-tags-holder mt-2">
-                                <div className="artist-tags-title font-weight-bold">Search Tags</div>
+                                <div className="artist-tags-title font-weight-bold">Search Tags<span className="text-danger">*</span></div>
                                 <div className="artist-tags-title-desc">(Please add Search Tags related to this album)</div>
                                 <ChipsInput
                                     chipTitle={'Search Tag'}
@@ -104,10 +126,16 @@ class AlbumsDash extends Component {
                             <SongSearcher
                                 searchStringSuggestionFetchUrl={"https://api.openbeats.live/suggester?k="}
                                 songSuggestionFetchUrl={"https://api.openbeats.live/ytcat?q="}
+                                addSongsToTheBucketCallBack={this.addSongsToTheBucketCallBack}
                             />
                         </div>
                         <div className="albumdash-song-bucket-holder">
-                            <SongsBucket />
+                            <SongsBucket
+                                songsBucket={this.state.songsCollection}
+                                removeSongFromBucketCallBack={this.removeSongFromBucketCallBack}
+                                emptyTheBucketCallBack={this.emptyTheBucketCallBack}
+                                arrangeSongsCallBack={this.arrangeSongsCallBack}
+                            />
                         </div>
                     </div>
                 </div>

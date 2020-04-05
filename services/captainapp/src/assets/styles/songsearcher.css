@@ -57,7 +57,7 @@
     border-radius: 10px;
     background: rgba(0, 0, 0, 0.5);
     box-shadow: 0 0 5px 0 black;
-    overflow: auto;
+    overflow: hidden;
     z-index: 100;
 }
 
