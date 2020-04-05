@@ -5,10 +5,10 @@ import { intersectionBy, differenceBy } from "lodash"
 import { toast } from 'react-toastify';
 
 class ChipsInput extends Component {
+
     constructor(props) {
         super(props);
         this.state = {
-            chips: [],
             chipSuggestion: [],
             suggestionString: '',
             suggestionRequestUrl: this.props.suggestionFetchUrl,
@@ -28,7 +28,7 @@ class ChipsInput extends Component {
             if (chipsFromServer.status) {
                 if (chipsFromServer.data.length) {
                     let setChips = [];
-                    setChips = intersectionBy(chipsFromServer.data, this.state.chips, "_id");
+                    setChips = intersectionBy(chipsFromServer.data, this.props.chipCollection, "_id");
                     setChips = differenceBy(chipsFromServer.data, setChips, "_id");
                     this.setState({ chipSuggestion: [...setChips] });
                 } else {
@@ -46,15 +46,14 @@ class ChipsInput extends Component {
     }
 
     deleteChip = (index) => {
-        let newChips = this.state.chips.filter((i, k) => k !== index);
-        this.setState({ chips: newChips });
+        let newChips = this.props.chipCollection.filter((i, k) => k !== index);
         this.props.setChipsCallback(newChips);
     }
 
     addChip = (index) => {
-        let addedNewChip = this.state.chips;
+        let addedNewChip = this.props.chipCollection;
         addedNewChip.push(this.state.chipSuggestion[index]);
-        this.setState({ chips: addedNewChip, chipSuggestion: [], suggestionString: '', suggestionCurrentIndex: 0 });
+        this.setState({ chipSuggestion: [], suggestionString: '', suggestionCurrentIndex: 0 });
         this.inputRef && this.inputRef.focus();
         this.props.setChipsCallback(addedNewChip);
     }
@@ -69,7 +68,7 @@ class ChipsInput extends Component {
         } else if (event.keyCode === 38) {
             this.setState({ suggestionCurrentIndex: (this.state.suggestionCurrentIndex - 1) >= 0 ? this.state.suggestionCurrentIndex - 1 : this.state.chipSuggestion.length - 1 })
         } else if (event.keyCode === 13) {
-            if (this.state.chipSuggestion.length && this.state.chipSuggestion[0] !== undefined)
+            if (this.state.chipSuggestion.length && this.state.chipSuggestion[0] !== "undefined")
                 this.addChip(this.state.suggestionCurrentIndex);
         }
     }
@@ -91,7 +90,7 @@ class ChipsInput extends Component {
                 ref={d => this.suggestionBlockRef = d}
             >
                 <div className="tags-chips-container">
-                    {this.state.chips.map((item, key) => (<div className="chip-container" key={key}>
+                    {this.props.chipCollection.map((item, key) => (<div className="chip-container" key={key}>
                         <span>{item[this.state.suggestionNameField]}</span>
                         <div className="chip-container-cancel-button cursor-pointer" onClick={() => this.deleteChip(key)}><i className="fas fa-times text-white"></i></div>
                     </div>

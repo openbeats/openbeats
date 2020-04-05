@@ -35,6 +35,10 @@ export default class SongsBucket extends Component {
         this.draggedIdx = null;
     };
 
+    playSongTrial = (index) => {
+        this.props.songTrialTrigger(this.props.songsBucket[index]);
+    }
+
     render() {
         return (
             <div className="songsbucket-wrapper">
@@ -68,7 +72,7 @@ export default class SongsBucket extends Component {
                                     <div className="songsbucket-song-thumbnail" style={{ backgroundImage: `url(${item.thumbnail})` }}></div>
                                 </div>
                                 <div className="songsbucket-actions ml-3">
-                                    <i className="fas fa-play-circle shadow cursor-pointer ml-1" ></i>
+                                    <i className="fas fa-play-circle shadow cursor-pointer ml-1" onClick={() => this.playSongTrial(key)}></i>
                                     <i className="fas fa-trash-alt shadow cursor-pointer ml-4" onClick={() => this.removeASongFromBucket(key)}></i>
                                 </div>
                                 <div className="font-weight-bold ml-4" >{item.title}</div>

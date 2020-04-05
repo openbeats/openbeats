@@ -39,7 +39,7 @@ export default class SongSearcher extends Component {
     }
 
     playSongTrial = (index) => {
-
+        this.props.songTrialTrigger(this.state.songsCollection[index]);
     }
 
     addSongToBucket = (index) => {
