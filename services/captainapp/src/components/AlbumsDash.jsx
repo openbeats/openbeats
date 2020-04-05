@@ -33,7 +33,7 @@ class AlbumsDash extends Component {
         if (parsed.editalbum !== undefined) {
             const albumData = (await axios.get(`${variables.baseUrl}/playlist/album/${parsed.editalbum}?edit=true`)).data;
             if (albumData.status) {
-                this.setState({
+                let prepareData = {
                     isUpdate: true,
                     updateAlbumId: parsed.editalbum,
                     songsCollection: albumData.data.songs,
@@ -42,7 +42,12 @@ class AlbumsDash extends Component {
                     searchChipsCollection: albumData.data.searchTags,
                     artistChips: albumData.data.featuringArtists.map(item => item._id),
                     searchChips: albumData.data.searchTags.map(item => item._id)
-                })
+                };
+                if (albumData.data.albumBy !== null) {
+                    prepareData.artistChipsCollection = [albumData.data.albumBy];
+                    prepareData.artistChips = [albumData.data.albumBy._id];
+                }
+                this.setState({ ...prepareData })
             } else {
                 toast.error("Something Went Wrong!");
                 this.props.pushPath("/albums");
