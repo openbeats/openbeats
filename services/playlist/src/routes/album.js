@@ -116,7 +116,12 @@ router.get("/all", paginationMiddleware(Album, {
 	name: 1,
 	thumbnail: 2,
 	totalSongs: 3,
-}), async (req, res) => {
+	createdAt: 4,
+	createdBy: 5
+}, {}, [{
+	path: 'createdBy',
+	select: 'name'
+}]), async (req, res) => {
 	try {
 		if (!res.paginatedResults) {
 			let data = "No albums found...";

@@ -452,16 +452,29 @@ structure:
 }
 ```
 
+_Get all SearchTag_
+
+> https://api.openbeats.live/playlist/searchtag/all
+
+```language
+method: GET
+
+structure:
+{
+	"searchVal": "<VALUE-OR-KEYWORD-TO-SEARCH>",
+}
+```
+
 _Fetch seaechtag by seaechtagID or startsWith(return 10 docs only)_
 
 > https://api.openbeats.live/playlist/searchtag/fetch
 
 ```language
 method: GET
-query param: searchId or startsWith(string-not case sensitive)
+query param: searchId or startsWith(string-case insensitive)
 ```
 
-_Update an artist_
+_Update an searchtag_
 
 > https://api.openbeats.live/playlist/searchtag/:id
 
@@ -471,11 +484,11 @@ Route params: <ARTIST-ID>
 bodyType: JSON
 structure:
 {
-    "searchVal": "<VALUE-OR-KEYWORD-TO-SEARCH>",
-    "albumId":<ALBUM-ID-TO-BE-ADDED-IN-ALBUMTAGS>
+    "searchVal": "<VALUE-OR-KEYWORD-TO-SEARCH>"
+}
 ```
 
-_delete album_
+_delete searchtag_
 
 > https://api.openbeats.live/playlist/searchtag/<:id>
 
