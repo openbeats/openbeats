@@ -11,6 +11,7 @@ import paginationMiddleware from "../config/paginationMiddleware";
 
 const router = Router();
 
+//Search Creation
 router.post("/create", async (req, res) => {
 	try {
 		let {
@@ -34,6 +35,8 @@ router.post("/create", async (req, res) => {
 	}
 });
 
+
+//Fetch search tag by Id or startsWith
 router.get(
 	"/fetch",
 	oneOf([check("tagId").exists(), check("startsWith").exists()]),
@@ -85,6 +88,7 @@ router.get(
 	},
 );
 
+//Get all searchTag Tag(page and limit required)
 router.get("/all", paginationMiddleware(SearchTag), async (req, res) => {
 	try {
 		if (!res.paginatedResults) {
@@ -107,6 +111,7 @@ router.get("/all", paginationMiddleware(SearchTag), async (req, res) => {
 	}
 });
 
+//updates searchTag
 router.put("/:id", async (req, res) => {
 	try {
 		const {
@@ -131,6 +136,7 @@ router.put("/:id", async (req, res) => {
 	}
 });
 
+//Delete searchTag
 router.delete("/:id", async (req, res) => {
 	try {
 		await SearchTag.findByIdAndDelete(req.params.id);
