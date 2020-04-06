@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 import SearchTag from "./SearchTag";
+import User from "./reference/User"
 
 const albumSchema = new mongoose.Schema({
 	name: String,
