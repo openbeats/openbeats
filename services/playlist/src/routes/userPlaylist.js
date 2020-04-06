@@ -116,19 +116,16 @@ router.get("/getplaylist/:id", async (req, res) => {
 		const playlistId = req.params.id;
 		const data = await UserPlaylist.findOne({
 			_id: playlistId,
-		});
-		const songsDataFetchUrl = `${baseUrl}/getsongs`;
-		const songIds = data.songs;
-		const songs = (await axios.post(songsDataFetchUrl, {
-			songIds
-		})).data.data;
-		const tempData = {
-			...data['_doc'],
-			songs: [...songs],
-		}
+		}).populate("songsList");
+
+		let fetchedAlbum = {
+			...data["_doc"],
+			songs: data["$$populatedVirtuals"]["songsList"]
+		};
+		
 		res.send({
 			status: true,
-			data: tempData,
+			data: fetchedAlbum,
 		});
 	} catch (error) {
 		res.send({
