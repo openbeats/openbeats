@@ -74,8 +74,8 @@ class Albums extends Component {
                             <div className="album-btn-rounded album-song-count p-events-none">{item.totalSongs}</div>
                             <div className="album-description">
                                 <div className="album-title">{item.name}</div>
-                                <div className="album-creation-date">28 March 2020</div>
-                                <div className="album-created-by">by OpenBeats</div>
+                                <div className="album-creation-date">{(new Date(item.createdAt)).toDateString()}</div>
+                                <div className="album-created-by">by {item.createdBy.name}</div>
                             </div>
                         </div>
                     ))}
