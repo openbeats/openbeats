@@ -202,11 +202,13 @@ app.get("/getsong/:id", async (req, res) => {
 app.post("/getsongs", async (req, res) => {
 	const { songIds } = req.body;
 	try {
-		const songs = await Song.find({
-			_id: {
-				$in: [...songIds],
-			},
-		});
+		const songsPromise = [];
+		for (let id of songIds) {
+			songsPromise.push(Song.findById(id));
+		}
+		const songs = await Promise.all(songsPromise)
+		.then(songsArr => songsArr)
+		.catch(err => {throw new Error(err.toString())});
 		res.send({
 			status: true,
 			data: songs,

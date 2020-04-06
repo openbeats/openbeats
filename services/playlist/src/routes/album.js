@@ -136,9 +136,10 @@ router.get("/:id", async (req, res) => {
 			album = await Album.findById(req.params.id)
 				.populate("searchTags")
 				.populate("featuringArtists")
-				.populate("albumBy");
+				.populate("albumBy")
+				.populate("songsList");
 		} else {
-			album = await Album.findById(req.params.id);
+			album = await Album.findById(req.params.id).populate("songsList");
 		}
 		if (!album) {
 			return res.json({
@@ -146,20 +147,15 @@ router.get("/:id", async (req, res) => {
 				data: "Album not found.",
 			});
 		}
-		const songsDataFetchUrl = `${baseUrl}/getsongs`;
-		const songIds = album.songs;
-		const songs = (
-			await axios.post(songsDataFetchUrl, {
-				songIds,
-			})
-		).data.data;
-		const tempData = {
+		
+		let fetchedAlbum = {
 			...album["_doc"],
-			songs: [...songs],
+			songs: album["$$populatedVirtuals"]["songsList"]
 		};
+
 		res.send({
 			status: true,
-			data: tempData,
+			data: fetchedAlbum,
 		});
 	} catch (error) {
 		console.log(error.message);

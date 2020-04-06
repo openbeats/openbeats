@@ -3,22 +3,11 @@ import {
 } from "express";
 import User from "../models/User";
 import auth from "../config/auth";
-import config from "config";
-import axios from "axios";
 import {
 	uniq
 } from "lodash";
-import {
-	Query
-} from "mongoose";
 
 const router = Router();
-
-const baseUrl = `${
-	config.get("isDev")
-		? config.get("corebaseurl").dev
-		: config.get("corebaseurl").prod
-}`;
 
 router.post("/recentlyplayed", async (req, res) => {
 	const userId = req.body.userId;
@@ -48,18 +37,11 @@ router.post("/recentlyplayed", async (req, res) => {
 
 router.get("/recentlyplayed", auth, async (req, res) => {
 	try {
-		const user = await User.findById(req.user.id);
-		const songsDataFetchUrl = `${baseUrl}/getsongs`;
-		const songIds = user.recentlyPlayedSongs;
-		const data = (
-			await axios.post(songsDataFetchUrl, {
-				songIds,
-			})
-		).data.data;
+		const user = await User.findById(req.user.id).populate("recentlyPlayedSongsList");
 		res.send({
 			id: req.user.id,
 			status: true,
-			data,
+			data: user["$$populatedVirtuals"]["recentlyPlayedSongsList"],
 		});
 	} catch (error) {
 		res.send({
