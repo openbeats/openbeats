@@ -1,4 +1,4 @@
-export default (model, options = {}) => {
+export default (model, query = {}, options = {}, populateQuery = []) => {
   return async (req, res, next) => {
     try {
       const page = parseInt(req.query.page);
@@ -9,19 +9,15 @@ export default (model, options = {}) => {
       const startIndex = (page - 1) * limit;
       const endIndex = page * limit;
       const data = {}
-      if (endIndex < await model.countDocuments().exec()) {
-        data.next = {
-          page: page + 1,
-          limit
-        };
-      }
-      if (startIndex > 0) {
-        data.previous = {
-          page: page - 1,
-          limit
-        };
-      }
-      data.result = await model.find({}, options).limit(limit).skip(startIndex).exec();
+      endIndex < await model.countDocuments() ? data.next = {
+        page: page + 1,
+        limit
+      } : data.next = null;
+      startIndex > 0 ? data.previous = {
+        page: page - 1,
+        limit
+      } : data.previous = null;
+      data.result = await model.find(query, options).populate(populateQuery).limit(limit).skip(startIndex);
       if (data.result.length > 0) {
         res.paginatedResults = data;
       }
