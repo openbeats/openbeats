@@ -1,6 +1,8 @@
 import mongoose from "mongoose";
 import SearchTag from "./SearchTag";
 import User from "./reference/User"
+import Song from "./reference/Song"
+
 
 const albumSchema = new mongoose.Schema({
 	name: String,
@@ -44,6 +46,13 @@ const albumSchema = new mongoose.Schema({
 		type: mongoose.Schema.Types.ObjectId,
 		ref: "User",
 	},
+});
+
+albumSchema.virtual("songsList", {
+	ref: "Song",
+	localField: 'songs',
+	foreignField: '_id',
+	justOne: false
 });
 
 albumSchema.methods.addDefultSearchTags = async function () {
