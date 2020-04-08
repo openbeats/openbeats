@@ -12,6 +12,8 @@ import PlaylistManipulator from "./PlaylistManipulator";
 import YourPlaylist from "./YourPlaylist";
 import Forgot from "./Forgot";
 import Reset from "./Reset";
+import Artists from "./Artists";
+import ArtistAlbums from "./ArtistAlbums";
 
 export {
 	Main,
@@ -27,5 +29,7 @@ export {
 	YourPlaylist,
 	Forgot,
 	Reset,
-	RecentlyPlayed
+	RecentlyPlayed,
+	Artists,
+	ArtistAlbums,
 };

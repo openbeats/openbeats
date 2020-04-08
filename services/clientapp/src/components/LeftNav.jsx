@@ -74,7 +74,7 @@ class LeftNav extends Component {
               </div>
               <div
                 className="nav-menu"
-                onClick={() => this.props.featureNotify()}
+                onClick={() => this.props.push("/artists")}
               >
                 <div className="nav-menu-icon-holder">
                   <img className="nav-menu-icon-size" src={navartist} alt="" />
