@@ -11,6 +11,8 @@ import Result from "./Result";
 import PlaylistManipulator from "./PlaylistManipulator";
 import YourPlaylist from "./YourPlaylist";
 import TopCharts from "./TopCharts";
+import Artists from "./Artists";
+import ArtistAlbums from "./ArtistAlbums";
 
 class Main extends Component {
   componentDidMount() {
@@ -76,6 +78,8 @@ class Main extends Component {
               }} />
               <Route path="/search" component={Result} />
               <Route path="/topcharts" component={TopCharts} />
+              <Route exact path="/artists" component={Artists} />
+              <Route path="/artists/:id" component={ArtistAlbums} />
             </Switch>
           </section>
         </main>
