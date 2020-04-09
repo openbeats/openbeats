@@ -4,6 +4,7 @@ import "../css/artistalbums.css";
 import { connect } from "react-redux";
 import { push } from "connected-react-router";
 import { musicDummy } from '../images';
+import { AlbumHolder } from '.';
 
 class ArtistAlbums extends Component {
     componentDidMount() {
@@ -14,6 +15,13 @@ class ArtistAlbums extends Component {
             <div className="artist-albums-wrapper">
                 <div className="artist-albums-header-image-holder" style={{ backgroundImage: `url(), url(${musicDummy})` }}>
                     <div className="artist-albums-artist-name">A R Rahman</div>
+                </div>
+                <div className="artist-albums-main-container">
+                    <AlbumHolder />
+                    <AlbumHolder />
+                    <AlbumHolder />
+                    <AlbumHolder />
+                    <AlbumHolder />
                 </div>
             </div>
         )

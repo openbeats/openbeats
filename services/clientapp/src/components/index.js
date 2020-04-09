@@ -14,6 +14,7 @@ import Forgot from "./Forgot";
 import Reset from "./Reset";
 import Artists from "./Artists";
 import ArtistAlbums from "./ArtistAlbums";
+import AlbumHolder from "./AlbumHolder";
 
 export {
 	Main,
@@ -32,4 +33,6 @@ export {
 	RecentlyPlayed,
 	Artists,
 	ArtistAlbums,
+	AlbumHolder,
+
 };
