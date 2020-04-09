@@ -38,9 +38,11 @@
 }
 
 .artist-albums-main-container {
+    margin-top: 10px;
     width: 100%;
-    padding: 20px;
-    display: flex;
-    flex-direction: column;
-    flex-wrap: wrap;
+    height: auto;
+    padding: 25px;
+    display: grid;
+    gap: 25px;
+    grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
 }
