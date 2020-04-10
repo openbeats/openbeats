@@ -108,19 +108,13 @@ router.get("/all", paginationMiddleware(Album, {}, {
 	select: 'name'
 }]), async (req, res) => {
 	try {
-		if (!res.paginatedResults) {
-			let data = "No albums found...";
-			if (res.pagnationError) {
-				data = res.pagnationError;
-			}
-			throw new Error(data);
-		}
+		if (res.pagnationError)
+			throw new Error(res.pagnationError);
 		res.send({
 			status: true,
 			data: res.paginatedResults,
 		});
 	} catch (error) {
-		console.log(error.message);
 		res.send({
 			status: false,
 			data: error.message,
@@ -147,7 +141,7 @@ router.get("/:id", async (req, res) => {
 				data: "Album not found.",
 			});
 		}
-		
+
 		let fetchedAlbum = {
 			...album["_doc"],
 			songs: album["$$populatedVirtuals"]["songsList"]
