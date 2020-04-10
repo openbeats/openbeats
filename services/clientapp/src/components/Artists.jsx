@@ -27,7 +27,6 @@ class Artists extends Component {
     fetchArtistHandler = async () => {
         const artistsFetchUrl = `${variables.baseUrl}/playlist/artist/all?page=1&limit=10000`;
         const data = (await axios.get(artistsFetchUrl)).data;
-        console.log(data);
         if (data.status) {
             this.setState({ isLoading: false, artists: data.data.result });
         } else {
