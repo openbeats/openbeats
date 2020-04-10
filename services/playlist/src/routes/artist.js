@@ -64,8 +64,7 @@ router.get(
 					status: true,
 					data: artist,
 				});
-			}
-			if (startsWith) {
+			} else if (startsWith) {
 				const artists = await Artist.find({
 					name: {
 						$regex: `^${startsWith}`,
@@ -94,13 +93,8 @@ router.get(
 //Get all artist (page and limit query param is required)
 router.get("/all", paginationMiddleware(Artist), async (req, res) => {
 	try {
-		if (!res.paginatedResults) {
-			let data = "No artist found...";
-			if (res.pagnationError) {
-				data = res.pagnationError;
-			}
-			throw new Error(data);
-		}
+		if (res.pagnationError)
+			throw new Error(res.pagnationError);
 		res.send({
 			status: true,
 			data: res.paginatedResults,
@@ -163,6 +157,7 @@ router.delete("/:id", async (req, res) => {
 	}
 });
 
+// fetch artist albums..
 router.get("/:id/releases", async (req, res) => {
 	try {
 		const releasedAlbum = await Album.find({
@@ -172,15 +167,12 @@ router.get("/:id/releases", async (req, res) => {
 			name: 1,
 			thumbnail: 2,
 			totalSongs: 3,
+			albumBy: 4
+		}).populate("albumBy");
+		return res.send({
+			status: true,
+			data: releasedAlbum,
 		});
-		if (releasedAlbum.length > 0) {
-			return res.send({
-				status: true,
-				data: releasedAlbum,
-			});
-		} else {
-			throw new Error("No releases for requested artist.");
-		}
 	} catch (error) {
 		console.log(error.message);
 		res.send({
