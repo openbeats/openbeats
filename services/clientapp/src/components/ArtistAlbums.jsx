@@ -14,7 +14,10 @@ class ArtistAlbums extends Component {
         super(props);
         this.initialState = {
             artistAlbums: [],
-            isLoading: true
+            artistName: '',
+            isLoading: true,
+            artistThumbnail: '',
+            artistId: ''
         };
         this.state = { ...this.initialState }
     }
@@ -26,14 +29,26 @@ class ArtistAlbums extends Component {
 
 
     fetchArtistAlbumsHandler = async () => {
-        const artistsFetchUrl = `${variables.baseUrl}/playlist/artist/${this.props.match.params.id}/releases`;
-        const data = (await axios.get(artistsFetchUrl)).data;
-        console.log(data);
-        if (data.status) {
-            this.setState({ isLoading: false, artists: data.data.result });
-        } else {
-            this.props.notify(data.data.toString());
+        try {
+            const artistFetchUrl = `${variables.baseUrl}/playlist/artist/fetch?tagId=${this.props.match.params.id}`;
+            const artistData = (await axios.get(artistFetchUrl)).data;
+            if (artistData.status) {
+                const { name, thumbnail, _id } = artistData.data;
+                this.setState({ artistName: name, artistThumbnail: thumbnail, artistId: _id })
+            } else {
+                throw new Error(artistData.data);
+            }
+            const artistAlbumsFetchUrl = `${variables.baseUrl}/playlist/artist/${this.props.match.params.id}/releases`;
+            const albumsData = (await axios.get(artistAlbumsFetchUrl)).data;
+            if (albumsData.status)
+                this.setState({ isLoading: false, artistAlbums: albumsData.data });
+            else
+                throw new Error(albumsData.data);
+
+        } catch (error) {
+            this.props.notify(error.message.toString());
             this.props.push("/");
+
         }
     }
 
@@ -48,16 +63,26 @@ class ArtistAlbums extends Component {
                 <Loader type="ThreeDots" color="#F32C2C" height={80} width={80} />
             </div> :
             <div className="artist-albums-wrapper">
-                <div className="artist-albums-header-image-holder" style={{ backgroundImage: `url(), url(${musicDummy})` }}>
-                    <div className="artist-albums-artist-name">A R Rahman</div>
+                <div className="artist-albums-header-image-holder" style={{ backgroundImage: `url(https://wallpaperstream.com/wallpapers/full/universe/Stars-Space-Universe-Wallpaper.jpg)` }}>
+                    <div className="artist-albums-header-artist-display-holder" style={{ backgroundImage: `url(${this.state.artistThumbnail}), url(${musicDummy})` }}></div>
+                    <div className="artist-albums-artist-name">{this.state.artistName}</div>
                 </div>
-                <div className="artist-albums-main-container">
-                    <AlbumHolder />
-                    <AlbumHolder />
-                    <AlbumHolder />
-                    <AlbumHolder />
-                    <AlbumHolder />
-                </div>
+                {this.state.artistAlbums.length > 0 &&
+                    <div className="artist-albums-main-container">
+                        {this.state.artistAlbums.map((item, key) => (
+                            <AlbumHolder
+                                key={key}
+                                albumName={item.name}
+                                albumThumbnail={item.thumbnail}
+                                albumTotalSongs={item.totalSongs}
+                                albumId={item._id}
+                                albumCreationDate={new Date().toDateString()}
+                                albumCreatedBy={"OpenBeats"}
+                            />
+                        ))}
+                    </div>
+                }
+                {this.state.artistAlbums.length === 0 && <div className="height-200px font-weight-bold d-flex align-items-center justify-content-center text-align-center">No Albums Found! <br /><br /> Stay Tuned For Updates!</div>}
             </div>
     }
 }
