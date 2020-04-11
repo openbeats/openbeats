@@ -29,7 +29,6 @@ class PlaylistDisplay extends Component {
         this.videoId = []
     }
 
-
     async componentDidMount() {
         await this.props.setCurrentAction("Playlist");
         await this.playlistFetchHandler();
@@ -39,45 +38,56 @@ class PlaylistDisplay extends Component {
     }
 
     async playlistFetchHandler() {
-        await this.setState({ ...this.initialState })
-        const {
-            type,
-            id
-        } = this.props.match.params
-        if (type === "user") {
-            const data = await this.props.fetchUserPlaylist(id);
-            if (data && data.status) {
-                await this.setState({
-                    type,
-                    playlistId: id,
-                    playlistName: data.data.name,
-                    playlistThumbnail: data.data.thumbnail ? data.data.thumbnail : musicDummy,
-                    editedName: data.data.name,
-                    playlistItems: data.data.songs,
-                    isLoading: false,
-                })
-            } else {
-                this.props.notify("Invalid Playlist!");
-                this.props.push("/");
+        try {
+            await this.setState({ ...this.initialState })
+            const {
+                type,
+                id
+            } = this.props.match.params
+            if (type === "user") {
+                const data = await this.props.fetchUserPlaylist(id);
+                if (data && data.status) {
+                    await this.setState({
+                        type,
+                        playlistId: id,
+                        playlistName: data.data.name,
+                        playlistThumbnail: data.data.thumbnail ? data.data.thumbnail : musicDummy,
+                        editedName: data.data.name,
+                        playlistItems: data.data.songs,
+                        isLoading: false,
+                    })
+                } else throw new Error("Invalid Playlist")
+            } else if (type === "charts") {
+                const data = await this.props.fetchChartsPlaylist(id);
+                if (data && data.status) {
+                    await this.setState({
+                        type,
+                        playlistId: id,
+                        playlistName: data.data.name,
+                        playlistThumbnail: data.data.thumbnail ? data.data.thumbnail : musicDummy,
+                        playlistItems: data.data.songs,
+                        isLoading: false,
+                    })
+                } else throw new Error("Invalid Playlist")
+            } else if (type === "albums") {
+                const data = await this.props.fetchAlbumPlaylist(id);
+                console.log(data)
+                if (data && data.status) {
+                    await this.setState({
+                        type,
+                        playlistId: id,
+                        playlistName: data.data.name,
+                        playlistThumbnail: data.data.thumbnail ? data.data.thumbnail : musicDummy,
+                        playlistItems: data.data.songs,
+                        isLoading: false,
+                    })
+                } else throw new Error("Invalid Playlist")
             }
-        } else if (type === "charts") {
-            const data = await this.props.fetchChartsPlaylist(id);
-            if (data && data.status) {
-                await this.setState({
-                    type,
-                    playlistId: id,
-                    playlistName: data.data.name,
-                    playlistThumbnail: data.data.thumbnail ? data.data.thumbnail : musicDummy,
-                    playlistItems: data.data.songs,
-                    isLoading: false,
-                })
-            } else {
-                this.props.notify("Invalid Playlist!");
-                this.props.push("/");
-            }
+        } catch (error) {
+            this.props.notify("Invalid Playlist!");
+            this.props.push("/");
         }
     }
-
 
     initQueue(key = 0) {
         if (this.state.playlistItems.length > 0) {
@@ -313,8 +323,8 @@ class PlaylistDisplay extends Component {
             </div >
         )
     }
-}
 
+}
 
 const mapStateToProps = (state) => {
     return {
@@ -363,6 +373,9 @@ const mapDispatchToProps = (dispatch) => {
         fetchChartsPlaylist: (playlistId) => {
             return playlistManipulatorActions.fetchChartsPlaylist(playlistId);
         },
+        fetchAlbumPlaylist: (playlistId) => {
+            return playlistManipulatorActions.fetchAlbumPlaylist(playlistId);
+        },
         changeUserPlaylistName: (playlistId, playlistName) => {
             return playlistManipulatorActions.changeUserPlaylistName(playlistId, playlistName);
         },
@@ -394,7 +407,7 @@ const mapDispatchToProps = (dispatch) => {
             } else {
                 toastActions.showMessage("Playlist you tried to add to the queue.. seems to be empty!")
             }
-        }
+        },
     }
 }
 

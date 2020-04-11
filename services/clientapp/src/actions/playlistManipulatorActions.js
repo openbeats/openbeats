@@ -8,9 +8,6 @@ import {
 import {
     toastActions
 } from ".";
-// import {
-//     push
-// } from "connected-react-router";
 
 export async function showAddPlaylistDialog(song) {
     const isAuthenticated = await store.getState().authReducer.isAuthenticated;
@@ -24,7 +21,6 @@ export async function showAddPlaylistDialog(song) {
         })
     else {
         toastActions.showMessage("Please Login to use this feature!!!")
-        // store.dispatch(push("/auth"))
     }
     return true;
 }
@@ -48,11 +44,24 @@ export async function fetchUserPlaylist(playlistId) {
         return null;
     }
 }
+
 export async function fetchChartsPlaylist(playlistId) {
     try {
         const {
             data
         } = await axios.get(`${variables.baseUrl}/playlist/topcharts/${playlistId}`)
+        return data;
+    } catch (error) {
+        toastActions.showMessage(error.toString());
+        return null;
+    }
+}
+
+export async function fetchAlbumPlaylist(playlistId) {
+    try {
+        const {
+            data
+        } = await axios.get(`${variables.baseUrl}/playlist/album/${playlistId}`)
         return data;
     } catch (error) {
         toastActions.showMessage(error.toString());
@@ -81,6 +90,7 @@ export async function fetchUserPlaylistMetadata(userId) {
     }
     return true;
 }
+
 export async function fetchChartsPlaylistMetadata() {
     try {
 
@@ -198,4 +208,4 @@ export async function getRecentlyPlayed() {
         console.error(error)
         return [];
     }
-};
+}
