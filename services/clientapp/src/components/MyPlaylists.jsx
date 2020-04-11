@@ -22,7 +22,7 @@ class MyPlaylists extends Component {
 
     render() {
         return (
-            <div className="your-playlist-wrapper">
+            <div className="my-playlists-wrapper">
                 {this.props.userPlaylistMetaData.map((item, key) => (
                     <div className="playlist-panel-wrapper" key={key}>
                         <div className="playlist-panel-image cursor-pointer" title="Play All songs!" onClick={() => this.props.push(`/playlist/user/${item._id}`)} style={{ backgroundImage: `url(${item.thumbnail ? item.thumbnail : musicDummy})` }}>

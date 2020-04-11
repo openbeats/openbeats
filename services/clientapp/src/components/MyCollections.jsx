@@ -30,7 +30,7 @@ class MyCollections extends Component {
                     width={80}
                 />
             </div> :
-            <div className="your-playlist-wrapper">
+            <div className="my-collections-wrapper">
                 My Collections
             </div>
     }
