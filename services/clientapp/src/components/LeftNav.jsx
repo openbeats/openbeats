@@ -83,12 +83,12 @@ class LeftNav extends Component {
               </div>
               <div
                 className="nav-menu"
-                onClick={() => this.props.featureNotify()}
+                onClick={() => this.props.push("/mycollections")}
               >
                 <div className="nav-menu-icon-holder">
                   <img className="nav-menu-icon-size" src={navalbum} alt="" />
                 </div>
-                <p className="nav-menu-text">Albums</p>
+                <p className="nav-menu-text">My Collections</p>
               </div>
               <div
                 className="nav-menu"
@@ -123,7 +123,7 @@ class LeftNav extends Component {
               <div
                 className="nav-menu cursor-pointer"
                 title="View All of Your Playlist"
-                onClick={() => this.props.push("/yourplaylist")}
+                onClick={() => this.props.push("/myplaylists")}
               >
                 <div className="nav-menu-icon-holder">
                   <img
@@ -132,7 +132,7 @@ class LeftNav extends Component {
                     alt=""
                   />
                 </div>
-                <p className="nav-menu-text">Your Playlists</p>
+                <p className="nav-menu-text">My Playlists</p>
               </div>
               {this.props.isAuthenticated ?
 
@@ -199,7 +199,7 @@ class LeftNav extends Component {
                 <span>Terms Privacy Policy</span> <br />
                 <span>Request New features</span> <br />
                 <br />
-                © 2019 OpenBeats, LLC <br />
+                © 2020 OpenBeats, LLC <br />
               </div>
             </section>
           </section>

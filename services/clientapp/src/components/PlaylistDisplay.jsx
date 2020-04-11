@@ -381,7 +381,7 @@ const mapDispatchToProps = (dispatch) => {
         },
         deleteUserPlaylist: async (pId) => {
             await playlistManipulatorActions.deleteUserPlaylist(pId);
-            dispatch(push("/yourplaylist"))
+            dispatch(push("/myplaylists"))
         },
         updateTyping: (isTyping) => {
             dispatch(searchActions.updateTyping(isTyping));
