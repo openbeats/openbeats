@@ -1,11 +1,11 @@
 import React, { Component } from "react";
-import "../css/yourplaylist.css";
+import "../css/myplaylists.css";
 import { push } from "connected-react-router";
 import { connect } from "react-redux";
 import { toastActions, coreActions, playlistManipulatorActions, nowPlayingActions } from "../actions";
 import { musicDummy, playlistSvg, pQueueWhite } from "../images";
 
-class YourPlaylist extends Component {
+class MyPlaylists extends Component {
 
     constructor(props) {
         super(props);
@@ -16,7 +16,7 @@ class YourPlaylist extends Component {
     }
 
     componentDidMount() {
-        this.props.setCurrentAction("Your Playlists")
+        this.props.setCurrentAction("My Playlists")
         this.props.fetchUserPlaylistMetadata(this.props.userDetails.id);
     }
 
@@ -121,5 +121,5 @@ const mapDispatchToProps = dispatch => {
     }
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(YourPlaylist);
+export default connect(mapStateToProps, mapDispatchToProps)(MyPlaylists);
 
