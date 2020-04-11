@@ -43,46 +43,37 @@ class PlaylistDisplay extends Component {
             const {
                 type,
                 id
-            } = this.props.match.params
-            if (type === "user") {
-                const data = await this.props.fetchUserPlaylist(id);
-                if (data && data.status) {
-                    await this.setState({
-                        type,
-                        playlistId: id,
-                        playlistName: data.data.name,
-                        playlistThumbnail: data.data.thumbnail ? data.data.thumbnail : musicDummy,
-                        editedName: data.data.name,
-                        playlistItems: data.data.songs,
-                        isLoading: false,
-                    })
-                } else throw new Error("Invalid Playlist")
-            } else if (type === "charts") {
-                const data = await this.props.fetchChartsPlaylist(id);
-                if (data && data.status) {
-                    await this.setState({
-                        type,
-                        playlistId: id,
-                        playlistName: data.data.name,
-                        playlistThumbnail: data.data.thumbnail ? data.data.thumbnail : musicDummy,
-                        playlistItems: data.data.songs,
-                        isLoading: false,
-                    })
-                } else throw new Error("Invalid Playlist")
-            } else if (type === "albums") {
-                const data = await this.props.fetchAlbumPlaylist(id);
-                console.log(data)
-                if (data && data.status) {
-                    await this.setState({
-                        type,
-                        playlistId: id,
-                        playlistName: data.data.name,
-                        playlistThumbnail: data.data.thumbnail ? data.data.thumbnail : musicDummy,
-                        playlistItems: data.data.songs,
-                        isLoading: false,
-                    })
-                } else throw new Error("Invalid Playlist")
+            } = this.props.match.params;
+            let data = null;
+            switch (type) {
+                case "user":
+                    data = await this.props.fetchUserPlaylist(id);
+                    break;
+                case "charts":
+                    data = await this.props.fetchChartsPlaylist(id);
+                    break;
+                case "albums":
+                    data = await this.props.fetchAlbumPlaylist(id);
+                    break;
+                case "recentlyplayed":
+                    data = await this.props.fetchRecentlyPlayed();
+                    break;
+                default:
+                    throw new Error("Invalid");
             }
+
+            if (data && data.status) {
+                await this.setState({
+                    type,
+                    playlistId: type === "recentlyplayed" ? "recentlyplayed" : id,
+                    playlistName: type === "recentlyplayed" ? "Recently Played" : data.data.name,
+                    playlistThumbnail: data.data.thumbnail ? data.data.thumbnail : ((type === "recentlyplayed" && data.data.length > 0) ? data.data[0].thumbnail : musicDummy),
+                    editedName: type === "recentlyplayed" ? "Recently Played" : data.data.name,
+                    playlistItems: type === "recentlyplayed" ? data.data : data.data.songs,
+                    isLoading: false,
+                })
+            } else throw new Error("Invalid Playlist")
+
         } catch (error) {
             this.props.notify("Invalid Playlist!");
             this.props.push("/");
@@ -301,26 +292,27 @@ class PlaylistDisplay extends Component {
                                 </Fragment>
                             )) :
                                 <Fragment>
-
                                     {this.state.type === "user" &&
                                         <div className="text-align-center width-100 height-100 d-flex align-items-center justify-content-center">
-                                            Your Playlist is Empty!
-                                            <br />
-                                            <br />
-                                            You can search and add songs to your Playlist!
-                                        </div>}
-                                    {this.state.type === "charts" && <div className="text-align-center width-100 height-100 d-flex align-items-center justify-content-center">
-                                        This Top Chart is Empty!
-                                        <br />
-                                        <br />
-                                        Stay Tuned!!!
-                                        </div>}
+                                            Your Playlist is Empty!<br /><br />You can search and add songs to your Playlist!
+                                        </div>
+                                    }
+                                    {this.state.type === "charts" &&
+                                        <div className="text-align-center width-100 height-100 d-flex align-items-center justify-content-center">
+                                            This Top Chart is Empty!<br /><br />Stay Tuned!!!
+                                        </div>
+                                    }
+                                    {this.state.type === "recentlyplayed" &&
+                                        <div className="text-align-center width-100 height-100 d-flex align-items-center justify-content-center">
+                                            It seems like you haven't listened to any music yet.<br /><br />Start listening today..It's free!!!
+                                        </div>
+                                    }
                                 </Fragment>
                             }
                         </div>
                     </Fragment>
                 }
-            </div >
+            </div>
         )
     }
 
@@ -407,6 +399,9 @@ const mapDispatchToProps = (dispatch) => {
             } else {
                 toastActions.showMessage("Playlist you tried to add to the queue.. seems to be empty!")
             }
+        },
+        fetchRecentlyPlayed: () => {
+            return playlistManipulatorActions.fetchRecentlyPlayed();
         },
     }
 }

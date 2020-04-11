@@ -57,6 +57,29 @@ export async function fetchChartsPlaylist(playlistId) {
     }
 }
 
+export async function fetchRecentlyPlayed() {
+    try {
+        const isAuthenticated = await store.getState().authReducer.isAuthenticated;
+        if (isAuthenticated) {
+            const token = await store.getState().authReducer.userDetails.token;
+            const options = {
+                headers: {
+                    'x-auth-token': token
+                }
+            };
+            const {
+                data
+            } = await axios.get(`${variables.baseUrl}/auth/metadata/recentlyplayed`, options);
+            return data;
+        } else {
+            throw new Error("Please Login to Use this Feature!");
+        }
+    } catch (error) {
+        toastActions.showMessage(error.toString());
+        return null;
+    }
+}
+
 export async function fetchAlbumPlaylist(playlistId) {
     try {
         const {
@@ -179,33 +202,5 @@ export async function changeUserPlaylistName(playlistId, name) {
     } catch (error) {
         toastActions.showMessage(error.toString())
         return false;
-    }
-}
-
-export async function getRecentlyPlayed() {
-    try {
-        const isAuthenticated = await store.getState().authReducer.isAuthenticated;
-        if (isAuthenticated) {
-            const token = await store.getState().authReducer.userDetails.token;
-            const options = {
-                headers: {
-                    'x-auth-token': token
-                }
-            };
-            const {
-                status,
-                data
-            } = await axios.get(`${variables.baseUrl}/auth/metadata/recentlyplayed`, options);
-            if (status) {
-                return data;
-            } else {
-                return [];
-            }
-        } else {
-            return [];
-        }
-    } catch (error) {
-        console.error(error)
-        return [];
     }
 }
