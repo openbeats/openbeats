@@ -10,6 +10,7 @@ import Loader from 'react-loader-spinner';
 import { variables } from '../config';
 
 class ArtistAlbums extends Component {
+
     constructor(props) {
         super(props);
         this.initialState = {
@@ -26,7 +27,6 @@ class ArtistAlbums extends Component {
         this.props.setCurrentAction("Artist Albums");
         this.fetchArtistAlbumsHandler();
     }
-
 
     fetchArtistAlbumsHandler = async () => {
         try {
@@ -52,6 +52,9 @@ class ArtistAlbums extends Component {
         }
     }
 
+    albumSelectCallBack = async (id) => {
+        this.props.push("/playlist/albums/" + id);
+    }
 
     componentWillUnmount() {
         this.setState({ ...this.initialState });
@@ -78,6 +81,7 @@ class ArtistAlbums extends Component {
                                 albumId={item._id}
                                 albumCreationDate={new Date().toDateString()}
                                 albumCreatedBy={"OpenBeats"}
+                                albumSelectCallBack={this.albumSelectCallBack}
                             />
                         ))}
                     </div>
@@ -85,6 +89,7 @@ class ArtistAlbums extends Component {
                 {this.state.artistAlbums.length === 0 && <div className="height-200px font-weight-bold d-flex align-items-center justify-content-center text-align-center">No Albums Found! <br /><br /> Stay Tuned For Updates!</div>}
             </div>
     }
+
 }
 
 const mapStateToProps = (state) => {
