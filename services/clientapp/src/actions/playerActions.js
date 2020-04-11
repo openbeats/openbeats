@@ -3,13 +3,21 @@ import {
 	nowPlayingActions,
 	// playerActions
 } from "../actions";
-import { store } from "../store";
-import { variables } from "../config";
-import { musicDummy } from "../images";
+import {
+	store
+} from "../store";
+import {
+	variables
+} from "../config";
+import {
+	musicDummy
+} from "../images";
 // import {
 //     push
 // } from "connected-react-router";
-import { Base64 } from "js-base64";
+import {
+	Base64
+} from "js-base64";
 
 export function playPauseToggle() {
 	const playerRef = document.getElementById("music-player");
@@ -250,11 +258,9 @@ export async function initPlayer(audioData, playMusic = true) {
 	await fetch(masterUrl, options)
 		.then(async res => {
 			const resjson = await res.json();
-			console.log(resjson);
 			return resjson;
 		})
 		.then(async res => {
-			console.log(res);
 			if (res.status) {
 				if (
 					store.getState().nowPlayingReducer.currentPlaying.videoId ===
@@ -362,10 +368,10 @@ export function playerDownloadHandler(e) {
 		});
 	} else {
 		fetch(
-			`${variables.baseUrl}/downcc/${state.id}?title=${encodeURI(
+				`${variables.baseUrl}/downcc/${state.id}?title=${encodeURI(
 				state.songTitle,
 			)}`,
-		)
+			)
 			.then(res => {
 				if (res.status === 200) {
 					store.dispatch({
