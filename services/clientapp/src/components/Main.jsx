@@ -1,7 +1,7 @@
 import React, { Component, Fragment } from "react";
 import "../css/core.css";
 import "../css/mainbody.css";
-import { Player, TopNav, PlaylistDisplay, RecentlyPlayed, LeftNav, Home, MyPlaylists, Artists, ArtistAlbums, TopCharts, PlaylistManipulator, Result, NowPlaying, MyCollections } from ".";
+import { Player, TopNav, PlaylistDisplay, LeftNav, Home, MyPlaylists, Artists, ArtistAlbums, TopCharts, PlaylistManipulator, Result, NowPlaying, MyCollections } from ".";
 import { toastActions, coreActions } from "../actions";
 import { connect } from "react-redux";
 import { push } from "connected-react-router";
@@ -54,15 +54,6 @@ class Main extends Component {
               <Route path="/myplaylists" component={() => {
                 if (this.props.isAuthenticated)
                   return <MyPlaylists />
-                else {
-                  this.props.notify("please login to use this feature!!!");
-                  this.props.push("/");
-                  return null;
-                }
-              }} />
-              <Route path="/recentlyplayed" component={() => {
-                if (this.props.isAuthenticated)
-                  return <RecentlyPlayed />
                 else {
                   this.props.notify("please login to use this feature!!!");
                   this.props.push("/");

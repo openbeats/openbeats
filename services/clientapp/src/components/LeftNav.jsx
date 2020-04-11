@@ -110,7 +110,7 @@ class LeftNav extends Component {
               </div>
               <div
                 className="nav-menu"
-                onClick={() => this.props.push("/recentlyplayed")}
+                onClick={() => this.props.push("/playlist/recentlyplayed/user")}
               >
                 <div className="nav-menu-icon-holder">
                   <img className="nav-menu-icon-size" src={navhistory} alt="" />
