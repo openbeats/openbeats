@@ -62,6 +62,10 @@ class ArtistAlbums extends Component {
         this.props.addSongsToQueue(id);
     }
 
+    addOrRemoveAlbumFromCollectionHandler = (isAdd = true, albumId) => {
+        // add remove operation
+    }
+
     componentWillUnmount() {
         this.setState({ ...this.initialState });
     }
@@ -90,6 +94,8 @@ class ArtistAlbums extends Component {
                                 albumAddToCurrentQueueCallBack={this.albumAddToCurrentQueueCallBack}
                                 albumViewCallBack={this.albumViewCallBack}
                                 albumPlayCallBack={this.albumPlayCallBack}
+                                addOrRemoveAlbumFromCollectionHandler={this.addOrRemoveAlbumFromCollectionHandler}
+                                isAuthenticated={this.props.isAuthenticated}
                             />
                         ))}
                     </div>
@@ -102,6 +108,7 @@ class ArtistAlbums extends Component {
 
 const mapStateToProps = (state) => {
     return {
+        isAuthenticated: state.authReducer.isAuthenticated
     }
 }
 
