@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { toastActions, coreActions } from "../actions";
+import { toastActions, coreActions, playlistManipulatorActions, nowPlayingActions } from "../actions";
 import "../css/artistalbums.css";
 import { connect } from "react-redux";
 import { push } from "connected-react-router";
@@ -52,8 +52,14 @@ class ArtistAlbums extends Component {
         }
     }
 
-    albumSelectCallBack = async (id) => {
+    albumViewCallBack = async (id) => {
         this.props.push("/playlist/albums/" + id);
+    }
+    albumPlayCallBack = async (id) => {
+        this.props.push("/playlist/albums/" + id + "?autoplay=true");
+    }
+    albumAddToCurrentQueueCallBack = async (id) => {
+        this.props.addSongsToQueue(id);
     }
 
     componentWillUnmount() {
@@ -81,7 +87,9 @@ class ArtistAlbums extends Component {
                                 albumId={item._id}
                                 albumCreationDate={new Date().toDateString()}
                                 albumCreatedBy={"OpenBeats"}
-                                albumSelectCallBack={this.albumSelectCallBack}
+                                albumAddToCurrentQueueCallBack={this.albumAddToCurrentQueueCallBack}
+                                albumViewCallBack={this.albumViewCallBack}
+                                albumPlayCallBack={this.albumPlayCallBack}
                             />
                         ))}
                     </div>
@@ -111,6 +119,14 @@ const mapDispatchToProps = (dispatch) => {
         setCurrentAction: (action) => {
             dispatch(coreActions.setCurrentAction(action))
         },
+        addSongsToQueue: async (pId) => {
+            const data = await playlistManipulatorActions.fetchAlbumPlaylist(pId);
+            if (data && data.status && data.data.songs.length) {
+                nowPlayingActions.addSongsToQueue(data.data.songs);
+            } else {
+                toastActions.showMessage("Playlist you tried to add to the queue.. seems to be empty!")
+            }
+        }
     }
 }
 
