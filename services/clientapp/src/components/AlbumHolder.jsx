@@ -7,7 +7,8 @@ export default class AlbumHolder extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            isInCollection: false
+            isInCollection: false,
+            albumId: this.props.albumId
         }
     }
 
@@ -15,14 +16,17 @@ export default class AlbumHolder extends Component {
 
     }
 
-    addOrRemoveAlbumFromCollectionHandler = () => {
-
+    addOrRemoveAlbumFromCollectionHandler = (id) => {
+        if (this.props.addOrRemoveAlbumFromCollectionHandler) {
+            if (this.state.isInCollection) this.props.addOrRemoveAlbumFromCollectionHandler(false, this.state.albumId)
+            else this.props.addOrRemoveAlbumFromCollectionHandler(true, this.state.albumId)
+        }
     }
 
     render() {
         return (
             <div className="album-holder-wrapper" style={{ backgroundImage: `url(${this.props.albumThumbnail}), url(${musicDummy})` }}>
-                <i className={`fas fa-heart album-add-to-collection-icon ${this.state.isInCollection ? "master-color" : ''}`} title={"Add to My Collection"} onClick={this.addOrRemoveAlbumFromCollectionHandler}></i>
+                {this.props.addOrRemoveAlbumFromCollectionHandler && this.props.isAuthenticated && <i className={`fas fa-heart album-add-to-collection-icon ${this.state.isInCollection ? "master-color" : ''}`} title={"Add to My Collection"} onClick={this.addOrRemoveAlbumFromCollectionHandler}></i>}
                 <div className="album-holder-play-icon-visible-on-hover">
                     <i className="far fa-eye" title="View this Album" onClick={() => this.props.albumViewCallBack(this.props.albumId)}></i>
                     <i className="fas fa-play" title="Reset Current Queue and Play this Album" onClick={() => this.props.albumPlayCallBack(this.props.albumId)}></i>
