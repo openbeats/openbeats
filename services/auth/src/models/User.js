@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 import Song from "./reference/Song";
+import Album from "./reference/Album";
 
 
 const userSchema = new mongoose.Schema({
