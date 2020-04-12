@@ -4,7 +4,8 @@ let userDetails = {
   id: "",
   token: "",
   email: "",
-  avatar: ""
+  avatar: "",
+  likedPlaylists: []
 };
 
 if (localStorage.getItem("userDetails")) {
