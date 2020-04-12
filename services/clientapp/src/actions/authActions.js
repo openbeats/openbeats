@@ -39,7 +39,8 @@ export function loginHandler(email, password) {
           email: data.email,
           id: data.id,
           token: data.token,
-          avatar: data.avatar
+          avatar: data.avatar,
+          likedPlaylists: data.likedPlaylists
         };
         localStorage.setItem("userDetails", JSON.stringify(userDetails));
         store.dispatch({
@@ -91,7 +92,8 @@ export function registerHandler(name, email, password) {
           email: data.email,
           id: data.id,
           token: data.token,
-          avatar: data.avatar
+          avatar: data.avatar,
+          likedPlaylists: data.likedPlaylists,
         };
         localStorage.setItem("userDetails", JSON.stringify(userDetails));
         store.dispatch({

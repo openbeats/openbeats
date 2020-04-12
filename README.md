@@ -476,11 +476,12 @@ structure:
 
 _Get all The Albums in the Collections_
 
-> https://api.openbeats.live/auth/metadata/mycollections
+> https://api.openbeats.live/auth/metadata/mycollections(?meatadata=true)
 
 ```language
 method: GET
 header: "x-auth-token: user-auth-token" (mandatory)
+queryParams: ?meatadata=true => for only getting albums Ids without population
 ```
 _Remove an Album from the Collections_
 

@@ -46,7 +46,8 @@ router.post("/login", (req, res, next) => {
               name: user.name,
               email: user.email,
               id: user.id,
-              avatar: user.avatar
+              avatar: user.avatar,
+              likedPlaylists: user.likedPlaylists
             };
             if (req.query.admin)
               data["admin"] = user.admin;
@@ -148,7 +149,8 @@ router.post("/register", [
               name: user.name,
               email: user.email,
               id: user.id,
-              avatar: user.avatar
+              avatar: user.avatar,
+              likedPlaylists: user.likedPlaylists,
             }
           });
         } catch (error) {
