@@ -25,9 +25,7 @@ router.post("/recentlyplayed", async (req, res) => {
 				user.recentlyPlayedSongs = recentlyPlayedIds;
 				await user.save();
 			}
-		} catch (error) {
-			console.log(error.message);
-		}
+		} catch (error) {}
 	}, 0);
 	res.send({
 		status: true,
@@ -64,7 +62,7 @@ router.post("/mycollections", async (req, res) => {
 				await user.save();
 				res.send({
 					status: true,
-					data: user.likedPlaylists,
+					data: "Album added to the collection!",
 				});
 			} else {
 				throw new Error("Album is Already in the Collections!");
@@ -73,7 +71,35 @@ router.post("/mycollections", async (req, res) => {
 			throw new Error("User Not found!");
 		}
 	} catch (error) {
-		console.log(error.message);
+		res.send({
+			status: false,
+			data: error.message,
+		});
+	}
+});
+
+router.delete("/mycollections", async (req, res) => {
+	const {
+		userId,
+		albumId
+	} = req.body;
+	try {
+		const user = await User.findById(userId);
+		if (user) {
+			if (user.likedPlaylists.indexOf(albumId) !== -1) {
+				user.likedPlaylists.splice(user.likedPlaylists.indexOf(albumId), 1);
+				await user.save();
+				res.send({
+					status: true,
+					data: "Album Removed from the Collection",
+				});
+			} else {
+				throw new Error("Album didn't exists in the Collection!");
+			}
+		} else {
+			throw new Error("User Not found!");
+		}
+	} catch (error) {
 		res.send({
 			status: false,
 			data: error.message,
