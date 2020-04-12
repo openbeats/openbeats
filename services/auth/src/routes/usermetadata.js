@@ -31,7 +31,7 @@ router.post("/recentlyplayed", async (req, res) => {
 	}, 0);
 	res.send({
 		status: true,
-		msg: "Song added to recently played.",
+		data: "Song added to recently played.",
 	});
 });
 
@@ -46,9 +46,60 @@ router.get("/recentlyplayed", auth, async (req, res) => {
 	} catch (error) {
 		res.send({
 			status: false,
-			msg: "Internal server error.",
+			data: "Internal server error.",
 		});
 	}
 });
+
+router.post("/mycollections", async (req, res) => {
+	const {
+		userId,
+		albumId
+	} = req.body;
+	try {
+		const user = await User.findById(userId);
+		if (user) {
+			if (user.likedPlaylists.indexOf(albumId) === -1) {
+				user.likedPlaylists.push(albumId);
+				await user.save();
+				res.send({
+					status: true,
+					data: user.likedPlaylists,
+				});
+			} else {
+				throw new Error("Album is Already in the Collections!");
+			}
+		} else {
+			throw new Error("User Not found!");
+		}
+	} catch (error) {
+		console.log(error.message);
+		res.send({
+			status: false,
+			data: error.message,
+		});
+	}
+});
+
+router.get("/mycollections", auth, async (req, res) => {
+	try {
+		let user = null;
+		if (req.query.metadata)
+			user = await User.findById(req.user.id);
+		else
+			user = await User.findById(req.user.id).populate("likedPlaylists");
+		res.send({
+			id: req.user.id,
+			status: true,
+			data: user.likedPlaylists,
+		});
+	} catch (error) {
+		res.send({
+			status: false,
+			data: "Internal server error.",
+		});
+	}
+});
+
 
 export default router;

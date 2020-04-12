@@ -458,3 +458,27 @@ _delete searchtag_
 method: DELETE
 Route params: <ARTIST-ID>
 ```
+**Mycollections Endpoints**
+
+_Add an Album to the user collection_
+
+> https://api.openbeats.live/auth/metadata/mycollections
+
+```language
+method: POST
+bodyType: JSON
+structure:
+{
+	"userId": "<USER-ID>",
+	"albumId": "<ALBUM-ID>",
+}
+```
+
+_Get all The Albums in the Collections_
+
+> https://api.openbeats.live/auth/metadata/mycollections
+
+```language
+method: GET
+header: "x-auth-token: user-auth-token" (mandatory)
+```
