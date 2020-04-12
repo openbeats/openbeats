@@ -204,3 +204,26 @@ export async function changeUserPlaylistName(playlistId, name) {
         return false;
     }
 }
+
+export async function addOrRemoveAlbumFromUserCollection(albumId, isAdd = true) {
+    try {
+        const userId = store.getState().authReducer.userDetails.id;
+        if (isAdd) {
+            await axios.post(`${variables.baseUrl}/auth/metadata/myCollections`, {
+                userId,
+                albumId
+            })
+            toastActions.showMessage("Album Added to the collection!");
+        } else {
+            await axios.delete(`${variables.baseUrl}/auth/metadata/myCollections`, {
+                userId,
+                albumId
+            })
+            toastActions.showMessage("Album Added to the collection!");
+        }
+        return true;
+    } catch (error) {
+        toastActions.showMessage(error.toString())
+        return false;
+    }
+}

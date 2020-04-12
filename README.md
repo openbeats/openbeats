@@ -482,3 +482,16 @@ _Get all The Albums in the Collections_
 method: GET
 header: "x-auth-token: user-auth-token" (mandatory)
 ```
+_Remove an Album from the Collections_
+
+> https://api.openbeats.live/auth/metadata/mycollections
+
+```language
+method: DELETE
+bodyType: JSON
+structure:
+{
+	"userId": "<USER-ID>",
+	"albumId": "<ALBUM-ID>",
+}
+```

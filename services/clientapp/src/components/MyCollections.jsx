@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import Loader from 'react-loader-spinner';
 import { push } from 'connected-react-router';
-import { toastActions, coreActions } from '../actions';
+import { toastActions, coreActions, playlistManipulatorActions, nowPlayingActions } from '../actions';
 import { connect } from 'react-redux';
 import { AlbumHolder } from '.';
 
@@ -20,6 +20,20 @@ class MyCollections extends Component {
         this.props.setCurrentAction("My Collections")
     }
 
+    albumViewCallBack = async (id) => {
+        this.props.push("/playlist/albums/" + id);
+    }
+    albumPlayCallBack = async (id) => {
+        this.props.push("/playlist/albums/" + id + "?autoplay=true");
+    }
+    albumAddToCurrentQueueCallBack = async (id) => {
+        this.props.addSongsToQueue(id);
+    }
+
+    addOrRemoveAlbumFromCollectionHandler = (isAdd = true, albumId) => {
+        // add remove operation
+    }
+
 
     render() {
         return this.state.isLoading ?
@@ -34,8 +48,18 @@ class MyCollections extends Component {
                 <div className="my-playlists-wrapper">
                     {this.state.myCollections.map((item, key) => (
                         <AlbumHolder
-
-
+                            key={key}
+                            albumName={item.name}
+                            albumThumbnail={item.thumbnail}
+                            albumTotalSongs={item.totalSongs}
+                            albumId={item._id}
+                            albumCreationDate={new Date(item.createdAt).toDateString()}
+                            albumCreatedBy={"OpenBeats"}
+                            albumAddToCurrentQueueCallBack={this.albumAddToCurrentQueueCallBack}
+                            albumViewCallBack={this.albumViewCallBack}
+                            albumPlayCallBack={this.albumPlayCallBack}
+                            addOrRemoveAlbumFromCollectionHandler={this.addOrRemoveAlbumFromCollectionHandler}
+                            isAuthenticated={this.props.isAuthenticated}
                         />
                     ))}
                 </div> :
@@ -45,6 +69,7 @@ class MyCollections extends Component {
 }
 const mapStateToProps = state => {
     return {
+        isAuthenticated: state.authReducer.isAuthenticated
     };
 };
 
@@ -61,6 +86,14 @@ const mapDispatchToProps = dispatch => {
         },
         fetchMyCollection: () => {
         },
+        addSongsToQueue: async (pId) => {
+            const data = await playlistManipulatorActions.fetchAlbumPlaylist(pId);
+            if (data && data.status && data.data.songs.length) {
+                nowPlayingActions.addSongsToQueue(data.data.songs);
+            } else {
+                toastActions.showMessage("Playlist you tried to add to the queue.. seems to be empty!")
+            }
+        }
     };
 };
 
