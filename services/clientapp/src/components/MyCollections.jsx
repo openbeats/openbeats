@@ -10,30 +10,54 @@ class MyCollections extends Component {
 
     constructor(props) {
         super(props);
-        this.state = {
-            isLoading: false,
+        this.initialState = {
+            isLoading: true,
             myCollections: [],
         }
+        this.state = { ...this.initialState }
     }
 
-    async componentDidMount() {
-        this.props.setCurrentAction("My Collections")
+    componentDidMount() {
+        this.props.setCurrentAction("My Collections");
+        this.props.updateAlbumsInTheCollectionMetaData();
+        this.fetchMyCollections();
+
+    }
+
+    fetchMyCollections = async () => {
+        const data = await this.props.fetchAllAlbumsInTheCollection();
+        if (data && data.status) {
+            this.setState({ isLoading: false, myCollections: data.data });
+        } else {
+            this.props.showMessage("Inavlid Request!");
+            this.props.push("/");
+        }
     }
 
     albumViewCallBack = async (id) => {
         this.props.push("/playlist/albums/" + id);
     }
+
     albumPlayCallBack = async (id) => {
         this.props.push("/playlist/albums/" + id + "?autoplay=true");
     }
+
     albumAddToCurrentQueueCallBack = async (id) => {
         this.props.addSongsToQueue(id);
     }
 
-    addOrRemoveAlbumFromCollectionHandler = (isAdd = true, albumId) => {
-        // add remove operation
+    addOrRemoveAlbumFromCollectionHandler = async (isAdd = true, albumId) => {
+        console.log(isAdd, albumId)
+        const result = await this.props.addOrRemoveAlbumFromUserCollection(albumId, isAdd);
+        console.log(isAdd, albumId, result)
+        if (result) {
+            this.fetchMyCollections();
+        }
     }
 
+    componentWillUnmount() {
+        this.setState(this.initialState)
+    }
 
     render() {
         return this.state.isLoading ?
@@ -46,7 +70,7 @@ class MyCollections extends Component {
                 />
             </div> : this.state.myCollections.length > 0 ?
                 <div className="my-playlists-wrapper">
-                    {this.state.myCollections.map((item, key) => (
+                    {this.state.myCollections.length > 0 && this.state.myCollections.map((item, key) => (
                         <AlbumHolder
                             key={key}
                             albumName={item.name}
@@ -60,6 +84,7 @@ class MyCollections extends Component {
                             albumPlayCallBack={this.albumPlayCallBack}
                             addOrRemoveAlbumFromCollectionHandler={this.addOrRemoveAlbumFromCollectionHandler}
                             isAuthenticated={this.props.isAuthenticated}
+                            isAlbumIsInCollection={this.props.likedPlaylists.indexOf(item._id) === -1 ? false : true}
                         />
                     ))}
                 </div> :
@@ -67,9 +92,11 @@ class MyCollections extends Component {
     }
 
 }
+
 const mapStateToProps = state => {
     return {
-        isAuthenticated: state.authReducer.isAuthenticated
+        isAuthenticated: state.authReducer.isAuthenticated,
+        likedPlaylists: state.authReducer.userDetails.likedPlaylists
     };
 };
 
@@ -81,10 +108,14 @@ const mapDispatchToProps = dispatch => {
         featureNotify: () => {
             toastActions.featureNotify();
         },
+        showMessage: (message) => {
+            toastActions.showMessage(message);
+        },
         setCurrentAction: (action) => {
             dispatch(coreActions.setCurrentAction(action))
         },
-        fetchMyCollection: () => {
+        fetchAllAlbumsInTheCollection: async () => {
+            return await playlistManipulatorActions.fetchAllAlbumsInTheCollection();
         },
         addSongsToQueue: async (pId) => {
             const data = await playlistManipulatorActions.fetchAlbumPlaylist(pId);
@@ -93,6 +124,12 @@ const mapDispatchToProps = dispatch => {
             } else {
                 toastActions.showMessage("Playlist you tried to add to the queue.. seems to be empty!")
             }
+        },
+        addOrRemoveAlbumFromUserCollection: async (albumId, isAdd = true) => {
+            return await playlistManipulatorActions.addOrRemoveAlbumFromUserCollection(albumId, isAdd);
+        },
+        updateAlbumsInTheCollectionMetaData: () => {
+            playlistManipulatorActions.updateAlbumsInTheCollectionMetaData();
         }
     };
 };

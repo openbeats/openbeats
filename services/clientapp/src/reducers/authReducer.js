@@ -1,3 +1,7 @@
+import {
+  UPDATE_LIKED_PLAYLISTS_METADATA
+} from "../types";
+
 let isAuthenticated = false;
 let userDetails = {
   name: "",
@@ -40,6 +44,16 @@ const authReducer = (state = initialState, action) => {
       state = {
         ...state,
         ...action.payload
+      };
+      break;
+    case UPDATE_LIKED_PLAYLISTS_METADATA:
+      let userDetails = {
+        ...state.userDetails,
+        likedPlaylists: action.payload
+      }
+      state = {
+        ...state,
+        ...userDetails
       };
       break;
     default:
