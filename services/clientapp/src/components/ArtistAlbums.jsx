@@ -63,7 +63,8 @@ class ArtistAlbums extends Component {
     }
 
     addOrRemoveAlbumFromCollectionHandler = (isAdd = true, albumId) => {
-        // add remove operation
+        console.log(isAdd, albumId)
+        this.props.addOrRemoveAlbumFromUserCollection(albumId, isAdd)
     }
 
     componentWillUnmount() {
@@ -96,6 +97,7 @@ class ArtistAlbums extends Component {
                                 albumPlayCallBack={this.albumPlayCallBack}
                                 addOrRemoveAlbumFromCollectionHandler={this.addOrRemoveAlbumFromCollectionHandler}
                                 isAuthenticated={this.props.isAuthenticated}
+                                isAlbumIsInCollection={this.props.likedPlaylists.indexOf(item._id) === -1 ? false : true}
                             />
                         ))}
                     </div>
@@ -108,7 +110,8 @@ class ArtistAlbums extends Component {
 
 const mapStateToProps = (state) => {
     return {
-        isAuthenticated: state.authReducer.isAuthenticated
+        isAuthenticated: state.authReducer.isAuthenticated,
+        likedPlaylists: state.authReducer.userDetails.likedPlaylists
     }
 }
 
@@ -133,6 +136,9 @@ const mapDispatchToProps = (dispatch) => {
             } else {
                 toastActions.showMessage("Playlist you tried to add to the queue.. seems to be empty!")
             }
+        },
+        addOrRemoveAlbumFromUserCollection: async (albumId, isAdd = true) => {
+            return await playlistManipulatorActions.addOrRemoveAlbumFromUserCollection(albumId, isAdd);
         }
     }
 }

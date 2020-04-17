@@ -8,6 +8,9 @@ import {
 import {
     toastActions
 } from ".";
+import {
+    UPDATE_LIKED_PLAYLISTS_METADATA
+} from "../types";
 
 export async function showAddPlaylistDialog(song) {
     const isAuthenticated = await store.getState().authReducer.isAuthenticated;
@@ -208,19 +211,32 @@ export async function changeUserPlaylistName(playlistId, name) {
 export async function addOrRemoveAlbumFromUserCollection(albumId, isAdd = true) {
     try {
         const userId = store.getState().authReducer.userDetails.id;
+        console.log(userId, albumId, isAdd)
         if (isAdd) {
-            await axios.post(`${variables.baseUrl}/auth/metadata/myCollections`, {
+            const {
+                data
+            } = await axios.post(`${variables.baseUrl}/auth/metadata/myCollections`, {
                 userId,
                 albumId
-            })
-            toastActions.showMessage("Album Added to the collection!");
+            });
+            if (data.status)
+                toastActions.showMessage("Album Added to the collection!");
+            else
+                throw new Error(data.data.toString());
         } else {
-            await axios.delete(`${variables.baseUrl}/auth/metadata/myCollections`, {
+            console.log("delete", isAdd, albumId)
+            const {
+                data
+            } = await axios.delete(`${variables.baseUrl}/auth/metadata/myCollections`, {
                 userId,
                 albumId
-            })
-            toastActions.showMessage("Album Added to the collection!");
+            });
+            if (data.status)
+                toastActions.showMessage("Album Deleted from the collection!");
+            else
+                throw new Error(data.data.toString());
         }
+        updateAlbumsInTheCollectionMetaData();
         return true;
     } catch (error) {
         toastActions.showMessage(error.toString())
@@ -228,25 +244,38 @@ export async function addOrRemoveAlbumFromUserCollection(albumId, isAdd = true) 
     }
 }
 
-export async function getAllAlbumsInTheCollection(albumId, isAdd = true) {
+export async function fetchAllAlbumsInTheCollection() {
     try {
-        const userId = store.getState().authReducer.userDetails.id;
-        if (isAdd) {
-            await axios.post(`${variables.baseUrl}/auth/metadata/myCollections`, {
-                userId,
-                albumId
-            })
-            toastActions.showMessage("Album Added to the collection!");
-        } else {
-            await axios.delete(`${variables.baseUrl}/auth/metadata/myCollections`, {
-                userId,
-                albumId
-            })
-            toastActions.showMessage("Album Added to the collection!");
-        }
-        return true;
+        const token = await store.getState().authReducer.userDetails.token;
+        const options = {
+            headers: {
+                'x-auth-token': token
+            }
+        };
+        const {
+            data
+        } = await axios.get(`${variables.baseUrl}/auth/metadata/mycollections`, options);
+        return data;
     } catch (error) {
-        toastActions.showMessage(error.toString())
-        return false;
+        toastActions.showMessage(error.toString());
+        return null;
     }
+}
+
+export async function updateAlbumsInTheCollectionMetaData() {
+    const token = await store.getState().authReducer.userDetails.token;
+    const options = {
+        headers: {
+            'x-auth-token': token
+        }
+    };
+    const {
+        data
+    } = await axios.get(`${variables.baseUrl}/auth/metadata/mycollections?metadata=true`, options);
+    console.log("reaches here", data)
+    if (data.status)
+        store.dispatch({
+            type: UPDATE_LIKED_PLAYLISTS_METADATA,
+            payload: data.data
+        })
 }
