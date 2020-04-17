@@ -1,6 +1,6 @@
 .album-holder-wrapper {
-    width: 100%;
-    height: 300px;
+    min-width: 230px;
+    min-height: 280px;
     background: white;
     box-shadow: 0 0 8px 0 black;
     border-radius: 5px;
@@ -10,6 +10,7 @@
     background-position: center;
     position: relative;
     cursor: pointer;
+    margin: 10px;
 }
 
 .album-holder-wrapper::after {
@@ -20,6 +21,8 @@
     bottom: 0;
     left: 0;
     background-image: linear-gradient(to bottom, transparent, rgba(0, 0, 0, 0.25), rgba(0, 0, 0, 0.50), rgba(0, 0, 0, 0.75), black);
+    border-bottom-left-radius: 5px;
+    border-bottom-right-radius: 5px;
 }
 
 .album-holder-songs-total-holder {

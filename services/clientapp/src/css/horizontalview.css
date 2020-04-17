@@ -1,0 +1,51 @@
+.horizontal-view-wrapper {
+    width: 100%;
+    height: auto;
+    padding-left: 10px;
+    padding-right: 10px;
+    position: relative;
+}
+
+.horizontal-scroll-view {
+    display: flex;
+    align-items: center;
+    flex-wrap: nowrap;
+    flex-direction: row;
+    width: 100%;
+    overflow-y: hidden;
+    overflow-x: auto;
+    height: auto;
+}
+
+.horizontal-scroll-view::-webkit-scrollbar {
+    display: none;
+}
+
+.scroll-button {
+    position: absolute;
+    height: 100%;
+    width: 60px;
+    z-index: 200;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 35px;
+    color: var(--main-master-color);
+    cursor: pointer;
+}
+
+.scroll-button:hover {
+    color: var(--text-color-main);
+}
+
+.left-scroll-button {
+    background-image: linear-gradient(to left, transparent, rgba(36, 32, 32, 0.70), rgba(36, 32, 32, 0.85), rgba(36, 32, 32, 0.90), rgba(36, 32, 32, 0.95), rgb(36, 32, 32));
+    top: 0;
+    left: 0
+}
+
+.right-scroll-button {
+    background-image: linear-gradient(to right, transparent, rgba(36, 32, 32, 0.70), rgba(36, 32, 32, 0.85), rgba(36, 32, 32, 0.90), rgba(36, 32, 32, 0.95), rgb(36, 32, 32));
+    top: 0;
+    right: 0
+}
