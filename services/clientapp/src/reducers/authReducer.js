@@ -9,24 +9,27 @@ let userDetails = {
   token: "",
   email: "",
   avatar: "",
-  likedPlaylists: []
 };
+let likedPlaylists = [];
 
 if (localStorage.getItem("userDetails")) {
   userDetails = JSON.parse(localStorage.getItem("userDetails"));
   isAuthenticated = true;
+  likedPlaylists = [];
 }
 
 const resetState = {
   isAuthenticated: false,
   isAuthLoading: false,
-  userDetails: null
+  userDetails: null,
+  likedPlaylists: []
 }
 
 const initialState = {
   isAuthenticated: isAuthenticated,
   isAuthLoading: false,
-  userDetails: userDetails
+  userDetails: userDetails,
+  likedPlaylists: likedPlaylists
 };
 
 const authReducer = (state = initialState, action) => {
@@ -47,13 +50,9 @@ const authReducer = (state = initialState, action) => {
       };
       break;
     case UPDATE_LIKED_PLAYLISTS_METADATA:
-      let userDetails = {
-        ...state.userDetails,
-        likedPlaylists: action.payload
-      }
       state = {
         ...state,
-        ...userDetails
+        likedPlaylists: action.payload
       };
       break;
     default:

@@ -47,9 +47,7 @@ class MyCollections extends Component {
     }
 
     addOrRemoveAlbumFromCollectionHandler = async (isAdd = true, albumId) => {
-        console.log(isAdd, albumId)
         const result = await this.props.addOrRemoveAlbumFromUserCollection(albumId, isAdd);
-        console.log(isAdd, albumId, result)
         if (result) {
             this.fetchMyCollections();
         }
@@ -96,7 +94,7 @@ class MyCollections extends Component {
 const mapStateToProps = state => {
     return {
         isAuthenticated: state.authReducer.isAuthenticated,
-        likedPlaylists: state.authReducer.userDetails.likedPlaylists
+        likedPlaylists: state.authReducer.likedPlaylists
     };
 };
 

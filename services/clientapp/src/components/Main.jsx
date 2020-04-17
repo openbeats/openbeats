@@ -2,7 +2,7 @@ import React, { Component, Fragment } from "react";
 import "../css/core.css";
 import "../css/mainbody.css";
 import { Player, TopNav, PlaylistDisplay, LeftNav, Home, MyPlaylists, Artists, ArtistAlbums, TopCharts, PlaylistManipulator, Result, NowPlaying, MyCollections } from ".";
-import { toastActions, coreActions } from "../actions";
+import { toastActions, coreActions, playlistManipulatorActions } from "../actions";
 import { connect } from "react-redux";
 import { push } from "connected-react-router";
 import { Switch, Route } from "react-router";
@@ -10,6 +10,7 @@ import { Switch, Route } from "react-router";
 class Main extends Component {
   componentDidMount() {
     this.initiateListeners();
+    if (this.props.isAuthenticated) this.props.updateAlbumsInTheCollectionMetaData();
   }
   initiateListeners() {
     const navCloseRef = document.getElementById("nav-close");
@@ -102,6 +103,9 @@ const mapDispatchToProps = dispatch => {
     },
     setCurrentAction: action => {
       dispatch(coreActions.setCurrentAction(action));
+    },
+    updateAlbumsInTheCollectionMetaData: () => {
+      playlistManipulatorActions.updateAlbumsInTheCollectionMetaData();
     }
   };
 };

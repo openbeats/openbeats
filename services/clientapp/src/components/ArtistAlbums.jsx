@@ -63,7 +63,6 @@ class ArtistAlbums extends Component {
     }
 
     addOrRemoveAlbumFromCollectionHandler = (isAdd = true, albumId) => {
-        console.log(isAdd, albumId)
         this.props.addOrRemoveAlbumFromUserCollection(albumId, isAdd)
     }
 
@@ -111,7 +110,7 @@ class ArtistAlbums extends Component {
 const mapStateToProps = (state) => {
     return {
         isAuthenticated: state.authReducer.isAuthenticated,
-        likedPlaylists: state.authReducer.userDetails.likedPlaylists
+        likedPlaylists: state.authReducer.likedPlaylists
     }
 }
 

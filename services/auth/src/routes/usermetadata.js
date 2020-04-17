@@ -83,10 +83,8 @@ router.delete("/mycollections", async (req, res) => {
 		userId,
 		albumId
 	} = req.body;
-	console.log("reaches herere....", userId, albumId)
 	try {
 		const user = await User.findById(userId);
-		console.log(user)
 		if (user) {
 			if (user.likedPlaylists.indexOf(albumId) !== -1) {
 				user.likedPlaylists.splice(user.likedPlaylists.indexOf(albumId), 1);
