@@ -3,21 +3,33 @@ import { toastActions, coreActions } from "../actions";
 import "../css/home.css"
 import { connect } from "react-redux";
 import { push } from "connected-react-router";
-import { musicDummy } from '../images';
-
+import { HorizontalView, AlbumHolder } from '.';
 
 class Home extends Component {
+    constructor(props) {
+        super(props);
+        this.initialState = {
+            sampleCollection: [1, 2, 3, 4, 5, 8, 3, 3]
+        };
+        this.state = { ...this.initialState };
+    }
+
     componentDidMount() {
         this.props.setCurrentAction("Home")
     }
+
+    getElementList(arrayList) {
+        return arrayList.map((item, key) => (
+            <AlbumHolder />
+        ))
+    }
+
     render() {
         return (
             <div className="home-wrapper">
-                <img src={musicDummy} alt="" srcSet="" />
-                <div>
-                    Home screen content is under development! <br />
-                    Give a try to our new playlist feature.. (your playlist - leftnavbar)
-                </div>
+                <HorizontalView
+                    elementList={this.getElementList(this.state.sampleCollection)}
+                />
             </div>
         )
     }

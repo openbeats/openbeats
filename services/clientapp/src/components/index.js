@@ -16,6 +16,7 @@ import ArtistAlbums from "./ArtistAlbums";
 import AlbumHolder from "./AlbumHolder";
 import MyCollections from "./MyCollections";
 import TopCharts from "./TopCharts";
+import HorizontalView from "./HorizontalView";
 
 export {
 	Main,
@@ -36,4 +37,5 @@ export {
 	AlbumHolder,
 	MyCollections,
 	TopCharts,
+	HorizontalView
 };
