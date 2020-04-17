@@ -211,7 +211,6 @@ export async function changeUserPlaylistName(playlistId, name) {
 export async function addOrRemoveAlbumFromUserCollection(albumId, isAdd = true) {
     try {
         const userId = store.getState().authReducer.userDetails.id;
-        console.log(userId, albumId, isAdd)
         if (isAdd) {
             const {
                 data
@@ -224,12 +223,13 @@ export async function addOrRemoveAlbumFromUserCollection(albumId, isAdd = true) 
             else
                 throw new Error(data.data.toString());
         } else {
-            console.log("delete", isAdd, albumId)
             const {
                 data
             } = await axios.delete(`${variables.baseUrl}/auth/metadata/myCollections`, {
-                userId,
-                albumId
+                data: {
+                    userId,
+                    albumId
+                }
             });
             if (data.status)
                 toastActions.showMessage("Album Deleted from the collection!");
@@ -272,7 +272,6 @@ export async function updateAlbumsInTheCollectionMetaData() {
     const {
         data
     } = await axios.get(`${variables.baseUrl}/auth/metadata/mycollections?metadata=true`, options);
-    console.log("reaches here", data)
     if (data.status)
         store.dispatch({
             type: UPDATE_LIKED_PLAYLISTS_METADATA,
