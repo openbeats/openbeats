@@ -1,5 +1,5 @@
 import React, { Component, Fragment } from "react";
-import "../css/player.css";
+import "../assets/css/player.css";
 import Loader from "react-loader-spinner";
 import { toastActions, playerActions, nowPlayingActions } from "../actions";
 import { connect } from "react-redux";
@@ -13,7 +13,7 @@ import {
   playernext,
   playerdownload,
   playerqueue
-} from "../images";
+} from "../assets/images";
 import { store } from "../store";
 
 class Player extends Component {

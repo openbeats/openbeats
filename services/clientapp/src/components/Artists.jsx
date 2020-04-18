@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
 import { toastActions, coreActions } from "../actions";
-import "../css/artists.css";
+import "../assets/css/artists.css";
 import { connect } from "react-redux";
 import { push } from "connected-react-router";
-import { musicDummy } from '../images';
+import { musicDummy } from '../assets/images';
 import axios from "axios";
 import Loader from "react-loader-spinner";
 import { variables } from '../config';

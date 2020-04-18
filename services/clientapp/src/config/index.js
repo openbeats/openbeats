@@ -2,7 +2,9 @@ import React from "react";
 import { toast, Zoom } from "react-toastify";
 import "react-toastify/dist/ReactToastify.min.css";
 import "react-loader-spinner/dist/loader/css/react-spinner-loader.css";
-import "../css/commons.css";
+import "../assets/css/commons.css";
+import '../assets/fontawesome/css/all.min.css';
+
 
 export const variables = {
   baseUrl: "https://api.openbeats.live",
