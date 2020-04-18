@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import "../css/nowplaying.css";
+import "../assets/css/nowplaying.css";
 import { toastActions, coreActions, nowPlayingActions, playerActions } from "../actions";
 import { connect } from "react-redux";
 import { push } from "connected-react-router";

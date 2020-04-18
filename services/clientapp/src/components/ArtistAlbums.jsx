@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
-import { toastActions, coreActions, playlistManipulatorActions, nowPlayingActions } from "../actions";
-import "../css/artistalbums.css";
+import { toastActions, coreActions, playlistManipulatorActions } from "../actions";
+import "../assets/css/artistalbums.css";
 import { connect } from "react-redux";
 import { push } from "connected-react-router";
-import { musicDummy } from '../images';
+import { musicDummy } from '../assets/images';
 import { AlbumHolder } from '.';
 import axios from "axios";
 import Loader from 'react-loader-spinner';
@@ -115,14 +115,6 @@ const mapDispatchToProps = (dispatch) => {
         },
         setCurrentAction: (action) => {
             dispatch(coreActions.setCurrentAction(action))
-        },
-        addSongsToQueue: async (pId) => {
-            const data = await playlistManipulatorActions.fetchAlbumPlaylist(pId);
-            if (data && data.status && data.data.songs.length) {
-                nowPlayingActions.addSongsToQueue(data.data.songs);
-            } else {
-                toastActions.showMessage("Playlist you tried to add to the queue.. seems to be empty!")
-            }
         },
         addOrRemoveAlbumFromUserCollection: async (albumId, isAdd = true) => {
             return await playlistManipulatorActions.addOrRemoveAlbumFromUserCollection(albumId, isAdd);

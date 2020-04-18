@@ -1,11 +1,11 @@
 import React, { Component } from "react";
-import "../css/auth.css";
+import "../assets/css/auth.css";
 import { toastActions, authActions } from "../actions";
 import Loader from "react-loader-spinner";
 import { connect } from "react-redux";
 import { push } from "connected-react-router";
 import { store } from "../store";
-import { musicIllustration, masterLogo } from "../images";
+import { musicIllustration, masterLogo } from "../assets/images";
 
 class Auth extends Component {
   constructor(props) {

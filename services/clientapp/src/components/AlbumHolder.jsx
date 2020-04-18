@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
-import "../css/albumholder.css";
-import { musicDummy } from '../images';
+import "../assets/css/albumholder.css";
+import { musicDummy } from '../assets/images';
 import { push } from 'connected-react-router';
 import { toastActions, playlistManipulatorActions, nowPlayingActions } from '../actions';
 import { connect } from 'react-redux';

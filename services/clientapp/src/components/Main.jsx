@@ -1,6 +1,6 @@
 import React, { Component, Fragment } from "react";
-import "../css/core.css";
-import "../css/mainbody.css";
+import "../assets/css/core.css";
+import "../assets/css/mainbody.css";
 import { Player, TopNav, PlaylistDisplay, LeftNav, Home, MyPlaylists, Artists, ArtistAlbums, TopCharts, PlaylistManipulator, Result, NowPlaying, MyCollections } from ".";
 import { toastActions, coreActions, playlistManipulatorActions } from "../actions";
 import { connect } from "react-redux";

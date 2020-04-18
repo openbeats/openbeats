@@ -1,9 +1,9 @@
 import React, { Component, Fragment } from 'react'
-import "../css/playlistdisplay.css";
+import "../assets/css/playlistdisplay.css";
 import { toastActions, coreActions, nowPlayingActions, playerActions, playlistManipulatorActions, searchActions } from "../actions";
 import { connect } from "react-redux";
 import { push } from "connected-react-router";
-import { musicDummy, playerdownload, pQueueWhite } from '../images';
+import { musicDummy, playerdownload, pQueueWhite } from '../assets/images';
 import Loader from 'react-loader-spinner';
 import { variables } from '../config';
 import queryString from 'query-string';

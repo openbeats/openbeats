@@ -1,5 +1,5 @@
 import React, { Component, Fragment } from "react";
-import "../css/leftnav.css";
+import "../assets/css/leftnav.css";
 import { toastActions, playlistManipulatorActions, searchActions } from "../actions";
 import { connect } from "react-redux";
 import { push } from "connected-react-router";
@@ -17,7 +17,7 @@ import {
   navclose,
   mainsearch,
   playerqueue
-} from "../images";
+} from "../assets/images";
 
 class LeftNav extends Component {
 

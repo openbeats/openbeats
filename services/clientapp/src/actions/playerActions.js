@@ -11,7 +11,7 @@ import {
 } from "../config";
 import {
 	musicDummy
-} from "../images";
+} from "../assets/images";
 // import {
 //     push
 // } from "connected-react-router";

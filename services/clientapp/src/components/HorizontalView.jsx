@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import "../css/horizontalview.css";
+import "../assets/css/horizontalview.css";
 
 export default class HorizontalView extends Component {
     constructor(props) {
