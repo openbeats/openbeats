@@ -3,9 +3,6 @@ import {
 } from "express";
 import User from "../models/User";
 import auth from "../config/auth";
-import {
-	uniq
-} from "lodash";
 
 const router = Router();
 
@@ -18,9 +15,8 @@ router.post("/recentlyplayed", async (req, res) => {
 			if (user) {
 				let recentlyPlayedIds = user.recentlyPlayedSongs;
 				if (recentlyPlayedIds.indexOf(videoId) !== -1)
-					recentlyPlayedIds = recentlyPlayedIds.splice(recentlyPlayedIds.indexOf(videoId), 1);
+					recentlyPlayedIds.splice(recentlyPlayedIds.indexOf(videoId), 1);
 				recentlyPlayedIds.unshift(videoId);
-				recentlyPlayedIds = uniq(recentlyPlayedIds);
 				recentlyPlayedIds = recentlyPlayedIds.slice(0, 30);
 				user.recentlyPlayedSongs = recentlyPlayedIds;
 				await user.save();
