@@ -1,5 +1,4 @@
-import auth from "./auth";
-
-export default {
-    auth
-};
+export * from "./auth";
+export * from "./core";
+export * from "./addArtist";
+export * from "./hangingPlayer";

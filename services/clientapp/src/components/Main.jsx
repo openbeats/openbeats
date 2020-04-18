@@ -1,20 +1,16 @@
 import React, { Component, Fragment } from "react";
 import "../css/core.css";
 import "../css/mainbody.css";
-import { Player, TopNav, PlaylistDisplay, RecentlyPlayed, LeftNav, Home } from ".";
-import { toastActions, coreActions } from "../actions";
+import { Player, TopNav, PlaylistDisplay, LeftNav, Home, MyPlaylists, Artists, ArtistAlbums, TopCharts, PlaylistManipulator, Result, NowPlaying, MyCollections } from ".";
+import { toastActions, coreActions, playlistManipulatorActions } from "../actions";
 import { connect } from "react-redux";
 import { push } from "connected-react-router";
 import { Switch, Route } from "react-router";
-import NowPlaying from "./NowPlaying";
-import Result from "./Result";
-import PlaylistManipulator from "./PlaylistManipulator";
-import YourPlaylist from "./YourPlaylist";
-import TopCharts from "./TopCharts";
 
 class Main extends Component {
   componentDidMount() {
     this.initiateListeners();
+    if (this.props.isAuthenticated) this.props.updateAlbumsInTheCollectionMetaData();
   }
   initiateListeners() {
     const navCloseRef = document.getElementById("nav-close");
@@ -56,26 +52,28 @@ class Main extends Component {
               <Route exact path="/" component={Home} />
               <Route path="/nowplaying" component={NowPlaying} />
               <Route path="/playlist/:type/:id" component={PlaylistDisplay} />
-              <Route path="/yourplaylist" component={() => {
+              <Route path="/myplaylists" component={() => {
                 if (this.props.isAuthenticated)
-                  return <YourPlaylist />
+                  return <MyPlaylists />
                 else {
-                  this.props.notify("please login to use this feature!!!")
-                  this.props.push("/")
-                  return null
+                  this.props.notify("please login to use this feature!!!");
+                  this.props.push("/");
+                  return null;
                 }
               }} />
-              <Route path="/recentlyplayed" component={() => {
+              <Route path="/mycollections" component={() => {
                 if (this.props.isAuthenticated)
-                  return <RecentlyPlayed />
+                  return <MyCollections />
                 else {
-                  this.props.notify("please login to use this feature!!!")
-                  this.props.push("/")
-                  return null
+                  this.props.notify("please login to use this feature!!!");
+                  this.props.push("/");
+                  return null;
                 }
               }} />
               <Route path="/search" component={Result} />
               <Route path="/topcharts" component={TopCharts} />
+              <Route exact path="/artists" component={Artists} />
+              <Route path="/artists/:id" component={ArtistAlbums} />
             </Switch>
           </section>
         </main>
@@ -105,6 +103,9 @@ const mapDispatchToProps = dispatch => {
     },
     setCurrentAction: action => {
       dispatch(coreActions.setCurrentAction(action));
+    },
+    updateAlbumsInTheCollectionMetaData: () => {
+      playlistManipulatorActions.updateAlbumsInTheCollectionMetaData();
     }
   };
 };

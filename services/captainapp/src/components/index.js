@@ -5,6 +5,11 @@ import Albums from './Albums';
 import Artists from './Artists';
 import Languages from './Languages';
 import AlbumsDash from './AlbumsDash';
+import ChipsInput from "./ChipsInput";
+import ArtistAddDialog from "./ArtistAddDialog";
+import SongSearcher from "./SongSearcher";
+import SongsBucket from "./SongsBucket";
+import HangingPlayer from "./HangingPlayer";
 
 export {
     Auth,
@@ -13,5 +18,10 @@ export {
     Albums,
     Artists,
     Languages,
-    AlbumsDash
+    AlbumsDash,
+    ChipsInput,
+    ArtistAddDialog,
+    SongSearcher,
+    SongsBucket,
+    HangingPlayer
 }

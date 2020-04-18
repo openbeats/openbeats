@@ -1,0 +1,105 @@
+.album-holder-wrapper {
+    width: 100%;
+    height: 300px;
+    background: white;
+    box-shadow: 0 0 8px 0 black;
+    border-radius: 5px;
+    background: var(--main-bg-color);
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+    position: relative;
+    cursor: pointer;
+}
+
+.album-holder-wrapper::after {
+    content: '';
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    bottom: 0;
+    left: 0;
+    background-image: linear-gradient(to bottom, transparent, rgba(0, 0, 0, 0.25), rgba(0, 0, 0, 0.50), rgba(0, 0, 0, 0.75), black);
+}
+
+.album-holder-songs-total-holder {
+    z-index: 10;
+    position: absolute;
+    width: 40px;
+    height: 40px;
+    background: var(--main-bg-color);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 15px;
+    font-weight: bold;
+    bottom: 10px;
+    right: 10px;
+}
+
+.album-holder-album-desc {
+    z-index: 10;
+    position: absolute;
+    bottom: 20px;
+    left: 15px;
+}
+
+.album-holder-album-title {
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.album-holder-album-date {
+    font-size: 13px;
+    margin-top: 5px;
+}
+
+.album-holder-album-by {
+    font-size: 12px;
+    margin-top: 5px;
+}
+
+.album-holder-play-icon-visible-on-hover {
+    top: 0;
+    left: 0;
+    position: absolute;
+    width: 100%;
+    height: 85%;
+    z-index: 100;
+    font-size: 35px;
+    font-weight: bold;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 0, 0, 0.1);
+}
+
+.album-holder-play-icon-visible-on-hover>i:nth-child(1),
+.album-holder-play-icon-visible-on-hover>i:nth-child(2) {
+    margin-right: 30px;
+}
+
+.album-holder-play-icon-visible-on-hover>i:nth-child(1):hover,
+.album-holder-play-icon-visible-on-hover>i:nth-child(2):hover,
+.album-holder-play-icon-visible-on-hover>i:nth-child(3):hover {
+    opacity: 0.7;
+}
+
+.album-holder-wrapper:hover .album-holder-play-icon-visible-on-hover {
+    display: flex;
+}
+
+
+.album-add-to-collection-icon {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    z-index: 500;
+    font-size: 25px;
+    color: #c9c3c3;
+}
+
+.album-add-to-collection-icon:hover {
+    opacity: 0.7;
+}

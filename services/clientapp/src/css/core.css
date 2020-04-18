@@ -69,3 +69,8 @@ main {
     height: calc(800vh);
   }
 }
+
+
+.master-color {
+  color: var(--main-master-color) !important;
+}

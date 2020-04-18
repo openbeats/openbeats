@@ -8,6 +8,10 @@ import config from "config";
 
 const router = express.Router();
 
+
+//Set Base Url
+const baseUrl = `${config.get("isDev") ? config.get("baseurl").dev : config.get("baseurl").prod}`;
+
 // create empty Playlist
 router.post("/create", async (req, res) => {
 	try {
@@ -48,7 +52,7 @@ router.post("/addsongs", async (req, res) => {
 		});
 
 		// yet to hit obs-core addsongs endpoint
-		const addSongsCoreUrl = `${config.get("isDev") ? config.get("baseurl").dev : config.get("baseurl").prod}/addsongs`;
+		const addSongsCoreUrl = `${baseUrl}/addsongs`;
 
 		if (playlist && songs.length) {
 			const availableSongs = playlist.songs;
@@ -112,19 +116,16 @@ router.get("/getplaylist/:id", async (req, res) => {
 		const playlistId = req.params.id;
 		const data = await UserPlaylist.findOne({
 			_id: playlistId,
-		});
-		const songsDataFetchUrl = `${config.get("isDev") ? config.get("baseurl").dev : config.get("baseurl").prod}/getsongs`;
-		const songIds = data.songs;
-		const songs = (await axios.post(songsDataFetchUrl, {
-			songIds
-		})).data.data;
-		let tempData = {
-			...data['_doc'],
-			songs: [...songs],
-		}
+		}).populate("songsList");
+
+		let fetchedAlbum = {
+			...data["_doc"],
+			songs: data["$$populatedVirtuals"]["songsList"]
+		};
+		
 		res.send({
 			status: true,
-			data: tempData,
+			data: fetchedAlbum,
 		});
 	} catch (error) {
 		res.send({
@@ -155,7 +156,7 @@ router.post("/deletesong", async (req, res) => {
 		const lastSongId = playlist.songs.length ? playlist.songs[playlist.songs.length - 1] : null;
 		let newThumbnail = `https://openbeats.live/static/media/dummy_music_holder.a3d0de2e.jpg`;
 		if (lastSongId !== null) {
-			const songsCoreUrl = `${config.get("isDev") ? config.get("baseurl").dev : config.get("baseurl").prod}/getsong/${lastSongId}`;
+			const songsCoreUrl = `${baseUrl}/getsong/${lastSongId}`;
 			const newThumbData = (await axios.get(songsCoreUrl)).data;
 			if (newThumbData.status) {
 				newThumbnail = newThumbData.data.thumbnail
@@ -166,8 +167,6 @@ router.post("/deletesong", async (req, res) => {
 			totalSongs: playlist.songs.length,
 			thumbnail: newThumbnail,
 		});
-
-		await playlist.save();
 
 		res.send({
 			status: true,

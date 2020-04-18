@@ -1,12 +1,18 @@
 .main-wrapper {
-    width: 100%;
-    height: 100%;
+    width: 100vw;
+    height: 100vh;
+    max-width: 100vw;
+    max-height: 100vh;
     display: grid;
     grid-template-columns: 65px auto;
     background: var(--main-bg);
     color: var(--text-main);
+    box-sizing: border-box;
 }
 
 .main-view {
     padding: 10px;
+    width: 100%;
+    height: 100vh;
+    position: relative;
 }

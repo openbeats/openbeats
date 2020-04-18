@@ -7,11 +7,15 @@ import Result from "./Result";
 import TopNav from "./TopNav";
 import NowPlaying from "./NowPlaying";
 import PlaylistDisplay from "./PlaylistDisplay";
-import RecentlyPlayed from "./RecentlyPlayed";
 import PlaylistManipulator from "./PlaylistManipulator";
-import YourPlaylist from "./YourPlaylist";
+import MyPlaylists from "./MyPlaylists";
 import Forgot from "./Forgot";
 import Reset from "./Reset";
+import Artists from "./Artists";
+import ArtistAlbums from "./ArtistAlbums";
+import AlbumHolder from "./AlbumHolder";
+import MyCollections from "./MyCollections";
+import TopCharts from "./TopCharts";
 
 export {
 	Main,
@@ -24,8 +28,12 @@ export {
 	NowPlaying,
 	PlaylistDisplay,
 	PlaylistManipulator,
-	YourPlaylist,
+	MyPlaylists,
 	Forgot,
 	Reset,
-	RecentlyPlayed
+	Artists,
+	ArtistAlbums,
+	AlbumHolder,
+	MyCollections,
+	TopCharts,
 };

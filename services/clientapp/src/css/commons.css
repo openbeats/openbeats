@@ -205,3 +205,17 @@ hr {
 .display-block {
   display: block !important;
 }
+
+.height-100px {
+  height: 100px;
+}
+
+.height-200px {
+
+  height: 200px;
+}
+
+.height-300px {
+
+  height: 300px;
+}
