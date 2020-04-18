@@ -5,6 +5,7 @@ import fetch from "node-fetch";
 export default async (req, res, next) => {
 	//Get token from header
 	const token = req.header("x-auth-token");
+	const info = req.query.info;
 	try {
 		if (token) {
 			const decoded = jwt.verify(token, config.get("jwtSecret"));
@@ -28,10 +29,11 @@ export default async (req, res, next) => {
 				},
 			});
 		}
-		const info = req.query.info;
-		const song = JSON.parse(Buffer.from(info, "base64").toString());
-		req.song = song;
-		next();
+		if (info) {
+			const song = JSON.parse(Buffer.from(info, "base64").toString());
+			req.song = song;
+		}
+		return next();
 	} catch (error) {
 		console.error(error.message);
 		return next();
