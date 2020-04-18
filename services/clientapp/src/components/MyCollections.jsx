@@ -77,9 +77,7 @@ class MyCollections extends Component {
                             albumId={item._id}
                             albumCreationDate={new Date(item.createdAt).toDateString()}
                             albumCreatedBy={"OpenBeats"}
-                            albumAddToCurrentQueueCallBack={this.albumAddToCurrentQueueCallBack}
-                            albumViewCallBack={this.albumViewCallBack}
-                            albumPlayCallBack={this.albumPlayCallBack}
+                            type={'album'}
                             addOrRemoveAlbumFromCollectionHandler={this.addOrRemoveAlbumFromCollectionHandler}
                             isAuthenticated={this.props.isAuthenticated}
                             isAlbumIsInCollection={this.props.likedPlaylists.indexOf(item._id) === -1 ? false : true}

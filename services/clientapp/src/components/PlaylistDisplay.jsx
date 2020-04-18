@@ -47,16 +47,16 @@ class PlaylistDisplay extends Component {
             let data = null;
             switch (type) {
                 case "user":
-                    data = await this.props.fetchUserPlaylist(id);
+                    data = await this.props.fetchAlbumPlaylist(id, 'user');
                     break;
-                case "charts":
-                    data = await this.props.fetchChartsPlaylist(id);
+                case "topchart":
+                    data = await this.props.fetchAlbumPlaylist(id, 'topchart');
                     break;
-                case "albums":
-                    data = await this.props.fetchAlbumPlaylist(id);
+                case "album":
+                    data = await this.props.fetchAlbumPlaylist(id, 'album');
                     break;
                 case "recentlyplayed":
-                    data = await this.props.fetchRecentlyPlayed();
+                    data = await this.props.fetchAlbumPlaylist(id, 'recentlyplayed');
                     break;
                 default:
                     throw new Error("Invalid");
@@ -164,18 +164,16 @@ class PlaylistDisplay extends Component {
                                     <Fragment>
                                         {/* <i className="fas fa-unlock cursor-pointer"></i> */}
                                         {/* <i className="fas fa-globe-americas cursor-pointer" title="Make Playlist Public"></i> */}
-                                        <img onClick={() => this.props.addSongsToQueue(this.state.type, this.state.playlistId)} className="cursor-pointer" title="Add to Queue" src={pQueueWhite} alt="" srcSet="" />
+                                        <img onClick={() => this.props.addSongsToQueue(this.state.playlistItems)} className="cursor-pointer" title="Add to Queue" src={pQueueWhite} alt="" srcSet="" />
                                         <i className="fas fa-lock cursor-pointer pl-3 pr-3" title="Make Playlist Private"></i>
                                         <i className="fas fa-trash-alt cursor-pointer" title="Delete Playlist" onClick={() => this.props.deleteUserPlaylist(this.state.playlistId)}></i>
                                     </Fragment> :
                                     <Fragment>
-                                        <div onClick={() => this.props.addSongsToQueue(this.state.type, this.state.playlistId)} className="d-flex align-items-center justify-content-center cursor-pointer">
+                                        <div onClick={() => this.props.addSongsToQueue(this.state.playlistItems)} className="d-flex align-items-center justify-content-center cursor-pointer">
                                             <img title="Add to Queue" src={pQueueWhite} alt="" srcSet="" />
                                             <span className="pl-2 f-s-16">Add to Queue!</span>
                                         </div>
-
-                                        {/* <i className="fas fa-heart cursor-pointer"></i>
-                                        <i className="fas fa-bookmark cursor-pointer"></i> */}
+                                        {/* <i className="fas fa-heart cursor-pointer"></i> */}
                                     </Fragment>
                                 }
                             </div>
@@ -238,7 +236,6 @@ class PlaylistDisplay extends Component {
                                                     e.preventDefault()
                                                     if (!this.props.isAuthenticated) {
                                                         toastActions.showMessage("Please Login to use this feature!")
-                                                        // store.dispatch(push("/auth"))
                                                         return
                                                     }
                                                     this.videoId.push(item.videoId)
@@ -297,7 +294,7 @@ class PlaylistDisplay extends Component {
                                             Your Playlist is Empty!<br /><br />You can search and add songs to your Playlist!
                                         </div>
                                     }
-                                    {this.state.type === "charts" &&
+                                    {this.state.type === "topchart" &&
                                         <div className="text-align-center width-100 height-100 d-flex align-items-center justify-content-center">
                                             This Top Chart is Empty!<br /><br />Stay Tuned!!!
                                         </div>
@@ -346,7 +343,6 @@ const mapDispatchToProps = (dispatch) => {
         updatePlayerQueue: (playlistData, key) => {
             if (!store.getState().authReducer.isAuthenticated) {
                 toastActions.showMessage("Please Login to use this feature!")
-                // store.dispatch(push("/auth"))
                 return
             }
             nowPlayingActions.updatePlayerQueue(playlistData, key);
@@ -359,14 +355,8 @@ const mapDispatchToProps = (dispatch) => {
             if (action)
                 dispatch(action)
         },
-        fetchUserPlaylist: (playlistId) => {
-            return playlistManipulatorActions.fetchUserPlaylist(playlistId);
-        },
-        fetchChartsPlaylist: (playlistId) => {
-            return playlistManipulatorActions.fetchChartsPlaylist(playlistId);
-        },
-        fetchAlbumPlaylist: (playlistId) => {
-            return playlistManipulatorActions.fetchAlbumPlaylist(playlistId);
+        fetchAlbumPlaylist: (playlistId, type = "album") => {
+            return playlistManipulatorActions.fetchAlbumPlaylist(playlistId, type);
         },
         changeUserPlaylistName: (playlistId, playlistName) => {
             return playlistManipulatorActions.changeUserPlaylistName(playlistId, playlistName);
@@ -381,27 +371,16 @@ const mapDispatchToProps = (dispatch) => {
         removeSongFromPlaylist: async (playlistId, songId) => {
             await playlistManipulatorActions.removeSongFromPlaylist(playlistId, songId);
         },
-        addSongsToQueue: async (type, pId) => {
+        addSongsToQueue: async (songs) => {
             if (!store.getState().authReducer.isAuthenticated) {
                 toastActions.showMessage("Please Login to use this feature!")
-                // store.dispatch(push("/auth"))
                 return
             }
-
-            let data = { status: false, data: {} }
-            if (type === "user") {
-                data = await playlistManipulatorActions.fetchUserPlaylist(pId);
-            } else if (type === "charts") {
-                data = await playlistManipulatorActions.fetchChartsPlaylist(pId);
-            }
-            if (data && data.status && data.data.songs.length) {
-                nowPlayingActions.addSongsToQueue(data.data.songs);
+            if (songs.length) {
+                nowPlayingActions.addSongsToQueue(songs);
             } else {
                 toastActions.showMessage("Playlist you tried to add to the queue.. seems to be empty!")
             }
-        },
-        fetchRecentlyPlayed: () => {
-            return playlistManipulatorActions.fetchRecentlyPlayed();
         },
     }
 }

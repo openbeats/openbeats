@@ -52,16 +52,6 @@ class ArtistAlbums extends Component {
         }
     }
 
-    albumViewCallBack = async (id) => {
-        this.props.push("/playlist/albums/" + id);
-    }
-    albumPlayCallBack = async (id) => {
-        this.props.push("/playlist/albums/" + id + "?autoplay=true");
-    }
-    albumAddToCurrentQueueCallBack = async (id) => {
-        this.props.addSongsToQueue(id);
-    }
-
     addOrRemoveAlbumFromCollectionHandler = (isAdd = true, albumId) => {
         this.props.addOrRemoveAlbumFromUserCollection(albumId, isAdd)
     }
@@ -91,9 +81,7 @@ class ArtistAlbums extends Component {
                                 albumId={item._id}
                                 albumCreationDate={new Date().toDateString()}
                                 albumCreatedBy={"OpenBeats"}
-                                albumAddToCurrentQueueCallBack={this.albumAddToCurrentQueueCallBack}
-                                albumViewCallBack={this.albumViewCallBack}
-                                albumPlayCallBack={this.albumPlayCallBack}
+                                type={'album'}
                                 addOrRemoveAlbumFromCollectionHandler={this.addOrRemoveAlbumFromCollectionHandler}
                                 isAuthenticated={this.props.isAuthenticated}
                                 isAlbumIsInCollection={this.props.likedPlaylists.indexOf(item._id) === -1 ? false : true}
