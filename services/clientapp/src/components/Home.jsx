@@ -20,7 +20,7 @@ class Home extends Component {
 
     getElementList(arrayList) {
         return arrayList.map((item, key) => (
-            <AlbumHolder />
+            <AlbumHolder key={key} albumCreatedBy={key.toString()} />
         ))
     }
 
