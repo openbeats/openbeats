@@ -12,7 +12,7 @@ import {
 	ConnectedRouter,
 } from "connected-react-router";
 import thunk from "redux-thunk";
-import logger from "redux-logger";
+// import logger from "redux-logger";
 import reducers from "./reducers";
 const history = createBrowserHistory();
 const store = createStore(
@@ -23,7 +23,7 @@ const store = createStore(
 	applyMiddleware(
 		routerMiddleware(history),
 		thunk,
-		logger,
+		// logger,
 	),
 );
 

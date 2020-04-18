@@ -15,6 +15,7 @@
     overflow-y: hidden;
     overflow-x: auto;
     height: auto;
+    scroll-behavior: smooth;
 }
 
 .horizontal-scroll-view::-webkit-scrollbar {
