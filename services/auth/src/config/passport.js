@@ -34,7 +34,8 @@ export default () => {
             name: user.name,
             email: user.email,
             avatar: user.avatar,
-            admin: user.admin
+            admin: user.admin,
+            likedPlaylists: user.likedPlaylists
           });
         } catch (error) {
           return done(error);

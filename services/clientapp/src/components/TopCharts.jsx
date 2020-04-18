@@ -1,10 +1,9 @@
 import React, { Component } from 'react';
 import Loader from 'react-loader-spinner';
-import { playlistSvg, musicDummy, pQueueWhite } from '../images';
 import { push } from 'connected-react-router';
 import { toastActions, coreActions, playlistManipulatorActions, nowPlayingActions } from '../actions';
 import { connect } from 'react-redux';
-
+import { AlbumHolder } from ".";
 
 class TopCharts extends Component {
 
@@ -25,47 +24,43 @@ class TopCharts extends Component {
         })
     }
 
+    albumAddToCurrentQueueCallBack = async (id) => {
+        this.props.addSongsToQueue(id)
+    }
+    albumViewCallBack = async (id) => {
+        this.props.push(`/playlist/charts/${id}`);
+    }
+    albumPlayCallBack = async (id) => {
+        this.props.push(`/playlist/charts/${id}?autoplay=true`);
+    }
+
 
     render() {
-        return (
-            this.state.isLoading ? <div className="search-preloader">
+        return this.state.isLoading ?
+            <div className="search-preloader">
                 <Loader
                     type="ThreeDots"
                     color="#F32C2C"
                     height={80}
                     width={80}
                 />
-            </div> : <div className="your-playlist-wrapper">
-                    {this.state.topCharts.map((item, key) => (
-                        <div className="playlist-panel-wrapper" key={key}>
-                            <div className="playlist-panel-image cursor-pointer" title="Play All songs!" onClick={() => this.props.push(`/playlist/charts/${item._id}`)} style={{ backgroundImage: `url(${item.thumbnail ? item.thumbnail : musicDummy})` }}>
-                                <div className="playlist-total-songs-display">
-                                    <img src={playlistSvg} alt="" srcSet="" />
-                                    <p>{item.totalSongs}</p>
-                                </div>
-                            </div>
-                            <div className="playlist-panel-name">
-                                <div className="playlist-panel-name">
-                                    {item.name}
-                                </div>
-                            </div>
-                            <div className="playlist-panel-options">
-                                <div className="p-options">
-                                    <div className="p-options-icon-holder">
-                                        <i className="fas fa-play cursor-pointer" onClick={() => this.props.push(`/playlist/charts/${item._id}?autoplay=true`)} title="Play"></i>
-                                    </div>
-                                    <div className="p-options-icon-holder">
-                                        <i className="fas fa-random cursor-pointer" onClick={() => this.props.featureNotify()} title="Shuffle Play"></i>
-                                    </div>
-                                    <div className="p-options-icon-holder">
-                                        <img className="cursor-pointer action-image-size" title="Add to Queue" onClick={() => this.props.addSongsToQueue(item._id)} src={pQueueWhite} alt="" srcSet="" />
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    ))}
-                </div>
-        )
+            </div> :
+            <div className="my-playlists-wrapper">
+                {this.state.topCharts.map((item, key) => (
+                    <AlbumHolder
+                        key={key}
+                        albumName={item.name}
+                        albumThumbnail={item.thumbnail}
+                        albumTotalSongs={item.totalSongs}
+                        albumId={item._id}
+                        albumCreationDate={new Date(item.createdAt).toDateString()}
+                        albumCreatedBy={item.createdBy}
+                        albumAddToCurrentQueueCallBack={this.albumAddToCurrentQueueCallBack}
+                        albumViewCallBack={this.albumViewCallBack}
+                        albumPlayCallBack={this.albumPlayCallBack}
+                    />
+                ))}
+            </div>
     }
 }
 

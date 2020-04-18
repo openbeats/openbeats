@@ -12,7 +12,8 @@ import {
     push
 } from "connected-react-router";
 import {
-    LOGIN_USER
+    LOGIN_USER,
+    LOGOUT_USER
 } from "../types";
 
 export const loginHandler = async (email, password) => {
@@ -48,4 +49,13 @@ export const loginHandler = async (email, password) => {
     } catch (error) {
         toast.error(error.toString())
     }
+}
+
+
+export const logoutHandler = async () => {
+    localStorage.clear();
+    store.dispatch({
+        type: LOGOUT_USER
+    })
+    store.dispatch(push("/auth"))
 }
