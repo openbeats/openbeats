@@ -107,11 +107,10 @@ class Home extends Component {
         ))
     }
 
-
     // Utils Part
     addOrRemoveAlbumFromCollectionHandler = async (isAdd = true, albumId) => {
         if (await this.props.addOrRemoveAlbumFromUserCollection(albumId, isAdd)) {
-            this.prepareHomeData();
+            this.fetchMyCollections();
         }
     }
 
@@ -119,8 +118,8 @@ class Home extends Component {
     TopCharts = () => {
         return this.state.topChartsCollection.length > 0 && <div className="home-section">
             <div className="home-section-header">
-                <div className="left-section cursor-pointer">
-                    <i className="fas fa-chart-line "></i>
+                <div className="left-section cursor-pointer" onClick={() => this.props.push("/topcharts")}>
+                    <i className="fad fa-bolt"></i>
                     <span className="">Weekly Top Charts</span>
                     <i className="fas fa-angle-double-right"></i>
                 </div>
@@ -135,9 +134,9 @@ class Home extends Component {
 
     MyCollections = () => {
         return this.state.myCollections.length > 0 && <div className="home-section">
-            <div className="home-section-header cursor-pointer">
-                <div className="left-section">
-                    <i className="fal fa-album-collection"></i>
+            <div className="home-section-header">
+                <div className="left-section cursor-pointer" onClick={() => this.props.push("/mycollections")}>
+                    <i className="fad fa-heart-square"></i>
                     <span className="">Albums in your Collection</span>
                     <i className="fas fa-angle-double-right"></i>
                 </div>
@@ -153,27 +152,27 @@ class Home extends Component {
     PopularAlbums = () => {
         return this.state.popularAlbums.length > 0 && <div className="home-section">
             <div className="home-section-header">
-                <div className="left-section">
-                    <i className="fad fa-fire"></i>
+                <div className="left-section cursor-pointer" onClick={() => this.props.push("/albums")}>
+                    <i className="fad fa-album-collection"></i>
                     <span className="">Popular Albums</span>
-                    {/* <i className="fas fa-angle-double-right"></i> */}
+                    <i className="fas fa-angle-double-right"></i>
                 </div>
-            </div>
+            </div >
             <div className="home-section-body">
                 <HorizontalView
                     elementList={this.getAlbumsList(this.state.popularAlbums)}
                 />
             </div>
-        </div>
+        </div >
     }
 
     LatestAlbums = () => {
         return this.state.latestAlbums.length > 0 && <div className="home-section">
             <div className="home-section-header">
-                <div className="left-section">
-                    <i className="far fa-sparkles"></i>
+                <div className="left-section cursor-pointer" onClick={() => this.props.push("/albums")}>
+                    <i className="fad fa-star"></i>
                     <span className="">Latest Albums</span>
-                    {/* <i className="fas fa-angle-double-right"></i> */}
+                    <i className="fas fa-angle-double-right"></i>
                 </div>
             </div>
             <div className="home-section-body">
