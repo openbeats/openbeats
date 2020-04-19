@@ -15,5 +15,5 @@
     "dev": 2004,
     "prod": 2000
   },
-  "isDev": true
+  "isDev": false
 }

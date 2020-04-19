@@ -223,6 +223,14 @@ router.get("/:id", async (req, res) => {
 			...album["_doc"],
 			songs: album["$$populatedVirtuals"]["songsList"]
 		};
+		setTimeout(() => {
+			if (typeof (album.popularityCount) === "number") {
+				album.popularityCount += 1;
+			} else {
+				album.popularityCount = 1;
+			}
+			album.save();
+		}, 0);
 
 		res.send({
 			status: true,
