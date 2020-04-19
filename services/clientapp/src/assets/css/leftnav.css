@@ -86,16 +86,18 @@ nav {
 
 .nav-menu-icon-holder {
     width: 30%;
-    align-items: center;
     text-align: right;
     padding-right: 10px;
 }
 
 .nav-menu-icon-size {
     height: 17px;
+    font-size: 20px;
 }
 
 .nav-menu-text {
+    display: flex;
+    align-items: center;
     padding-left: 10px;
     font-size: 15px;
     color: var(--text-color-main);

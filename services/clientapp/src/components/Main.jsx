@@ -1,7 +1,7 @@
 import React, { Component, Fragment } from "react";
 import "../assets/css/core.css";
 import "../assets/css/mainbody.css";
-import { Player, TopNav, PlaylistDisplay, LeftNav, Home, MyPlaylists, Artists, ArtistAlbums, TopCharts, PlaylistManipulator, Result, NowPlaying, MyCollections } from ".";
+import { Player, TopNav, PlaylistDisplay, LeftNav, Home, MyPlaylists, Artists, ArtistAlbums, TopCharts, PlaylistManipulator, Result, NowPlaying, MyCollections, Albums } from ".";
 import { toastActions, coreActions, playlistManipulatorActions } from "../actions";
 import { connect } from "react-redux";
 import { push } from "connected-react-router";
@@ -74,6 +74,7 @@ class Main extends Component {
               <Route path="/topcharts" component={TopCharts} />
               <Route exact path="/artists" component={Artists} />
               <Route path="/artists/:id" component={ArtistAlbums} />
+              <Route exact path="/albums" component={Albums} />
             </Switch>
           </section>
         </main>

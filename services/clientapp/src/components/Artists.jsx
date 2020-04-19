@@ -3,10 +3,10 @@ import { toastActions, coreActions } from "../actions";
 import "../assets/css/artists.css";
 import { connect } from "react-redux";
 import { push } from "connected-react-router";
-import { musicDummy } from '../assets/images';
 import axios from "axios";
 import Loader from "react-loader-spinner";
 import { variables } from '../config';
+import { ArtistHolder } from '.';
 
 class Artists extends Component {
     constructor(props) {
@@ -34,9 +34,7 @@ class Artists extends Component {
         }
     }
 
-    aritstClickHandler = async (id) => {
-        this.props.push("/artists/" + id);
-    }
+
 
     componentWillUnmount() {
         this.setState({ ...this.initialState });
@@ -49,11 +47,12 @@ class Artists extends Component {
             </div> :
             <div className="artists-wrapper">
                 {this.state.artists.map((item, key) => (
-                    <div className="artist-display-holder cursor-pointer" onClick={() => this.aritstClickHandler(item._id)} key={key}>
-                        <div className="artist-rounded-circle-holder" style={{ backgroundImage: `url('${item.thumbnail}'), url(${musicDummy})` }}></div>
-                        <div className="artist-name">{item.name}</div>
-                        <div className="artist-description">Artist</div>
-                    </div>
+                    <ArtistHolder
+                        key={key}
+                        id={item._id}
+                        name={item.name}
+                        thumbnail={item.thumbnail}
+                    />
                 ))}
             </div>
     }
