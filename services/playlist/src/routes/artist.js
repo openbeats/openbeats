@@ -157,7 +157,7 @@ router.delete("/:id", async (req, res) => {
 	}
 });
 
-// fetch artist albums..
+// fetch artist specific albums..
 router.get("/:id/releases", async (req, res) => {
 	try {
 		const releasedAlbum = await Album.find({
@@ -169,6 +169,15 @@ router.get("/:id/releases", async (req, res) => {
 			totalSongs: 3,
 			albumBy: 4
 		}).populate("albumBy");
+		setTimeout(async () => {
+			const artist = await Artist.findById(req.params.id);
+			if (typeof (artist.popularityCount) === "number") {
+				artist.popularityCount += 1;
+			} else {
+				artist.popularityCount = 1;
+			}
+			artist.save();
+		}, 0);
 		return res.send({
 			status: true,
 			data: releasedAlbum,
@@ -182,6 +191,7 @@ router.get("/:id/releases", async (req, res) => {
 	}
 });
 
+// fetch artist featuring albums..
 router.get("/:id/featuring", async (req, res) => {
 	try {
 		const featuringAlbum = await Album.find({
@@ -194,6 +204,15 @@ router.get("/:id/featuring", async (req, res) => {
 			thumbnail: 2,
 			totalSongs: 3,
 		});
+		setTimeout(async () => {
+			const artist = await Artist.findById(req.params.id);
+			if (typeof (artist.popularityCount) === "number") {
+				artist.popularityCount += 1;
+			} else {
+				artist.popularityCount = 1;
+			}
+			artist.save();
+		}, 0);
 		res.send({
 			status: true,
 			data: featuringAlbum,
