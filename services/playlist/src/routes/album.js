@@ -198,6 +198,31 @@ router.get("/all", paginationMiddleware(Album, {}, {
 	}
 });
 
+//Find album related to searchtag
+router.get("/findbysearchtag/:searchtag", async (req, res) => {
+	try {
+		const relatedAlbum = await Album.find({
+			searchTags: {
+				"$in": [req.params.searchtag]
+			}
+		}, {
+			_id: true,
+			name: 1,
+			thumbnail: 2,
+			totalSongs: 3,
+		});
+		res.send({
+			status: true,
+			data: relatedAlbum,
+		});
+	} catch (error) {
+		console.log(error.message);
+		res.send({
+			status: false,
+			data: error.message,
+		});
+	}
+});
 
 // get specific album
 router.get("/:id", async (req, res) => {
@@ -235,32 +260,6 @@ router.get("/:id", async (req, res) => {
 		res.send({
 			status: true,
 			data: fetchedAlbum,
-		});
-	} catch (error) {
-		console.log(error.message);
-		res.send({
-			status: false,
-			data: error.message,
-		});
-	}
-});
-
-//Find album related to searchtag
-router.get("/findbysearchtag/:searchtag", async (req, res) => {
-	try {
-		const relatedAlbum = await Album.find({
-			searchTags: {
-				"$in": [req.params.searchtag]
-			}
-		}, {
-			_id: true,
-			name: 1,
-			thumbnail: 2,
-			totalSongs: 3,
-		});
-		res.send({
-			status: true,
-			data: relatedAlbum,
 		});
 	} catch (error) {
 		console.log(error.message);
