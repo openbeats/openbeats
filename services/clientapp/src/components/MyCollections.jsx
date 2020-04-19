@@ -5,9 +5,8 @@ import { toastActions, coreActions, playlistManipulatorActions, nowPlayingAction
 import { connect } from 'react-redux';
 import { AlbumHolder } from '.';
 
-
 class MyCollections extends Component {
-
+    _isMounted = false;
     constructor(props) {
         super(props);
         this.initialState = {
@@ -18,6 +17,7 @@ class MyCollections extends Component {
     }
 
     componentDidMount() {
+        this._isMounted = true;
         this.props.setCurrentAction("My Collections");
         this.props.updateAlbumsInTheCollectionMetaData();
         this.fetchMyCollections();
@@ -27,7 +27,8 @@ class MyCollections extends Component {
     fetchMyCollections = async () => {
         const data = await this.props.fetchAllAlbumsInTheCollection();
         if (data && data.status) {
-            this.setState({ isLoading: false, myCollections: data.data });
+            if (this._isMounted)
+                this.setState({ isLoading: false, myCollections: data.data });
         } else {
             this.props.showMessage("Inavlid Request!");
             this.props.push("/");
@@ -54,7 +55,8 @@ class MyCollections extends Component {
     }
 
     componentWillUnmount() {
-        this.setState(this.initialState)
+        this.setState(this.initialState);
+        this._isMounted = false;
     }
 
     render() {
@@ -68,7 +70,7 @@ class MyCollections extends Component {
                 />
             </div> : this.state.myCollections.length > 0 ?
                 <div className="my-playlists-wrapper">
-                    {this.state.myCollections.length > 0 && this.state.myCollections.map((item, key) => (
+                    {this.state.myCollections.map((item, key) => (
                         <AlbumHolder
                             key={key}
                             albumName={item.name}
