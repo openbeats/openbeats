@@ -7,6 +7,7 @@ import { HorizontalView, AlbumHolder } from '.';
 import Loader from 'react-loader-spinner';
 
 class Home extends Component {
+
     constructor(props) {
         super(props);
         this.initialState = {
@@ -28,7 +29,9 @@ class Home extends Component {
 
     prepareHomeData = async () => {
         await this.topChartsFetchHandler();
+        await this.latestAlbumsFetchHandler();
         if (this.props.isAuthenticated) await this.myCollectionsFetchHandler();
+        await this.popularAlbumsFetchHandler();
         this.setState({ isLoading: false })
     }
 
@@ -45,7 +48,17 @@ class Home extends Component {
 
     myCollectionsFetchHandler = async () => {
         const data = await this.props.fetchMyCollections();
-        this.setState({ myCollections: data })
+        this.setState({ myCollections: data });
+    }
+
+    popularAlbumsFetchHandler = async () => {
+        const data = await this.props.fetchPopularAlbums();
+        this.setState({ popularAlbums: data });
+    }
+
+    latestAlbumsFetchHandler = async () => {
+        const data = await this.props.fetchLatestAlbums();
+        this.setState({ latestAlbums: data });
     }
 
     getAlbumList(arrayList) {
@@ -88,14 +101,11 @@ class Home extends Component {
     TopCharts = () => {
         return this.state.topChartsCollection.length > 0 && <div className="home-section">
             <div className="home-section-header">
-                <div className="left-section">
+                <div className="left-section cursor-pointer">
                     <i className="fas fa-chart-line "></i>
                     <span className="">Weekly Top Charts</span>
-                </div>
-                <div className="right-section cursor-pointer" onClick={() => this.props.push("/topcharts")}>
                     <i className="fas fa-angle-double-right"></i>
-                Show More
-            </div>
+                </div>
             </div>
             <div className="home-section-body">
                 <HorizontalView
@@ -107,19 +117,50 @@ class Home extends Component {
 
     MyCollections = () => {
         return this.state.myCollections.length > 0 && <div className="home-section">
-            <div className="home-section-header">
+            <div className="home-section-header cursor-pointer">
                 <div className="left-section">
                     <i className="fal fa-album-collection"></i>
                     <span className="">Albums in your Collection</span>
-                </div>
-                <div className="right-section cursor-pointer" onClick={() => this.props.push("/mycollections")}>
                     <i className="fas fa-angle-double-right"></i>
-                Show More
-            </div>
+                </div>
             </div>
             <div className="home-section-body">
                 <HorizontalView
                     elementList={this.getAlbumList(this.state.myCollections)}
+                />
+            </div>
+        </div>
+    }
+
+    PopularAlbums = () => {
+        return this.state.popularAlbums.length > 0 && <div className="home-section">
+            <div className="home-section-header">
+                <div className="left-section">
+                    <i className="fad fa-fire"></i>
+                    <span className="">Popular Albums</span>
+                    {/* <i className="fas fa-angle-double-right"></i> */}
+                </div>
+            </div>
+            <div className="home-section-body">
+                <HorizontalView
+                    elementList={this.getAlbumList(this.state.popularAlbums)}
+                />
+            </div>
+        </div>
+    }
+
+    LatestAlbums = () => {
+        return this.state.latestAlbums.length > 0 && <div className="home-section">
+            <div className="home-section-header">
+                <div className="left-section">
+                    <i className="far fa-sparkles"></i>
+                    <span className="">Latest Albums</span>
+                    {/* <i className="fas fa-angle-double-right"></i> */}
+                </div>
+            </div>
+            <div className="home-section-body">
+                <HorizontalView
+                    elementList={this.getAlbumList(this.state.latestAlbums)}
                 />
             </div>
         </div>
@@ -131,10 +172,13 @@ class Home extends Component {
                 <Loader type="ThreeDots" color="#F32C2C" height={80} width={80} />
             </div> :
             <div className="home-wrapper">
+                <this.LatestAlbums />
                 <this.TopCharts />
+                <this.PopularAlbums />
                 <this.MyCollections />
             </div>
     }
+
 }
 
 const mapStateToProps = (state) => {
@@ -163,6 +207,12 @@ const mapDispatchToProps = (dispatch) => {
         },
         fetchMyCollections: async () => {
             return await homeActions.fetchMyCollections();
+        },
+        fetchPopularAlbums: async () => {
+            return await homeActions.fetchPopularAlbums();
+        },
+        fetchLatestAlbums: async () => {
+            return await homeActions.fetchLatestAlbums();
         },
         addOrRemoveAlbumFromUserCollection: async (albumId, isAdd = true) => {
             return await playlistManipulatorActions.addOrRemoveAlbumFromUserCollection(albumId, isAdd);

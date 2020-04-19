@@ -46,3 +46,34 @@ export const fetchMyCollections = async () => {
         return [];
     }
 }
+
+
+export const fetchLatestAlbums = async () => {
+    try {
+        const {
+            data
+        } = await axios.get(`${variables.baseUrl}/playlist/album/all?type=latest&page=1&limit=10`);
+        if (data.status)
+            return data.data.result;
+        else
+            throw new Error(data.data.toString());
+    } catch (error) {
+        toastActions.showMessage(error.toString());
+        return [];
+    }
+}
+
+export const fetchPopularAlbums = async () => {
+    try {
+        const {
+            data
+        } = await axios.get(`${variables.baseUrl}/playlist/album/all?type=popular&page=1&limit=10`);
+        if (data.status)
+            return data.data.result;
+        else
+            throw new Error(data.data.toString());
+    } catch (error) {
+        toastActions.showMessage(error.toString());
+        return [];
+    }
+}

@@ -272,11 +272,12 @@ structure:
 
 _Get All album_
 
-> https://api.openbeats.live/playlist/album/all
+> https://api.openbeats.live/playlist/album/all?type=<-album-fetch-type-here->&page=<-page-no->&limit=<-album-size-limit->
 
 ```language
 method: Get
-query param: page and limit
+query param: page, limit (necessary => ex:- page=1&limit=10)
+query param 'type' => popular or latest (if type param is not added fetch will done basis on default configurations)
 ```
 
 _Get All album by search tag_
