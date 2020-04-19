@@ -95,75 +95,8 @@ router.post(
 	},
 );
 
-//Get all albums
-router.get("/all", paginationMiddleware(Album, {}, {
-	_id: true,
-	name: 1,
-	thumbnail: 2,
-	totalSongs: 3,
-	createdAt: 4,
-	createdBy: 5
-}, [{
-	path: 'createdBy',
-	select: 'name'
-}]), async (req, res) => {
-	try {
-		if (res.pagnationError)
-			throw new Error(res.pagnationError);
-		res.send({
-			status: true,
-			data: res.paginatedResults,
-		});
-	} catch (error) {
-		res.send({
-			status: false,
-			data: error.message,
-		});
-	}
-});
-
-// get specific data
-router.get("/:id", async (req, res) => {
-	try {
-		let album = null;
-		if (req.query.edit === "true") {
-			album = await Album.findById(req.params.id)
-				.populate("searchTags")
-				.populate("featuringArtists")
-				.populate("albumBy")
-				.populate("songsList");
-		} else {
-			album = await Album.findById(req.params.id).populate("songsList");
-		}
-		if (!album) {
-			return res.json({
-				status: false,
-				data: "Album not found.",
-			});
-		}
-
-		let fetchedAlbum = {
-			...album["_doc"],
-			songs: album["$$populatedVirtuals"]["songsList"]
-		};
-
-		res.send({
-			status: true,
-			data: fetchedAlbum,
-		});
-	} catch (error) {
-		console.log(error.message);
-		res.send({
-			status: false,
-			data: error.message,
-		});
-	}
-});
-
-// updates Album
-router.put(
-	"/:id",
-	[
+// update Album
+router.put("/:id", [
 		check("name", "Name is required").not().isEmpty(),
 		check("userId", "User Id is required.").not().isEmpty(),
 		check("songs", "Please pass array of song objects to add.")
@@ -236,16 +169,64 @@ router.put(
 				data: error.message,
 			});
 		}
-	},
-);
+	});
 
-//delete album
-router.delete("/:id", async (req, res) => {
+//Get all albums
+router.get("/all", paginationMiddleware(Album, {}, {
+	_id: true,
+	name: 1,
+	thumbnail: 2,
+	totalSongs: 3,
+	createdAt: 4,
+	createdBy: 5
+}, [{
+	path: 'createdBy',
+	select: 'name'
+}]), async (req, res) => {
 	try {
-		await Album.findByIdAndDelete(req.params.id);
+		if (res.pagnationError)
+			throw new Error(res.pagnationError);
 		res.send({
 			status: true,
-			data: "Album got deleted successfully.",
+			data: res.paginatedResults,
+		});
+	} catch (error) {
+		res.send({
+			status: false,
+			data: error.message,
+		});
+	}
+});
+
+
+// get specific album
+router.get("/:id", async (req, res) => {
+	try {
+		let album = null;
+		if (req.query.edit === "true") {
+			album = await Album.findById(req.params.id)
+				.populate("searchTags")
+				.populate("featuringArtists")
+				.populate("albumBy")
+				.populate("songsList");
+		} else {
+			album = await Album.findById(req.params.id).populate("songsList");
+		}
+		if (!album) {
+			return res.json({
+				status: false,
+				data: "Album not found.",
+			});
+		}
+
+		let fetchedAlbum = {
+			...album["_doc"],
+			songs: album["$$populatedVirtuals"]["songsList"]
+		};
+
+		res.send({
+			status: true,
+			data: fetchedAlbum,
 		});
 	} catch (error) {
 		console.log(error.message);
@@ -257,7 +238,7 @@ router.delete("/:id", async (req, res) => {
 });
 
 //Find album related to searchtag
-router.get("/:searchtag/findbysearchtag", async (req, res) => {
+router.get("/findbysearchtag/:searchtag", async (req, res) => {
 	try {
 		const relatedAlbum = await Album.find({
 			searchTags: {
@@ -282,5 +263,21 @@ router.get("/:searchtag/findbysearchtag", async (req, res) => {
 	}
 });
 
+//delete album
+router.delete("/:id", async (req, res) => {
+	try {
+		await Album.findByIdAndDelete(req.params.id);
+		res.send({
+			status: true,
+			data: "Album got deleted successfully.",
+		});
+	} catch (error) {
+		console.log(error.message);
+		res.send({
+			status: false,
+			data: error.message,
+		});
+	}
+});
 
 export default router;
