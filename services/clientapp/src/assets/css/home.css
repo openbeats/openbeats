@@ -24,23 +24,20 @@
 .left-section {
     height: auto;
     width: auto;
-    display: grid;
+    display: flex;
     font-weight: bold;
-    grid-template-columns: auto auto;
-    gap: 10px;
     font-size: 15px;
+    align-items: center;
+    justify-content: center;
 }
 
-.left-section>i {
+.left-section>i:nth-child(1) {
     font-size: 19px;
+    margin-right: 10px;
 }
 
-.right-section {
-    height: auto;
-    width: auto;
-    display: grid;
-    font-weight: bold;
-    grid-template-columns: auto auto;
-    gap: 2px;
-    font-size: 14px;
+.left-section>i:nth-child(3) {
+    margin-left: 6px;
+    margin-top: 2px;
+    font-size: 11px;
 }
