@@ -3,7 +3,7 @@ import { toastActions, coreActions, homeActions, playlistManipulatorActions } fr
 import "../assets/css/home.css"
 import { connect } from "react-redux";
 import { push } from "connected-react-router";
-import { HorizontalView, AlbumHolder } from '.';
+import { HorizontalView, AlbumHolder, ArtistHolder } from '.';
 import Loader from 'react-loader-spinner';
 
 class Home extends Component {
@@ -11,7 +11,7 @@ class Home extends Component {
     constructor(props) {
         super(props);
         this.initialState = {
-            artistCollection: [],
+            popularArtists: [],
             topChartsCollection: [],
             myCollections: [],
             latestAlbums: [],
@@ -27,41 +27,43 @@ class Home extends Component {
         this.prepareHomeData();
     }
 
+    // Data Fetch Part
     prepareHomeData = async () => {
-        await this.topChartsFetchHandler();
-        await this.latestAlbumsFetchHandler();
-        if (this.props.isAuthenticated) await this.myCollectionsFetchHandler();
-        await this.popularAlbumsFetchHandler();
+        await this.fetchTopCharts();
+        await this.fetchLatestAlbums();
+        if (this.props.isAuthenticated) await this.fetchMyCollections();
+        await this.fetchPopularAlbums();
+        await this.fetchPopularArtists();
         this.setState({ isLoading: false })
     }
 
-    topChartsFetchHandler = async () => {
+    fetchTopCharts = async () => {
         const data = await this.props.fetchTopCharts();
         this.setState({ topChartsCollection: data })
     }
 
-    addOrRemoveAlbumFromCollectionHandler = async (isAdd = true, albumId) => {
-        if (await this.props.addOrRemoveAlbumFromUserCollection(albumId, isAdd)) {
-            this.prepareHomeData();
-        }
-    }
-
-    myCollectionsFetchHandler = async () => {
+    fetchMyCollections = async () => {
         const data = await this.props.fetchMyCollections();
         this.setState({ myCollections: data });
     }
 
-    popularAlbumsFetchHandler = async () => {
+    fetchPopularAlbums = async () => {
         const data = await this.props.fetchPopularAlbums();
         this.setState({ popularAlbums: data });
     }
 
-    latestAlbumsFetchHandler = async () => {
+    fetchLatestAlbums = async () => {
         const data = await this.props.fetchLatestAlbums();
         this.setState({ latestAlbums: data });
     }
 
-    getAlbumList(arrayList) {
+    fetchPopularArtists = async () => {
+        const data = await this.props.fetchPopularArtists();
+        this.setState({ popularArtists: data });
+    }
+
+    // List Preparing Part
+    getAlbumsList(arrayList) {
         return arrayList.map((item, key) => (
             <AlbumHolder
                 key={key}
@@ -95,9 +97,25 @@ class Home extends Component {
     }
 
     getArtistsList(arrayList) {
-
+        return arrayList.map((item, key) => (
+            <ArtistHolder
+                key={key}
+                name={item.name}
+                thumbnail={item.thumbnail}
+                id={item._id}
+            />
+        ))
     }
 
+
+    // Utils Part
+    addOrRemoveAlbumFromCollectionHandler = async (isAdd = true, albumId) => {
+        if (await this.props.addOrRemoveAlbumFromUserCollection(albumId, isAdd)) {
+            this.prepareHomeData();
+        }
+    }
+
+    // DOM Preparing Part
     TopCharts = () => {
         return this.state.topChartsCollection.length > 0 && <div className="home-section">
             <div className="home-section-header">
@@ -126,7 +144,7 @@ class Home extends Component {
             </div>
             <div className="home-section-body">
                 <HorizontalView
-                    elementList={this.getAlbumList(this.state.myCollections)}
+                    elementList={this.getAlbumsList(this.state.myCollections)}
                 />
             </div>
         </div>
@@ -143,7 +161,7 @@ class Home extends Component {
             </div>
             <div className="home-section-body">
                 <HorizontalView
-                    elementList={this.getAlbumList(this.state.popularAlbums)}
+                    elementList={this.getAlbumsList(this.state.popularAlbums)}
                 />
             </div>
         </div>
@@ -160,7 +178,24 @@ class Home extends Component {
             </div>
             <div className="home-section-body">
                 <HorizontalView
-                    elementList={this.getAlbumList(this.state.latestAlbums)}
+                    elementList={this.getAlbumsList(this.state.latestAlbums)}
+                />
+            </div>
+        </div>
+    }
+
+    PopularArtists = () => {
+        return this.state.popularArtists.length > 0 && <div className="home-section">
+            <div className="home-section-header">
+                <div className="left-section cursor-pointer" onClick={() => this.props.push("/artists")}>
+                    <i className="fad fa-user-music"></i>
+                    <span className="">Popular Artists</span>
+                    <i className="fas fa-angle-double-right"></i>
+                </div>
+            </div>
+            <div className="home-section-body">
+                <HorizontalView
+                    elementList={this.getArtistsList(this.state.popularArtists)}
                 />
             </div>
         </div>
@@ -174,6 +209,7 @@ class Home extends Component {
             <div className="home-wrapper">
                 <this.LatestAlbums />
                 <this.TopCharts />
+                <this.PopularArtists />
                 <this.PopularAlbums />
                 <this.MyCollections />
             </div>
@@ -210,6 +246,9 @@ const mapDispatchToProps = (dispatch) => {
         },
         fetchPopularAlbums: async () => {
             return await homeActions.fetchPopularAlbums();
+        },
+        fetchPopularArtists: async () => {
+            return await homeActions.fetchPopularArtists();
         },
         fetchLatestAlbums: async () => {
             return await homeActions.fetchLatestAlbums();

@@ -48,11 +48,11 @@ export const fetchMyCollections = async () => {
 }
 
 
-export const fetchLatestAlbums = async () => {
+export const fetchLatestAlbums = async (page = 1, limit = 10) => {
     try {
         const {
             data
-        } = await axios.get(`${variables.baseUrl}/playlist/album/all?type=latest&page=1&limit=10`);
+        } = await axios.get(`${variables.baseUrl}/playlist/album/all?type=latest&page=${page}&limit=${limit}`);
         if (data.status)
             return data.data.result;
         else
@@ -63,11 +63,26 @@ export const fetchLatestAlbums = async () => {
     }
 }
 
-export const fetchPopularAlbums = async () => {
+export const fetchPopularAlbums = async (page = 1, limit = 10) => {
     try {
         const {
             data
-        } = await axios.get(`${variables.baseUrl}/playlist/album/all?type=popular&page=1&limit=10`);
+        } = await axios.get(`${variables.baseUrl}/playlist/album/all?type=popular&page=${page}&limit=${limit}`);
+        if (data.status)
+            return data.data.result;
+        else
+            throw new Error(data.data.toString());
+    } catch (error) {
+        toastActions.showMessage(error.toString());
+        return [];
+    }
+}
+
+export const fetchPopularArtists = async () => {
+    try {
+        const {
+            data
+        } = await axios.get(`${variables.baseUrl}/playlist/artist/all?type=popular&page=1&limit=10`);
         if (data.status)
             return data.data.result;
         else

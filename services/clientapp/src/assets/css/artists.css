@@ -20,9 +20,7 @@
     align-items: center;
     justify-content: center;
     box-sizing: border-box;
-    margin-left: 15px;
-    margin-right: 15px;
-    margin-bottom: 20px;
+    margin: 10px;
 }
 
 .artist-rounded-circle-holder {

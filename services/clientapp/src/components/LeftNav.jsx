@@ -6,10 +6,10 @@ import { push } from "connected-react-router";
 import { store } from "../store";
 import {
   masterLogo,
-  navhome,
+  // navhome,
   navchart,
   navartist,
-  navalbum,
+  // navalbum,
   navhistory,
   navplaylist,
   navplus,
@@ -59,7 +59,8 @@ class LeftNav extends Component {
             <section className="main-nav-menus">
               <div className="nav-menu" onClick={() => this.props.push("/")}>
                 <div className="nav-menu-icon-holder">
-                  <img className="nav-menu-icon-size" src={navhome} alt="" />
+                  <i className="fas fa-home master-color nav-menu-icon-size"></i>
+                  {/* <img className="nav-menu-icon-size" src={navhome} alt="" /> */}
                 </div>
                 <p className="nav-menu-text">Home</p>
               </div>
@@ -71,6 +72,16 @@ class LeftNav extends Component {
                   <img className="nav-menu-icon-size" src={navchart} alt="" />
                 </div>
                 <p className="nav-menu-text">Top Charts</p>
+              </div>
+              <div
+                className="nav-menu"
+                onClick={() => this.props.push("/albums")}
+              >
+                <div className="nav-menu-icon-holder">
+                  <i className="master-color fad fa-album-collection nav-menu-icon-size"></i>
+                  {/* <img className="nav-menu-icon-size" src={navalbum} alt="" /> */}
+                </div>
+                <p className="nav-menu-text">Albums</p>
               </div>
               <div
                 className="nav-menu"
@@ -86,7 +97,8 @@ class LeftNav extends Component {
                 onClick={() => this.props.push("/mycollections")}
               >
                 <div className="nav-menu-icon-holder">
-                  <img className="nav-menu-icon-size" src={navalbum} alt="" />
+                  <i className="master-color fas fa-heart-square nav-menu-icon-size"></i>
+                  {/* <img className="nav-menu-icon-size" src={navalbum} alt="" /> */}
                 </div>
                 <p className="nav-menu-text">My Collections</p>
               </div>

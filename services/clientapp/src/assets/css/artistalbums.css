@@ -56,7 +56,5 @@
     width: 100%;
     height: auto;
     padding: 25px;
-    display: grid;
-    gap: 25px;
-    grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+    display: flex;
 }
