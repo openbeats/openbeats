@@ -3,7 +3,7 @@ import { toastActions, coreActions, playlistManipulatorActions } from "../action
 import "../assets/css/artistalbums.css";
 import { connect } from "react-redux";
 import { push } from "connected-react-router";
-import { musicDummy } from '../assets/images';
+import { musicDummy, spaceImage } from '../assets/images';
 import { AlbumHolder } from '.';
 import axios from "axios";
 import Loader from 'react-loader-spinner';
@@ -66,7 +66,7 @@ class ArtistAlbums extends Component {
                 <Loader type="ThreeDots" color="#F32C2C" height={80} width={80} />
             </div> :
             <div className="artist-albums-wrapper">
-                <div className="artist-albums-header-image-holder" style={{ backgroundImage: `url(https://wallpaperstream.com/wallpapers/full/universe/Stars-Space-Universe-Wallpaper.jpg)` }}>
+                <div className="artist-albums-header-image-holder" style={{ backgroundImage: `url(${spaceImage})` }}>
                     <div className="artist-albums-header-artist-display-holder" style={{ backgroundImage: `url(${this.state.artistThumbnail}), url(${musicDummy})` }}></div>
                     <div className="artist-albums-artist-name">{this.state.artistName}</div>
                 </div>
