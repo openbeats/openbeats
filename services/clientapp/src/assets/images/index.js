@@ -24,6 +24,7 @@ import musicIllustration from "./music_illustration.svg";
 import playlistSvg from "./playlist-svg.svg";
 import pQueueRed from "./pqueuered.png";
 import pQueueWhite from "./pqueuewhite.png";
+import spaceImage from "./spaceImage.jpg";
 
 export {
   musicDummy,
@@ -52,4 +53,5 @@ export {
   playlistSvg,
   pQueueRed,
   pQueueWhite,
+  spaceImage
 };
