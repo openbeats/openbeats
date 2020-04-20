@@ -152,7 +152,7 @@ class Home extends Component {
     PopularAlbums = () => {
         return this.state.popularAlbums.length > 0 && <div className="home-section">
             <div className="home-section-header">
-                <div className="left-section cursor-pointer" onClick={() => this.props.push("/albums")}>
+                <div className="left-section cursor-pointer" onClick={() => this.props.push("/albums/popular")}>
                     <i className="fad fa-album-collection"></i>
                     <span className="">Popular Albums</span>
                     <i className="fas fa-angle-double-right"></i>
@@ -169,7 +169,7 @@ class Home extends Component {
     LatestAlbums = () => {
         return this.state.latestAlbums.length > 0 && <div className="home-section">
             <div className="home-section-header">
-                <div className="left-section cursor-pointer" onClick={() => this.props.push("/albums")}>
+                <div className="left-section cursor-pointer" onClick={() => this.props.push("/albums/latest")}>
                     <i className="fad fa-star"></i>
                     <span className="">Latest Albums</span>
                     <i className="fas fa-angle-double-right"></i>
@@ -243,11 +243,11 @@ const mapDispatchToProps = (dispatch) => {
         fetchMyCollections: async () => {
             return await homeActions.fetchMyCollections();
         },
-        fetchPopularAlbums: async () => {
-            return await homeActions.fetchPopularAlbums();
-        },
         fetchPopularArtists: async () => {
             return await homeActions.fetchPopularArtists();
+        },
+        fetchPopularAlbums: async () => {
+            return await homeActions.fetchPopularAlbums();
         },
         fetchLatestAlbums: async () => {
             return await homeActions.fetchLatestAlbums();
