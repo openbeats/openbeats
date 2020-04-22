@@ -1,0 +1,111 @@
+.my-playlists-wrapper {
+    width: 100%;
+    height: auto;
+    padding: 10px;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+}
+
+.playlist-panel-wrapper {
+    margin: 15px;
+    width: 190px;
+    height: 170px;
+    border-radius: 2px;
+    box-sizing: border-box;
+}
+
+.playlist-panel-image {
+    position: relative;
+    width: 100%;
+    height: 75%;
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+}
+
+.playlist-total-songs-display {
+    position: absolute;
+    height: 100%;
+    width: 50%;
+    right: 0;
+    top: 0;
+    background: rgba(0, 0, 0, 0.8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+}
+
+.playlist-total-songs-display>img {
+    width: 20px;
+}
+
+.playlist-total-songs-display>p {
+    font-size: 15px;
+    color: gray;
+    margin-left: -5px;
+    margin-top: 8px;
+}
+
+.playlist-panel-name {
+    font-size: 15px;
+    margin-top: 10px;
+    text-transform: capitalize;
+}
+
+.playlist-panel-name>i {
+    font-size: 12px;
+    margin-left: 10px;
+}
+
+.playlist-panel-options {
+    margin-top: 10px;
+    display: flex;
+    justify-content: space-between;
+    padding: 0 2px 0 2px;
+}
+
+.p-options {
+    display: flex;
+}
+
+.p-options>div:nth-child(1) {
+    margin-right: 25px;
+}
+
+.p-options>div:nth-child(3) {
+    margin-left: 25px;
+}
+
+.playlist-panel-edit-name {
+    position: relative;
+    width: 100%;
+}
+
+.playlist-panel-edit-name>input {
+    width: 100%;
+    background: none;
+    border: none;
+    border-bottom: 1px solid gray;
+    outline: none;
+    color: var(--text-color-main);
+}
+
+.playlist-panel-edit-options>button {
+    background: none;
+    outline: none;
+    border: none;
+    position: absolute;
+    color: var(--text-color-main);
+    right: 0;
+    top: 0;
+}
+
+.playlist-panel-edit-options>button:nth-child(1) {
+    margin-right: 25px;
+}
+
+.playlist-panel-edit-options>button:nth-child(2) {
+    margin-right: 2px;
+}

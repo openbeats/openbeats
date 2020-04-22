@@ -1,9 +1,9 @@
 import React, { Component } from "react";
-import "../css/myplaylists.css";
+import "../assets/css/myplaylists.css";
 import { push } from "connected-react-router";
 import { connect } from "react-redux";
 import { toastActions, coreActions, playlistManipulatorActions, nowPlayingActions } from "../actions";
-import { musicDummy, playlistSvg, pQueueWhite } from "../images";
+import { musicDummy, playlistSvg, pQueueWhite } from "../assets/images";
 
 class MyPlaylists extends Component {
 

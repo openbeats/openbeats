@@ -1,9 +1,9 @@
 import React, { Component } from "react";
-import "../css/topnav.css";
+import "../assets/css/topnav.css";
 import { push } from "connected-react-router";
 import { connect } from "react-redux";
 import { toastActions, searchActions, authActions } from "../actions";
-import { angleright, mainsearch } from "../images";
+import { angleright, mainsearch } from "../assets/images";
 
 class TopNav extends Component {
   constructor(props) {
@@ -21,20 +21,20 @@ class TopNav extends Component {
     const searchBarRef = document.getElementsByClassName("search-input")[0];
     searchBarRef.addEventListener(
       "focusin",
-      function(e) {
+      function (e) {
         this.props.updateTyping(true);
       }.bind(this)
     );
     searchBarRef.addEventListener(
       "focusout",
-      function(e) {
+      function (e) {
         this.props.updateTyping(false);
       }.bind(this)
     );
 
     document.addEventListener(
       "keydown",
-      function(e) {
+      function (e) {
         if (e.keyCode === 27) {
           this.props.emptyKeywordSuggestion();
         }
@@ -98,7 +98,7 @@ class TopNav extends Component {
                   this.props.currentTextIndex === key + 1
                     ? "highlight-current"
                     : ""
-                }`}
+                  }`}
               >
                 {item[0]}
               </div>
@@ -121,7 +121,7 @@ class TopNav extends Component {
               <div
                 className={`usr-opt user-option-display-holder ${
                   this.state.showUserOptions ? "" : "make-invisible"
-                }`}
+                  }`}
               >
                 <div className="usr-opt list user-name-holder">
                   {this.props.userDetails.name}
@@ -141,14 +141,14 @@ class TopNav extends Component {
               </div>
             </div>
           ) : (
-            <div
-              className="auth-login-register-holder cursor-pointer"
-              onClick={() => this.props.push("/auth")}
-            >
-              <i className="fas fa-power-off red-color auth-power-on"></i>
-              <span className="hide-me">&nbsp;&nbsp;Login/Register</span>
-            </div>
-          )}
+              <div
+                className="auth-login-register-holder cursor-pointer"
+                onClick={() => this.props.push("/auth")}
+              >
+                <i className="fas fa-power-off red-color auth-power-on"></i>
+                <span className="hide-me">&nbsp;&nbsp;Login/Register</span>
+              </div>
+            )}
         </div>
       </section>
     );

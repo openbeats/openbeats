@@ -1,5 +1,9 @@
-import { store } from "../store";
-import { variables } from "../config";
+import {
+    store
+} from "../store";
+import {
+    variables
+} from "../config";
 
 export function updateSuggestionText(text) {
     return {
@@ -66,19 +70,25 @@ export async function getKeywordSuggestion(key) {
         await fetch(url)
             .then(res => res.json())
             .then(async res => {
-                let temp = res.data
+                let temp = res.data.slice(0, 10);
                 let listener = document.addEventListener("click", async function () {
                     if (state.listener != null) {
-                        document.removeEventListener(state.listenter)
+                        document.removeEventListener(state.listenter);
                     }
                     await store.dispatch({
                         type: "FETCH_KEYWORD_SUGGESTION",
-                        payload: { keywordSuggestions: [], listener: null }
+                        payload: {
+                            keywordSuggestions: [],
+                            listener: null
+                        }
                     });
                 });
                 await store.dispatch({
                     type: "FETCH_KEYWORD_SUGGESTION",
-                    payload: { keywordSuggestions: temp, listener: listener }
+                    payload: {
+                        keywordSuggestions: temp,
+                        listener: listener
+                    }
                 });
             })
             .catch(e => console.error(e))
@@ -113,15 +123,27 @@ export function onKeyUpHandler(e) {
     if (e.keyCode === 40 && state.keywordSuggestions.length) {
         let current = (state.currentTextIndex + 1) % (state.keywordSuggestions.length + 1);
         if (current !== 0)
-            payload = { currentTextIndex: current, suggestionText: state.keywordSuggestions[current - 1][0] };
+            payload = {
+                currentTextIndex: current,
+                suggestionText: state.keywordSuggestions[current - 1][0]
+            };
         else
-            payload = { currentTextIndex: current, suggestionText: state.actualText };
+            payload = {
+                currentTextIndex: current,
+                suggestionText: state.actualText
+            };
     } else if (e.keyCode === 38 && state.keywordSuggestions.length) {
         let current = Math.abs(state.currentTextIndex - 1) % (state.keywordSuggestions.length + 1);
         if (current !== 0)
-            payload = { currentTextIndex: current, suggestionText: state.keywordSuggestions[current - 1][0] };
+            payload = {
+                currentTextIndex: current,
+                suggestionText: state.keywordSuggestions[current - 1][0]
+            };
         else
-            payload = { currentTextIndex: current, suggestionText: state.actualText };
+            payload = {
+                currentTextIndex: current,
+                suggestionText: state.actualText
+            };
     }
 
     return {

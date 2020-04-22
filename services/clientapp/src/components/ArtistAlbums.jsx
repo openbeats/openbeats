@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
-import { toastActions, coreActions, playlistManipulatorActions, nowPlayingActions } from "../actions";
-import "../css/artistalbums.css";
+import { toastActions, coreActions, playlistManipulatorActions } from "../actions";
+import "../assets/css/artistalbums.css";
 import { connect } from "react-redux";
 import { push } from "connected-react-router";
-import { musicDummy } from '../images';
+import { musicDummy, spaceImage } from '../assets/images';
 import { AlbumHolder } from '.';
 import axios from "axios";
 import Loader from 'react-loader-spinner';
@@ -52,16 +52,6 @@ class ArtistAlbums extends Component {
         }
     }
 
-    albumViewCallBack = async (id) => {
-        this.props.push("/playlist/albums/" + id);
-    }
-    albumPlayCallBack = async (id) => {
-        this.props.push("/playlist/albums/" + id + "?autoplay=true");
-    }
-    albumAddToCurrentQueueCallBack = async (id) => {
-        this.props.addSongsToQueue(id);
-    }
-
     addOrRemoveAlbumFromCollectionHandler = (isAdd = true, albumId) => {
         this.props.addOrRemoveAlbumFromUserCollection(albumId, isAdd)
     }
@@ -76,7 +66,7 @@ class ArtistAlbums extends Component {
                 <Loader type="ThreeDots" color="#F32C2C" height={80} width={80} />
             </div> :
             <div className="artist-albums-wrapper">
-                <div className="artist-albums-header-image-holder" style={{ backgroundImage: `url(https://wallpaperstream.com/wallpapers/full/universe/Stars-Space-Universe-Wallpaper.jpg)` }}>
+                <div className="artist-albums-header-image-holder" style={{ backgroundImage: `url(${spaceImage})` }}>
                     <div className="artist-albums-header-artist-display-holder" style={{ backgroundImage: `url(${this.state.artistThumbnail}), url(${musicDummy})` }}></div>
                     <div className="artist-albums-artist-name">{this.state.artistName}</div>
                 </div>
@@ -91,9 +81,7 @@ class ArtistAlbums extends Component {
                                 albumId={item._id}
                                 albumCreationDate={new Date().toDateString()}
                                 albumCreatedBy={"OpenBeats"}
-                                albumAddToCurrentQueueCallBack={this.albumAddToCurrentQueueCallBack}
-                                albumViewCallBack={this.albumViewCallBack}
-                                albumPlayCallBack={this.albumPlayCallBack}
+                                type={'album'}
                                 addOrRemoveAlbumFromCollectionHandler={this.addOrRemoveAlbumFromCollectionHandler}
                                 isAuthenticated={this.props.isAuthenticated}
                                 isAlbumIsInCollection={this.props.likedPlaylists.indexOf(item._id) === -1 ? false : true}
@@ -127,14 +115,6 @@ const mapDispatchToProps = (dispatch) => {
         },
         setCurrentAction: (action) => {
             dispatch(coreActions.setCurrentAction(action))
-        },
-        addSongsToQueue: async (pId) => {
-            const data = await playlistManipulatorActions.fetchAlbumPlaylist(pId);
-            if (data && data.status && data.data.songs.length) {
-                nowPlayingActions.addSongsToQueue(data.data.songs);
-            } else {
-                toastActions.showMessage("Playlist you tried to add to the queue.. seems to be empty!")
-            }
         },
         addOrRemoveAlbumFromUserCollection: async (albumId, isAdd = true) => {
             return await playlistManipulatorActions.addOrRemoveAlbumFromUserCollection(albumId, isAdd);
