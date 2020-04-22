@@ -36,58 +36,39 @@ export function clearAddPlaylistDialog() {
     return true;
 }
 
-export async function fetchUserPlaylist(playlistId) {
+export async function fetchAlbumPlaylist(playlistId, type = "album") {
     try {
-        const {
-            data
-        } = await axios.get(`${variables.baseUrl}/playlist/userplaylist/getplaylist/${playlistId}`)
-        return data;
-    } catch (error) {
-        toastActions.showMessage(error.toString());
-        return null;
-    }
-}
-
-export async function fetchChartsPlaylist(playlistId) {
-    try {
-        const {
-            data
-        } = await axios.get(`${variables.baseUrl}/playlist/topcharts/${playlistId}`)
-        return data;
-    } catch (error) {
-        toastActions.showMessage(error.toString());
-        return null;
-    }
-}
-
-export async function fetchRecentlyPlayed() {
-    try {
+        let url = '';
+        let options = {};
         const isAuthenticated = await store.getState().authReducer.isAuthenticated;
         if (isAuthenticated) {
             const token = await store.getState().authReducer.userDetails.token;
-            const options = {
+            options = {
                 headers: {
                     'x-auth-token': token
                 }
             };
-            const {
-                data
-            } = await axios.get(`${variables.baseUrl}/auth/metadata/recentlyplayed`, options);
-            return data;
-        } else {
-            throw new Error("Please Login to Use this Feature!");
         }
-    } catch (error) {
-        toastActions.showMessage(error.toString());
-        return null;
-    }
-}
-
-export async function fetchAlbumPlaylist(playlistId) {
-    try {
+        switch (type) {
+            case 'album':
+                url = `${variables.baseUrl}/playlist/album/${playlistId}`;
+                break;
+            case 'topchart':
+                url = `${variables.baseUrl}/playlist/topcharts/${playlistId}`;
+                break;
+            case 'user':
+                url = `${variables.baseUrl}/playlist/userplaylist/getplaylist/${playlistId}`;
+                break;
+            case 'recentlyplayed':
+                url = `${variables.baseUrl}/auth/metadata/recentlyplayed`;
+                break;
+            default:
+                break;
+        }
+        if (url.length === 0) throw new Error("Inavalid Album url");
         const {
             data
-        } = await axios.get(`${variables.baseUrl}/playlist/album/${playlistId}`)
+        } = await axios.get(url, options)
         return data;
     } catch (error) {
         toastActions.showMessage(error.toString());

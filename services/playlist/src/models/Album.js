@@ -46,6 +46,10 @@ const albumSchema = new mongoose.Schema({
 		type: mongoose.Schema.Types.ObjectId,
 		ref: "User",
 	},
+	popularityCount: {
+		type: Number,
+		default: 0
+	}
 });
 
 albumSchema.virtual("songsList", {

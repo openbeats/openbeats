@@ -1,0 +1,237 @@
+.toast-margin-bottom {
+  margin-bottom: 40px;
+  z-index: 100000000000;
+}
+
+.toast-bg-color {
+  background: #242424;
+  width: 100%;
+  height: 100%;
+}
+
+.toast-base-color {
+  color: #f32c2c;
+}
+
+.make-invisible {
+  display: none;
+}
+
+.make-visible {
+  display: block !important;
+}
+
+.toast-progress-bar-color {
+  background: #f32c2c;
+}
+
+.cursor-pointer {
+  cursor: pointer;
+}
+
+.cursor-pointer:hover {
+  opacity: 0.8;
+}
+
+.highlight-current-play {
+  border: 0.5px solid rgba(255, 255, 255, 0.2);
+}
+
+.hover-me:hover {
+  opacity: 0.8;
+}
+
+hr {
+  opacity: 0.1;
+}
+
+.highlight-active {
+  box-shadow: 0px 0px 10px 0px var(--main-master-color);
+  border-radius: 5px;
+  margin: 0 0 10px 0;
+}
+
+.highlight-active-result {
+  box-shadow: 0px 0px 10px 0px var(--main-master-color);
+  border-radius: 5px;
+}
+
+.green-color {
+  color: lightgreen;
+}
+
+.red-color {
+  color: red;
+}
+
+.text-align-center {
+  text-align: center;
+}
+
+.width-100 {
+  width: 100%;
+}
+
+.d-flex {
+  display: flex;
+}
+
+.align-items-center {
+  align-items: center;
+}
+
+.justify-content-center {
+  justify-content: center;
+}
+
+.height-100 {
+  height: 100%;
+}
+
+.mr-1 {
+  margin-left: 5px;
+}
+
+.mr-2 {
+  margin-left: 10px;
+}
+
+.mr-3 {
+  margin-left: 15px;
+}
+
+.mr-4 {
+  margin-left: 20px;
+}
+
+.ml-1 {
+  margin-left: 5px;
+}
+
+.ml-2 {
+  margin-left: 10px;
+}
+
+.ml-3 {
+  margin-left: 15px;
+}
+
+.ml-4 {
+  margin-left: 20px;
+}
+
+.mb-1 {
+  margin-bottom: 5px;
+}
+
+.mb-2 {
+  margin-bottom: 10px;
+}
+
+.mb-3 {
+  margin-bottom: 15px;
+}
+
+.mb-4 {
+  margin-bottom: 20px;
+}
+
+.mt-1 {
+  margin-top: 5px;
+}
+
+.mt-2 {
+  margin-top: 10px;
+}
+
+.mt-3 {
+  margin-top: 15px;
+}
+
+.mt-4 {
+  margin-top: 20px;
+}
+
+.mt-5 {
+  margin-top: 25px;
+}
+
+.mt-6 {
+  margin-top: 30px;
+}
+
+.f-s-14 {
+  font-size: 14px;
+}
+
+.f-s-15 {
+  font-size: 15px;
+}
+
+.f-s-16 {
+  font-size: 16px;
+}
+
+.f-s-17 {
+  font-size: 17px;
+}
+
+.f-s-18 {
+  font-size: 18px;
+}
+
+.f-s-19 {
+  font-size: 19px;
+}
+
+.f-s-20 {
+  font-size: 20px;
+}
+
+
+.pl-1 {
+  padding-left: 5px;
+}
+
+.pl-2 {
+  padding-left: 10px;
+}
+
+.pl-3 {
+  padding-left: 15px;
+}
+
+.pr-1 {
+  padding-right: 5px;
+}
+
+.pr-2 {
+  padding-right: 10px;
+}
+
+.pr-3 {
+  padding-right: 15px;
+}
+
+.font-weight-bold {
+  font-weight: bold;
+}
+
+
+.display-block {
+  display: block !important;
+}
+
+.height-100px {
+  height: 100px;
+}
+
+.height-200px {
+
+  height: 200px;
+}
+
+.height-300px {
+
+  height: 300px;
+}

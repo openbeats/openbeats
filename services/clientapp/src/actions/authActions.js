@@ -210,7 +210,7 @@ export async function logoutHandler() {
       reset: true
     }
   })
-  await store.dispatch(push("/"))
+  window.location.replace('/');
 }
 
 export async function validateResetToken(token) {

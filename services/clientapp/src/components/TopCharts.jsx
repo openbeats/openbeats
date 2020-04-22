@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import Loader from 'react-loader-spinner';
 import { push } from 'connected-react-router';
-import { toastActions, coreActions, playlistManipulatorActions, nowPlayingActions } from '../actions';
+import { toastActions, coreActions, playlistManipulatorActions } from '../actions';
 import { connect } from 'react-redux';
 import { AlbumHolder } from ".";
 
@@ -22,16 +22,6 @@ class TopCharts extends Component {
             isLoading: false,
             topCharts: topChartsData
         })
-    }
-
-    albumAddToCurrentQueueCallBack = async (id) => {
-        this.props.addSongsToQueue(id)
-    }
-    albumViewCallBack = async (id) => {
-        this.props.push(`/playlist/charts/${id}`);
-    }
-    albumPlayCallBack = async (id) => {
-        this.props.push(`/playlist/charts/${id}?autoplay=true`);
     }
 
 
@@ -55,9 +45,7 @@ class TopCharts extends Component {
                         albumId={item._id}
                         albumCreationDate={new Date(item.createdAt).toDateString()}
                         albumCreatedBy={item.createdBy}
-                        albumAddToCurrentQueueCallBack={this.albumAddToCurrentQueueCallBack}
-                        albumViewCallBack={this.albumViewCallBack}
-                        albumPlayCallBack={this.albumPlayCallBack}
+                        type={'topchart'}
                     />
                 ))}
             </div>
@@ -83,14 +71,6 @@ const mapDispatchToProps = dispatch => {
         fetchChartsPlaylistMetadata: () => {
             return playlistManipulatorActions.fetchChartsPlaylistMetadata();
         },
-        addSongsToQueue: async (pId) => {
-            const data = await playlistManipulatorActions.fetchChartsPlaylist(pId);
-            if (data && data.status && data.data.songs.length) {
-                nowPlayingActions.addSongsToQueue(data.data.songs);
-            } else {
-                toastActions.showMessage("Playlist you tried to add to the queue.. seems to be empty!")
-            }
-        }
     };
 };
 

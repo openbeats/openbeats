@@ -1,12 +1,12 @@
 import React, { Component } from 'react';
-import "../css/reset.css";
+import "../assets/css/reset.css";
 import jwtDecode from "jwt-decode";
 import { store } from '../store';
 import { push } from 'connected-react-router';
 import { toastActions, authActions } from '../actions';
 import Loader from 'react-loader-spinner';
 import { connect } from 'react-redux';
-import { master } from '../images';
+import { master } from '../assets/images';
 
 
 class Reset extends Component {

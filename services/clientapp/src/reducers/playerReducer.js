@@ -1,6 +1,6 @@
 import {
     musicDummy
-} from "../images"
+} from "../assets/images"
 
 const initialState = {
     masterUrl: null,

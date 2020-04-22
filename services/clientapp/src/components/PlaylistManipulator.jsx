@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import "../css/playlistmanipulator.css";
+import "../assets/css/playlistmanipulator.css";
 import { connect } from "react-redux";
 import { toastActions, coreActions, playlistManipulatorActions, searchActions } from "../actions";
 

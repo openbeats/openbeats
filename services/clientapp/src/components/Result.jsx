@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
-import { playerdownload, playerplay, master, playlistadd, playerpause, pQueueRed, } from "../images";
+import { playerdownload, playerplay, master, playlistadd, playerpause, pQueueRed, } from "../assets/images";
 import Loader from 'react-loader-spinner';
-import "../css/result.css"
+import "../assets/css/result.css"
 import { variables } from '../config'
 import { connect } from "react-redux"
 import { toastActions, coreActions, nowPlayingActions, playerActions, playlistManipulatorActions } from '../actions';
