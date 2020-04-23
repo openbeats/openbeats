@@ -1,5 +1,5 @@
 {
-    "mongoURI_DEV": "mongodb://127.0.0.1:27017/obs-db",
+    "mongoURI_DEV": "mongodb+srv://obs-db:openbeats%40123@obs-db-prijj.mongodb.net/test",
     "google": {
         "client_id": "2800805513-or82jtgi9ug4bskbftp792o90so12f1d.apps.googleusercontent.com",
         "client_secret": "5SsBLfvwqqrs0r1se2Y3noix"
