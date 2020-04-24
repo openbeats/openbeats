@@ -2,10 +2,12 @@ name: CI
 
 env: 
   SERVICE_PATH: services/clientapp
+  DOCKER_REPO_NAME: thayalangr/obs-clientapp
+  UNIQ_ID: sha-${GITHUB_SHA::7}
 
 on:
   push:
-    branches: [ master ]
+    branches: master
     # paths:
     #   - $SERVICE_PATH/**
 
@@ -19,14 +21,13 @@ jobs:
     - name: 'Sample Echo'
       run: |
         echo $SERVICE_PATH
-        echo sha-${GITHUB_SHA::7}
+        echo $UNIQ_ID
       
-    - name: Build and push Docker images
+    - name: Build and push Docker image
       uses: docker/build-push-action@v1.1.0
       with:
         username: ${{ secrets.DOCKER_USERNAME }}
         password: ${{ secrets.DOCKER_PASSWORD }}
-        repository: 'thayalangr/obs-clientapp'
+        repository: ${{ env.DOCKER_REPO_NAME }}
         tag_with_sha: true
         path: ${{ env.SERVICE_PATH }}
-        push: true
