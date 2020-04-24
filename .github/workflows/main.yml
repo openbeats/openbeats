@@ -1,13 +1,13 @@
 name: CI
 
 env: 
-  SERVICE_PATH: 'services/clientapp'
+  SERVICE_PATH: services/clientapp
 
 on:
   push:
     branches: [ master ]
-    paths:
-      - ${{ SERVICE_PATH }}/**
+    # paths:
+    #   - $SERVICE_PATH/**
 
 jobs:
   build:
@@ -23,5 +23,5 @@ jobs:
         password: ${{ secrets.DOCKER_PASSWORD }}
         repository: 'thayalangr/obs-clientapp'
         tag_with_sha: true
-        dockerfile: ${{ SERVICE_PATH }}
+        dockerfile: $SERVICE_PATH
         push: true
