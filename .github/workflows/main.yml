@@ -1,15 +1,16 @@
 name: CI
 
-env: 
-  SERVICE_PATH: services/clientapp
-  DOCKER_REPO_NAME: thayalangr/obs-clientapp
-  UNIQ_ID: ${ GITHUB_SHA::7 }
 
 on:
   push:
     branches: master
-    # paths:
-    #   - $SERVICE_PATH/**
+    paths:
+        - services/clientapp/**
+      
+env: 
+  SERVICE_PATH: services/clientapp
+  DOCKER_REPO_NAME: thayalangr/obs-clientapp
+  UNIQ_ID: ${GITHUB_SHA::7}
 
 jobs:
   build:
