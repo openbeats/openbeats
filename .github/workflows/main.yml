@@ -15,6 +15,11 @@ jobs:
     steps:
     - name: 'Checkout Repo'
       uses: actions/checkout@v2
+
+    - name: 'Sample Echo'
+      run: |
+        echo $SERVICE_PATH
+        echo $GITHUB_SHA::11
       
     - name: Build and push Docker images
       uses: docker/build-push-action@v1.1.0
@@ -23,5 +28,5 @@ jobs:
         password: ${{ secrets.DOCKER_PASSWORD }}
         repository: 'thayalangr/obs-clientapp'
         tag_with_sha: true
-        dockerfile: $SERVICE_PATH
+        dockerfile: ${{ SERVICE_PATH }}
         push: true
