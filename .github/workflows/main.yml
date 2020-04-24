@@ -1,14 +1,15 @@
 name: CI
 
-env: 
-  SERVICE_PATH: services/clientapp
 
 on:
   push:
     branches: [ master ]
     # paths:
-    #   - $SERVICE_PATH/**
-
+      #   - $SERVICE_PATH/**
+      
+env: 
+  SERVICE_PATH: services/clientapp
+  
 jobs:
   build:
     runs-on: ubuntu-latest
