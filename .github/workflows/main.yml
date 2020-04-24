@@ -4,7 +4,7 @@ env:
   SERVICE_PATH: services/clientapp
   DOCKER_REPO_NAME: thayalangr/obs-clientapp
   SHA: ${ GITHUB_SHA::7 }
-  UNIQ_ID: ${{ format('{{sha-{0}}}', env.SHA) }}
+  UNIQ_ID: ${{ format('{{sha-{0}}}', ${{ env.SHA }}) }}
 
 on:
   push:
