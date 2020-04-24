@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: container
-        image: thayalangr/obs-fallback:latest
+        image: thayalangr/obs-fallback:117
         env:
         - name: DB
           value: obs-db:27017

@@ -16,4 +16,4 @@ spec:
     spec:
       containers:
       - name: container
-        image: thayalangr/obs-clientapp:latest
+        image: thayalangr/obs-clientapp:178

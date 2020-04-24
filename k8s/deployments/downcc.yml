@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: container
-        image: thayalangr/obs-downcc:latest
+        image: thayalangr/obs-downcc:117
         env:
         - name: DB
           value: obs-db:27017

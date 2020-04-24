@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: container
-          image: thayalangr/obs-auth
+          image: thayalangr/obs-auth:171
           env:
             - name: DB
               value: obs-db:27017
