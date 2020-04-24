@@ -1,22 +1,27 @@
 name: CI
 
+env: 
+  SERVICE_PATH: 'services/clientapp'
+
 on:
   push:
     branches: [ master ]
+    paths:
+      - ${{ SERVICE_PATH }}/**
 
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
+    - name: 'Checkout Repo'
+      uses: actions/checkout@v2
       
-    - name: Run a one-line script
-      run: echo Hello, world!
-      
-    # Runs a set of commands using the runners shell
-    - name: Run a multi-line script
-      run: |
-        echo Add other actions to build,
-        echo test, and deploy your project.
-        ls
-        pwd
+    - name: Build and push Docker images
+      uses: docker/build-push-action@v1.1.0
+      with:
+        username: ${{ secrets.DOCKER_USERNAME }}
+        password: ${{ secrets.DOCKER_PASSWORD }}
+        repository: 'thayalangr/obs-clientapp'
+        tag_with_sha: true
+        dockerfile: ${{ SERVICE_PATH }}
+        push: true
