@@ -3,7 +3,7 @@ name: CI
 env: 
   SERVICE_PATH: services/clientapp
   DOCKER_REPO_NAME: thayalangr/obs-clientapp
-  UNIQ_ID: sha-${GITHUB_SHA::7}
+  UNIQ_ID: sha-${{ github.sha::7 }}
 
 on:
   push:
