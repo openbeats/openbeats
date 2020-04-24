@@ -28,5 +28,5 @@ jobs:
         password: ${{ secrets.DOCKER_PASSWORD }}
         repository: 'thayalangr/obs-clientapp'
         tag_with_sha: true
-        dockerfile: ${SERVICE_PATH}
+        dockerfile: ${{ env.SERVICE_PATH }}
         push: true
