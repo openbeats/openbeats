@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: container
-          image: thayalangr/obs-playlist:149
+          image: thayalangr/obs-playlist:new
           env:
             - name: DB
               value: obs-db:27017

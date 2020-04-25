@@ -15,8 +15,8 @@ spec:
         service: obs-core
     spec:
       containers:
-      - name: container
-        image: thayalangr/obs-core:173
-        env:
-        - name: DB
-          value: obs-db:27017
+        - name: container
+          image: thayalangr/obs-core:new
+          env:
+            - name: DB
+              value: obs-db:27017
