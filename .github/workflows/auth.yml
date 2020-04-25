@@ -3,8 +3,8 @@ name: auth
 on:
   push:
     branches: production
-    # paths:
-    #   - services/auth/**
+    paths:
+      - services/auth/**
       
 env: 
   SERVICE_PATH: services/auth
