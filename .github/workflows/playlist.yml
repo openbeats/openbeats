@@ -3,14 +3,14 @@ name: CI
 on:
   push:
     branches: master
-    # paths:
-    #     - services/clientapp/**
+    paths:
+      - services/playlist/**
       
 env: 
-  SERVICE_PATH: services/auth
-  DOCKER_REPO_NAME: thayalangr/obs-auth
-  K8S_DEPLOYMENT_FILE_PATH: k8s/deployments/auth.yml
-  K8S_SERVICE_FILE_PATH: k8s/svc/auth.yml
+  SERVICE_PATH: services/playlist
+  DOCKER_REPO_NAME: thayalangr/obs-playlist
+  K8S_DEPLOYMENT_FILE_PATH: k8s/deployments/playlist.yml
+  K8S_SERVICE_FILE_PATH: k8s/svc/playlist.yml
   IS_NEW_SERVICE: ${{ false }}
 
 jobs:

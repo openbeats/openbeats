@@ -1,0 +1,81 @@
+name: CI
+
+on:
+  push:
+    branches: master
+    paths:
+      - services/downcc/**
+      
+env: 
+  SERVICE_PATH: services/downcc
+  DOCKER_REPO_NAME: thayalangr/obs-downcc
+  K8S_DEPLOYMENT_FILE_PATH: k8s/deployments/downcc.yml
+  K8S_SERVICE_FILE_PATH: k8s/svc/downcc.yml
+  IS_NEW_SERVICE: ${{ false }}
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout Repo
+      uses: actions/checkout@v2
+
+    - name: Generate Build Number
+      uses: einaregilsson/build-number@v1
+      with:
+        token: ${{secrets.github_token}}
+
+    - name: echo
+      run: echo $BUILD_NUMBER
+
+    - name: Build and push New Docker Image
+      if: env.IS_NEW_SERVICE == 'true'
+      uses: docker/build-push-action@v1.1.0
+      with:
+        username: ${{ secrets.DOCKER_USERNAME }}
+        password: ${{ secrets.DOCKER_PASSWORD }}
+        repository: ${{ env.DOCKER_REPO_NAME }}
+        tags: new
+        path: ${{ env.SERVICE_PATH }}
+
+    - name: Build and push Existing Docker Image
+      if: env.IS_NEW_SERVICE == 'false'
+      uses: docker/build-push-action@v1.1.0
+      with:
+        username: ${{ secrets.DOCKER_USERNAME }}
+        password: ${{ secrets.DOCKER_PASSWORD }}
+        repository: ${{ env.DOCKER_REPO_NAME }}
+        tags: ${{ env.BUILD_NUMBER }} 
+        path: ${{ env.SERVICE_PATH }}
+
+    - name: k8s Create New Deployment
+      if: env.IS_NEW_SERVICE == 'true'
+      uses: actions-hub/kubectl@master
+      env:
+        KUBE_CONFIG: ${{ secrets.KUBE_CONFIG_DATA }}
+      with:
+        args: apply -f ${{ env.K8S_DEPLOYMENT_FILE_PATH }}
+
+    - name: k8s Create New Service
+      if: env.IS_NEW_SERVICE == 'true'
+      uses: actions-hub/kubectl@master
+      env:
+        KUBE_CONFIG: ${{ secrets.KUBE_CONFIG_DATA }}
+      with:
+        args: apply -f ${{ env.K8S_SERVICE_FILE_PATH }}
+
+    - name: k8s Update Existing Deployment
+      if: env.IS_NEW_SERVICE == 'false'
+      uses: actions-hub/kubectl@master
+      env:
+        KUBE_CONFIG: ${{ secrets.KUBE_CONFIG_DATA }}
+      with:
+        args: set image -f ${{ env.K8S_DEPLOYMENT_FILE_PATH }} container=${{ env.DOCKER_REPO_NAME }}:${{ env.BUILD_NUMBER }} -n default
+
+    - name: k8s Update Existing Service
+      if: env.IS_NEW_SERVICE == 'false'
+      uses: actions-hub/kubectl@master
+      env:
+        KUBE_CONFIG: ${{ secrets.KUBE_CONFIG_DATA }}
+      with:
+        args: apply -f ${{ env.K8S_SERVICE_FILE_PATH }}
