@@ -11,7 +11,7 @@ env:
   DOCKER_REPO_NAME: thayalangr/obs-auth
   K8S_DEPLOYMENT_FILE_PATH: k8s/deployments/auth.yml
   K8S_SERVICE_FILE_PATH: k8s/svc/auth.yml
-  IS_NEW_SERVICE: ${{ true }}
+  IS_NEW_SERVICE: ${{ false }}
 
 jobs:
   build:
@@ -20,11 +20,6 @@ jobs:
     - name: 'Checkout Repo'
       uses: actions/checkout@v2
 
-    - name: 'Sample Echo'
-      run: |
-        echo $SERVICE_PATH
-        echo sha-${GITHUB_SHA::7}
-      
     - name: Build and push New Docker Image
       if: env.IS_NEW_SERVICE == 'true'
       uses: docker/build-push-action@v1.1.0
