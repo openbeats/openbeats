@@ -13,9 +13,6 @@ env:
 jobs:
   build:
     runs-on: ubuntu-latest
-    env:
-      UNIQ_ID: ${GITHUB_SHA::7}
-
     steps:
     - name: 'Checkout Repo'
       uses: actions/checkout@v2
@@ -23,8 +20,7 @@ jobs:
     - name: 'Sample Echo'
       run: |
         echo $SERVICE_PATH
-        echo $UNIQ_ID
-        echo ${GITHUB_SHA::7}
+        echo sha-${GITHUB_SHA::7}
       
     - name: Build and push Docker image
       uses: docker/build-push-action@v1.1.0
@@ -34,3 +30,11 @@ jobs:
         repository: ${{ env.DOCKER_REPO_NAME }}
         tag_with_sha: true
         path: ${{ env.SERVICE_PATH }}
+
+    - name: Update Kubernetes Cluster
+      uses: actions-hub/kubectl@master
+      env:
+        KUBE_CONFIG: ${{ secrets.KUBE_CONFIG_DATA }}
+      with:
+        args: get pods
+
