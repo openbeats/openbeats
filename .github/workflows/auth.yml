@@ -16,8 +16,8 @@ env:
 
 jobs:
   production:
+    if: env.IS_PRODUCTION_BUILD == 'true'
     runs-on: ubuntu-latest
-    if: $IS_PRODUCTION_BUILD == 'true'
     steps:
     - name: Checkout Repo
       uses: actions/checkout@v2
@@ -75,8 +75,8 @@ jobs:
         args: apply -f ${{ env.K8S_SERVICE_FILE_PATH }}
         
   staging:
+    if: env.IS_PRODUCTION_BUILD == 'false'
     runs-on: ubuntu-latest
-    if: $IS_PRODUCTION_BUILD == 'false'
     steps:
     - name: Checkout Repo
       uses: actions/checkout@v2
