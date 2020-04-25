@@ -15,8 +15,8 @@ spec:
         service: obs-downcc
     spec:
       containers:
-      - name: container
-        image: thayalangr/obs-downcc:117
-        env:
-        - name: DB
-          value: obs-db:27017
+        - name: container
+          image: thayalangr/obs-downcc:new
+          env:
+            - name: DB
+              value: obs-db:27017

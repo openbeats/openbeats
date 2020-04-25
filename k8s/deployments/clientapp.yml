@@ -15,5 +15,5 @@ spec:
         service: obs-clientapp
     spec:
       containers:
-      - name: container
-        image: thayalangr/obs-clientapp:178
+        - name: container
+          image: thayalangr/obs-clientapp:new
