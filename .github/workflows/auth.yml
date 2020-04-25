@@ -22,7 +22,7 @@ jobs:
       uses: actions/checkout@v2
 
     - name: echo
-      run: echo ${github.ref}
+      run: echo github.ref
 
     - name: Build and push New Docker Image
       if: env.IS_NEW_SERVICE == 'true'
