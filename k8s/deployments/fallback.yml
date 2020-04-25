@@ -15,8 +15,8 @@ spec:
         service: obs-fallback
     spec:
       containers:
-      - name: container
-        image: thayalangr/obs-fallback:117
-        env:
-        - name: DB
-          value: obs-db:27017
+        - name: container
+          image: thayalangr/obs-fallback:new
+          env:
+            - name: DB
+              value: obs-db:27017
