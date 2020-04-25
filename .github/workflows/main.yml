@@ -61,8 +61,9 @@ jobs:
       uses: actions-hub/kubectl@master
       env:
         KUBE_CONFIG: ${{ secrets.KUBE_CONFIG_DATA }}
+        SHA: ${GITHUB_SHA::7}
       with:
-        args: set image -f ${{ env.K8S_DEPLOYMENT_FILE_PATH }} container=${{ env.DOCKER_REPO_NAME }}:sha-${{ env.GITHUB_SHA::7 }} -n default
+        args: set image -f ${{ env.K8S_DEPLOYMENT_FILE_PATH }} container=${{ env.DOCKER_REPO_NAME }}:sha-${{ env.SHA }} -n default
 
     - name: k8s Update Existing Service
       if: env.IS_NEW_SERVICE == 'false'
