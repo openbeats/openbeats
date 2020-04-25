@@ -36,5 +36,5 @@ jobs:
       env:
         KUBE_CONFIG: ${{ secrets.KUBE_CONFIG_DATA }}
       with:
-        args: get pods
+        args: describe -f k8s/deployments/clientapp.yml
 
