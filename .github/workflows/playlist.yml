@@ -20,11 +20,6 @@ jobs:
     - name: Checkout Repo
       uses: actions/checkout@v2
 
-    - name: Generate Build Number
-      uses: einaregilsson/build-number@v1
-      with:
-        token: ${{secrets.github_token}}
-
     - name: Build and push New Docker Image
       if: env.IS_NEW_SERVICE == 'true'
       uses: docker/build-push-action@v1.1.0
