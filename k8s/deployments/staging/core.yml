@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: obs-core
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      type: backend
+      service: obs-core
+  template:
+    metadata:
+      labels:
+        type: backend
+        service: obs-core
+    spec:
+      containers:
+        - name: container
+          image: thayalangr/obs-core:new
+          env:
+            - name: DB
+              value: obs-db:27017
