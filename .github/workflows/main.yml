@@ -37,7 +37,7 @@ jobs:
         username: ${{ secrets.DOCKER_USERNAME }}
         password: ${{ secrets.DOCKER_PASSWORD }}
         repository: ${{ env.DOCKER_REPO_NAME }}
-        tag_with_sha: true
+        tags: ${{ env.GITHUB_RUN_NUMBER }} 
         path: ${{ env.SERVICE_PATH }}
 
     - name: k8s Create New Deployment
@@ -61,9 +61,8 @@ jobs:
       uses: actions-hub/kubectl@master
       env:
         KUBE_CONFIG: ${{ secrets.KUBE_CONFIG_DATA }}
-        SHA: ${GITHUB_SHA::7}
       with:
-        args: set image -f ${{ env.K8S_DEPLOYMENT_FILE_PATH }} container=${{ env.DOCKER_REPO_NAME }}:sha-${{ env.SHA }} -n default
+        args: set image -f ${{ env.K8S_DEPLOYMENT_FILE_PATH }} container=${{ env.DOCKER_REPO_NAME }}:${{ env.GITHUB_RUN_NUMBER }} -n default
 
     - name: k8s Update Existing Service
       if: env.IS_NEW_SERVICE == 'false'
