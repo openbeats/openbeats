@@ -1,5 +1,5 @@
 {
-  "mongoURI_DEV": "mongodb+srv://obs-db:openbeats%40123@obs-db-prijj.mongodb.net/test",
+  "mongoURI_DEV": "mongodb+srv://obs-db:openbeats%40123@obs-db-prijj.mongodb.net/obs-db",
   "authbaseurl": {
     "dev": "http://localhost:2001",
     "prod": "http://obs-auth:2000"

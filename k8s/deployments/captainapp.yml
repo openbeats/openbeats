@@ -15,5 +15,5 @@ spec:
         service: obs-captainapp
     spec:
       containers:
-      - name: container
-        image: thayalangr/obs-captainapp:155
+        - name: container
+          image: thayalangr/obs-captainapp:new
