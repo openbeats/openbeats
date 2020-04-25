@@ -2,7 +2,9 @@ import express from "express";
 import User from "../models/User";
 import passport from "passport";
 import jwt from "jsonwebtoken";
-import config from "config";
+import {
+  config
+} from "../../config";
 import {
   check,
   validationResult
@@ -37,7 +39,7 @@ router.post("/login", (req, res, next) => {
       };
       jwt.sign(
         payload,
-        config.get("jwtSecret"),
+        config.jwtSecret,
         (err, token) => {
           try {
             if (err) throw error;
@@ -126,7 +128,7 @@ router.post("/register", [
       avatar
     });
 
-    const salt = await bcrypt.genSalt(config.get("saltRound"));
+    const salt = await bcrypt.genSalt(config.saltRound);
     user.password = await bcrypt.hash(password, salt);
     await user.save();
     const payload = {
@@ -136,7 +138,7 @@ router.post("/register", [
     };
     jwt.sign(
       payload,
-      config.get("jwtSecret"), {
+      config.jwtSecret, {
         expiresIn: 360000
       },
       (err, token) => {
@@ -203,8 +205,8 @@ router.post("/forgotpassword", [
       })
     };
 
-    const supportEmail = config.get("support.email");
-    const supportPassword = config.get("support.password");
+    const supportEmail = config.support.email;
+    const supportPassword = config.support.password;
 
     const smtpTransport = nodemailer.createTransport({
       service: 'Gmail',
@@ -226,7 +228,7 @@ router.post("/forgotpassword", [
 
     const token = jwt.sign(
       payload,
-      config.get("jwtSecret"), {
+      config.jwtSecret, {
         expiresIn: 60 * 60
       });
 
@@ -290,7 +292,7 @@ router.post('/resetpassword', async (req, res) => {
         data: "Invalid Link."
       })
     };
-    const salt = await bcrypt.genSalt(config.get("saltRound"));
+    const salt = await bcrypt.genSalt(config.saltRound);
     user.password = await bcrypt.hash(password, salt);
     user.reset_password_token = "";
     await user.save()
