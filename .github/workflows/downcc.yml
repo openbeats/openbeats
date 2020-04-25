@@ -1,8 +1,8 @@
-name: CI
+name: downcc
 
 on:
   push:
-    branches: master
+    branches: production
     paths:
       - services/downcc/**
       
@@ -24,9 +24,6 @@ jobs:
       uses: einaregilsson/build-number@v1
       with:
         token: ${{secrets.github_token}}
-
-    - name: echo
-      run: echo $BUILD_NUMBER
 
     - name: Build and push New Docker Image
       if: env.IS_NEW_SERVICE == 'true'
