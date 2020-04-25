@@ -11,7 +11,7 @@ env:
   DOCKER_REPO_NAME: thayalangr/obs-auth
   K8S_DEPLOYMENT_FILE_PATH: k8s/deployments/auth.yml
   K8S_SERVICE_FILE_PATH: k8s/svc/auth.yml
-  IS_NEW_SERVICE: ${{ false }}
+  IS_NEW_SERVICE: ${{ true }}
 
 jobs:
   build:
@@ -26,7 +26,7 @@ jobs:
         echo sha-${GITHUB_SHA::7}
       
     - name: Build and push New Docker Image
-      if: env.IS_NEW_SERVICE == true
+      if: env.IS_NEW_SERVICE == ${{ true }}
       uses: docker/build-push-action@v1.1.0
       with:
         username: ${{ secrets.DOCKER_USERNAME }}
@@ -36,7 +36,7 @@ jobs:
         path: ${{ env.SERVICE_PATH }}
 
     - name: Build and push Existing Docker Image
-      if: env.IS_NEW_SERVICE == false
+      if: env.IS_NEW_SERVICE == ${{ false}}
       uses: docker/build-push-action@v1.1.0
       with:
         username: ${{ secrets.DOCKER_USERNAME }}
@@ -46,7 +46,7 @@ jobs:
         path: ${{ env.SERVICE_PATH }}
 
     - name: k8s Create New Deployment
-      if: env.IS_NEW_SERVICE == true
+      if: env.IS_NEW_SERVICE == ${{ true}}
       uses: actions-hub/kubectl@master
       env:
         KUBE_CONFIG: ${{ secrets.KUBE_CONFIG_DATA }}
@@ -54,7 +54,7 @@ jobs:
         args: apply -f ${{ env.K8S_DEPLOYMENT_FILE_PATH }}
 
     - name: k8s Create New Service
-      if: env.IS_NEW_SERVICE == true
+      if: env.IS_NEW_SERVICE == ${{ true}}
       uses: actions-hub/kubectl@master
       env:
         KUBE_CONFIG: ${{ secrets.KUBE_CONFIG_DATA }}
@@ -62,7 +62,7 @@ jobs:
         args: apply -f ${{ env.K8S_SERVICE_FILE_PATH }}
 
     - name: k8s Update Existing Deployment
-      if: env.IS_NEW_SERVICE == false
+      if: env.IS_NEW_SERVICE == ${{ false}}
       uses: actions-hub/kubectl@master
       env:
         KUBE_CONFIG: ${{ secrets.KUBE_CONFIG_DATA }}
@@ -70,7 +70,7 @@ jobs:
         args: set image -f ${{ env.K8S_SERVICE_FILE_PATH }} container=${{ env.DOCKER_REPO_NAME }}:sha-${GITHUB_SHA::7} -n default
 
     - name: k8s Update Existing Service
-      if: env.IS_NEW_SERVICE == false
+      if: env.IS_NEW_SERVICE == ${{ false}}
       uses: actions-hub/kubectl@master
       env:
         KUBE_CONFIG: ${{ secrets.KUBE_CONFIG_DATA }}
