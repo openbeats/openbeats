@@ -3,8 +3,8 @@ name: auth
 on:
   push:
     branches: production
-    paths:
-      - services/auth/**
+    # paths:
+    #   - services/auth/**
       
 env: 
   SERVICE_PATH: services/auth
@@ -12,15 +12,17 @@ env:
   K8S_DEPLOYMENT_FILE_PATH: k8s/deployments/auth.yml
   K8S_SERVICE_FILE_PATH: k8s/svc/auth.yml
   IS_NEW_SERVICE: ${{ false }}
-  IS_PRODUCTION_BUILD: ${{ true }}
 
 jobs:
   production:
-    if: env.IS_PRODUCTION_BUILD == 'true'
+    if: github.ref == 'production'
     runs-on: ubuntu-latest
     steps:
     - name: Checkout Repo
       uses: actions/checkout@v2
+
+    - name: echo
+      runs: echo ${github.ref}
 
     - name: Build and push New Docker Image
       if: env.IS_NEW_SERVICE == 'true'
@@ -75,7 +77,7 @@ jobs:
         args: apply -f ${{ env.K8S_SERVICE_FILE_PATH }}
         
   staging:
-    if: env.IS_PRODUCTION_BUILD == 'false'
+    if: github.ref == 'staging'
     runs-on: ubuntu-latest
     steps:
     - name: Checkout Repo
