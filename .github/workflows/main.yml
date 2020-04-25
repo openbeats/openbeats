@@ -39,3 +39,10 @@ jobs:
       with:
         args: describe -f ${{ env.K8S_DEPLOYMENT_FILE_PATH }}
 
+    - name: last applied config 
+      uses: actions-hub/kubectl@master
+      env:
+        KUBE_CONFIG: ${{ secrets.KUBE_CONFIG_DATA }}
+      with:
+        args: apply view-last-applied -f ${{ env.K8S_DEPLOYMENT_FILE_PATH }}
+
