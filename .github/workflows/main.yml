@@ -9,11 +9,12 @@ on:
 env: 
   SERVICE_PATH: services/clientapp
   DOCKER_REPO_NAME: thayalangr/obs-clientapp
-  UNIQ_ID: ${GITHUB_SHA::7}
 
 jobs:
   build:
     runs-on: ubuntu-latest
+    env:
+      UNIQ_ID: ${GITHUB_SHA::7}
     steps:
     - name: 'Checkout Repo'
       uses: actions/checkout@v2
