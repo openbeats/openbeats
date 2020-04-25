@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: obs-fallback
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      type: backend
+      service: obs-fallback
+  template:
+    metadata:
+      labels:
+        type: backend
+        service: obs-fallback
+    spec:
+      containers:
+        - name: container
+          image: thayalangr/obs-fallback:new
+          env:
+            - name: DB
+              value: obs-db:27017
