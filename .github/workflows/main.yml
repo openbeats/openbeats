@@ -44,5 +44,5 @@ jobs:
       env:
         KUBE_CONFIG: ${{ secrets.KUBE_CONFIG_DATA }}
       with:
-        args: apply view-last-applied -f ${{ env.K8S_DEPLOYMENT_FILE_PATH }}
+        args: aapply set-last-applied -f ${{ env.K8S_DEPLOYMENT_FILE_PATH }}
 
