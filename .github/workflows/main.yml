@@ -9,6 +9,7 @@ on:
 env: 
   SERVICE_PATH: services/clientapp
   DOCKER_REPO_NAME: thayalangr/obs-clientapp
+  K8S_DEPLOYMENT_FILE_PATH: k8s/deployments/clientapp.yml
 
 jobs:
   build:
@@ -31,12 +32,10 @@ jobs:
     #     tag_with_sha: true
     #     path: ${{ env.SERVICE_PATH }}
 
-    - name: Update Kubernetes Cluster
+    - name: Deploy 
       uses: actions-hub/kubectl@master
       env:
         KUBE_CONFIG: ${{ secrets.KUBE_CONFIG_DATA }}
       with:
-        args: 
-          - describe -f k8s/deployments/clientapp.yml
-          - get pods
+        args: describe -f ${{ env.K8S_DEPLOYMENT_FILE_PATH }}
 
