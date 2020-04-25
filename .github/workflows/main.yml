@@ -26,7 +26,7 @@ jobs:
         token: ${{secrets.github_token}}
 
     - name: echo
-      runs: echo $BUILD_NUMBER
+      run: echo $BUILD_NUMBER
 
     - name: Build and push New Docker Image
       if: env.IS_NEW_SERVICE == 'true'
