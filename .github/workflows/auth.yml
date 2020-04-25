@@ -17,7 +17,7 @@ env:
 jobs:
   production:
     runs-on: ubuntu-latest
-    if: env.IS_PRODUCTION_BUILD == 'true'
+    if: $IS_PRODUCTION_BUILD == 'true'
     steps:
     - name: Checkout Repo
       uses: actions/checkout@v2
@@ -76,7 +76,7 @@ jobs:
         
   staging:
     runs-on: ubuntu-latest
-    if: env.IS_PRODUCTION_BUILD == 'false'
+    if: $IS_PRODUCTION_BUILD == 'false'
     steps:
     - name: Checkout Repo
       uses: actions/checkout@v2
