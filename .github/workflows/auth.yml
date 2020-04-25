@@ -15,14 +15,11 @@ env:
 
 jobs:
   production:
-    # if: github.ref == 'production'
+    if: github.ref == 'refs/heads/production'
     runs-on: ubuntu-latest
     steps:
     - name: Checkout Repo
       uses: actions/checkout@v2
-
-    - name: echo
-      run: echo ${{ github.ref }}
 
     - name: Build and push New Docker Image
       if: env.IS_NEW_SERVICE == 'true'
@@ -77,7 +74,7 @@ jobs:
         args: apply -f ${{ env.K8S_SERVICE_FILE_PATH }}
         
   staging:
-    if: github.ref == 'staging'
+    if: github.ref == 'refs/heads/staging'
     runs-on: ubuntu-latest
     steps:
     - name: Checkout Repo
