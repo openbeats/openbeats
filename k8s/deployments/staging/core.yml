@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: obs-core
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      type: backend
+      service: obs-core
+  template:
+    metadata:
+      labels:
+        type: backend
+        service: obs-core
+    spec:
+      containers:
+        - name: container
+          image: thayalangr/obs-core:staging
+          imagePullPolicy: Always
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: obs-core
+spec:
+  type: NodePort
+  ports:
+  - port: 2000
+  selector:
+    type: backend
+    service: obs-core
