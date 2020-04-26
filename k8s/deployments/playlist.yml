@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: container
-          image: thayalangr/obs-playlist:new
+          image: thayalangr/obs-playlist:latest
 
 ---
 apiVersion: v1

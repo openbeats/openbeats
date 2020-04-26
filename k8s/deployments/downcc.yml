@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: container
-          image: thayalangr/obs-downcc:new
+          image: thayalangr/obs-downcc:latest
 
 ---
 apiVersion: v1
