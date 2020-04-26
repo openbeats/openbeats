@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: obs-clientapp
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
       type: frontend
@@ -17,3 +17,16 @@ spec:
       containers:
         - name: container
           image: thayalangr/obs-clientapp:new
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: obs-clientapp
+spec:
+  type: NodePort
+  ports:
+  - port: 3000
+  selector:
+    type: frontend
+    service: obs-clientapp

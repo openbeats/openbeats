@@ -17,3 +17,16 @@ spec:
       containers:
       - name: container
         image: redis
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: obs-redis
+spec:
+  type: NodePort
+  ports:
+  - port: 6379
+  selector:
+    type: db
+    service: obs-redis

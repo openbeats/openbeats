@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: obs-core
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
       type: backend
@@ -17,6 +17,16 @@ spec:
       containers:
         - name: container
           image: thayalangr/obs-core:new
-          env:
-            - name: DB
-              value: obs-db:27017
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: obs-core
+spec:
+  type: NodePort
+  ports:
+  - port: 2000
+  selector:
+    type: backend
+    service: obs-core
