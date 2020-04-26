@@ -1,0 +1,75 @@
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+  name: obs-frontend-ingress
+  annotations:
+    nginx.ingress.kubernetes.io/ingress.class: "nginx"
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/rewrite-target: /
+spec:
+  rules:
+    - host: openbeats.live
+      http:
+        paths:
+          - backend:
+              serviceName: obs-clientapp
+              servicePort: 3000
+            path: /
+
+    - host: www.openbeats.live
+      http:
+        paths:
+          - backend:
+              serviceName: obs-clientapp
+              servicePort: 3000
+            path: /
+
+    - host: captain.openbeats.live
+      http:
+        paths:
+          - backend:
+              serviceName: obs-captainapp
+              servicePort: 3000
+            path: /
+    - host: api.openbeats.live
+      http:
+        paths:
+          - path: /
+            backend:
+              serviceName: obs-core
+              servicePort: 2000
+
+---
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+  name: obs-backend-ingress
+  annotations:
+    nginx.ingress.kubernetes.io/ingress.class: "nginx"
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
+spec:
+  rules:
+    - host: api.openbeats.live
+      http:
+        paths:
+          - path: /fallback(/|$)(.*)
+            backend:
+              serviceName: obs-fallback
+              servicePort: 2000
+          - path: /downcc(/|$)(.*)
+            backend:
+              serviceName: obs-downcc
+              servicePort: 2000
+          - path: /auth(/|$)(.*)
+            backend:
+              serviceName: obs-auth
+              servicePort: 2000
+          - path: /playlist(/|$)(.*)
+            backend:
+              serviceName: obs-playlist
+              servicePort: 2000
+          - path: /cron(/|$)(.*)
+            backend:
+              serviceName: obs-cron
+              servicePort: 2000
