@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: container
-          image: thayalangr/obs-captainapp:latest
+          image: thayalangr/obs-captainapp:production
           imagePullPolicy: Always
 
 ---

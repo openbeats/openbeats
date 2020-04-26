@@ -26,6 +26,13 @@ jobs:
     - name: Checkout Repo
       uses: actions/checkout@v2
 
+    - name: k8s Check and Apply New Redis
+      uses: actions-hub/kubectl@master
+      env:
+        KUBE_CONFIG: ${{ secrets.KUBE_CONFIG_DATA }}
+      with:
+        args: apply -f ${{ env.K8S_REDIS_DEPLOYMENT_PATH }} -n production
+
     - name: Build and push Docker Image
       uses: docker/build-push-action@v1.1.0
       with:
@@ -34,13 +41,6 @@ jobs:
         repository: ${{ env.DOCKER_REPO_NAME }}
         tags: production
         path: ${{ env.SERVICE_PATH }}
-
-    - name: k8s Check and Apply New Redis
-      uses: actions-hub/kubectl@master
-      env:
-        KUBE_CONFIG: ${{ secrets.KUBE_CONFIG_DATA }}
-      with:
-        args: apply -f ${{ env.K8S_REDIS_DEPLOYMENT_PATH }} -n production
 
     - name: k8s Check and Apply New Deployment
       uses: actions-hub/kubectl@master
