@@ -4,13 +4,15 @@ import axios from "axios";
 import {
 	uniq
 } from "lodash";
-import config from "config";
+import {
+	config
+} from "../../config";
 
 const router = express.Router();
 
 
 //Set Base Url
-const baseUrl = `${config.get("isDev") ? config.get("baseurl").dev : config.get("baseurl").prod}`;
+const baseUrl = `${config.isDev ? config.baseurl.dev : config.baseurl.prod}`;
 
 // create empty Playlist
 router.post("/create", async (req, res) => {
@@ -122,7 +124,7 @@ router.get("/getplaylist/:id", async (req, res) => {
 			...data["_doc"],
 			songs: data["$$populatedVirtuals"]["songsList"]
 		};
-		
+
 		res.send({
 			status: true,
 			data: fetchedAlbum,

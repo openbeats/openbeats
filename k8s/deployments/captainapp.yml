@@ -16,4 +16,4 @@ spec:
     spec:
       containers:
         - name: container
-          image: thayalangr/obs-captainapp:new
+          image: thayalangr/obs-captainapp:70b91483fecf1e07e64d074717abebbd4bf81bd4

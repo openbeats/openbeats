@@ -8,7 +8,7 @@ metadata:
     nginx.ingress.kubernetes.io/rewrite-target: /
 spec:
   rules:
-    - host: openbeats.live
+    - host: staging.openbeats.live
       http:
         paths:
           - backend:
@@ -16,22 +16,14 @@ spec:
               servicePort: 3000
             path: /
 
-    - host: www.openbeats.live
-      http:
-        paths:
-          - backend:
-              serviceName: obs-clientapp
-              servicePort: 3000
-            path: /
-
-    - host: captain.openbeats.live
+    - host: staging-captain.openbeats.live
       http:
         paths:
           - backend:
               serviceName: obs-captainapp
               servicePort: 3000
             path: /
-    - host: api.openbeats.live
+    - host: staging-api.openbeats.live
       http:
         paths:
           - path: /
@@ -50,7 +42,7 @@ metadata:
     nginx.ingress.kubernetes.io/rewrite-target: /$2
 spec:
   rules:
-    - host: api.openbeats.live
+    - host: staging-api.openbeats.live
       http:
         paths:
           - path: /fallback(/|$)(.*)

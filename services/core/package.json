@@ -21,7 +21,6 @@
         "babel-register": "^6.26.0",
         "bcryptjs": "^2.4.3",
         "cheerio": "^1.0.0-rc.3",
-        "config": "^3.3.0",
         "cors": "^2.8.5",
         "express": "^4.17.1",
         "form-data": "^3.0.0",

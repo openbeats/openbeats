@@ -2,7 +2,9 @@ import fetchRetry from "./refetch";
 import cheerio from "cheerio";
 import TopChart from "../models/TopChart";
 import MissedFetch from "../models/MissedFetch"
-import config from "config";
+import {
+	config
+} from "../../config";
 
 export const updateTopCharts = async (chartName, chartId) => {
 	try {
@@ -13,9 +15,9 @@ export const updateTopCharts = async (chartName, chartId) => {
 		playres = await playres.text();
 		const $ = cheerio.load(playres.trim());
 		let fetchurls = [];
-		const baseurl = config.get("isDev") ?
-			config.get("baseurl").dev :
-			config.get("baseurl").prod;
+		const baseurl = config.isDev ?
+			config.baseurl.dev :
+			config.baseurl.prod;
 		let chart = await TopChart.findById(chartId);
 		$(".top01").each(async (i, el) => {
 			let fetchobj = {};

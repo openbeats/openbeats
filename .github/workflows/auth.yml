@@ -2,7 +2,9 @@ name: auth
 
 on:
   push:
-    branches: production
+    branches: 
+      - production
+      - staging
     paths:
       - services/auth/**
       
@@ -11,7 +13,9 @@ env:
   DOCKER_REPO_NAME: thayalangr/obs-auth
   K8S_DEPLOYMENT_FILE_PATH: k8s/deployments/auth.yml
   K8S_SERVICE_FILE_PATH: k8s/svc/auth.yml
-  IS_NEW_SERVICE: ${{ false }}
+  IS_NEW_SERVICE: ${{ true }}
+  PRODUCTION_ING_PATH: k8s/ingress/ingress.yml
+  STAGING_ING_PATH: k8s/ingress/staging-ingress.yml
 
 jobs:
   production:
@@ -47,7 +51,7 @@ jobs:
       env:
         KUBE_CONFIG: ${{ secrets.KUBE_CONFIG_DATA }}
       with:
-        args: apply -f ${{ env.K8S_DEPLOYMENT_FILE_PATH }}
+        args: apply -f ${{ env.K8S_DEPLOYMENT_FILE_PATH }} -n default
 
     - name: k8s Create New Service
       if: env.IS_NEW_SERVICE == 'true'
@@ -55,7 +59,7 @@ jobs:
       env:
         KUBE_CONFIG: ${{ secrets.KUBE_CONFIG_DATA }}
       with:
-        args: apply -f ${{ env.K8S_SERVICE_FILE_PATH }}
+        args: apply -f ${{ env.K8S_SERVICE_FILE_PATH }} -n default
 
     - name: k8s Update Existing Deployment
       if: env.IS_NEW_SERVICE == 'false'
@@ -71,7 +75,14 @@ jobs:
       env:
         KUBE_CONFIG: ${{ secrets.KUBE_CONFIG_DATA }}
       with:
-        args: apply -f ${{ env.K8S_SERVICE_FILE_PATH }}
+        args: apply -f ${{ env.K8S_SERVICE_FILE_PATH }} -n default
+        
+    - name: k8s Update Ingress
+      uses: actions-hub/kubectl@master
+      env:
+        KUBE_CONFIG: ${{ secrets.KUBE_CONFIG_DATA }}
+      with:
+        args: apply -f ${{ env.PRODUCTION_ING_PATH }} -n default
         
   staging:
     if: github.ref == 'refs/heads/staging'
@@ -106,7 +117,7 @@ jobs:
       env:
         KUBE_CONFIG: ${{ secrets.KUBE_CONFIG_DATA }}
       with:
-        args: apply -f ${{ env.K8S_DEPLOYMENT_FILE_PATH }}
+        args: apply -f ${{ env.K8S_DEPLOYMENT_FILE_PATH }} -n staging
 
     - name: k8s Create New Service
       if: env.IS_NEW_SERVICE == 'true'
@@ -114,7 +125,7 @@ jobs:
       env:
         KUBE_CONFIG: ${{ secrets.KUBE_CONFIG_DATA }}
       with:
-        args: apply -f ${{ env.K8S_SERVICE_FILE_PATH }}
+        args: apply -f ${{ env.K8S_SERVICE_FILE_PATH }} -n staging
 
     - name: k8s Update Existing Deployment
       if: env.IS_NEW_SERVICE == 'false'
@@ -122,7 +133,7 @@ jobs:
       env:
         KUBE_CONFIG: ${{ secrets.KUBE_CONFIG_DATA }}
       with:
-        args: set image -f ${{ env.K8S_DEPLOYMENT_FILE_PATH }} container=${{ env.DOCKER_REPO_NAME }}:${{ github.sha }} -n default
+        args: set image -f ${{ env.K8S_DEPLOYMENT_FILE_PATH }} container=${{ env.DOCKER_REPO_NAME }}:${{ github.sha }} -n staging
 
     - name: k8s Update Existing Service
       if: env.IS_NEW_SERVICE == 'false'
@@ -130,4 +141,11 @@ jobs:
       env:
         KUBE_CONFIG: ${{ secrets.KUBE_CONFIG_DATA }}
       with:
-        args: apply -f ${{ env.K8S_SERVICE_FILE_PATH }}
+        args: apply -f ${{ env.K8S_SERVICE_FILE_PATH }} -n staging
+
+    - name: k8s Update Ingress
+      uses: actions-hub/kubectl@master
+      env:
+        KUBE_CONFIG: ${{ secrets.KUBE_CONFIG_DATA }}
+      with:
+        args: apply -f ${{ env.STAGING_ING_PATH }} -n staging

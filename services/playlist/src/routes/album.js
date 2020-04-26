@@ -5,7 +5,9 @@ import {
 	body,
 	validationResult
 } from "express-validator";
-import config from "config";
+import {
+	config
+} from "../../config";
 import axios from "axios";
 import {
 	Error
@@ -15,9 +17,7 @@ import paginationMiddleware from "../config/paginationMiddleware"
 const router = express.Router();
 
 //Set Base Url
-const baseUrl = `${
-	config.get("isDev") ? config.get("baseurl").dev : config.get("baseurl").prod
-}`;
+const baseUrl = `${config.isDev ? config.baseurl.dev : config.baseurl.prod}`;
 
 // album creation
 router.post(

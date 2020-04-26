@@ -1,8 +1,10 @@
 import mongoose from "mongoose";
-import config from "config";
+import {
+	config
+} from "../../config";
 
 export default async () => {
-	const mongoUrl = config.get("mongoURI_DEV");
+	const mongoUrl = config.mongoURI_DEV;
 	await mongoose
 		.connect(mongoUrl, {
 			useNewUrlParser: true,
