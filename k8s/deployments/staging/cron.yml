@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: obs-cron
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      type: backend
+      service: obs-cron
+  template:
+    metadata:
+      labels:
+        type: backend
+        service: obs-cron
+    spec:
+      containers:
+        - name: container
+          image: thayalangr/obs-cron:staging
+          imagePullPolicy: Always
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: obs-cron
+spec:
+  type: NodePort
+  ports:
+  - port: 2000
+  selector:
+    type: backend
+    service: obs-cron

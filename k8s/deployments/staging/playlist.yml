@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: obs-playlist
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      type: backend
+      service: obs-playlist
+  template:
+    metadata:
+      labels:
+        type: backend
+        service: obs-playlist
+    spec:
+      containers:
+        - name: container
+          image: thayalangr/obs-playlist:staging
+          imagePullPolicy: Always
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: obs-playlist
+spec:
+  type: NodePort
+  ports:
+  - port: 2000
+  selector:
+    type: backend
+    service: obs-playlist
