@@ -1,4 +1,4 @@
-const type = 'production';
+const type = 'development';
 // production or development or staging
 
 let mongoURI = "mongodb+srv://obs-db:openbeats%40123@obs-db-prijj.mongodb.net/obs-db"; // production url

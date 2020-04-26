@@ -5,7 +5,7 @@ import authRoutes from "./routes/auth";
 import usermetadata from "./routes/usermetadata";
 import {
 	config
-} from "../config";
+} from "./config";
 //Set up db connection
 dbconfig();
 
