@@ -17,6 +17,7 @@ spec:
       containers:
         - name: container
           image: thayalangr/obs-downcc:latest
+          imagePullPolicy: Always
 
 ---
 apiVersion: v1

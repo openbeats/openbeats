@@ -17,6 +17,7 @@ spec:
       containers:
         - name: container
           image: thayalangr/obs-auth:latest
+          imagePullPolicy: Always
 
 ---
 apiVersion: v1

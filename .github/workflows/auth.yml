@@ -12,7 +12,7 @@ env:
   SERVICE_PATH: services/auth
   DOCKER_REPO_NAME: thayalangr/obs-auth
   K8S_DEPLOYMENT_FILE_PATH: k8s/deployments/auth.yml
-  K8S_DEPLOYMENT_NAME: deployments/obs-auth
+  K8S_DEPLOYMENT_NAME: obs-auth
   PRODUCTION_ING_PATH: k8s/ingress/production-ingress.yml
   STAGING_ING_PATH: k8s/ingress/staging-ingress.yml
   K8S_REDIS_DEPLOYMENT_FILE_PATH: k8s/deployments/redis.yml
@@ -31,7 +31,7 @@ jobs:
         username: ${{ secrets.DOCKER_USERNAME }}
         password: ${{ secrets.DOCKER_PASSWORD }}
         repository: ${{ env.DOCKER_REPO_NAME }}
-        tags: ${{ github.sha }} 
+        tags: latest
         path: ${{ env.SERVICE_PATH }}
 
     - name: k8s Check and Apply New Redis
@@ -53,7 +53,7 @@ jobs:
       env:
         KUBE_CONFIG: ${{ secrets.KUBE_CONFIG_DATA }}
       with:
-        args: set image ${{ env.K8S_DEPLOYMENT_NAME }} container=${{ env.DOCKER_REPO_NAME }}:${{ github.sha }} -n default
+        args: rollout restart deploy ${{ env.K8S_DEPLOYMENT_NAME }} -n default
 
     - name: k8s Check and Apply New Ingress
       uses: actions-hub/kubectl@master
@@ -75,7 +75,7 @@ jobs:
         username: ${{ secrets.DOCKER_USERNAME }}
         password: ${{ secrets.DOCKER_PASSWORD }}
         repository: ${{ env.DOCKER_REPO_NAME }}
-        tags: ${{ github.sha }} 
+        tags: latest
         path: ${{ env.SERVICE_PATH }}
 
     - name: k8s Check and Apply New Redis
@@ -97,7 +97,7 @@ jobs:
       env:
         KUBE_CONFIG: ${{ secrets.KUBE_CONFIG_DATA }}
       with:
-        args: set image ${{ env.K8S_DEPLOYMENT_NAME }} container=${{ env.DOCKER_REPO_NAME }}:${{ github.sha }} -n staging
+        args: rollout restart deploy ${{ env.K8S_DEPLOYMENT_NAME }} -n staging
 
     - name: k8s Check and Apply New Ingress
       uses: actions-hub/kubectl@master
