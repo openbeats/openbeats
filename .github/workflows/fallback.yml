@@ -16,7 +16,6 @@ env:
   K8S_STAGING_DEPLOYMENT_PATH: k8s/deployments/staging/fallback.yml
   k8s_PRODUCTION_ING_PATH: k8s/ingress/production-ingress.yml
   k8s_STAGING_ING_PATH: k8s/ingress/staging-ingress.yml
-  K8S_REDIS_DEPLOYMENT_PATH: k8s/deployments/redis.yml
 
 jobs:
   production:
@@ -34,13 +33,6 @@ jobs:
         repository: ${{ env.DOCKER_REPO_NAME }}
         tags: production
         path: ${{ env.SERVICE_PATH }}
-
-    - name: k8s Check and Apply New Redis
-      uses: actions-hub/kubectl@master
-      env:
-        KUBE_CONFIG: ${{ secrets.KUBE_CONFIG_DATA }}
-      with:
-        args: apply -f ${{ env.K8S_REDIS_DEPLOYMENT_PATH }} -n production
 
     - name: k8s Check and Apply New Deployment
       uses: actions-hub/kubectl@master
@@ -78,13 +70,6 @@ jobs:
         repository: ${{ env.DOCKER_REPO_NAME }}
         tags: staging
         path: ${{ env.SERVICE_PATH }}
-
-    - name: k8s Check and Apply New Redis
-      uses: actions-hub/kubectl@master
-      env:
-        KUBE_CONFIG: ${{ secrets.KUBE_CONFIG_DATA }}
-      with:
-        args: apply -f ${{ env.K8S_REDIS_DEPLOYMENT_PATH }} -n staging
 
     - name: k8s Check and Apply New Deployment
       uses: actions-hub/kubectl@master
