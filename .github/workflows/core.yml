@@ -12,6 +12,7 @@ env:
   SERVICE_PATH: services/core
   DOCKER_REPO_NAME: thayalangr/obs-core
   K8S_DEPLOYMENT_FILE_PATH: k8s/deployments/core.yml
+  K8S_DEPLOYMENT_NAME: deployments/obs-core
   PRODUCTION_ING_PATH: k8s/ingress/production-ingress.yml
   STAGING_ING_PATH: k8s/ingress/staging-ingress.yml
   K8S_REDIS_DEPLOYMENT_FILE_PATH: k8s/deployments/redis.yml
@@ -52,7 +53,7 @@ jobs:
       env:
         KUBE_CONFIG: ${{ secrets.KUBE_CONFIG_DATA }}
       with:
-        args: set image -f ${{ env.K8S_DEPLOYMENT_FILE_PATH }} container=${{ env.DOCKER_REPO_NAME }}:${{ github.sha }} -n default
+        args: set image -f ${{ env.K8S_DEPLOYMENT_NAME }} container=${{ env.DOCKER_REPO_NAME }}:${{ github.sha }} -n default
 
     - name: k8s Check and Apply New Ingress
       uses: actions-hub/kubectl@master
@@ -96,7 +97,7 @@ jobs:
       env:
         KUBE_CONFIG: ${{ secrets.KUBE_CONFIG_DATA }}
       with:
-        args: set image -f ${{ env.K8S_DEPLOYMENT_FILE_PATH }} container=${{ env.DOCKER_REPO_NAME }}:${{ github.sha }} -n staging
+        args: set image -f ${{ env.K8S_DEPLOYMENT_NAME }} container=${{ env.DOCKER_REPO_NAME }}:${{ github.sha }} -n staging
 
     - name: k8s Check and Apply New Ingress
       uses: actions-hub/kubectl@master
