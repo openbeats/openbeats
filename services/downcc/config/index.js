@@ -1,5 +1,14 @@
+const type = 'production';
+// production or development or staging
+
+let mongoURI = "mongodb+srv://obs-db:openbeats%40123@obs-db-prijj.mongodb.net/obs-db"; // production url
+if (type === 'staging') {
+    mongoURI = "mongodb+srv://obs-db:openbeats%40123@obs-db-prijj.mongodb.net/obs-db-staging"; // production url
+}
+
+
 export const config = {
-    mongoURI_DEV: "mongodb+srv://obs-db:openbeats%40123@obs-db-prijj.mongodb.net/obs-db",
+    mongoURI_DEV: mongoURI,
     google: {
         client_id: "2800805513-or82jtgi9ug4bskbftp792o90so12f1d.apps.googleusercontent.com",
         client_secret: "5SsBLfvwqqrs0r1se2Y3noix"
@@ -11,5 +20,6 @@ export const config = {
         prod: "obs-redis",
         dev: "localhost"
     },
-    isDev: false
+    isDev: type === 'development' ? true : false
+
 }
