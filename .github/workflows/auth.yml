@@ -28,9 +28,9 @@ jobs:
 
     - name: Change Variables for production
       run: |
-        cat $SERVICE_PATH/config/index.js
+        cat $CONFIG_PATH
         sed '1d' $CONFIG_PATH > temp.js ; mv temp.js $CONFIG_PATH ; sed -i '1iconst type = "production";' $CONFIG_PATH
-        cat $SERVICE_PATH/config/index.js
+        cat $CONFIG_PATH
 
     - name: Build and push Docker Image
       uses: docker/build-push-action@v1.1.0
