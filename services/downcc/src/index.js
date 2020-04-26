@@ -9,7 +9,7 @@ import fetch from "node-fetch";
 import redis from "./config/redis";
 import {
 	config
-} from "../config";
+} from "./config";
 // import dbconfig from "./config/db";
 // dbconfig();
 const PORT = process.env.PORT || 2000;

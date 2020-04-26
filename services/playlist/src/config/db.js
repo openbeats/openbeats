@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 import {
 	config
-} from "../../config";
+} from "../config";
 
 export default async () => {
 	const mongoUrl = config.mongoURI_DEV;

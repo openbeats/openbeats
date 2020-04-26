@@ -1,7 +1,7 @@
 import redis from "redis";
 import {
     config
-} from "../../config";
+} from "../config";
 
 export default redis.createClient({
     port: 6379,

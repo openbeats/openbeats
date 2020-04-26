@@ -6,7 +6,7 @@ import {
 } from "lodash";
 import {
 	config
-} from "../../config";
+} from "../config";
 
 const router = express.Router();
 

@@ -7,7 +7,7 @@ import {
 } from "express-validator";
 import {
 	config
-} from "../../config";
+} from "../config";
 import axios from "axios";
 import {
 	Error

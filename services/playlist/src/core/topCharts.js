@@ -6,7 +6,7 @@ import MissedFetch from "../models/MissedFetch";
 import fetchRetry from "./refetch";
 import {
 	config
-} from "../../config";
+} from "../config";
 
 export const fetchTopCharts = async () => {
 	try {
