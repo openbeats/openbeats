@@ -25,6 +25,12 @@ jobs:
     - name: Checkout Repo
       uses: actions/checkout@v2
 
+    - name: Change Variables for production
+      run:
+        - cat $SERVICE_PATH/config/index.js
+        - sed '1d' $SERVICE_PATH/config/index.js > temp.js ; mv temp.js $SERVICE_PATH/config/index.js ; sed -i '1iconst type = "production";' $SERVICE_PATH/config/index.js
+        - cat $SERVICE_PATH/config/index.js
+
     - name: Build and push Docker Image
       uses: docker/build-push-action@v1.1.0
       with:

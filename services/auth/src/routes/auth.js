@@ -4,7 +4,7 @@ import passport from "passport";
 import jwt from "jsonwebtoken";
 import {
   config
-} from "../../config";
+} from "../config";
 import {
   check,
   validationResult
