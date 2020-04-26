@@ -1,4 +1,4 @@
-name: auth
+name: captainapp
 
 on:
   push:
@@ -6,13 +6,13 @@ on:
       - production
       - staging
     paths:
-      - services/auth/**
+      - services/captainapp/**
       
 env: 
-  SERVICE_PATH: services/auth
-  DOCKER_REPO_NAME: thayalangr/obs-auth
-  K8S_DEPLOYMENT_FILE_PATH: k8s/deployments/auth.yml
-  K8S_DEPLOYMENT_NAME: deployments/obs-auth
+  SERVICE_PATH: services/captainapp
+  DOCKER_REPO_NAME: thayalangr/obs-captainapp
+  K8S_DEPLOYMENT_FILE_PATH: k8s/deployments/captainapp.yml
+  K8S_DEPLOYMENT_NAME: deployments/obs-captainapp
   PRODUCTION_ING_PATH: k8s/ingress/production-ingress.yml
   STAGING_ING_PATH: k8s/ingress/staging-ingress.yml
   K8S_REDIS_DEPLOYMENT_FILE_PATH: k8s/deployments/redis.yml
