@@ -11,6 +11,7 @@ on:
 env: 
   SERVICE_PATH: services/core
   DOCKER_REPO_NAME: thayalangr/obs-core
+  CONFIG_PATH: services/core/src/config/index.js
   K8S_DEPLOYMENT_NAME: obs-core
   K8S_PRODUCTION_DEPLOYMENT_PATH: k8s/deployments/production/core.yml
   K8S_STAGING_DEPLOYMENT_PATH: k8s/deployments/staging/core.yml
@@ -27,11 +28,16 @@ jobs:
       uses: actions/checkout@v2
 
     - name: k8s Check and Apply New Redis
+      if: env.SERVICE_PATH == 'services/core'
       uses: actions-hub/kubectl@master
       env:
         KUBE_CONFIG: ${{ secrets.KUBE_CONFIG_DATA }}
       with:
         args: apply -f ${{ env.K8S_REDIS_DEPLOYMENT_PATH }} -n production
+    
+    - name: Change Variables for Production
+      run: |
+        sed '1d' $CONFIG_PATH > temp.js ; mv temp.js $CONFIG_PATH ; sed -i '1iconst type = "production";' $CONFIG_PATH
 
     - name: Build and push Docker Image
       uses: docker/build-push-action@v1.1.0
@@ -70,6 +76,18 @@ jobs:
     - name: Checkout Repo
       uses: actions/checkout@v2
 
+    - name: k8s Check and Apply New Redis
+      if: env.SERVICE_PATH == 'services/core'
+      uses: actions-hub/kubectl@master
+      env:
+        KUBE_CONFIG: ${{ secrets.KUBE_CONFIG_DATA }}
+      with:
+        args: apply -f ${{ env.K8S_REDIS_DEPLOYMENT_PATH }} -n staging
+
+    - name: Change Variables for Staging
+      run: |
+        sed '1d' $CONFIG_PATH > temp.js ; mv temp.js $CONFIG_PATH ; sed -i '1iconst type = "staging";' $CONFIG_PATH
+
     - name: Build and push Docker Image
       uses: docker/build-push-action@v1.1.0
       with:
@@ -78,13 +96,6 @@ jobs:
         repository: ${{ env.DOCKER_REPO_NAME }}
         tags: staging
         path: ${{ env.SERVICE_PATH }}
-
-    - name: k8s Check and Apply New Redis
-      uses: actions-hub/kubectl@master
-      env:
-        KUBE_CONFIG: ${{ secrets.KUBE_CONFIG_DATA }}
-      with:
-        args: apply -f ${{ env.K8S_REDIS_DEPLOYMENT_PATH }} -n staging
 
     - name: k8s Check and Apply New Deployment
       uses: actions-hub/kubectl@master

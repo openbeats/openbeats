@@ -1,7 +1,7 @@
 import jwt from "jsonwebtoken";
 import {
 	config
-} from "../../config";
+} from "../config";
 import fetch from "node-fetch";
 
 export default async (req, res, next) => {

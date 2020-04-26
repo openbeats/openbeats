@@ -4,7 +4,7 @@ import cron from "node-cron";
 import fetch from "node-fetch";
 import {
   config
-} from "../config";
+} from "./config";
 
 const PORT = 2000 || process.env.PORT;
 

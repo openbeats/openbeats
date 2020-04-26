@@ -17,6 +17,7 @@ env:
   K8S_STAGING_DEPLOYMENT_PATH: k8s/deployments/staging/auth.yml
   k8s_PRODUCTION_ING_PATH: k8s/ingress/production-ingress.yml
   k8s_STAGING_ING_PATH: k8s/ingress/staging-ingress.yml
+  K8S_REDIS_DEPLOYMENT_PATH: k8s/deployments/redis.yml
 
 jobs:
   production:
@@ -26,11 +27,17 @@ jobs:
     - name: Checkout Repo
       uses: actions/checkout@v2
 
-    - name: Change Variables for production
+    - name: k8s Check and Apply New Redis
+      if: env.SERVICE_PATH == 'services/core'
+      uses: actions-hub/kubectl@master
+      env:
+        KUBE_CONFIG: ${{ secrets.KUBE_CONFIG_DATA }}
+      with:
+        args: apply -f ${{ env.K8S_REDIS_DEPLOYMENT_PATH }} -n production
+    
+    - name: Change Variables for Production
       run: |
-        cat $CONFIG_PATH
         sed '1d' $CONFIG_PATH > temp.js ; mv temp.js $CONFIG_PATH ; sed -i '1iconst type = "production";' $CONFIG_PATH
-        cat $CONFIG_PATH
 
     - name: Build and push Docker Image
       uses: docker/build-push-action@v1.1.0
@@ -68,6 +75,18 @@ jobs:
     steps:
     - name: Checkout Repo
       uses: actions/checkout@v2
+
+    - name: k8s Check and Apply New Redis
+      if: env.SERVICE_PATH == 'services/core'
+      uses: actions-hub/kubectl@master
+      env:
+        KUBE_CONFIG: ${{ secrets.KUBE_CONFIG_DATA }}
+      with:
+        args: apply -f ${{ env.K8S_REDIS_DEPLOYMENT_PATH }} -n staging
+
+    - name: Change Variables for Staging
+      run: |
+        sed '1d' $CONFIG_PATH > temp.js ; mv temp.js $CONFIG_PATH ; sed -i '1iconst type = "staging";' $CONFIG_PATH
 
     - name: Build and push Docker Image
       uses: docker/build-push-action@v1.1.0

@@ -4,7 +4,7 @@ import TopChart from "../models/TopChart";
 import MissedFetch from "../models/MissedFetch"
 import {
 	config
-} from "../../config";
+} from "../config";
 
 export const updateTopCharts = async (chartName, chartId) => {
 	try {
