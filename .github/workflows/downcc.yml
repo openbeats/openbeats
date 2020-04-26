@@ -12,10 +12,10 @@ env:
   SERVICE_PATH: services/downcc
   DOCKER_REPO_NAME: thayalangr/obs-downcc
   K8S_DEPLOYMENT_FILE_PATH: k8s/deployments/downcc.yml
-  K8S_SERVICE_FILE_PATH: k8s/svc/downcc.yml
   IS_NEW_SERVICE: ${{ true }}
-  PRODUCTION_ING_PATH: k8s/ingress/ingress.yml
+  PRODUCTION_ING_PATH: k8s/ingress/production-ingress.yml
   STAGING_ING_PATH: k8s/ingress/staging-ingress.yml
+  K8S_REDIS_DEPLOYMENT_FILE_PATH: k8s/deployments/redis.yml
 
 jobs:
   production:
@@ -45,6 +45,14 @@ jobs:
         tags: ${{ github.sha }} 
         path: ${{ env.SERVICE_PATH }}
 
+    - name: k8s Create New Deployment Redis
+      if: env.IS_NEW_SERVICE == 'true'
+      uses: actions-hub/kubectl@master
+      env:
+        KUBE_CONFIG: ${{ secrets.KUBE_CONFIG_DATA }}
+      with:
+        args: apply -f ${{ env.K8S_REDIS_DEPLOYMENT_FILE_PATH }} -n default
+
     - name: k8s Create New Deployment
       if: env.IS_NEW_SERVICE == 'true'
       uses: actions-hub/kubectl@master
@@ -52,14 +60,6 @@ jobs:
         KUBE_CONFIG: ${{ secrets.KUBE_CONFIG_DATA }}
       with:
         args: apply -f ${{ env.K8S_DEPLOYMENT_FILE_PATH }} -n default
-
-    - name: k8s Create New Service
-      if: env.IS_NEW_SERVICE == 'true'
-      uses: actions-hub/kubectl@master
-      env:
-        KUBE_CONFIG: ${{ secrets.KUBE_CONFIG_DATA }}
-      with:
-        args: apply -f ${{ env.K8S_SERVICE_FILE_PATH }} -n default
 
     - name: k8s Update Existing Deployment
       if: env.IS_NEW_SERVICE == 'false'
@@ -69,15 +69,8 @@ jobs:
       with:
         args: set image -f ${{ env.K8S_DEPLOYMENT_FILE_PATH }} container=${{ env.DOCKER_REPO_NAME }}:${{ github.sha }} -n default
 
-    - name: k8s Update Existing Service
-      if: env.IS_NEW_SERVICE == 'false'
-      uses: actions-hub/kubectl@master
-      env:
-        KUBE_CONFIG: ${{ secrets.KUBE_CONFIG_DATA }}
-      with:
-        args: apply -f ${{ env.K8S_SERVICE_FILE_PATH }} -n default
-        
     - name: k8s Update Ingress
+      if: env.IS_NEW_SERVICE == 'true'
       uses: actions-hub/kubectl@master
       env:
         KUBE_CONFIG: ${{ secrets.KUBE_CONFIG_DATA }}
@@ -111,6 +104,14 @@ jobs:
         tags: ${{ github.sha }} 
         path: ${{ env.SERVICE_PATH }}
 
+    - name: k8s Create New Deployment Redis
+      if: env.IS_NEW_SERVICE == 'true'
+      uses: actions-hub/kubectl@master
+      env:
+        KUBE_CONFIG: ${{ secrets.KUBE_CONFIG_DATA }}
+      with:
+        args: apply -f ${{ env.K8S_REDIS_DEPLOYMENT_FILE_PATH }} -n staging
+
     - name: k8s Create New Deployment
       if: env.IS_NEW_SERVICE == 'true'
       uses: actions-hub/kubectl@master
@@ -118,14 +119,6 @@ jobs:
         KUBE_CONFIG: ${{ secrets.KUBE_CONFIG_DATA }}
       with:
         args: apply -f ${{ env.K8S_DEPLOYMENT_FILE_PATH }} -n staging
-
-    - name: k8s Create New Service
-      if: env.IS_NEW_SERVICE == 'true'
-      uses: actions-hub/kubectl@master
-      env:
-        KUBE_CONFIG: ${{ secrets.KUBE_CONFIG_DATA }}
-      with:
-        args: apply -f ${{ env.K8S_SERVICE_FILE_PATH }} -n staging
 
     - name: k8s Update Existing Deployment
       if: env.IS_NEW_SERVICE == 'false'
@@ -135,15 +128,8 @@ jobs:
       with:
         args: set image -f ${{ env.K8S_DEPLOYMENT_FILE_PATH }} container=${{ env.DOCKER_REPO_NAME }}:${{ github.sha }} -n staging
 
-    - name: k8s Update Existing Service
-      if: env.IS_NEW_SERVICE == 'false'
-      uses: actions-hub/kubectl@master
-      env:
-        KUBE_CONFIG: ${{ secrets.KUBE_CONFIG_DATA }}
-      with:
-        args: apply -f ${{ env.K8S_SERVICE_FILE_PATH }} -n staging
-
     - name: k8s Update Ingress
+      if: env.IS_NEW_SERVICE == 'true'
       uses: actions-hub/kubectl@master
       env:
         KUBE_CONFIG: ${{ secrets.KUBE_CONFIG_DATA }}

@@ -17,6 +17,16 @@ spec:
       containers:
         - name: container
           image: thayalangr/obs-cron:new
-          env:
-            - name: DB
-              value: obs-db:27017
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: obs-cron
+spec:
+  type: NodePort
+  ports:
+  - port: 2000
+  selector:
+    type: backend
+    service: obs-cron

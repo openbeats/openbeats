@@ -16,4 +16,17 @@ spec:
     spec:
       containers:
         - name: container
-          image: thayalangr/obs-captainapp:70b91483fecf1e07e64d074717abebbd4bf81bd4
+          image: thayalangr/obs-captainapp:new
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: obs-captainapp
+spec:
+  type: NodePort
+  ports:
+  - port: 3000
+  selector:
+    type: frontend
+    service: obs-captainapp
