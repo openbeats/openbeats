@@ -27,10 +27,10 @@ jobs:
       uses: actions/checkout@v2
 
     - name: Change Variables for production
-      run:
-        - cat $SERVICE_PATH/config/index.js
-        - sed '1d' $CONFIG_PATH > temp.js ; mv temp.js $CONFIG_PATH ; sed -i '1iconst type = "production";' $CONFIG_PATH
-        - cat $SERVICE_PATH/config/index.js
+      run: |
+        cat $SERVICE_PATH/config/index.js
+        sed '1d' $CONFIG_PATH > temp.js ; mv temp.js $CONFIG_PATH ; sed -i '1iconst type = "production";' $CONFIG_PATH
+        cat $SERVICE_PATH/config/index.js
 
     - name: Build and push Docker Image
       uses: docker/build-push-action@v1.1.0
