@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: container
-          image: thayalangr/obs-cron:new
+          image: thayalangr/obs-cron:latest
 
 ---
 apiVersion: v1

@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: container
-          image: thayalangr/obs-auth:new
+          image: thayalangr/obs-auth:latest
 
 ---
 apiVersion: v1

@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: container
-          image: thayalangr/obs-fallback:new
+          image: thayalangr/obs-fallback:latest
 
 ---
 apiVersion: v1
