@@ -11,6 +11,7 @@ on:
 env: 
   SERVICE_PATH: services/auth
   DOCKER_REPO_NAME: thayalangr/obs-auth
+  CONFIG_PATH: services/auth/src/config/index.js
   K8S_DEPLOYMENT_NAME: obs-auth
   K8S_PRODUCTION_DEPLOYMENT_PATH: k8s/deployments/production/auth.yml
   K8S_STAGING_DEPLOYMENT_PATH: k8s/deployments/staging/auth.yml
@@ -28,7 +29,7 @@ jobs:
     - name: Change Variables for production
       run:
         - cat $SERVICE_PATH/config/index.js
-        - sed '1d' $SERVICE_PATH/config/index.js > temp.js ; mv temp.js $SERVICE_PATH/config/index.js ; sed -i '1iconst type = "production";' $SERVICE_PATH/config/index.js
+        - sed '1d' $CONFIG_PATH > temp.js ; mv temp.js $CONFIG_PATH ; sed -i '1iconst type = "production";' $CONFIG_PATH
         - cat $SERVICE_PATH/config/index.js
 
     - name: Build and push Docker Image
