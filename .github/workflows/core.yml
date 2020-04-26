@@ -112,6 +112,7 @@ jobs:
         args: rollout restart deploy ${{ env.K8S_DEPLOYMENT_NAME }} -n staging
 
     - name: k8s Check and Apply New Ingress
+      if: env.SERVICE_PATH == 'services/core'
       uses: actions-hub/kubectl@master
       env:
         KUBE_CONFIG: ${{ secrets.KUBE_CONFIG_DATA }}
