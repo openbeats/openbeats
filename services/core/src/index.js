@@ -1,19 +1,25 @@
 import middleware from "./config/middleware";
 import express from "express";
-import { ytcat, suggestbeat, copycat } from "./core";
+import {
+	ytcat,
+	suggestbeat,
+	copycat
+} from "./core";
 import ytdl from "ytdl-core";
 import fetch from "node-fetch";
 import redis from "./config/redis";
-import config from "config";
+import {
+	config
+} from "../config";
 import dbconfig from "./config/db";
 import addtorecentlyplayed from "./config/addtorecentlyplayed";
 import Song from "./models/Song";
 dbconfig();
 
 const PORT =
-	process.env.PORT || config.get("isDev")
-		? config.get("port").dev
-		: config.get("port").prod;
+	process.env.PORT || config.isDev ?
+	config.port.dev :
+	config.port.prod;
 const app = express();
 
 middleware(app);
@@ -39,7 +45,7 @@ app.get("/opencc/:id", addtorecentlyplayed, async (req, res) => {
 					});
 				} else {
 					const info = await (
-						await fetch(`${config.get("lambda")}${videoID}`)
+						await fetch(`${config.lambda}${videoID}`)
 					).json();
 					if (info.formats) {
 						setTimeout(() => {
@@ -127,7 +133,9 @@ const addSongInDeAttachedMode = async (videoId, song) => {
 			if (!song) {
 				item = (await ytcat(videoId, true))[0];
 			} else {
-				item = { ...song };
+				item = {
+					...song
+				};
 			}
 			item["_id"] = item.videoId;
 			await Song.insertMany([item], {
@@ -200,15 +208,19 @@ app.get("/getsong/:id", async (req, res) => {
 
 // get multiple songs at a time
 app.post("/getsongs", async (req, res) => {
-	const { songIds } = req.body;
+	const {
+		songIds
+	} = req.body;
 	try {
 		const songsPromise = [];
 		for (let id of songIds) {
 			songsPromise.push(Song.findById(id));
 		}
 		const songs = await Promise.all(songsPromise)
-		.then(songsArr => songsArr)
-		.catch(err => {throw new Error(err.toString())});
+			.then(songsArr => songsArr)
+			.catch(err => {
+				throw new Error(err.toString())
+			});
 		res.send({
 			status: true,
 			data: songs,

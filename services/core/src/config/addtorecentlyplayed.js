@@ -1,5 +1,7 @@
 import jwt from "jsonwebtoken";
-import config from "config";
+import {
+	config
+} from "../../config";
 import fetch from "node-fetch";
 
 export default async (req, res, next) => {
@@ -8,14 +10,14 @@ export default async (req, res, next) => {
 	const info = req.query.info;
 	try {
 		if (token) {
-			const decoded = jwt.verify(token, config.get("jwtSecret"));
+			const decoded = jwt.verify(token, config.jwtSecret);
 			const userId = decoded.user.id;
 			const videoId = req.params.id;
 			let baseUrl;
-			if (config.get("isDev")) {
-				baseUrl = config.get("authbaseurl").dev;
+			if (config.isDev) {
+				baseUrl = config.authbaseurl.dev;
 			} else {
-				baseUrl = config.get("authbaseurl").prod;
+				baseUrl = config.authbaseurl.prod;
 			}
 			const body = {
 				userId,

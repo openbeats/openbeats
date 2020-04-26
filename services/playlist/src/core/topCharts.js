@@ -4,7 +4,9 @@ import {
 import TopChart from "../models/TopChart";
 import MissedFetch from "../models/MissedFetch";
 import fetchRetry from "./refetch";
-import config from "config";
+import {
+	config
+} from "../../config";
 
 export const fetchTopCharts = async () => {
 	try {
@@ -73,12 +75,12 @@ export const englishTopCharts = async () => {
 			engChart.updatedAt = Date.now();
 			await engChart.save();
 		}
-		const url = `http://ws.audioscrobbler.com/2.0/?method=chart.gettoptracks&api_key=${config.get("lastFmAPIKey")}&format=json&perPage=20&limit=30`;
+		const url = `http://ws.audioscrobbler.com/2.0/?method=chart.gettoptracks&api_key=${config.lastFmAPIKey}&format=json&perPage=20&limit=30`;
 		const engTop = await (await fetchRetry(`${url}`, 2)).json();
 		const trackArray = engTop.tracks.track;
-		const baseurl = config.get("isDev") ?
-			config.get("baseurl").dev :
-			config.get("baseurl").prod;
+		const baseurl = config.isDev ?
+			config.baseurl.dev :
+			config.baseurl.prod;
 		let rank = 1;
 		const fetchList = [];
 		for (let track of trackArray) {
