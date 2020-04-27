@@ -80,9 +80,8 @@
 	top: 4px;
 }
 .crown-select {
-	color: gold;
-	text-shadow: 0 0 3px gold;
-	opacity: 0.6;
+	color: var(--base-color);
+	text-shadow: 0 0 3px 0 gray;
 }
 
 .tag-suggestion-string-holder {
