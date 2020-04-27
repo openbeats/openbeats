@@ -84,8 +84,8 @@ class AlbumsDash extends Component {
 					this.state.artistChips.length === 1
 						? []
 						: this.state.artistChips.filter(
-								(artistId) => artistId !== this.state.albumBy,
-						  ),
+							(artistId) => artistId !== this.state.albumBy,
+						),
 				albumBy:
 					this.state.artistChips.length === 1
 						? this.state.artistChips[0]
@@ -268,10 +268,8 @@ class AlbumsDash extends Component {
 					<div className="albumdash-container-right-pan">
 						<div className="albumdash-search-holder">
 							<SongSearcher
-								searchStringSuggestionFetchUrl={
-									"https://api.openbeats.live/suggester?k="
-								}
-								songSuggestionFetchUrl={"https://api.openbeats.live/ytcat?q="}
+								searchStringSuggestionFetchUrl={`${variables.baseUrl}/suggester?k=`}
+								songSuggestionFetchUrl={`${variables.baseUrl}/ytcat?q=`}
 								addSongsToTheBucketCallBack={this.addSongsToTheBucketCallBack}
 								songTrialTrigger={this.songTrialTrigger}
 							/>
