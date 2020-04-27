@@ -81,11 +81,15 @@ class AlbumsDash extends Component {
 				userId: this.props.adminId,
 				searchTags: this.state.searchChips,
 				featuringArtists:
-					this.state.artistChips.length === 1 ? [] : this.state.artistChips,
+					this.state.artistChips.length === 1
+						? []
+						: this.state.artistChips.filter(
+								(artistId) => artistId !== this.state.albumBy,
+						  ),
 				albumBy:
 					this.state.artistChips.length === 1
 						? this.state.artistChips[0]
-						: null,
+						: this.state.albumBy,
 				songs: this.state.songsCollection,
 			};
 			if (!this.state.isUpdate) {
