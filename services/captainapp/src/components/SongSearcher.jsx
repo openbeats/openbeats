@@ -28,7 +28,7 @@ export default class SongSearcher extends Component {
 			let suggestionData = (
 				await axios.get(
 					this.state.searchStringSuggestionFetchUrl +
-						this.state.suggestionString,
+						this.state.suggestionString
 				)
 			).data;
 			this.setState({
@@ -52,11 +52,10 @@ export default class SongSearcher extends Component {
 				this.state.suggestionCurrentIndex
 			][0],
 		});
-		console.log(this.state.suggestionString);
 		if (this.state.songSuggestionFetchUrl) {
 			let suggestionData = (
 				await axios.get(
-					this.state.songSuggestionFetchUrl + this.state.suggestionString,
+					this.state.songSuggestionFetchUrl + this.state.suggestionString
 				)
 			).data;
 			this.setState({
