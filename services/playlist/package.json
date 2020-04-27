@@ -15,6 +15,7 @@
     "nodemon": "^2.0.2"
   },
   "dependencies": {
+    "aws-sdk": "^2.663.0",
     "axios": "^0.19.2",
     "babel-polyfill": "^6.26.0",
     "babel-preset-env": "^1.7.0",
