@@ -7,8 +7,6 @@ import { toast } from "react-toastify";
 class ChipsInput extends Component {
 	constructor(props) {
 		super(props);
-		console.log(this.props);
-
 		this.state = {
 			chipSuggestion: [],
 			suggestionString: "",
@@ -33,7 +31,7 @@ class ChipsInput extends Component {
 					setChips = intersectionBy(
 						chipsFromServer.data,
 						this.props.chipCollection,
-						"_id",
+						"_id"
 					);
 					setChips = differenceBy(chipsFromServer.data, setChips, "_id");
 					this.setState({ chipSuggestion: [...setChips] });
@@ -43,7 +41,6 @@ class ChipsInput extends Component {
 				document.addEventListener("click", this.clearSuggestionInputListener);
 				document.addEventListener("keyup", this.clearSuggestionInputListener);
 			} else {
-				console.error(chipsFromServer);
 				toast.error(chipsFromServer.data.toString());
 			}
 		} else {
@@ -117,7 +114,7 @@ class ChipsInput extends Component {
 		document.removeEventListener("click", this.clearSuggestionInputListener);
 		document.removeEventListener("keyup", this.clearSuggestionInputListener);
 		const newChipData = await this.props.createNewChipCallback(
-			this.state.suggestionString,
+			this.state.suggestionString
 		);
 		if (newChipData.status) {
 			await this.setState({ chipSuggestion: [newChipData.data] });
@@ -158,7 +155,7 @@ class ChipsInput extends Component {
 									<i className="fas fa-times text-white"></i>
 								</div>
 							</div>
-						),
+						)
 					)}
 				</div>
 				<div className="tag-input-container">
