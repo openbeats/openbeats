@@ -8,8 +8,7 @@ export default class SongSearcher extends Component {
 		this.state = {
 			suggestionStringArray: [],
 			suggestionString: "",
-			searchStringSuggestionFetchUrl:
-				this.props.searchStringSuggestionFetchUrl || null,
+			searchStringSuggestionFetchUrl: this.props.searchStringSuggestionFetchUrl || null,
 			songSuggestionFetchUrl: this.props.songSuggestionFetchUrl || null,
 			songsCollection: [],
 			suggestionCurrentIndex: 0,
@@ -19,39 +18,29 @@ export default class SongSearcher extends Component {
 	}
 
 	fetchSearchStringSuggestion = async () => {
-		if (
-			this.state.searchStringSuggestionFetchUrl &&
-			this.state.suggestionString.length
-		) {
-			document.removeEventListener("click", this.clearSuggestionInputListener);
-			document.removeEventListener("keyup", this.clearSuggestionInputListener);
-			let suggestionData = (
-				await axios.get(
-					this.state.searchStringSuggestionFetchUrl +
-						this.state.suggestionString
-				)
-			).data;
-			this.setState({
-				suggestionStringArray: [
-					this.state.suggestionString,
-					...suggestionData.data.slice(0, 5),
-				],
-				suggestionCurrentIndex: 0,
-			});
-			document.addEventListener("click", this.clearSuggestionInputListener);
-			document.addEventListener("keyup", this.clearSuggestionInputListener);
-		}
+		document.removeEventListener("click", this.clearSuggestionInputListener);
+		document.removeEventListener("keyup", this.clearSuggestionInputListener);
+		let suggestionData = (
+			await axios.get(
+				this.state.searchStringSuggestionFetchUrl +
+				this.state.suggestionString
+			)
+		).data;
+
+		this.setState({
+			suggestionStringArray: [
+				[this.state.suggestionString],
+				...suggestionData.data.slice(0, 5),
+			],
+			suggestionCurrentIndex: 0,
+		});
+		document.addEventListener("click", this.clearSuggestionInputListener);
+		document.addEventListener("keyup", this.clearSuggestionInputListener);
 	};
 
 	fetchSongSuggestion = async () => {
 		document.removeEventListener("click", this.clearSuggestionInputListener);
 		document.removeEventListener("keyup", this.clearSuggestionInputListener);
-
-		await this.setState({
-			suggestionString: this.state.suggestionStringArray[
-				this.state.suggestionCurrentIndex
-			][0],
-		});
 		if (this.state.songSuggestionFetchUrl) {
 			let suggestionData = (
 				await axios.get(
@@ -60,7 +49,7 @@ export default class SongSearcher extends Component {
 			).data;
 			this.setState({
 				songsCollection: suggestionData.data,
-				suggestionStringArray: [],
+				suggestionStringArray: []
 			});
 		}
 	};
@@ -74,10 +63,7 @@ export default class SongSearcher extends Component {
 	};
 
 	clearSuggestionInputListener = (event) => {
-		if (
-			event.keyCode === 27 ||
-			!this.suggestionBlockRef.contains(event.target)
-		) {
+		if (event.keyCode === 27 || !this.suggestionBlockRef.contains(event.target)) {
 			this.setState({
 				suggestionStringArray: [],
 				suggestionString: "",
@@ -86,24 +72,19 @@ export default class SongSearcher extends Component {
 			document.removeEventListener("click", this.clearSuggestionInputListener);
 			document.removeEventListener("keyup", this.clearSuggestionInputListener);
 		} else if (event.keyCode === 40) {
+			const currentIndex = this.state.suggestionCurrentIndex + 1 < this.state.suggestionStringArray.length ? this.state.suggestionCurrentIndex + 1 : 0;
 			this.setState({
-				suggestionCurrentIndex:
-					this.state.suggestionCurrentIndex + 1 <
-					this.state.suggestionStringArray.length
-						? this.state.suggestionCurrentIndex + 1
-						: 0,
+				suggestionCurrentIndex: currentIndex,
+				suggestionString: this.state.suggestionStringArray[currentIndex][0],
 			});
+
 		} else if (event.keyCode === 38) {
+			const currentIndex = this.state.suggestionCurrentIndex - 1 >= 0 ? this.state.suggestionCurrentIndex - 1 : this.state.suggestionStringArray.length - 1;
 			this.setState({
-				suggestionCurrentIndex:
-					this.state.suggestionCurrentIndex - 1 >= 0
-						? this.state.suggestionCurrentIndex - 1
-						: this.state.suggestionStringArray.length - 1,
+				suggestionCurrentIndex: currentIndex,
+				suggestionString: this.state.suggestionStringArray[currentIndex][0],
 			});
-		} else if (
-			event.keyCode === 13 &&
-			this.state.suggestionStringArray.length
-		) {
+		} else if (event.keyCode === 13 && this.state.suggestionStringArray.length) {
 			this.fetchSongSuggestion();
 		}
 	};
@@ -143,9 +124,9 @@ export default class SongSearcher extends Component {
 												this.state.suggestionCurrentIndex === key
 													? "bg-dark text-white"
 													: ""
-											}`}
+												}`}
 											onClick={async () => {
-												await this.setState({ suggestionCurrentIndex: key });
+												await this.setState({ suggestionCurrentIndex: key, suggestionString: this.state.suggestionStringArray[key][0] });
 												this.fetchSongSuggestion();
 											}}
 											key={key}>
