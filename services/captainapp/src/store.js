@@ -1,5 +1,11 @@
-import { createBrowserHistory } from "history";
-import { combineReducers, applyMiddleware, createStore } from "redux";
+import {
+	createBrowserHistory
+} from "history";
+import {
+	combineReducers,
+	applyMiddleware,
+	createStore
+} from "redux";
 import {
 	connectRouter,
 	routerMiddleware,
@@ -8,19 +14,25 @@ import {
 import thunk from "redux-thunk";
 import logger from "redux-logger";
 import * as reducers from "./reducers";
+import {
+	isDev
+} from "./config";
 
 const history = createBrowserHistory();
+let middleWares = [];
+if (isDev) middleWares = [routerMiddleware(history), thunk, logger]
+else middleWares = [routerMiddleware(history), thunk]
+
 const store = createStore(
 	combineReducers({
 		router: connectRouter(history),
 		...reducers,
-	}),
-	{},
-	applyMiddleware(
-		routerMiddleware(history),
-		thunk
-		//logger,
-	)
+	}), {},
+	applyMiddleware(...middleWares)
 );
 
-export { store, history, ConnectedRouter };
+export {
+	store,
+	history,
+	ConnectedRouter
+};

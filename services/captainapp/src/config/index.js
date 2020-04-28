@@ -6,6 +6,8 @@ if (type === 'production')
 const variables = {
     baseUrl: baseURL
 }
+const isDev = type === 'development' ? true : false;
 export {
-    variables
+    variables,
+    isDev
 }
