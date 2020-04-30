@@ -4,8 +4,8 @@ import dbconfig from "./config/db";
 import userPlaylistRoutes from "./routes/userPlaylist";
 import topcharts from "./routes/topcharts";
 import album from "./routes/album";
-import searchtag from "./routes/searchtag"
-import artist from "./routes/artist"
+import artist from "./routes/artist";
+import searchtag from "./routes/searchtag";
 
 dbconfig();
 
@@ -18,8 +18,8 @@ middleware(app);
 app.use("/album", album);
 app.use("/userplaylist", userPlaylistRoutes);
 app.use("/topcharts", topcharts);
-app.use("/searchtag", searchtag);
 app.use("/artist", artist);
+app.use("/searchtag", searchtag);
 
 app.listen(PORT, () => {
 	console.log(`openbeats playlist service up and running on ${PORT}!`);

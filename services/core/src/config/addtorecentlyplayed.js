@@ -1,7 +1,5 @@
 import jwt from "jsonwebtoken";
-import {
-	config
-} from "../config";
+import { config } from "../config";
 import fetch from "node-fetch";
 
 export default async (req, res, next) => {
@@ -15,9 +13,9 @@ export default async (req, res, next) => {
 			const videoId = req.params.id;
 			let baseUrl;
 			if (config.isDev) {
-				baseUrl = config.authbaseurl.dev;
+				baseUrl = config.authBaseUrl.dev;
 			} else {
-				baseUrl = config.authbaseurl.prod;
+				baseUrl = config.authBaseUrl.prod;
 			}
 			const body = {
 				userId,
