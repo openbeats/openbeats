@@ -3,7 +3,8 @@ import Album from "../models/Album";
 import { Router } from "express";
 import { check, oneOf, validationResult } from "express-validator";
 import paginationMiddleware from "../config/paginationMiddleware";
-import saveAsserts from "../core/saveAsserts";
+import { saveAsserts, deleteAssert } from "../core/digitalOceanSpaces";
+import { canDeleteArtist, canUpdateArtist } from "../permissions/artist";
 
 const router = Router();
 
@@ -34,51 +35,71 @@ router.post("/create", async (req, res) => {
 });
 
 //Get artist by Id or startsWith
-router.get(
-	"/fetch",
-	oneOf([check("tagId").exists(), check("startsWith").exists()]),
-	async (req, res) => {
-		try {
-			const errors = validationResult(req);
-			if (!errors.isEmpty()) {
-				return res.json({
-					status: false,
-					data: "Please provide either artistId or startsWith as query params.",
-				});
-			}
-			const { tagId, startsWith } = req.query;
-
-			if (tagId) {
-				const artist = await Artist.findById(tagId);
-				return res.send({
-					status: true,
-					data: artist,
-				});
-			} else if (startsWith) {
-				const artists = await Artist.find({
-					name: {
-						$regex: `^${startsWith}`,
-						$options: "i",
-					},
-				}).limit(10);
-				return res.send({
-					status: true,
-					data: artists,
-				});
-			}
-			return res.send({
+router.get("/fetch", oneOf([check("tagId").exists(), check("query").exists()]), async (req, res) => {
+	try {
+		const errors = validationResult(req);
+		if (!errors.isEmpty()) {
+			return res.json({
 				status: false,
-				data: [],
-			});
-		} catch (error) {
-			console.log(error.message);
-			res.send({
-				status: false,
-				data: error.message,
+				data: "Please provide either artistId or query as query params.",
 			});
 		}
+		const { tagId, query } = req.query;
+
+		if (tagId) {
+			const artist = await Artist.findById(tagId);
+			return res.send({
+				status: true,
+				data: artist,
+			});
+		} else if (query) {
+			const artists = await Artist.find(
+				{
+					$text: {
+						$search: `${query}`,
+						$caseSensitive: false,
+					},
+				},
+				{
+					score: {
+						$meta: "textScore",
+					},
+				}
+			).sort({ score: { $meta: "textScore" } });
+			return res.send({
+				status: true,
+				data: artists,
+			});
+		}
+		return res.send({
+			status: false,
+			data: [],
+		});
+	} catch (error) {
+		console.log(error.message);
+		res.send({
+			status: false,
+			data: error.message,
+		});
 	}
-);
+});
+
+router.get("/suggest", async (req, res) => {
+	try {
+		const { query } = req.query;
+		const artists = await Artist.find({ name: { $regex: `${query}`, $options: `i` } }).limit(5);
+		return res.send({
+			status: true,
+			data: artists,
+		});
+	} catch (error) {
+		console.log(error.message);
+		res.send({
+			status: false,
+			data: error.message,
+		});
+	}
+});
 
 //Get all artist (page and limit query param is required)
 router.get("/all", paginationMiddleware(Artist), async (req, res) => {
@@ -98,24 +119,21 @@ router.get("/all", paginationMiddleware(Artist), async (req, res) => {
 });
 
 //update artist
-router.put("/:id", async (req, res) => {
+router.put("/:id", canUpdateArtist, async (req, res) => {
 	try {
-		const artist = await Artist.findById(req.params.id);
-		if (!artist) {
-			throw new Error("No artist found with given Id.");
-		}
 		const { name, thumbnail } = req.body;
 		if (!name) {
 			throw new Error("Name is required.");
 		}
-		artist.name = name;
+		req.artist.name = name;
 		if (thumbnail) {
-			artist.thumbnail = thumbnail;
+			req.artist.thumbnail = thumbnail;
+			saveAsserts("artists", req.artist._id, thumbnail, Artist, "thumbnail");
 		}
-		await artist.save();
+		await req.artist.save();
 		return res.send({
 			status: true,
-			data: artist,
+			data: req.artist,
 		});
 	} catch (error) {
 		console.log(error.message);
@@ -127,9 +145,11 @@ router.put("/:id", async (req, res) => {
 });
 
 //delete artist
-router.delete("/:id", async (req, res) => {
+router.delete("/:id", canDeleteArtist, async (req, res) => {
 	try {
-		await Artist.findByIdAndDelete(req.params.id);
+		const artist = await Artist.findById(req.params.id);
+		deleteAssert(artist.thumbnail);
+		Artist.deleteOne({ _id: req.params.id });
 		res.send({
 			status: true,
 			data: "Artist got deleted successfully.",

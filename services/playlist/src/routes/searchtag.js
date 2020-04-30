@@ -1,12 +1,6 @@
 import SearchTag from "../models/SearchTag";
-import {
-	Router
-} from "express";
-import {
-	check,
-	oneOf,
-	validationResult
-} from "express-validator";
+import { Router } from "express";
+import { check, oneOf, validationResult } from "express-validator";
 import paginationMiddleware from "../config/paginationMiddleware";
 
 const router = Router();
@@ -14,9 +8,7 @@ const router = Router();
 //Search Creation
 router.post("/create", async (req, res) => {
 	try {
-		let {
-			searchVal
-		} = req.body;
+		let { searchVal } = req.body;
 		searchVal = searchVal.toLowerCase();
 		const searchtag = new SearchTag({
 			searchVal,
@@ -35,58 +27,49 @@ router.post("/create", async (req, res) => {
 	}
 });
 
-
 //Fetch search tag by Id or startsWith
-router.get(
-	"/fetch",
-	oneOf([check("tagId").exists(), check("startsWith").exists()]),
-	async (req, res) => {
-		try {
-			const errors = validationResult(req);
-			if (!errors.isEmpty()) {
-				return res.json({
-					status: false,
-					data: "Please provide either tagId or startsWith as query params.",
-				});
-			}
-			const {
-				tagId,
-				startsWith
-			} = req.query;
-			if (tagId) {
-				const searchTag = await SearchTag.findById(tagId);
-				if (!searchTag)
-					throw new Error("Search tag not found.");
-				return res.send({
-					status: true,
-					data: searchTag,
-				});
-			}
-			if (startsWith) {
-				const searchTags = await SearchTag.find({
-					searchVal: {
-						$regex: `^${startsWith}`,
-						$options: "i",
-					},
-				}).limit(10);
-				return res.send({
-					status: true,
-					data: searchTags,
-				});
-			}
-			return res.send({
+router.get("/fetch", oneOf([check("tagId").exists(), check("startsWith").exists()]), async (req, res) => {
+	try {
+		const errors = validationResult(req);
+		if (!errors.isEmpty()) {
+			return res.json({
 				status: false,
-				data: [],
-			});
-		} catch (error) {
-			console.log(error.message);
-			res.send({
-				status: false,
-				data: error.message,
+				data: "Please provide either tagId or startsWith as query params.",
 			});
 		}
-	},
-);
+		const { tagId, startsWith } = req.query;
+		if (tagId) {
+			const searchTag = await SearchTag.findById(tagId);
+			if (!searchTag) throw new Error("Search tag not found.");
+			return res.send({
+				status: true,
+				data: searchTag,
+			});
+		}
+		if (startsWith) {
+			const searchTags = await SearchTag.find({
+				searchVal: {
+					$regex: `^${startsWith}`,
+					$options: "i",
+				},
+			}).limit(10);
+			return res.send({
+				status: true,
+				data: searchTags,
+			});
+		}
+		return res.send({
+			status: false,
+			data: [],
+		});
+	} catch (error) {
+		console.log(error.message);
+		res.send({
+			status: false,
+			data: error.message,
+		});
+	}
+});
 
 //Get all searchTag Tag(page and limit required)
 router.get("/all", paginationMiddleware(SearchTag), async (req, res) => {
@@ -114,9 +97,7 @@ router.get("/all", paginationMiddleware(SearchTag), async (req, res) => {
 //updates searchTag
 router.put("/:id", async (req, res) => {
 	try {
-		const {
-			searchVal
-		} = req.body;
+		const { searchVal } = req.body;
 		const searchTag = await SearchTag.findById(req.params.id);
 		if (!searchVal) {
 			throw new Error("searchVal is required.");
