@@ -1,7 +1,5 @@
 import jwt from "jsonwebtoken";
-import {
-	config
-} from "../config"
+import { config } from "../config";
 export default (req, res, next) => {
 	//Get token from header
 	const token = req.header("x-auth-token");
@@ -9,7 +7,7 @@ export default (req, res, next) => {
 	if (!token) {
 		return res.json({
 			status: false,
-			data: "No token, authorization denied"
+			data: "No token, authorization denied",
 		});
 	}
 
@@ -20,7 +18,7 @@ export default (req, res, next) => {
 	} catch (error) {
 		res.json({
 			status: false,
-			data: "Token is not valid"
+			data: "Token is not valid",
 		});
 	}
 };

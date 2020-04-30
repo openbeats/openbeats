@@ -1,25 +1,16 @@
 import middleware from "./config/middleware";
 import express from "express";
-import {
-	ytcat,
-	suggestbeat,
-	copycat
-} from "./core";
+import { ytcat, suggestbeat, copycat } from "./core";
 import ytdl from "ytdl-core";
 import fetch from "node-fetch";
 import redis from "./config/redis";
-import {
-	config
-} from "./config";
+import { config } from "./config";
 import dbconfig from "./config/db";
 import addtorecentlyplayed from "./config/addtorecentlyplayed";
 import Song from "./models/Song";
 dbconfig();
 
-const PORT =
-	process.env.PORT || config.isDev ?
-	config.port.dev :
-	config.port.prod;
+const PORT = process.env.PORT || config.isDev ? config.port.dev : config.port.prod;
 const app = express();
 
 middleware(app);
@@ -44,9 +35,7 @@ app.get("/opencc/:id", addtorecentlyplayed, async (req, res) => {
 						link: sourceUrl,
 					});
 				} else {
-					const info = await (
-						await fetch(`${config.lambda}${videoID}`)
-					).json();
+					const info = await (await fetch(`${config.lambda}${videoID}`)).json();
 					if (info.formats) {
 						setTimeout(() => {
 							addSongInDeAttachedMode(videoID, req.song);
@@ -101,6 +90,22 @@ app.get("/ytcat", async (req, res) => {
 	try {
 		if (!req.query.q) throw new Error("Missing required query param q.");
 		const fr = (req.query.fr && true) || false;
+		if (req.query.advanced === "true") {
+			let baseUrl = config.playlistBaseUrl.prod;
+			if (config.isDev) {
+				baseUrl = config.playlistBaseUrl.dev;
+			}
+			const data = {};
+			const albums = await (await fetch(baseUrl + `/album/findbytag?query=${req.query.q}`)).json();
+			data.albums = albums["data"];
+			const artists = await (await fetch(baseUrl + `/artist/fetch?query=${req.query.q}`)).json();
+			data.artists = artists["data"];
+			data.songs = await ytcat(req.query.q, fr);
+			return res.send({
+				status: true,
+				data,
+			});
+		}
 		res.send({
 			status: true,
 			data: await ytcat(req.query.q, fr),
@@ -134,7 +139,7 @@ const addSongInDeAttachedMode = async (videoId, song) => {
 				item = (await ytcat(videoId, true))[0];
 			} else {
 				item = {
-					...song
+					...song,
 				};
 			}
 			item["_id"] = item.videoId;
@@ -208,9 +213,7 @@ app.get("/getsong/:id", async (req, res) => {
 
 // get multiple songs at a time
 app.post("/getsongs", async (req, res) => {
-	const {
-		songIds
-	} = req.body;
+	const { songIds } = req.body;
 	try {
 		const songsPromise = [];
 		for (let id of songIds) {
@@ -219,7 +222,7 @@ app.post("/getsongs", async (req, res) => {
 		const songs = await Promise.all(songsPromise)
 			.then(songsArr => songsArr)
 			.catch(err => {
-				throw new Error(err.toString())
+				throw new Error(err.toString());
 			});
 		res.send({
 			status: true,
