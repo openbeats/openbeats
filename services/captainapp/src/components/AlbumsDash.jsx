@@ -2,11 +2,7 @@ import React, { Component } from "react";
 import "../assets/styles/albumsdash.css";
 import { ChipsInput, SongSearcher, SongsBucket } from ".";
 import { connect } from "react-redux";
-import {
-	addArtistActions,
-	addSearchTagActions,
-	hangingPlayerActions,
-} from "../actions";
+import { addArtistActions, addSearchTagActions, hangingPlayerActions } from "../actions";
 import { store } from "../store";
 import { push } from "connected-react-router";
 import { variables } from "../config";
@@ -35,9 +31,7 @@ class AlbumsDash extends Component {
 		const parsed = queryString.parse(window.location.search);
 		if (parsed.editalbum !== undefined) {
 			const albumData = (
-				await axios.get(
-					`${variables.baseUrl}/playlist/album/${parsed.editalbum}?edit=true`,
-				)
+				await axios.get(`${variables.baseUrl}/playlist/album/${parsed.editalbum}?edit=true`)
 			).data;
 			if (albumData.status) {
 				let prepareData = {
@@ -47,18 +41,15 @@ class AlbumsDash extends Component {
 					albumName: albumData.data.name,
 					artistChipsCollection: albumData.data.featuringArtists,
 					searchChipsCollection: albumData.data.searchTags,
-					artistChips: albumData.data.featuringArtists.map((item) => item._id),
-					searchChips: albumData.data.searchTags.map((item) => item._id),
+					artistChips: albumData.data.featuringArtists.map(item => item._id),
+					searchChips: albumData.data.searchTags.map(item => item._id),
 				};
 				if (albumData.data.albumBy !== null) {
 					prepareData.artistChipsCollection = [
 						...prepareData.artistChipsCollection,
 						albumData.data.albumBy,
 					];
-					prepareData.artistChips = [
-						...prepareData.artistChips,
-						albumData.data.albumBy._id,
-					];
+					prepareData.artistChips = [...prepareData.artistChips, albumData.data.albumBy._id];
 					prepareData.albumBy = albumData.data.albumBy._id;
 				}
 				this.setState({ ...prepareData });
@@ -83,21 +74,14 @@ class AlbumsDash extends Component {
 				featuringArtists:
 					this.state.artistChips.length === 1
 						? []
-						: this.state.artistChips.filter(
-							(artistId) => artistId !== this.state.albumBy,
-						),
+						: this.state.artistChips.filter(artistId => artistId !== this.state.albumBy),
 				albumBy:
-					this.state.artistChips.length === 1
-						? this.state.artistChips[0]
-						: this.state.albumBy,
+					this.state.artistChips.length === 1 ? this.state.artistChips[0] : this.state.albumBy,
 				songs: this.state.songsCollection,
 			};
 			if (!this.state.isUpdate) {
 				const resultData = (
-					await axios.post(
-						`${variables.baseUrl}/playlist/album/create`,
-						preparedData,
-					)
+					await axios.post(`${variables.baseUrl}/playlist/album/create`, preparedData)
 				).data;
 				if (resultData.status) {
 					toast.success("Album Created Successfully");
@@ -109,7 +93,7 @@ class AlbumsDash extends Component {
 				const resultData = (
 					await axios.put(
 						`${variables.baseUrl}/playlist/album/${this.state.updateAlbumId}`,
-						preparedData,
+						preparedData
 					)
 				).data;
 				if (resultData.status) {
@@ -120,37 +104,33 @@ class AlbumsDash extends Component {
 				}
 			}
 		} else {
-			this.state.albumName.length === 0 &&
-				toast.error("Album Name is Missing!");
-			this.state.songsCollection.length === 0 &&
-				toast.error("Songs Bucket is Empty!");
-			this.state.artistChips.length === 0 &&
-				toast.error("Artist Tags is Empty!");
-			this.state.searchChips.length === 0 &&
-				toast.error("Search Tags is Empty!");
+			this.state.albumName.length === 0 && toast.error("Album Name is Missing!");
+			this.state.songsCollection.length === 0 && toast.error("Songs Bucket is Empty!");
+			this.state.artistChips.length === 0 && toast.error("Artist Tags is Empty!");
+			this.state.searchChips.length === 0 && toast.error("Search Tags is Empty!");
 		}
 	};
 
-	setArtistChips = (chips) => {
-		const chipsId = chips.map((item) => item._id);
+	setArtistChips = chips => {
+		const chipsId = chips.map(item => item._id);
 		this.setState({ artistChipsCollection: chips, artistChips: chipsId });
 	};
 
-	setAlbumBy = (artistId) => {
+	setAlbumBy = artistId => {
 		this.setState({ albumBy: artistId });
 	};
 
-	setSearchChips = (chips) => {
-		const chipsId = chips.map((item) => item._id);
+	setSearchChips = chips => {
+		const chipsId = chips.map(item => item._id);
 		this.setState({ searchChipsCollection: chips, searchChips: chipsId });
 	};
 
-	createNewArtist = async (artistStringName) => {
+	createNewArtist = async artistStringName => {
 		const data = await this.props.toggleAddArtistDialog(artistStringName);
 		return data;
 	};
 
-	createNewSearchTag = async (searchString) => {
+	createNewSearchTag = async searchString => {
 		const data = await this.props.addSearchTagHandler(searchString);
 		return data;
 	};
@@ -159,7 +139,7 @@ class AlbumsDash extends Component {
 		this.props.pushPath("/albums");
 	};
 
-	removeSongFromBucketCallBack = (index) => {
+	removeSongFromBucketCallBack = index => {
 		let editSongsCollection = this.state.songsCollection;
 		editSongsCollection.splice(index, 1);
 		this.setState({ songsCollection: editSongsCollection });
@@ -169,13 +149,13 @@ class AlbumsDash extends Component {
 		this.setState({ songsCollection: [] });
 	};
 
-	addSongsToTheBucketCallBack = (song) => {
+	addSongsToTheBucketCallBack = song => {
 		if (findIndex(this.state.songsCollection, song) === -1)
 			this.setState({ songsCollection: [...this.state.songsCollection, song] });
 		else toast.error("Song is Already in the bucket!");
 	};
 
-	arrangeSongsCallBack = (songs) => {
+	arrangeSongsCallBack = songs => {
 		this.setState({ songsCollection: songs });
 	};
 
@@ -183,7 +163,7 @@ class AlbumsDash extends Component {
 		this.setState({ albumName: "", artistChips: [], searchChips: [] });
 	}
 
-	songTrialTrigger = async (song) => {
+	songTrialTrigger = async song => {
 		await this.props.setHangingPlayerSongData(song);
 		await this.props.initHangingPlayer();
 		await this.props.toggleHangingPlayer(true);
@@ -194,8 +174,7 @@ class AlbumsDash extends Component {
 			<div className="albumsdash-wrapper">
 				<div className="albumsdash-header">
 					<div className="albumsdash-indicator d-flex align-items-center font-weight-bold base-color h5-responsive">
-						<i className="fas fa-angle-right mr-1 right-angel"></i>Albums Dash
-						Yard
+						<i className="fas fa-angle-right mr-1 right-angel"></i>Albums Dash Yard
 					</div>
 					<div className="d-flex">
 						<div
@@ -221,7 +200,7 @@ class AlbumsDash extends Component {
 								<input
 									className="rounded w-100"
 									value={this.state.albumName}
-									onChange={(e) => this.setState({ albumName: e.target.value })}
+									onChange={e => this.setState({ albumName: e.target.value })}
 									placeholder="This is Yuvan Shankar Raja"
 									type="text"
 								/>
@@ -231,15 +210,15 @@ class AlbumsDash extends Component {
 									Artist Tags<span className="text-danger">*</span>
 								</div>
 								<div className="artist-tags-title-desc">
-									(Please add only one artist, if you want this album to comes
-									under specific Artist)
+									(Please add only one artist, if you want this album to comes under specific
+									Artist)
 								</div>
 								<ChipsInput
 									chipTitle={"Artist"}
 									albumBy={this.state.albumBy}
 									setAlbumBy={this.setAlbumBy}
 									setChipsCallback={this.setArtistChips}
-									suggestionFetchUrl={`${variables.baseUrl}/playlist/artist/fetch?startsWith=`}
+									suggestionFetchUrl={`${variables.baseUrl}/playlist/artist/fetch?query=`}
 									suggestionNameField={"name"}
 									createNewChipCallback={this.createNewArtist}
 									placeholder={"Search Artist Here..."}
@@ -256,7 +235,7 @@ class AlbumsDash extends Component {
 								<ChipsInput
 									chipTitle={"Search Tag"}
 									setChipsCallback={this.setSearchChips}
-									suggestionFetchUrl={`${variables.baseUrl}/playlist/searchtag/fetch?startsWith=`}
+									suggestionFetchUrl={`${variables.baseUrl}/playlist/searchtag/fetch?query=`}
 									suggestionNameField={"searchVal"}
 									createNewChipCallback={this.createNewSearchTag}
 									placeholder={"Search Search Tags Here..."}
@@ -290,27 +269,27 @@ class AlbumsDash extends Component {
 	}
 }
 
-const mapStateToProps = (state) => {
+const mapStateToProps = state => {
 	return {
 		adminId: state.auth.adminDetails.id,
 	};
 };
 
-const mapDispatchToProps = (dispatch) => {
+const mapDispatchToProps = dispatch => {
 	return {
-		pushPath: (path) => {
+		pushPath: path => {
 			store.dispatch(push(path));
 		},
-		toggleAddArtistDialog: (artistName) => {
+		toggleAddArtistDialog: artistName => {
 			return addArtistActions.toggleAddArtistDialog(true, artistName);
 		},
-		addSearchTagHandler: (searchVal) => {
+		addSearchTagHandler: searchVal => {
 			return addSearchTagActions.addSearchTagHandler(searchVal);
 		},
-		setHangingPlayerSongData: async (songData) => {
+		setHangingPlayerSongData: async songData => {
 			return await hangingPlayerActions.setHangingPlayerSongData(songData);
 		},
-		toggleHangingPlayer: (bool) => {
+		toggleHangingPlayer: bool => {
 			return hangingPlayerActions.toggleHangingplayer(bool);
 		},
 		initHangingPlayer: async () => {
