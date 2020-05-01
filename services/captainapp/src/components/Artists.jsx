@@ -124,7 +124,8 @@ class Artists extends Component {
 											className="album-btn-rounded album-view-button cursor-pointer"
 											title={`View on ${variables.clientUrl}`}
 											href={`${variables.clientUrl}/artists/${item._id}`}
-											target="_blank">
+											target="_blank"
+											rel="noopener noreferrer">
 											<i className="fas fa-eye"></i>
 										</a>
 									)}
