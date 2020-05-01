@@ -5,7 +5,7 @@ import { config } from "../config";
 import axios from "axios";
 import { Error } from "mongoose";
 import paginationMiddleware from "../config/paginationMiddleware";
-import { scopedAlbums, canUpdateOrDeleteAlbum } from "../permissions/album";
+import { isAdmin, canUpdateOrDeleteAlbum, scopedAlbums } from "../permissions";
 
 const router = express.Router();
 
@@ -16,13 +16,15 @@ const baseUrl = `${config.isDev ? config.baseurl.dev : config.baseurl.prod}`;
 router.post(
 	"/create",
 	[
-		check("name", "Name is required").not().isEmpty(),
-		check("userId", "User Id is required.").not().isEmpty(),
-		check("songs", "Please pass array of song objects to add.").isArray().not().isEmpty(),
-		oneOf([check("featuringArtists").exists().notEmpty(), check("albumBy").exists().notEmpty()]),
-		check("searchTags", "Please pass atleast one search tag in array.")
-			.isArray()
-			.custom(value => value.length > 0),
+		isAdmin,
+		[
+			check("name", "Name is required").not().isEmpty(),
+			check("songs", "Please pass array of song objects to add.").isArray().not().isEmpty(),
+			oneOf([check("featuringArtists").exists().notEmpty(), check("albumBy").exists().notEmpty()]),
+			check("searchVals", "Please pass atleast one search tag in array.")
+				.isArray()
+				.custom(value => value.length > 0),
+		],
 	],
 	async (req, res) => {
 		try {
@@ -36,23 +38,24 @@ router.post(
 						.join("\n"),
 				});
 			}
-			const { name, featuringArtists, searchTags, userId, albumBy, songs } = req.body;
+			const { name, featuringArtists, searchTags, userId, albumBy, songs, searchVals } = req.body;
 
-			if (!name || !userId || !songs) {
+			if (!name || !songs) {
 				throw new Error("Pass name, userId and songs in request body.");
 			}
 
 			const songIds = songs.map(song => song.videoId);
 			const newAlbum = {};
 			newAlbum.name = name;
-			newAlbum.createdBy = userId;
-			newAlbum.updatedBy = userId;
+			newAlbum.createdBy = req.user.id;
+			newAlbum.updatedBy = req.user.id;
 			newAlbum.songs = songIds;
 			newAlbum.totalSongs = songIds.length;
 			newAlbum.thumbnail = songs[0].thumbnail;
 			newAlbum.albumBy = albumBy;
 			newAlbum.featuringArtists = featuringArtists;
 			newAlbum.searchTags = searchTags;
+			newAlbum.searchVals = searchVals;
 			const addSongsCoreUrl = `${baseUrl}/addsongs`;
 			axios
 				.post(addSongsCoreUrl, {
@@ -79,13 +82,14 @@ router.post(
 router.put(
 	"/:id",
 	[
+		isAdmin,
 		canUpdateOrDeleteAlbum,
 		[
 			check("name", "Name is required").not().isEmpty(),
-			check("userId", "User Id is required.").not().isEmpty(),
 			check("songs", "Please pass array of song objects to add.").isArray().not().isEmpty(),
 			check("featuringArtists", "Please pass atleast one artist tag in array.").if(body("featuringArtists").exists()).isArray(),
-			check("searchTags", "Please pass atleast one search tag in array.")
+			oneOf([check("featuringArtists").exists().notEmpty(), check("albumBy").exists().notEmpty()]),
+			check("searchVals", "Please pass atleast one search tag in array.")
 				.isArray()
 				.custom(value => value.length > 0),
 		],
@@ -102,19 +106,20 @@ router.put(
 						.join("\n"),
 				});
 			}
-			const { name, featuringArtists, songs, searchTags, userId, albumBy } = req.body;
-			if (!name || !userId || !songs) {
+			const { name, featuringArtists, songs, searchTags, userId, albumBy, searchVals } = req.body;
+			if (!name || !songs) {
 				throw new Error("Pass name, userId and songs in request body.");
 			}
 			const songIds = songs.map(song => song.videoId);
 			req.album.name = name;
-			req.album.updatedBy = userId;
+			req.album.updatedBy = req.user.id;
 			req.album.songs = songIds;
 			req.album.totalSongs = songIds.length;
 			req.album.thumbnail = songs[0].thumbnail;
 			req.album.albumBy = albumBy;
 			req.album.featuringArtists = featuringArtists;
 			req.album.searchTags = searchTags;
+			req.album.searchVals = searchVals;
 			const addSongsCoreUrl = `${baseUrl}/addsongs`;
 			axios.post(addSongsCoreUrl, {
 				songs,
@@ -137,6 +142,7 @@ router.put(
 //Get all for captain app
 router.get(
 	"/captain/all",
+	isAdmin,
 	scopedAlbums,
 	paginationMiddleware(
 		Album,
@@ -172,7 +178,7 @@ router.get(
 	}
 );
 
-//Get all
+//Get all for client app
 router.get(
 	"/all",
 	paginationMiddleware(
@@ -296,7 +302,7 @@ router.get("/:id", async (req, res) => {
 });
 
 //delete album
-router.delete("/:id", canUpdateOrDeleteAlbum, async (req, res) => {
+router.delete("/:id", isAdmin, canUpdateOrDeleteAlbum, async (req, res) => {
 	try {
 		await Album.findByIdAndDelete(req.params.id);
 		res.send({
