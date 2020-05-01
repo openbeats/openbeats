@@ -2,7 +2,7 @@ import {
 	toastActions,
 	nowPlayingActions,
 	// playerActions
-} from "../actions";
+} from ".";
 import {
 	store
 } from "../store";
@@ -341,7 +341,44 @@ export async function startPlayer(shallIPlay = true) {
 			isAudioBuffering: false,
 		},
 	});
+	initMediaSession();
 	return true;
+}
+
+export const initMediaSession = async () => {
+	let state = await store.getState();
+	if ('mediaSession' in navigator) {
+		/* eslint-disable-next-line */
+		navigator.mediaSession.metadata = new MediaMetadata({
+			title: state.playerReducer.songTitle,
+			artwork: [{
+				src: state.playerReducer.thumbnail.split("?")[0],
+				sizes: '480x360',
+				type: 'image/jpg'
+			}]
+		});
+
+		navigator.mediaSession.setActionHandler('play', () => {
+			playPauseToggle()
+		});
+		navigator.mediaSession.setActionHandler('pause', () => {
+			playPauseToggle()
+		});
+		navigator.mediaSession.setActionHandler('seekbackward', () => {
+			audioSeekHandler(false)
+		});
+		navigator.mediaSession.setActionHandler('seekforward', () => {
+			audioSeekHandler(true)
+		});
+		if (state.nowPlayingReducer.isPreviousAvailable)
+			navigator.mediaSession.setActionHandler('previoustrack', () => {
+				nowPlayingActions.playPreviousSong();
+			});
+		if (state.nowPlayingReducer.isNextAvailable)
+			navigator.mediaSession.setActionHandler('nexttrack', () => {
+				nowPlayingActions.playNextSong();
+			});
+	}
 }
 
 export function playerDownloadHandler(e) {
