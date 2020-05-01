@@ -7,13 +7,14 @@ class ArtistAddDialog extends Component {
 	constructor(props) {
 		super(props);
 		this.state = {
+			isEdit: this.props.isEdit,
+			artistId: this.props.artistId || "",
 			artistName: this.props.addArtistInitName || "",
-			artistImageUrl: "",
-			fallbackArtistImageUrl:
-				"https://openbeats.live/static/media/dummy_music_holder.a3d0de2e.jpg",
+			artistImageUrl: this.props.artistInitImageUrl || "",
+			fallbackArtistImageUrl: "https://openbeats.live/static/media/dummy_music_holder.a3d0de2e.jpg",
 		};
 	}
-	checkURL = (e) => {
+	checkURL = e => {
 		this.setState({ artistImageUrl: e.target.value });
 	};
 
@@ -21,17 +22,17 @@ class ArtistAddDialog extends Component {
 		const addArtistResult = await this.props.addArtistHandler(
 			this.state.artistName,
 			this.state.artistImageUrl,
+			this.state.isEdit,
+			this.state.artistId
 		);
 		if (addArtistResult) {
-			if (this.props.addArtistCallBack)
-				this.props.addArtistCallBack(addArtistResult);
+			if (this.props.addArtistCallBack) this.props.addArtistCallBack(addArtistResult);
 			this.props.toggleAddArtistDialog(false);
 		}
 	};
 
 	cancelActionHandler = () => {
-		if (this.props.addArtistCallBack)
-			this.props.addArtistCallBack({ status: false, data: "cancelled" });
+		if (this.props.addArtistCallBack) this.props.addArtistCallBack({ status: false, data: "cancelled" });
 		this.props.toggleAddArtistDialog(false);
 	};
 
@@ -39,6 +40,7 @@ class ArtistAddDialog extends Component {
 		this.setState({
 			artistName: "",
 			artistImageUrl: "",
+			artistId: "",
 		});
 	}
 
@@ -53,14 +55,10 @@ class ArtistAddDialog extends Component {
 						</div>
 						<div className="artist-add-dialog-header-right-items">
 							<div className="d-flex">
-								<div
-									className="create-album-link font-weight-bold mr-3 cursor-pointer"
-									onClick={this.saveActionHandler}>
+								<div className="create-album-link font-weight-bold mr-3 cursor-pointer" onClick={this.saveActionHandler}>
 									save
 								</div>
-								<div
-									className="create-album-link bg-danger font-weight-bold cursor-pointer"
-									onClick={this.cancelActionHandler}>
+								<div className="create-album-link bg-danger font-weight-bold cursor-pointer" onClick={this.cancelActionHandler}>
 									cancel
 								</div>
 							</div>
@@ -69,29 +67,23 @@ class ArtistAddDialog extends Component {
 					<div className="artist-add-dialog-content-holder">
 						<div className="artist-add-dialog-input-container">
 							<div className="artist-name-input d-flex flex-column align-items-center justify-content-center mb-4">
-								<div className="font-weight-bold mb-2 add-artist-input-title">
-									Artist Name
-								</div>
+								<div className="font-weight-bold mb-2 add-artist-input-title">Artist Name</div>
 								<input
 									className="input input-sm rounded artist-name-input"
 									required
 									value={this.state.artistName}
-									onChange={(e) =>
-										this.setState({ artistName: e.target.value })
-									}
+									onChange={e => this.setState({ artistName: e.target.value })}
 									placeholder="Anirudh Ravichandar"
 									type="text"
 								/>
 							</div>
 							<div className="artist-name-input d-flex flex-column align-items-center justify-content-center mt-4">
-								<div className="font-weight-bold mb-2 add-artist-input-title">
-									Artist Image Url
-								</div>
+								<div className="font-weight-bold mb-2 add-artist-input-title">Artist Image Url</div>
 								<input
 									className="input input-sm rounded artist-name-input"
 									required
 									value={this.state.artistImageUrl}
-									onChange={(e) => this.checkURL(e)}
+									onChange={e => this.checkURL(e)}
 									placeholder="https://imageurl.com/image.jpg"
 									type="text"
 								/>
@@ -113,20 +105,23 @@ class ArtistAddDialog extends Component {
 	}
 }
 
-const mapStateToProps = (state) => {
+const mapStateToProps = state => {
 	return {
+		isEdit: state.addArtist.isEdit,
+		artistId: state.addArtist.artistId,
 		addArtistInitName: state.addArtist.artistName,
+		artistInitImageUrl: state.addArtist.artistImageUrl,
 		addArtistCallBack: state.addArtist.addArtistCallBack,
 	};
 };
 
-const mapDispatchToProps = (dispatch) => {
+const mapDispatchToProps = dispatch => {
 	return {
-		toggleAddArtistDialog: (value) => {
+		toggleAddArtistDialog: value => {
 			addArtistActions.toggleAddArtistDialog(value);
 		},
-		addArtistHandler: (name, url) => {
-			return addArtistActions.addArtistHandler(name, url);
+		addArtistHandler: (name, url, isEdit, artistId) => {
+			return addArtistActions.addArtistHandler(name, url, isEdit, artistId);
 		},
 	};
 };

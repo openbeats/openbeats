@@ -4,12 +4,12 @@ import { Router } from "express";
 import { check, oneOf, validationResult } from "express-validator";
 import paginationMiddleware from "../config/paginationMiddleware";
 import { saveAsserts, deleteAssert } from "../core/digitalOceanSpaces";
-import { canDeleteArtist, canUpdateArtist } from "../permissions/artist";
+import { isAdmin, canDeleteArtist, canUpdateArtist } from "../permissions";
 
 const router = Router();
 
 //artist creation
-router.post("/create", async (req, res) => {
+router.post("/create", isAdmin, async (req, res) => {
 	try {
 		const { name, thumbnail } = req.body;
 		if (!name) {
@@ -18,6 +18,7 @@ router.post("/create", async (req, res) => {
 		const artist = new Artist({
 			name,
 			thumbnail,
+			createdBy: req.user.id,
 		});
 		await artist.save();
 		saveAsserts("artists", artist._id, thumbnail, Artist, "thumbnail");
@@ -119,17 +120,16 @@ router.get("/all", paginationMiddleware(Artist), async (req, res) => {
 });
 
 //update artist
-router.put("/:id", canUpdateArtist, async (req, res) => {
+router.put("/:id", isAdmin, canUpdateArtist, async (req, res) => {
 	try {
 		const { name, thumbnail } = req.body;
-		if (!name) {
+		if (!name || !thumbnail) {
 			throw new Error("Name is required.");
 		}
 		req.artist.name = name;
-		if (thumbnail) {
-			req.artist.thumbnail = thumbnail;
-			saveAsserts("artists", req.artist._id, thumbnail, Artist, "thumbnail");
-		}
+		req.artist.thumbnail = thumbnail;
+		saveAsserts("artists", req.artist._id, thumbnail, Artist, "thumbnail");
+		req.artist.updatedBy = req.user.id;
 		await req.artist.save();
 		return res.send({
 			status: true,
@@ -145,11 +145,10 @@ router.put("/:id", canUpdateArtist, async (req, res) => {
 });
 
 //delete artist
-router.delete("/:id", canDeleteArtist, async (req, res) => {
+router.delete("/:id", isAdmin, canDeleteArtist, async (req, res) => {
 	try {
-		const artist = await Artist.findById(req.params.id);
-		deleteAssert(artist.thumbnail);
-		Artist.deleteOne({ _id: req.params.id });
+		deleteAssert(req.artist.thumbnail);
+		await Artist.deleteOne({ _id: req.artist._id });
 		res.send({
 			status: true,
 			data: "Artist got deleted successfully.",
