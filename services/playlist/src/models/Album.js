@@ -24,7 +24,8 @@ const albumSchema = new mongoose.Schema({
 			ref: "Artist",
 		},
 	],
-	searchTags: { type: [String] },
+	searchVals: { type: [String] },
+	searchTags: [{ type: mongoose.Schema.Types.ObjectId, ref: "SearchTag" }],
 	totalSongs: {
 		type: Number,
 		default: 0,
@@ -51,7 +52,7 @@ const albumSchema = new mongoose.Schema({
 	},
 });
 
-albumSchema.index({ name: "text", searchTags: "text" });
+albumSchema.index({ name: "text", searchVals: "text" });
 
 albumSchema.virtual("songsList", {
 	ref: "Song",
