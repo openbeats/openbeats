@@ -30,9 +30,7 @@ class AlbumsDash extends Component {
 	async componentDidMount() {
 		const parsed = queryString.parse(window.location.search);
 		if (parsed.editalbum !== undefined) {
-			const albumData = (
-				await axios.get(`${variables.baseUrl}/playlist/album/${parsed.editalbum}?edit=true`)
-			).data;
+			const albumData = (await axios.get(`${variables.baseUrl}/playlist/album/${parsed.editalbum}?edit=true`)).data;
 			if (albumData.status) {
 				let prepareData = {
 					isUpdate: true,
@@ -45,10 +43,7 @@ class AlbumsDash extends Component {
 					searchChips: albumData.data.searchTags.map(item => item._id),
 				};
 				if (albumData.data.albumBy !== null) {
-					prepareData.artistChipsCollection = [
-						...prepareData.artistChipsCollection,
-						albumData.data.albumBy,
-					];
+					prepareData.artistChipsCollection = [...prepareData.artistChipsCollection, albumData.data.albumBy];
 					prepareData.artistChips = [...prepareData.artistChips, albumData.data.albumBy._id];
 					prepareData.albumBy = albumData.data.albumBy._id;
 				}
@@ -69,20 +64,16 @@ class AlbumsDash extends Component {
 		) {
 			const preparedData = {
 				name: this.state.albumName,
-				userId: this.props.adminId,
 				searchTags: this.state.searchChips,
-				featuringArtists:
-					this.state.artistChips.length === 1
-						? []
-						: this.state.artistChips.filter(artistId => artistId !== this.state.albumBy),
-				albumBy:
-					this.state.artistChips.length === 1 ? this.state.artistChips[0] : this.state.albumBy,
+				searchVals: this.state.searchChipsCollection.map(item => item.searchVal),
+				featuringArtists: this.state.artistChips.length === 1 ? [] : this.state.artistChips.filter(artistId => artistId !== this.state.albumBy),
+				albumBy: this.state.artistChips.length === 1 ? this.state.artistChips[0] : this.state.albumBy,
 				songs: this.state.songsCollection,
 			};
+			console.log(JSON.stringify(preparedData));
+
 			if (!this.state.isUpdate) {
-				const resultData = (
-					await axios.post(`${variables.baseUrl}/playlist/album/create`, preparedData)
-				).data;
+				const resultData = (await axios.post(`${variables.baseUrl}/playlist/album/create`, preparedData)).data;
 				if (resultData.status) {
 					toast.success("Album Created Successfully");
 					this.props.pushPath("/albums");
@@ -90,12 +81,7 @@ class AlbumsDash extends Component {
 					toast.error(resultData.data.toString());
 				}
 			} else {
-				const resultData = (
-					await axios.put(
-						`${variables.baseUrl}/playlist/album/${this.state.updateAlbumId}`,
-						preparedData
-					)
-				).data;
+				const resultData = (await axios.put(`${variables.baseUrl}/playlist/album/${this.state.updateAlbumId}`, preparedData)).data;
 				if (resultData.status) {
 					toast.success("Album Saved Successfully");
 					this.props.pushPath("/albums");
@@ -150,8 +136,7 @@ class AlbumsDash extends Component {
 	};
 
 	addSongsToTheBucketCallBack = song => {
-		if (findIndex(this.state.songsCollection, song) === -1)
-			this.setState({ songsCollection: [...this.state.songsCollection, song] });
+		if (findIndex(this.state.songsCollection, song) === -1) this.setState({ songsCollection: [...this.state.songsCollection, song] });
 		else toast.error("Song is Already in the bucket!");
 	};
 
@@ -160,7 +145,7 @@ class AlbumsDash extends Component {
 	};
 
 	componentWillUnmount() {
-		this.setState({ albumName: "", artistChips: [], searchChips: [] });
+		this.setState({ albumName: "", artistChips: [], searchChips: [], albumBy: null });
 	}
 
 	songTrialTrigger = async song => {
@@ -177,14 +162,10 @@ class AlbumsDash extends Component {
 						<i className="fas fa-angle-right mr-1 right-angel"></i>Albums Dash Yard
 					</div>
 					<div className="d-flex">
-						<div
-							className="create-album-link font-weight-bold mr-3 cursor-pointer"
-							onClick={this.saveAlbum}>
+						<div className="create-album-link font-weight-bold mr-3 cursor-pointer" onClick={this.saveAlbum}>
 							save
 						</div>
-						<div
-							className="create-album-link bg-danger font-weight-bold cursor-pointer"
-							onClick={this.albumsDashCancelHandler}>
+						<div className="create-album-link bg-danger font-weight-bold cursor-pointer" onClick={this.albumsDashCancelHandler}>
 							cancel
 						</div>
 					</div>
@@ -209,16 +190,13 @@ class AlbumsDash extends Component {
 								<div className="artist-tags-title font-weight-bold">
 									Artist Tags<span className="text-danger">*</span>
 								</div>
-								<div className="artist-tags-title-desc">
-									(Please add only one artist, if you want this album to comes under specific
-									Artist)
-								</div>
+								<div className="artist-tags-title-desc">(Please add only one artist, if you want this album to comes under specific Artist)</div>
 								<ChipsInput
 									chipTitle={"Artist"}
 									albumBy={this.state.albumBy}
 									setAlbumBy={this.setAlbumBy}
 									setChipsCallback={this.setArtistChips}
-									suggestionFetchUrl={`${variables.baseUrl}/playlist/artist/fetch?query=`}
+									suggestionFetchUrl={`${variables.baseUrl}/playlist/artist/suggest?query=`}
 									suggestionNameField={"name"}
 									createNewChipCallback={this.createNewArtist}
 									placeholder={"Search Artist Here..."}
@@ -229,13 +207,11 @@ class AlbumsDash extends Component {
 								<div className="artist-tags-title font-weight-bold">
 									Search Tags<span className="text-danger">*</span>
 								</div>
-								<div className="artist-tags-title-desc">
-									(Please add Search Tags related to this album)
-								</div>
+								<div className="artist-tags-title-desc">(Please add Search Tags related to this album)</div>
 								<ChipsInput
 									chipTitle={"Search Tag"}
 									setChipsCallback={this.setSearchChips}
-									suggestionFetchUrl={`${variables.baseUrl}/playlist/searchtag/fetch?query=`}
+									suggestionFetchUrl={`${variables.baseUrl}/playlist/searchtag/fetch?startsWith=`}
 									suggestionNameField={"searchVal"}
 									createNewChipCallback={this.createNewSearchTag}
 									placeholder={"Search Search Tags Here..."}
@@ -270,9 +246,7 @@ class AlbumsDash extends Component {
 }
 
 const mapStateToProps = state => {
-	return {
-		adminId: state.auth.adminDetails.id,
-	};
+	return {};
 };
 
 const mapDispatchToProps = dispatch => {
@@ -281,7 +255,7 @@ const mapDispatchToProps = dispatch => {
 			store.dispatch(push(path));
 		},
 		toggleAddArtistDialog: artistName => {
-			return addArtistActions.toggleAddArtistDialog(true, artistName);
+			return addArtistActions.toggleAddArtistDialog(true, false, null, artistName, null);
 		},
 		addSearchTagHandler: searchVal => {
 			return addSearchTagActions.addSearchTagHandler(searchVal);

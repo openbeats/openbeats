@@ -49,7 +49,7 @@ router.get("/fetch", oneOf([check("tagId").exists(), check("startsWith").exists(
 		if (startsWith) {
 			const searchTags = await SearchTag.find({
 				searchVal: {
-					$regex: `^${startsWith}`,
+					$regex: `${startsWith}`,
 					$options: "i",
 				},
 			}).limit(10);
