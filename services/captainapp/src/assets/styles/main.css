@@ -16,3 +16,9 @@
     height: 100vh;
     position: relative;
 }
+
+@media only screen and (max-width: 1000px) {
+    .main-wrapper {
+        grid-template-columns: auto;
+    }
+}

@@ -69,58 +69,54 @@ class Albums extends Component {
 					<div className="album-indicator d-flex align-items-center font-weight-bold base-color h5-responsive">
 						<i className="fas fa-angle-right mr-1 right-angel"></i>Albums
 					</div>
-					<div className="album-search-input">
-						<input className="input input-sm red-border" type="text" placeholder="Search Albums, Artists, Languages..." aria-label="Search" />
-						<i className="fas fa-search text-grey cursor-pointer" aria-hidden="true"></i>
-					</div>
 					<Link className="create-album-link font-weight-bold cursor-pointer text-white" to="/albums/dashyard">
 						<i className="far fa-plus mr-1"></i>&nbsp;Create Album
 					</Link>
 				</div>
 				{this.state.isLoading ? (
-					<div className="width-100 height-100 d-flex align-items-center justify-content-center">
+					<div className="preloader-wrapper">
 						<Loader type="ThreeDots" color="#F32C2C" height={80} width={80} />
 					</div>
 				) : (
-					<Fragment>
-						<div className="albums-container">
-							{this.state.albumsCollection.map((item, key) => (
-								<div className="album-holder" style={{ backgroundImage: `url(${item.thumbnail})` }} key={key}>
-									{this.editDeletePermission(item.createdBy._id) ? (
-										<Fragment>
-											<div className="album-btn-rounded album-edit-button cursor-pointer" onClick={e => this.editAlbum(key)}>
-												<i className="fas fa-pencil-alt"></i>
-											</div>
-											<div className="album-btn-rounded album-delete-button cursor-pointer" onClick={e => this.deleteAlbum(key)}>
-												<i className="far fa-trash-alt"></i>
-											</div>
-										</Fragment>
-									) : (
-										<a
-											className="album-btn-rounded album-view-button cursor-pointer"
-											title={`View on ${variables.clientUrl}`}
-											href={`${variables.clientUrl}/playlist/album/${item._id}`}
-											target="_blank"
-											rel="noopener noreferrer">
-											<i className="fas fa-eye"></i>
-										</a>
-									)}
-									<div className="album-btn-rounded album-song-count p-events-none">{item.totalSongs}</div>
-									<div className="album-description">
-										<div className="album-title">{item.name}</div>
-										<div className="album-creation-date">{new Date(item.createdAt).toDateString()}</div>
-										<div className="album-created-by">by {item.createdBy.name}</div>
+						<Fragment>
+							<div className="albums-container">
+								{this.state.albumsCollection.map((item, key) => (
+									<div className="album-holder" style={{ backgroundImage: `url(${item.thumbnail})` }} key={key}>
+										{this.editDeletePermission(item.createdBy._id) ? (
+											<Fragment>
+												<div className="album-btn-rounded album-edit-button cursor-pointer" onClick={e => this.editAlbum(key)}>
+													<i className="fas fa-pencil-alt"></i>
+												</div>
+												<div className="album-btn-rounded album-delete-button cursor-pointer" onClick={e => this.deleteAlbum(key)}>
+													<i className="far fa-trash-alt"></i>
+												</div>
+											</Fragment>
+										) : (
+												<a
+													className="album-btn-rounded album-view-button cursor-pointer"
+													title={`View on ${variables.clientUrl}`}
+													href={`${variables.clientUrl}/playlist/album/${item._id}`}
+													target="_blank"
+													rel="noopener noreferrer">
+													<i className="fas fa-eye"></i>
+												</a>
+											)}
+										<div className="album-btn-rounded album-song-count p-events-none">{item.totalSongs}</div>
+										<div className="album-description">
+											<div className="album-title">{item.name}</div>
+											<div className="album-creation-date">{new Date(item.createdAt).toDateString()}</div>
+											<div className="album-created-by">by {item.createdBy.name}</div>
+										</div>
 									</div>
-								</div>
-							))}
-							{this.state.albumsCollection.length === 0 && (
-								<div className="font-weight-bold h5-responsive w-100 h-100 d-flex align-items-center text-dark justify-content-center">
-									No Albums found in the Server!
-								</div>
-							)}
-						</div>
-					</Fragment>
-				)}
+								))}
+								{this.state.albumsCollection.length === 0 && (
+									<div className="font-weight-bold h5-responsive w-100 h-100 d-flex align-items-center text-dark justify-content-center">
+										No Albums found in the Server!
+									</div>
+								)}
+							</div>
+						</Fragment>
+					)}
 			</div>
 		);
 	}

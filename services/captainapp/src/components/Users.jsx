@@ -55,10 +55,6 @@ const Users = ({ adminDetails }) => {
 				<div className="user-indicator d-flex align-items-center font-weight-bold base-color h5-responsive">
 					<i className="fas fa-angle-right mr-1 right-angel"></i>Users
 				</div>
-				<div className="user-search-input">
-					<input className="input input-sm red-border" type="text" placeholder="Search Albums, Artists, Languages..." aria-label="Search" />
-					<i className="fas fa-search text-grey cursor-pointer" aria-hidden="true"></i>
-				</div>
 			</div>
 			<div className="users-container">
 				{isLoading ? (

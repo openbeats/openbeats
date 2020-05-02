@@ -12,6 +12,7 @@ class LeftNav extends Component {
 		this.state = {
 			itemName: "home",
 			profileOptionsShow: false,
+			openMobileLeftNav: false
 		};
 		this.menuRef = null;
 	}
@@ -37,9 +38,17 @@ class LeftNav extends Component {
 		}
 	};
 
+	toggleMobileLeftNav = () => {
+		console.log("hits here")
+		this.setState({ openMobileLeftNav: !this.state.openMobileLeftNav })
+	}
+
 	render() {
 		return (
-			<div className="leftnav-wrapper">
+			<div className={`leftnav-wrapper ${this.state.openMobileLeftNav ? "open-mobile-leftnav" : ''}`}>
+				<div className="hamburger-holder" onClick={this.toggleMobileLeftNav}>
+					<i className="far fa-bars"></i>
+				</div>
 				<ul className="leftnav-menu">
 					<div className="leftnav-item hanging-music-player-holder">
 						<img
