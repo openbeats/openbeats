@@ -109,3 +109,13 @@
 .playlist-panel-edit-options>button:nth-child(2) {
     margin-right: 2px;
 }
+
+
+
+
+@media only screen and (max-width: 800px) {
+    .my-playlists-wrapper {
+        align-items: center;
+        justify-content: center;
+    }
+}
