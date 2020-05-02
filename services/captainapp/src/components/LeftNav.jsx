@@ -73,12 +73,14 @@ class LeftNav extends Component {
 							<span>Artists</span>
 						</div>
 					</Link>
-					<Link to="userbase" onClick={() => this.props.setCurrentNavItem("userbase")} className={`leftnav-item`} title="View users">
-						<div className={`content ${this.props.currentNavItem === "userbase" ? "item-active" : ""}`}>
-							<i className="fas fa-users"></i>
-							<span>Users</span>
-						</div>
-					</Link>
+					{[2, 3].includes(this.props.adminDetails.accessLevel) &&
+						<Link to="userbase" onClick={() => this.props.setCurrentNavItem("userbase")} className={`leftnav-item`} title="View users">
+							<div className={`content ${this.props.currentNavItem === "userbase" ? "item-active" : ""}`}>
+								<i className="fas fa-users"></i>
+								<span>Users</span>
+							</div>
+						</Link>
+					}
 					<li className="leftnav-item">
 						<div
 							ref={d => (this.menuRef = d)}
