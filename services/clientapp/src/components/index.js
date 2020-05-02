@@ -19,6 +19,7 @@ import TopCharts from "./TopCharts";
 import HorizontalView from "./HorizontalView";
 import ArtistHolder from "./ArtistHolder";
 import Albums from "./Albums";
+import NoPage from "./NoPage";
 
 export {
 	Main,
@@ -42,4 +43,5 @@ export {
 	HorizontalView,
 	ArtistHolder,
 	Albums,
+	NoPage,
 };
