@@ -20,6 +20,7 @@ import HorizontalView from "./HorizontalView";
 import ArtistHolder from "./ArtistHolder";
 import Albums from "./Albums";
 import NoPage from "./NoPage";
+import Song from "./Song";
 
 export {
 	Main,
@@ -44,4 +45,5 @@ export {
 	ArtistHolder,
 	Albums,
 	NoPage,
+	Song,
 };
