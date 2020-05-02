@@ -16,7 +16,7 @@ class Main extends Component {
 						<Route exact path="/albums" component={Albums} />
 						<Route path="/albums/dashyard" component={AlbumsDash} />
 						<Route path="/artists" component={Artists} />
-						<Route path="/userbase" component={Users} />
+						{[2, 3].includes(this.props.adminDetails.accessLevel) && <Route path="/userbase" component={Users} />}
 					</Switch>
 					{this.props.isAddArtistOpended && <ArtistAddDialog />}
 				</div>
@@ -28,6 +28,7 @@ class Main extends Component {
 const mapStateToProps = state => {
 	return {
 		isAddArtistOpended: state.addArtist.isOpened,
+		adminDetails: state.auth.adminDetails,
 	};
 };
 
