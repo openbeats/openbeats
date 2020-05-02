@@ -35,7 +35,7 @@ export async function fetchResults() {
         }
     });
 
-    const url = `${variables.baseUrl}/ytcat?q=${state.suggestionText.replace(/[^\w\s-]/gi, '')}`
+    const url = `${variables.baseUrl}/ytcat?q=${state.suggestionText.replace(/[^\w\s-]/gi, '')}&advanced=true`;
     await fetch(url)
         .then(res => res.json())
         .then(async res => {
@@ -43,7 +43,9 @@ export async function fetchResults() {
                 await store.dispatch({
                     type: "FETCH_RESULTS",
                     payload: {
-                        searchResults: res.data,
+                        songs: res.data.songs,
+                        albums: res.data.albums,
+                        artists: res.data.artists,
                         isSearching: false,
                         keywordSuggestions: []
                     }
