@@ -359,25 +359,38 @@ export const initMediaSession = async () => {
 		});
 
 		navigator.mediaSession.setActionHandler('play', () => {
-			playPauseToggle()
+			playPauseToggle();
 		});
+
 		navigator.mediaSession.setActionHandler('pause', () => {
-			playPauseToggle()
+			playPauseToggle();
 		});
+
+		navigator.mediaSession.setActionHandler("stop", () => {
+			resetPlayer();
+		});
+
 		navigator.mediaSession.setActionHandler('seekbackward', () => {
-			audioSeekHandler(false)
+			audioSeekHandler(false);
 		});
+
 		navigator.mediaSession.setActionHandler('seekforward', () => {
-			audioSeekHandler(true)
+			audioSeekHandler(true);
 		});
+
 		if (state.nowPlayingReducer.isPreviousAvailable)
 			navigator.mediaSession.setActionHandler('previoustrack', () => {
 				nowPlayingActions.playPreviousSong();
 			});
+		else
+			navigator.mediaSession.setActionHandler('previoustrack', null);
+
 		if (state.nowPlayingReducer.isNextAvailable)
 			navigator.mediaSession.setActionHandler('nexttrack', () => {
 				nowPlayingActions.playNextSong();
 			});
+		else
+			navigator.mediaSession.setActionHandler('nexttrack', null);
 	}
 }
 
