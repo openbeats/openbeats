@@ -35,7 +35,7 @@ export async function fetchResults() {
         }
     });
 
-    const url = `${variables.baseUrl}/ytcat?q=${state.suggestionText.replace(/[^\w\s-]/gi, '')}`
+    const url = `${variables.baseUrl}/ytcat?q=${state.suggestionText.replace(/[^\w\s-]/gi, '')}&advanced=true`;
     await fetch(url)
         .then(res => res.json())
         .then(async res => {
@@ -43,7 +43,9 @@ export async function fetchResults() {
                 await store.dispatch({
                     type: "FETCH_RESULTS",
                     payload: {
-                        searchResults: res.data,
+                        songs: res.data.songs,
+                        albums: res.data.albums,
+                        artists: res.data.artists,
                         isSearching: false,
                         keywordSuggestions: []
                     }
@@ -66,33 +68,31 @@ export async function getKeywordSuggestion(key) {
         }
     });
     const url = `${variables.baseUrl}/suggester?k=${key}`;
-    if (key.length > 0) {
-        await fetch(url)
-            .then(res => res.json())
-            .then(async res => {
-                let temp = res.data.slice(0, 10);
-                let listener = document.addEventListener("click", async function () {
-                    if (state.listener != null) {
-                        document.removeEventListener(state.listenter);
-                    }
-                    await store.dispatch({
-                        type: "FETCH_KEYWORD_SUGGESTION",
-                        payload: {
-                            keywordSuggestions: [],
-                            listener: null
-                        }
-                    });
-                });
+    await fetch(url)
+        .then(res => res.json())
+        .then(async res => {
+            let temp = res.data.slice(0, 10);
+            let listener = document.addEventListener("click", async function () {
+                if (state.listener != null) {
+                    document.removeEventListener(state.listenter);
+                }
                 await store.dispatch({
                     type: "FETCH_KEYWORD_SUGGESTION",
                     payload: {
-                        keywordSuggestions: temp,
-                        listener: listener
+                        keywordSuggestions: [],
+                        listener: null
                     }
                 });
-            })
-            .catch(e => console.error(e))
-    }
+            });
+            await store.dispatch({
+                type: "FETCH_KEYWORD_SUGGESTION",
+                payload: {
+                    keywordSuggestions: temp,
+                    listener: listener
+                }
+            });
+        })
+        .catch(e => console.error(e))
 
     return true;
 }
@@ -121,7 +121,7 @@ export function onKeyUpHandler(e) {
     let state = store.getState().searchReducer;
     let payload = {}
     if (e.keyCode === 40 && state.keywordSuggestions.length) {
-        let current = (state.currentTextIndex + 1) % (state.keywordSuggestions.length + 1);
+        let current = (state.currentTextIndex + 1) <= state.keywordSuggestions.length ? (state.currentTextIndex + 1) : 0;
         if (current !== 0)
             payload = {
                 currentTextIndex: current,
@@ -133,7 +133,7 @@ export function onKeyUpHandler(e) {
                 suggestionText: state.actualText
             };
     } else if (e.keyCode === 38 && state.keywordSuggestions.length) {
-        let current = Math.abs(state.currentTextIndex - 1) % (state.keywordSuggestions.length + 1);
+        let current = (state.currentTextIndex - 1) >= 0 ? (state.currentTextIndex - 1) : state.keywordSuggestions.length;
         if (current !== 0)
             payload = {
                 currentTextIndex: current,

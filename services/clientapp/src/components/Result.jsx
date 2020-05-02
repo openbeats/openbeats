@@ -1,136 +1,122 @@
 import React, { Component } from 'react';
-import { playerdownload, playerplay, master, playlistadd, playerpause, pQueueRed, } from "../assets/images";
+import { master } from "../assets/images";
 import Loader from 'react-loader-spinner';
-import "../assets/css/result.css"
-import { variables } from '../config'
-import { connect } from "react-redux"
+import "../assets/css/result.css";
+import { connect } from "react-redux";
 import { toastActions, coreActions, nowPlayingActions, playerActions, playlistManipulatorActions } from '../actions';
-import { store } from '../store';
-import { push } from 'connected-react-router';
-
+import { Song, HorizontalView, ArtistHolder, AlbumHolder } from '.';
 class Result extends Component {
-
-    constructor(props) {
-        super(props);
-        this.state = {
-            isPlaying: false,
-            videoId: []
-        }
-        this.playId = null
-        this.videoId = []
-
-    }
     componentDidMount() {
         this.props.setCurrentAction("Search Result");
     }
 
-    addSongToQueue(song) {
-        this.props.addSongsToQueue([song]);
+    getSongsList = () => {
+        return (
+            this.props.songs.map((item, key) => (
+                <Song
+                    key={key}
+                    item={item}
+                    isPlaylist={this.props.isPlaylist}
+                    currentPlaying={this.props.currentPlaying}
+                    isAudioBuffering={this.props.isAudioBuffering}
+                    isMusicPlaying={this.props.isMusicPlaying}
+                    playPauseToggle={this.props.playPauseToggle}
+                    updateCurrentPlaying={this.props.updateCurrentPlaying}
+                    downloadSong={this.downloadSong}
+                    isAuthenticated={this.props.isAuthenticated}
+                    addSongsToQueue={this.props.addSongsToQueue}
+                    showAddPlaylistDialog={this.props.showAddPlaylistDialog}
+                />
+            ))
+        )
     }
 
-    async downloadSong(item) {
-        if (!this.props.isAuthenticated) {
-            toastActions.showMessage("Please Login to use this feature!")
-            store.dispatch(push("/auth"))
-            return
-        }
-        await fetch(`${variables.baseUrl}/downcc/${item.videoId}?title=${encodeURI(item.title)}`)
-            .then(res => {
-                if (res.status === 200) {
-                    this.videoId.splice(this.videoId.indexOf(item.videoId), 1)
-                    this.setState({ videoId: this.videoId })
-                    window.open(`${variables.baseUrl}/downcc/${item.videoId}?title=${encodeURI(item.title)}`, "_self")
-                } else {
-                    this.videoId.splice(this.videoId.indexOf(item.videoId), 1)
-                    this.setState({ videoId: this.videoId })
-                    this.props.notify("Requested content not available right now!, try downloading alternate songs!");
-                }
-            }).catch(err => {
-                this.videoId.splice(this.videoId.indexOf(item.videoId), 1)
-                this.setState({ videoId: this.videoId })
-                this.props.notify("Requested content not available right now!, try downloading alternate songs!");
-            })
+    getAlbumsList() {
+        return this.props.albums.map((item, key) => (
+            <AlbumHolder
+                key={key}
+                albumName={item.name}
+                albumThumbnail={item.thumbnail}
+                albumTotalSongs={item.totalSongs}
+                albumId={item._id}
+                albumCreationDate={new Date().toDateString()}
+                albumCreatedBy={"OpenBeats"}
+                type={'album'}
+                addOrRemoveAlbumFromCollectionHandler={this.props.addOrRemoveAlbumFromUserCollection}
+                isAuthenticated={this.props.isAuthenticated}
+                isAlbumIsInCollection={this.props.likedPlaylists.indexOf(item._id) === -1 ? false : true}
+            />
+        ))
+    }
+
+    getArtistsList() {
+        return this.props.artists.map((item, key) => (
+            <ArtistHolder
+                key={key}
+                name={item.name}
+                thumbnail={item.thumbnail}
+                id={item._id}
+            />
+        ))
+    }
+
+
+    Songs = () => {
+        return this.props.songs.length > 0 && <div className="home-section">
+            <div className="home-section-header">
+                <div className="left-section" >
+                    <i className="fad fa-music-alt"></i>
+                    <span className="">Songs</span>
+                </div>
+            </div>
+            <div className="home-section-body">
+                <HorizontalView
+                    elementList={this.getSongsList()}
+                />
+            </div>
+        </div>
+    }
+
+    Artists = () => {
+        return this.props.artists.length > 0 && <div className="home-section">
+            <div className="home-section-header">
+                <div className="left-section" >
+                    <i className="fad fa-user-music"></i>
+                    <span className="">Artists</span>
+                </div>
+            </div>
+            <div className="home-section-body">
+                <HorizontalView
+                    elementList={this.getArtistsList()}
+                />
+            </div>
+        </div>
+    }
+
+    Albums = () => {
+        return this.props.albums.length > 0 && <div className="home-section">
+            <div className="home-section-header">
+                <div className="left-section" >
+                    <i className="fad fa-album"></i>
+                    <span className="">Albums</span>
+                </div>
+            </div>
+            <div className="home-section-body">
+                <HorizontalView
+                    elementList={this.getAlbumsList()}
+                />
+            </div>
+        </div>
     }
 
     render() {
         return (
             !this.props.isSearching ?
-                this.props.searchResults.length > 0 ?
+                this.props.songs.length > 0 || this.props.albums.length > 0 || this.props.artists.length > 0 ?
                     <div className="search-result-container">
-                        {this.props.searchResults.map((item, key) => (
-
-                            <div className={`result-node ${!this.props.isPlaylist && this.props.currentPlaying && this.props.currentPlaying.videoId === item.videoId ? "highlight-active-result" : ""}`} key={key}>
-                                <div className="result-node-thumb">
-                                    <img src={item.thumbnail} alt="" />
-                                </div>
-                                <div className="result-node-desc">
-                                    <div className="result-node-title">
-                                        {item.title}
-                                    </div>
-                                    <div className="result-node-attributes">
-                                        <div className="result-node-duration">
-                                            {item.duration}
-                                        </div>
-                                        <div className="result-node-actions">
-                                            {!this.props.isPlaylist && this.props.currentPlaying && this.props.currentPlaying.videoId === item.videoId ?
-                                                !this.props.isAudioBuffering ?
-                                                    this.props.isMusicPlaying ?
-                                                        <img onClick={async (e) => {
-                                                            await this.props.playPauseToggle()
-                                                        }} className="action-image-size play-icon-result cursor-pointer" src={playerpause} alt="" />
-                                                        :
-                                                        <img onClick={async (e) => {
-                                                            await this.props.playPauseToggle()
-                                                        }} className="action-image-size play-icon-result cursor-pointer" src={playerplay} alt="" />
-                                                    :
-                                                    <Loader
-                                                        type="Rings"
-                                                        color="#F32C2C"
-                                                        height={30}
-                                                        width={30}
-                                                    />
-                                                :
-                                                <img onClick={async (e) => {
-                                                    await this.props.updateCurrentPlaying(item)
-                                                }} className="action-image-size play-icon-result cursor-pointer" src={playerplay} alt="" />
-                                            }
-
-
-                                            <div download
-                                                onClick={async (e) => {
-                                                    this.videoId.push(item.videoId)
-                                                    this.setState({ videoId: this.videoId })
-                                                    e.preventDefault()
-                                                    this.downloadSong(item);
-
-                                                }}
-                                                className="t-none cursor-pointer" >
-                                                {this.state.videoId.includes(item.videoId) ?
-                                                    <Loader
-                                                        type="Oval"
-                                                        color="#F32C2C"
-                                                        height={20}
-                                                        width={20}
-                                                    />
-                                                    :
-                                                    <img className="action-image-size " src={playerdownload} alt="" />
-                                                }
-                                            </div>
-                                            <img onClick={
-                                                () => {
-                                                    this.addSongToQueue(item);
-                                                }
-                                            } className="action-image-size cursor-pointer queue-icon-result" title="Add to Queue" src={pQueueRed} alt="" />
-                                            <img onClick={
-                                                () => {
-                                                    this.props.showAddPlaylistDialog(item)
-                                                }
-                                            } className="action-image-size cursor-pointer" title="Add to playlist" src={playlistadd} alt="" />
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        ))}
+                        <this.Songs />
+                        <this.Albums />
+                        <this.Artists />
                     </div>
                     :
                     <div className="dummy-music-holder">
@@ -152,13 +138,16 @@ class Result extends Component {
 
 const mapStateToProps = (state) => {
     return {
-        searchResults: state.searchReducer.searchResults,
+        songs: state.searchReducer.songs,
+        artists: state.searchReducer.artists,
+        albums: state.searchReducer.albums,
         isSearching: state.searchReducer.isSearching,
         currentPlaying: state.nowPlayingReducer.currentPlaying,
         isPlaylist: state.nowPlayingReducer.isPlaylist,
         isMusicPlaying: state.playerReducer.isMusicPlaying,
         isAudioBuffering: state.playerReducer.isAudioBuffering,
         isAuthenticated: state.authReducer.isAuthenticated,
+        likedPlaylists: state.authReducer.likedPlaylists,
     }
 
 }
@@ -184,8 +173,11 @@ const mapDispatchToProps = (dispatch) => {
             playlistManipulatorActions.showAddPlaylistDialog(song)
         },
         addSongsToQueue: (song) => {
-            nowPlayingActions.addSongsToQueue(song);
-        }
+            nowPlayingActions.addSongsToQueue([song]);
+        },
+        addOrRemoveAlbumFromUserCollection: async (isAdd = true, albumId) => {
+            return await playlistManipulatorActions.addOrRemoveAlbumFromUserCollection(albumId, isAdd);
+        },
     }
 }
 

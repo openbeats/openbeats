@@ -17,7 +17,7 @@
 }
 
 .user-display-holder {
-	width: 220px;
+	width: 200px;
 	height: 250px;
 	background: var(--main-bg-color);
 	box-shadow: 0 0 8px 0px black;
@@ -32,8 +32,10 @@
 }
 
 .user-rounded-circle-holder {
-	height: 170px;
-	width: 170px;
+	height: 140px;
+	width: 140px;
+	min-height: 140px;
+	min-width: 140px;
 	border-radius: 50%;
 	background: white;
 	background-repeat: no-repeat;
@@ -86,13 +88,13 @@
 	border-radius: 20px;
 }
 
-.user-search-input > input {
+.user-search-input>input {
 	width: 100%;
 	border: none;
 	outline: none;
 }
 
-.user-search-input > i {
+.user-search-input>i {
 	margin-left: 5px;
 }
 
@@ -130,6 +132,23 @@
 .users-container::-webkit-scrollbar-thumb:hover {
 	background: var(--base-color);
 	opacity: 0.5;
+}
+
+.access-level-added {
+	height: 300px;
+}
+
+.access-levels {
+	margin-top: 10px;
+	font-size: 15px;
+	font-weight: bold;
+	margin-bottom: 5px;
+}
+
+.access-level {
+	font-size: 14px;
+	border-radius: 5px;
+	padding: 2px;
 }
 
 @media only screen and (max-width: 1027px) {
