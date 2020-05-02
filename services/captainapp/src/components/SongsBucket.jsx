@@ -47,10 +47,10 @@ export default class SongsBucket extends Component {
                         <div className="songsbucket-totalsongs">{this.props.songsBucket.length}</div>
                     </div>
                     <div className="songsbucket-title-holer font-weight-bold display-flex align-items-center justify-content-center">
-                        <i className="fab fa-bitbucket mr-2 base-color "></i><span className="text-white">Songs in The Bucket</span>
+                        <i className="fab fa-bitbucket mr-2 base-color "></i><span className="text-white bucket-heading-title">Songs in The Bucket</span>
                     </div>
                     <div className="songsbucket-empty-action">
-                        {this.props.songsBucket.length && <i className="fas fa-trash-restore-alt text-danger cursor-pointer" title="Empty the Bucket" onClick={this.emptyTheBucket}></i>}
+                        <i className="fas fa-trash-restore-alt text-danger cursor-pointer" title="Empty the Bucket" onClick={this.emptyTheBucket}></i>
                     </div>
                 </div>
                 <div className="songsbucket-body">
@@ -71,11 +71,11 @@ export default class SongsBucket extends Component {
                                 <div className="songsbucket-song-thumbnail-holder">
                                     <div className="songsbucket-song-thumbnail" style={{ backgroundImage: `url(${item.thumbnail})` }}></div>
                                 </div>
-                                <div className="songsbucket-actions ml-3">
-                                    <i className="fas fa-play-circle shadow cursor-pointer ml-1" onClick={() => this.playSongTrial(key)}></i>
-                                    <i className="fas fa-trash-alt shadow cursor-pointer ml-4" onClick={() => this.removeASongFromBucket(key)}></i>
+                                <div className="songsbucket-actions">
+                                    <i className="fas fa-play-circle shadow cursor-pointer" onClick={() => this.playSongTrial(key)}></i>
+                                    <i className="fas fa-trash-alt shadow cursor-pointer" onClick={() => this.removeASongFromBucket(key)}></i>
                                 </div>
-                                <div className="font-weight-bold ml-4" >{item.title}</div>
+                                <div className="font-weight-bold bucket-song-title" >{item.title}</div>
                             </div>
                         ))}
                     </div>}
