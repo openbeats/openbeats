@@ -1,11 +1,19 @@
 .users-wrapper {
 	width: 100%;
-	height: auto;
+	height: 100%;
+	overflow: hidden;
+	display: grid;
+	grid-template-rows: 40px auto;
+	box-sizing: border-box;
+}
+
+.loader-center {
+	height: 100%;
+	width: 100%;
 	display: flex;
-	flex-wrap: wrap;
-	padding-left: 10px;
-	padding-right: 10px;
-	padding-top: 10px;
+	align-items: center;
+	justify-content: center;
+	flex-direction: column;
 }
 
 .user-display-holder {
@@ -71,6 +79,7 @@
 	display: flex;
 	align-items: center;
 	border: 1px solid var(--base-color);
+	margin-right: 500px;
 	padding: 5px;
 	padding-left: 15px;
 	padding-right: 10px;
