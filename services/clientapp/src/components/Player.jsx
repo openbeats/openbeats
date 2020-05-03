@@ -20,14 +20,21 @@ class Player extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      listenerStore: null
+      listenerStore: null,
+      isMobilePlayerOpened: false,
     };
+    this.playerWrapperRef = null;
     this.listenerFunction = this.listenerFunction.bind(this);
     this.updatePlayerPlayState = this.updatePlayerPlayState.bind(this);
     this.updatePlayerPauseState = this.updatePlayerPauseState.bind(this);
   }
   componentDidMount() {
     this.initListeners();
+    this.checkAndUpdateMobileVolume();
+  }
+
+  checkAndUpdateMobileVolume = () => {
+    if (this.props.detectMobile()) this.props.setFullVolumeForMobile();
   }
 
   componentWillUnmount() {
@@ -86,10 +93,28 @@ class Player extends Component {
     }
   }
 
+  toggleMobilePlayer = () => {
+    if (!this.state.isMobilePlayerOpened) {
+      this.setState({ isMobilePlayerOpened: true });
+      document.addEventListener("click", this.closeMobilePlayerHandler)
+    } else {
+      this.setState({ isMobilePlayerOpened: false });
+      document.removeEventListener("click", this.closeMobilePlayerHandler)
+    }
+  }
+
+  closeMobilePlayerHandler = e => {
+    if (!this.playerWrapperRef.contains(e.target)) {
+      this.setState({ isMobilePlayerOpened: false });
+      document.removeEventListener("click", this.closeMobilePlayerHandler)
+    }
+  }
+
+
   render() {
     return (
       <Fragment>
-        <div className="player-wrapper " id="player-wrapper">
+        <div className={`player-wrapper ${this.state.isMobilePlayerOpened ? "show-player" : ''}`} id="player-wrapper" ref={d => this.playerWrapperRef = d}>
           <audio
             id="music-player"
             onLoadedMetadata={() => this.props.setTotalDuration()}
@@ -248,22 +273,14 @@ class Player extends Component {
             </section>
             <div
               className="minimize-mobile-toggle"
-              onClick={() => {
-                const playerWrapperRef = document.getElementById(
-                  "player-wrapper"
-                );
-                playerWrapperRef.classList.remove("show-player");
-              }}
+              onClick={this.toggleMobilePlayer}
             >
               <i className="fas fa-times"></i>
             </div>
           </div>
         </div>
         <div
-          onClick={() => {
-            const playerWrapperRef = document.getElementById("player-wrapper");
-            playerWrapperRef.classList.add("show-player");
-          }}
+          onClick={this.toggleMobilePlayer}
           className="mobile-music-notifier"
         >
           {this.props.isMusicPlaying ? (
@@ -368,6 +385,12 @@ const mapDispatchToProps = dispatch => {
           reset: true
         }
       })
+    },
+    detectMobile: () => {
+      return playerActions.detectMobile();
+    },
+    setFullVolumeForMobile: () => {
+      playerActions.setFullVolumeForMobile();
     }
   };
 };

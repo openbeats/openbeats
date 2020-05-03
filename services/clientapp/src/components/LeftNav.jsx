@@ -6,10 +6,8 @@ import { push } from "connected-react-router";
 import { store } from "../store";
 import {
   masterLogo,
-  // navhome,
   navchart,
   navartist,
-  // navalbum,
   navhistory,
   navplaylist,
   navplus,
@@ -26,7 +24,9 @@ class LeftNav extends Component {
     this.state = {
       isCreateNewPlaylistTriggered: false,
       playlistName: '',
+      isLeftNavOpened: false
     }
+    this.navBarRef = null;
   }
 
   componentDidMount() {
@@ -35,13 +35,31 @@ class LeftNav extends Component {
     }
   }
 
+  closeLefNavMenu = () => {
+    if (!this.state.isLeftNavOpened) {
+      this.setState({ isLeftNavOpened: true });
+      document.addEventListener("click", this.closeLeftNavMenuHandler);
+    } else {
+      this.setState({ isLeftNavOpened: false });
+      document.removeEventListener("click", this.closeLeftNavMenuHandler);
+    }
+  }
+
+  closeLeftNavMenuHandler = (e) => {
+    // if (!this.navBarRef.contains(e.target)) {  // issue fix - close on clicking any menu
+    this.setState({ isLeftNavOpened: false });
+    document.removeEventListener("click", this.closeLeftNavMenuHandler);
+    // }
+  }
+
+
   render() {
     return (
       <Fragment>
-        <div id="nav-hamburger" className="hamburger-holder">
+        <div onClick={this.closeLefNavMenu} className="hamburger-holder">
           <img src={hamburger} alt="" srcSet="" />
         </div>
-        <nav id="nav">
+        <nav ref={d => this.navBarRef = d} className={`${this.state.isLeftNavOpened ? 'nav-show' : ''}`}>
           <section className="master-logo">
             <img
               className="cursor-pointer"
@@ -51,7 +69,7 @@ class LeftNav extends Component {
               src={masterLogo}
               alt=""
             />
-            <div id="nav-close" className="nav-close-holder">
+            <div onClick={this.closeLefNavMenu} className="nav-close-holder">
               <img src={navclose} alt="" srcSet="" />
             </div>
           </section>
@@ -60,7 +78,6 @@ class LeftNav extends Component {
               <div className="nav-menu" onClick={() => this.props.push("/")}>
                 <div className="nav-menu-icon-holder">
                   <i className="fas fa-home master-color nav-menu-icon-size"></i>
-                  {/* <img className="nav-menu-icon-size" src={navhome} alt="" /> */}
                 </div>
                 <p className="nav-menu-text">Home</p>
               </div>
@@ -79,7 +96,6 @@ class LeftNav extends Component {
               >
                 <div className="nav-menu-icon-holder">
                   <i className="master-color fad fa-album-collection nav-menu-icon-size"></i>
-                  {/* <img className="nav-menu-icon-size" src={navalbum} alt="" /> */}
                 </div>
                 <p className="nav-menu-text">Albums</p>
               </div>
@@ -98,7 +114,6 @@ class LeftNav extends Component {
               >
                 <div className="nav-menu-icon-holder">
                   <i className="master-color fas fa-heart-square nav-menu-icon-size"></i>
-                  {/* <img className="nav-menu-icon-size" src={navalbum} alt="" /> */}
                 </div>
                 <p className="nav-menu-text">My Collections</p>
               </div>

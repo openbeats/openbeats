@@ -5,6 +5,8 @@
     grid-template-rows: 40px auto;
     box-sizing: border-box;
     position: relative;
+    overflow-x: hidden;
+    overflow-y: auto;
 }
 
 .albumsdash-header {
@@ -20,13 +22,40 @@
 }
 
 .albumdash-container {
-    height: 100%;
     width: 100%;
+    height: 100%;
     display: grid;
     grid-template-columns: 50% 50%;
     overflow-y: auto;
     box-sizing: border-box;
 }
+
+/* width */
+.albumdash-container::-webkit-scrollbar {
+    width: 8px;
+    border-radius: 10px;
+}
+
+/* Track */
+.albumdash-container::-webkit-scrollbar-track {
+    background: var(--text-leftnav);
+    border-radius: 10px;
+}
+
+/* Handle */
+.albumdash-container::-webkit-scrollbar-thumb {
+    background: var(--base-color);
+    border-radius: 20px;
+    cursor: pointer;
+}
+
+/* Handle on hover */
+.albumdash-container::-webkit-scrollbar-thumb:hover {
+    background: var(--base-color);
+    opacity: 0.5;
+}
+
+
 
 .albumdash-container-left-pan {
     width: 100%;
@@ -94,4 +123,32 @@
 .albumdash-artist-tags-holder>div:nth-child(2) {
     font-size: 13px;
     color: gray;
+}
+
+@media only screen and (max-width: 1000px) {
+    .albumdash-container {
+        width: 100%;
+        height: auto;
+        display: block;
+        overflow-y: auto;
+    }
+
+    .albumdash-container-left-pan {
+        width: 100%;
+        height: auto;
+    }
+
+
+    .albumdash-container-right-pan {
+        box-sizing: border-box;
+        width: 100%;
+        /* overflow-x: hidden; */
+        height: auto;
+        display: block;
+    }
+
+    .albumsdash-header {
+        font-size: 12px;
+    }
+
 }
