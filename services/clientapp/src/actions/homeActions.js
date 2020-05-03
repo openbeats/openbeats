@@ -47,7 +47,6 @@ export const fetchMyCollections = async () => {
     }
 }
 
-
 export const fetchLatestAlbums = async (page = 1, limit = 10) => {
     try {
         const {

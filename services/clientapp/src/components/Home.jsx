@@ -7,6 +7,7 @@ import { HorizontalView, AlbumHolder, ArtistHolder } from '.';
 import Loader from 'react-loader-spinner';
 
 class Home extends Component {
+    _isMounted = false;
 
     constructor(props) {
         super(props);
@@ -23,6 +24,7 @@ class Home extends Component {
     }
 
     componentDidMount() {
+        this._isMounted = true;
         this.props.setCurrentAction("Home");
         this.prepareHomeData();
     }
@@ -34,32 +36,32 @@ class Home extends Component {
         if (this.props.isAuthenticated) await this.fetchMyCollections();
         await this.fetchPopularAlbums();
         await this.fetchPopularArtists();
-        this.setState({ isLoading: false })
+        this._isMounted && this.setState({ isLoading: false })
     }
 
     fetchTopCharts = async () => {
         const data = await this.props.fetchTopCharts();
-        this.setState({ topChartsCollection: data })
+        this._isMounted && this.setState({ topChartsCollection: data })
     }
 
     fetchMyCollections = async () => {
         const data = await this.props.fetchMyCollections();
-        this.setState({ myCollections: data });
+        this._isMounted && this.setState({ myCollections: data });
     }
 
     fetchPopularAlbums = async () => {
         const data = await this.props.fetchPopularAlbums();
-        this.setState({ popularAlbums: data });
+        this._isMounted && this.setState({ popularAlbums: data });
     }
 
     fetchLatestAlbums = async () => {
         const data = await this.props.fetchLatestAlbums();
-        this.setState({ latestAlbums: data });
+        this._isMounted && this.setState({ latestAlbums: data });
     }
 
     fetchPopularArtists = async () => {
         const data = await this.props.fetchPopularArtists();
-        this.setState({ popularArtists: data });
+        this._isMounted && this.setState({ popularArtists: data });
     }
 
     // List Preparing Part
@@ -198,6 +200,10 @@ class Home extends Component {
                 />
             </div>
         </div>
+    }
+
+    componentWillUnmount() {
+        this._isMounted = false;
     }
 
     render() {

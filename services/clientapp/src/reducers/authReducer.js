@@ -1,6 +1,7 @@
 import {
   UPDATE_LIKED_PLAYLISTS_METADATA
 } from "../types";
+import setAuthToken from "../utils/setAuthToken";
 
 let isAuthenticated = false;
 let userDetails = {
@@ -14,6 +15,7 @@ let likedPlaylists = [];
 
 if (localStorage.getItem("userDetails")) {
   userDetails = JSON.parse(localStorage.getItem("userDetails"));
+  setAuthToken(userDetails);
   isAuthenticated = true;
   likedPlaylists = [];
 }
