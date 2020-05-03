@@ -15,6 +15,7 @@ class LeftNav extends Component {
 			openMobileLeftNav: false
 		};
 		this.menuRef = null;
+		this.leftNavRef = null;
 	}
 
 	componentWillUnmount() {
@@ -39,34 +40,56 @@ class LeftNav extends Component {
 	};
 
 	toggleMobileLeftNav = () => {
-		console.log("hits here")
-		this.setState({ openMobileLeftNav: !this.state.openMobileLeftNav })
+		if (!this.state.openMobileLeftNav) {
+			this.setState({ openMobileLeftNav: true });
+			document.addEventListener("click", this.closeLeftNavMenu);
+		} else {
+			this.setState({ openMobileLeftNav: false });
+			document.removeEventListener("click", this.closeLeftNavMenu);
+		}
+	}
+
+	closeLeftNavMenu = e => {
+		if (!this.leftNavRef.contains(e.target)) {
+			this.setState({ openMobileLeftNav: false });
+			document.removeEventListener("click", this.closeLeftNavMenu);
+		}
 	}
 
 	render() {
 		return (
-			<div className={`leftnav-wrapper ${this.state.openMobileLeftNav ? "open-mobile-leftnav" : ''}`}>
+			<div ref={d => this.leftNavRef = d} className={`leftnav-wrapper ${this.state.openMobileLeftNav ? "open-mobile-leftnav" : ''}`}>
 				<div className="hamburger-holder" onClick={this.toggleMobileLeftNav}>
-					<i className="far fa-bars"></i>
+					{this.state.openMobileLeftNav && <i class="fas fa-angle-left"></i>}
+					{!this.state.openMobileLeftNav && <i class="fas fa-angle-right"></i>}
 				</div>
 				<ul className="leftnav-menu">
 					<div className="leftnav-item hanging-music-player-holder">
 						<img
 							className="leftnav-logo-img cursor-pointer"
-							onClick={() => this.props.toggleHangingPlayer(!this.props.showHangingPlayer)}
+							onClick={() => {
+								this.props.toggleHangingPlayer(!this.props.showHangingPlayer);
+								this.toggleMobileLeftNav();
+							}}
 							src={logo}
 							alt=""
 							srcSet=""
 						/>
 						<HangingPlayer />
 					</div>
-					<Link to="/" onClick={() => this.props.setCurrentNavItem("home")} className={`leftnav-item`} title="Home - view insights and more">
+					<Link to="/" onClick={() => {
+						this.props.setCurrentNavItem("home");
+						this.toggleMobileLeftNav();
+					}} className={`leftnav-item`} title="Home - view insights and more">
 						<div className={`content ${this.props.currentNavItem === "home" ? "item-active" : ""}`} title="Home">
 							<i className="far fa-home"></i>
 							<span>Home</span>
 						</div>
 					</Link>
-					<Link to="/albums" onClick={() => this.props.setCurrentNavItem("albums")} className={`leftnav-item`} title="Create, View and Update Albums">
+					<Link to="/albums" onClick={() => {
+						this.props.setCurrentNavItem("albums");
+						this.toggleMobileLeftNav();
+					}} className={`leftnav-item`} title="Create, View and Update Albums">
 						<div className={`content ${this.props.currentNavItem === "albums" ? "item-active" : ""}`}>
 							<i className="fas fa-album-collection"></i>
 							<span>Albums</span>
@@ -74,7 +97,10 @@ class LeftNav extends Component {
 					</Link>
 					<Link
 						to="/artists"
-						onClick={() => this.props.setCurrentNavItem("artists")}
+						onClick={() => {
+							this.props.setCurrentNavItem("artists");
+							this.toggleMobileLeftNav();
+						}}
 						className={`leftnav-item`}
 						title="Add, Update and delete Artists">
 						<div className={`content ${this.props.currentNavItem === "artists" ? "item-active" : ""}`}>
@@ -83,7 +109,10 @@ class LeftNav extends Component {
 						</div>
 					</Link>
 					{[2, 3].includes(this.props.adminDetails.accessLevel) &&
-						<Link to="userbase" onClick={() => this.props.setCurrentNavItem("userbase")} className={`leftnav-item`} title="View users">
+						<Link to="userbase" onClick={() => {
+							this.props.setCurrentNavItem("userbase");
+							this.toggleMobileLeftNav();
+						}} className={`leftnav-item`} title="View users">
 							<div className={`content ${this.props.currentNavItem === "userbase" ? "item-active" : ""}`}>
 								<i className="fas fa-users"></i>
 								<span>Users</span>
@@ -94,7 +123,10 @@ class LeftNav extends Component {
 						<div
 							ref={d => (this.menuRef = d)}
 							className={`leftnav-item profile-options ${this.state.profileOptionsShow ? "profile-options-show" : ""}`}>
-							<div className="content" onClick={() => this.props.logoutHandler()}>
+							<div className="content" onClick={() => {
+								this.props.logoutHandler();
+								this.toggleMobileLeftNav();
+							}}>
 								<i className="fas fa-sign-out-alt"></i>
 								<span>Logout</span>
 							</div>
