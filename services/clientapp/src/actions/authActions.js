@@ -12,6 +12,7 @@ import {
   variables
 } from "../config";
 import axios from "axios";
+import setAuthToken from "../utils/setAuthToken";
 
 export async function loginHandler(email, password) {
   try {
@@ -35,6 +36,7 @@ export async function loginHandler(email, password) {
         likedPlaylists: data.likedPlaylists
       };
       localStorage.setItem("userDetails", JSON.stringify(userDetails));
+      setAuthToken(userDetails);
       store.dispatch({
         type: "LOGIN_USER",
         payload: {
@@ -79,6 +81,7 @@ export async function registerHandler(name, email, password) {
         likedPlaylists: data.likedPlaylists,
       };
       localStorage.setItem("userDetails", JSON.stringify(userDetails));
+      setAuthToken(userDetails);
       store.dispatch({
         type: "LOGIN_USER",
         payload: {
@@ -157,6 +160,7 @@ export async function resetEmailHandler(email) {
 
 export async function logoutHandler() {
   localStorage.removeItem("userDetails");
+  setAuthToken(false);
   await playerActions.resetPlayer();
   await store.dispatch({
     type: "LOGOUT_USER",
