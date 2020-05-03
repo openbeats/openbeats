@@ -2,8 +2,7 @@ import middleware from "./config/middleware";
 import express from "express";
 import {
 	ytcat,
-	suggestbeat,
-	copycat
+	suggestbeat
 } from "./core";
 import ytdl from "ytdl-core";
 import fetch from "node-fetch";
