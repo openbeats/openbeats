@@ -1,6 +1,6 @@
 import middleware from "./config/middleware";
 import express from "express";
-import { ytcat, suggestbeat, copycat } from "./core";
+import { ytcat, suggestbeat } from "./core";
 import ytdl from "ytdl-core";
 import fetch from "node-fetch";
 import redis from "./config/redis";
