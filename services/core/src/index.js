@@ -1,10 +1,16 @@
 import middleware from "./config/middleware";
 import express from "express";
-import { ytcat, suggestbeat, copycat } from "./core";
+import {
+	ytcat,
+	suggestbeat,
+	copycat
+} from "./core";
 import ytdl from "ytdl-core";
 import fetch from "node-fetch";
 import redis from "./config/redis";
-import { config } from "./config";
+import {
+	config
+} from "./config";
 import dbconfig from "./config/db";
 import addtorecentlyplayed from "./config/addtorecentlyplayed";
 import Song from "./models/Song";
@@ -56,12 +62,17 @@ app.get("/opencc/:id", addtorecentlyplayed, async (req, res) => {
 				}
 			});
 		} else {
+			console.log(songDetails)
 			songDetails = JSON.parse(songDetails);
 		}
 		setTimeout(() => {
 			addSongInDeAttachedMode(videoID, req.song);
 		}, 0);
-		return res.json({ status: true, link: songDetails.sourceUrl, HRThumbnail: songDetails.HRThumbnail });
+		return res.json({
+			status: true,
+			link: songDetails.sourceUrl,
+			HRThumbnail: songDetails.HRThumbnail
+		});
 	} catch (error) {
 		console.log(error);
 		return res.send({
@@ -198,7 +209,9 @@ app.get("/getsong/:id", async (req, res) => {
 
 // get multiple songs at a time
 app.post("/getsongs", async (req, res) => {
-	const { songIds } = req.body;
+	const {
+		songIds
+	} = req.body;
 	try {
 		const songsPromise = [];
 		for (let id of songIds) {
