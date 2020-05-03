@@ -4,6 +4,7 @@ import { playerpause, playerplay, playerdownload, pQueueRed, playlistadd } from 
 import Loader from 'react-loader-spinner';
 import { toastActions } from '../actions';
 import { variables } from '../config';
+import axios from "axios";
 
 export default class Song extends Component {
 
@@ -20,16 +21,15 @@ export default class Song extends Component {
             this.setState({ videoId: null })
             return
         }
-        await fetch(`${variables.baseUrl}/downcc/${item.videoId}?title=${encodeURI(item.title)}`)
-            .then(res => {
-                if (res.status === 200) {
-                    window.open(`${variables.baseUrl}/downcc/${item.videoId}?title=${encodeURI(item.title)}`, "_blank")
-                } else {
-                    toastActions.showMessage("Requested content not available right now!, try downloading alternate songs!");
-                }
-            }).catch(err => {
-                toastActions.showMessage("Requested content not available right now!, try downloading alternate songs!");
-            })
+        try {
+            const response = await axios.get(`${variables.baseUrl}/downcc/${item.videoId}?title=${encodeURI(item.title)}`);
+            if (response.status === 200)
+                window.open(`${variables.baseUrl}/downcc/${item.videoId}?title=${encodeURI(item.title)}`, "_blank")
+            else
+                throw new Error("!");
+        } catch (error) {
+            toastActions.showMessage("Requested content not available right now!, try downloading alternate songs!");
+        }
         this.setState({ videoId: null })
     }
 

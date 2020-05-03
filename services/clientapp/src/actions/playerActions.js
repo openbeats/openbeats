@@ -18,6 +18,7 @@ import {
 import {
 	Base64
 } from "js-base64";
+import axios from "axios";
 
 export function playPauseToggle() {
 	const playerRef = document.getElementById("music-player");
@@ -255,87 +256,49 @@ export async function initPlayer(audioData, playMusic = true) {
 		},
 	});
 
-	const isAuthenticated = await store.getState().authReducer.isAuthenticated;
-	const options = {};
-	if (isAuthenticated) {
-		const token = await store.getState().authReducer.userDetails.token;
-		options.headers = {
-			"x-auth-token": token,
-		};
-	}
 	const audioDataB64 = Base64.encode(JSON.stringify(audioData));
-	const masterUrl = `${
-		variables.baseUrl
-	}/opencc/${audioData.videoId.trim()}?info=${audioDataB64}`;
-	const fallBackUrl = `${
-		variables.baseUrl
-	}/fallback/${audioData.videoId.trim()}`;
+	const masterUrl = `${variables.baseUrl}/opencc/${audioData.videoId.trim()}?info=${audioDataB64}`;
+	const fallBackUrl = `${variables.baseUrl}/fallback/${audioData.videoId.trim()}`;
 
-	await fetch(masterUrl, options)
-		.then(async res => {
-			const resjson = await res.json();
-			return resjson;
-		})
-		.then(async res => {
-			if (res.status) {
-				if (
-					store.getState().nowPlayingReducer.currentPlaying.videoId ===
-					audioData.videoId
-				) {
+	try {
+		const {
+			data
+		} = await axios.get(masterUrl);
+		const res = data;
+		if (res.status) {
+			if (store.getState().nowPlayingReducer.currentPlaying.videoId === audioData.videoId) {
+				await store.dispatch({
+					type: "LOAD_AUDIO_DATA",
+					payload: {
+						masterUrl: res.link,
+						fallBackUrl,
+					},
+				});
+				await startPlayer(playMusic);
+			}
+		} else {
+			const dat = await axios.get(fallBackUrl);
+			const resData = dat.data;
+			if (resData.status === 200) {
+				if ((await store.getState().nowPlayingReducer.currentPlaying.videoId) === audioData.videoId) {
 					await store.dispatch({
 						type: "LOAD_AUDIO_DATA",
 						payload: {
-							masterUrl: res.link,
+							masterUrl: resData.link,
 							fallBackUrl,
 						},
 					});
 					await startPlayer(playMusic);
 				}
-			} else {
-				await fetch(fallBackUrl)
-					.then(async res => {
-						if (res.status === 200) {
-							if (
-								(await store.getState().nowPlayingReducer.currentPlaying
-									.videoId) === audioData.videoId
-							) {
-								await store.dispatch({
-									type: "LOAD_AUDIO_DATA",
-									payload: {
-										masterUrl: res.link,
-										fallBackUrl,
-									},
-								});
-								await startPlayer(playMusic);
-							}
-						} else {
-							toastActions.showMessage(
-								"Requested audio is not availabe right now! try alternate search!",
-							);
-							await store.dispatch(await resetPlayer());
-							nowPlayingActions.clearQueue();
-						}
-					})
-					.catch(async err => {
-						toastActions.showMessage(
-							"Requested audio is not availabe right now!" + String(err),
-						);
-						await store.dispatch(await resetPlayer());
-						nowPlayingActions.clearQueue();
-					});
-			}
-		})
-		.catch(async err => {
-			if (String(err).indexOf("AbortError:") > -1) {
-				// toastActions.showMessage("Slow and Steady Wins the Race!")
-			} else {
-				toastActions.showMessage(
-					"Requested audio is not availabe right now! " + String(err),
-				);
-				await store.dispatch(await resetPlayer());
-				nowPlayingActions.clearQueue();
-			}
-		});
+			} else
+				throw new Error("Not Available")
+		}
+	} catch (error) {
+		toastActions.showMessage("Requested audio is not availabe right now! " + error.message.toString());
+		await store.dispatch(await resetPlayer());
+		nowPlayingActions.clearQueue();
+	}
+
 	return true;
 }
 
@@ -416,11 +379,9 @@ export const initMediaSession = async () => {
 	}
 }
 
-export function playerDownloadHandler(e) {
+export async function playerDownloadHandler(e) {
 	if (!store.getState().authReducer.isAuthenticated) {
 		toastActions.showMessage("Please Login to use this feature!");
-		// playerActions.resetPlayer();
-		// store.dispatch(push("/auth"));
 		return;
 	}
 	let state = store.getState().playerReducer;
@@ -439,51 +400,29 @@ export function playerDownloadHandler(e) {
 			},
 		});
 	} else {
-		fetch(
-				`${variables.baseUrl}/downcc/${state.id}?title=${encodeURI(
-				state.songTitle,
-			)}`,
-			)
-			.then(res => {
-				if (res.status === 200) {
-					store.dispatch({
-						type: "PLAYER_DOWNLOAD_HANDLE",
-						payload: {
-							downloadProcess: false,
-						},
-					});
-					window.open(
-						`${variables.baseUrl}/downcc/${state.id}?title=${encodeURI(
-							state.songTitle,
-						)}`,
-						"_self",
-					);
-				} else {
-					store.dispatch({
-						type: "PLAYER_DOWNLOAD_HANDLE",
-						payload: {
-							downloadProcess: false,
-						},
-					});
-					toastActions.showMessage(
-						"Requested content not available right now!, try downloading alternate songs!",
-					);
-				}
-			})
-			.catch(err => {
+		try {
+			const response = await axios.get(`${variables.baseUrl}/downcc/${state.id}?title=${encodeURI(state.songTitle)}`)
+			if (response.status === 200) {
 				store.dispatch({
 					type: "PLAYER_DOWNLOAD_HANDLE",
 					payload: {
 						downloadProcess: false,
 					},
 				});
-				toastActions.showMessage(
-					"Requested content not available right now!, try downloading alternate songs!",
-				);
+				window.open(`${variables.baseUrl}/downcc/${state.id}?title=${encodeURI(state.songTitle)}`, "_blank");
+			} else
+				throw new Error("Not Available");
+		} catch (error) {
+			store.dispatch({
+				type: "PLAYER_DOWNLOAD_HANDLE",
+				payload: {
+					downloadProcess: false,
+				},
 			});
+			toastActions.showMessage("Requested content not available right now!, try downloading alternate songs!" + error.message.toString());
+		}
 	}
 }
-
 
 export function detectMobile() {
 	const toMatch = [

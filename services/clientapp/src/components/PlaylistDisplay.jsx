@@ -8,6 +8,7 @@ import Loader from 'react-loader-spinner';
 import { variables } from '../config';
 import queryString from 'query-string';
 import { store } from '../store';
+import axios from "axios";
 
 class PlaylistDisplay extends Component {
 
@@ -20,13 +21,12 @@ class PlaylistDisplay extends Component {
             type: "",
             playlistThumbnail: musicDummy,
             downloadProcess: false,
-            videoId: [],
             isLoading: true,
             editedName: "",
             editPlaylistName: false,
+            videoId: []
         }
         this.state = { ...this.initialState };
-        this.videoId = []
     }
 
     async componentDidMount() {
@@ -92,6 +92,25 @@ class PlaylistDisplay extends Component {
             this.props.updatePlayerQueue(playlistData, key);
         } else {
             this.props.notify("Your playlist is empty! you can search and add songs to the playlist :-)")
+        }
+    }
+
+    downloadHandler = async (item) => {
+        if (!this.props.isAuthenticated) {
+            toastActions.showMessage("Please Login to use this feature!")
+            return
+        }
+        try {
+            const response = await axios.get(`${variables.baseUrl}/downcc/${item.videoId}?title=${encodeURI(item.title)}`);
+            if (response.status === 200) {
+                window.open(`${variables.baseUrl}/downcc/${item.videoId}?title=${encodeURI(item.title)}`, '_blank')
+                this.setState({ videoId: [...this.state.videoId.filter(id => id !== item.videoId)] });
+            }
+            else
+                throw new Error("!");
+        } catch (error) {
+            this.props.notify("Requested content not available right now!, try downloading alternate songs!" + error.message.toString());
+            this.setState({ videoId: [...this.state.videoId.filter(id => id !== item.videoId)] });
         }
     }
 
@@ -242,33 +261,13 @@ class PlaylistDisplay extends Component {
                                             }
                                         </span>
                                         <span>
-                                            <a download
+                                            <div download
                                                 onClick={async (e) => {
-                                                    e.preventDefault()
-                                                    if (!this.props.isAuthenticated) {
-                                                        toastActions.showMessage("Please Login to use this feature!")
-                                                        return
-                                                    }
-                                                    this.videoId.push(item.videoId)
-                                                    this.setState({ videoId: this.videoId })
-                                                    await fetch(`${variables.baseUrl}/downcc/${item.videoId}?title=${encodeURI(item.title)}`)
-                                                        .then(res => {
-                                                            if (res.status === 200) {
-                                                                this.videoId.splice(this.videoId.indexOf(item.videoId), 1)
-                                                                this.setState({ videoId: this.videoId })
-                                                                window.open(`${variables.baseUrl}/downcc/${item.videoId}?title=${encodeURI(item.title)}`, '_self')
-                                                            } else {
-                                                                this.videoId.splice(this.videoId.indexOf(item.videoId), 1)
-                                                                this.setState({ videoId: this.videoId })
-                                                                this.props.notify("Requested content not available right now!, try downloading alternate songs!");
-                                                            }
-                                                        }).catch(err => {
-                                                            this.videoId.splice(this.videoId.indexOf(item.videoId), 1)
-                                                            this.setState({ videoId: this.videoId })
-                                                            this.props.notify("Requested content not available right now!, try downloading alternate songs!");
-                                                        })
+                                                    e.preventDefault();
+                                                    await this.setState({ videoId: [...this.state.videoId, item.videoId] })
+                                                    this.downloadHandler(item);
                                                 }}
-                                                className="t-none cursor-pointer" href={`${variables.baseUrl}/downcc/${item.videoId}?title=${encodeURI(item.title)}`}>
+                                                className="t-none cursor-pointer">
                                                 {this.state.videoId.includes(item.videoId) ?
                                                     <Loader
                                                         type="Oval"
@@ -280,7 +279,7 @@ class PlaylistDisplay extends Component {
                                                     :
                                                     <img className="playlist-display-songs-icon-2" src={playerdownload} alt="" />
                                                 }
-                                            </a>
+                                            </div>
                                         </span>
                                         {this.state.type === 'user' &&
                                             <span>
