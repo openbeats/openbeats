@@ -8,6 +8,7 @@ import { config } from "./config";
 import dbconfig from "./config/db";
 import addtorecentlyplayed from "./config/addtorecentlyplayed";
 import Song from "./models/Song";
+import isSafe from "./utils/isSafe";
 dbconfig();
 
 const PORT = process.env.PORT || config.isDev ? config.port.dev : config.port.prod;
@@ -23,63 +24,47 @@ app.get("/opencc/:id", addtorecentlyplayed, async (req, res) => {
 	try {
 		const videoID = req.params.id;
 		if (!ytdl.validateID(videoID)) throw new Error("INvalid id");
-		redis.get(videoID, async (err, value) => {
-			try {
-				if (value) {
-					let sourceUrl = value;
-					setTimeout(() => {
-						addSongInDeAttachedMode(videoID, req.song);
-					}, 0);
-					res.send({
-						status: true,
-						link: sourceUrl,
-					});
-				} else {
-					const info = await (await fetch(`${config.lambda}${videoID}`)).json();
-					if (info.formats) {
-						setTimeout(() => {
-							addSongInDeAttachedMode(videoID, req.song);
-						}, 0);
-						let audioFormats = ytdl.filterFormats(info.formats, "audioonly");
-						if (!audioFormats[0].contentLength) {
-							audioFormats = ytdl.filterFormats(info.formats, "audioandvideo");
-						}
-						let sourceUrl = audioFormats[0].url;
-						redis.set(videoID, sourceUrl, err => {
-							if (err) console.error(err);
-							else {
-								redis.expire(videoID, 20000, err => {
-									if (err) console.error(err);
-								});
-							}
-						});
-						res.send({
-							status: true,
-							link: sourceUrl,
-						});
-					} else {
-						throw new Error("Cannot Fetch the requested song");
-					}
+		const isAvail = new Promise((resolve, reject) => {
+			redis.get(videoID, (err, value) => {
+				if (err) {
+					reject(err);
 				}
-			} catch (error) {
-				let link = null;
-				let status = 404;
-				if (ytdl.validateID(videoID)) {
-					link = await copycat(videoID);
-					if (link)
-						setTimeout(() => {
-							addSongInDeAttachedMode(videoID, req.song);
-						}, 0);
-					status = 200;
-				}
-				res.send({
-					status: status === 200 ? true : false,
-					link: link,
-				});
-			}
+				resolve(value);
+			});
 		});
+		let songDetails = await isAvail;
+		if (!songDetails) {
+			songDetails = {};
+			const info = await (await fetch(`${config.lambda}${videoID}`)).json();
+			if (!info.formats) {
+				throw new Error("Cannot fetch the requested song...");
+			}
+			let audioFormats = ytdl.filterFormats(info.formats, "audioonly");
+			if (!audioFormats[0].contentLength) {
+				audioFormats = ytdl.filterFormats(info.formats, "audioandvideo");
+			}
+			songDetails.sourceUrl = audioFormats[0].url;
+			songDetails.HRThumbnail = isSafe(
+				() => info["player_response"]["microformat"]["playerMicroformatRenderer"]["thumbnail"]["thumbnails"][0]["url"]
+			);
+			redis.set(videoID, JSON.stringify(songDetails), err => {
+				if (err) console.error(err);
+				else {
+					redis.expire(videoID, 20000, err => {
+						if (err) console.error(err);
+					});
+				}
+			});
+		} else {
+			songDetails = JSON.parse(songDetails);
+		}
+		setTimeout(() => {
+			addSongInDeAttachedMode(videoID, req.song);
+		}, 0);
+		return res.json({ status: true, link: songDetails.sourceUrl, HRThumbnail: songDetails.HRThumbnail });
 	} catch (error) {
-		res.send({
+		console.log(error);
+		return res.send({
 			status: false,
 			link: null,
 		});
