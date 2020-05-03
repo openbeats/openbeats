@@ -94,3 +94,45 @@
     visibility: visible;
     height: auto;
 }
+
+.hamburger-holder {
+    position: absolute;
+    bottom: 5px;
+    right: -45px;
+    font-weight: bold;
+    font-size: 20px;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    display: none;
+    z-index: 100000;
+    box-shadow: 0 0 10px 0 gray;
+    background: var(--base-color);
+    color: white;
+}
+
+
+
+@media only screen and (max-width: 1000px) {
+    .leftnav-wrapper {
+        width: auto;
+        position: fixed;
+        z-index: 1010;
+        margin-left: -55px;
+        box-shadow: 0 0 0px 0 gray;
+        transition-property: all;
+        transition-duration: .3s;
+        transition-timing-function: ease-in;
+    }
+
+    .open-mobile-leftnav {
+        margin-left: 0px !important;
+    }
+
+    .hamburger-holder {
+        display: flex;
+    }
+}

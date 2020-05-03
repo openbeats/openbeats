@@ -127,6 +127,22 @@ export function updateVolume(e) {
 	};
 }
 
+export function setFullVolumeForMobile() {
+	let payload = {};
+	const playerRef = document.getElementById("music-player");
+
+	playerRef.volume = 1.0;
+	playerRef.muted = false;
+	payload = {
+		isMuted: false,
+		playerVolume: playerRef.volume,
+	};
+	store.dispatch({
+		type: "UPDATE_VOLUME",
+		payload
+	});
+}
+
 export function setTotalDuration() {
 	const playerRef = document.getElementById("music-player");
 	var durmins = Math.floor(playerRef.duration / 60);
@@ -460,4 +476,21 @@ export function playerDownloadHandler(e) {
 				);
 			});
 	}
+}
+
+
+export function detectMobile() {
+	const toMatch = [
+		/Android/i,
+		/webOS/i,
+		/iPhone/i,
+		/iPad/i,
+		/iPod/i,
+		/BlackBerry/i,
+		/Windows Phone/i
+	];
+
+	return toMatch.some((toMatchItem) => {
+		return navigator.userAgent.match(toMatchItem);
+	});
 }

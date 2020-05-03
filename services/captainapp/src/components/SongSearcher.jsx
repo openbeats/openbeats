@@ -159,15 +159,15 @@ export default class SongSearcher extends Component {
 												backgroundImage: `url(${item.thumbnail})`,
 											}}></div>
 									</div>
-									<div className="song-searcher-actions ml-3">
+									<div className="song-searcher-actions">
 										<i
-											className="fas fa-play-circle shadow cursor-pointer ml-1"
+											className="fas fa-play-circle shadow cursor-pointer"
 											onClick={() => this.playSongTrial(key)}></i>
 										<i
-											className="fas fa-plus-circle shadow cursor-pointer ml-4"
+											className="fas fa-plus-circle shadow cursor-pointer"
 											onClick={() => this.addSongToBucket(key)}></i>
 									</div>
-									<div className="font-weight-bold ml-4">{item.title}</div>
+									<div className="font-weight-bold song-searcher-song-title">{item.title}</div>
 								</div>
 							))}
 						</div>

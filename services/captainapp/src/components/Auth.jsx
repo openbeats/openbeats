@@ -3,6 +3,7 @@ import { MDBInput, MDBBtn, MDBCard, MDBCardBody } from 'mdbreact';
 import { logo } from '../assets/images';
 import { connect } from "react-redux";
 import { authActions } from '../actions';
+import "../assets/styles/auth.css";
 
 class Auth extends Component {
 
@@ -21,14 +22,14 @@ class Auth extends Component {
 
     render() {
         return (
-            <div className="auth-wrapper vw-100 vh-100 d-flex align-items-center justify-content-center">
-                <MDBCard className="w-25 shadow-none">
+            <div className="auth-wrapper">
+                <MDBCard className="shadow-none auth-card-holder">
                     <MDBCardBody>
                         <form onSubmit={e => {
                             e.preventDefault();
                             this.props.loginHandler(this.state.email, this.state.password);
                         }}>
-                            <p className="h4 text-center py-1 d-flex align-items-center justify-content-center"><img className="rounded-circle" alt="logo" style={{ height: "100px" }} src={logo} /></p>
+                            <p className="h4 text-center d-flex align-items-center justify-content-center"><img className="rounded-circle" alt="logo" style={{ height: "100px" }} src={logo} /></p>
                             <div className="grey-text">
                                 <MDBInput
                                     label="Your email"

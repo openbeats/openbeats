@@ -39,7 +39,7 @@ class PlaylistDisplay extends Component {
 
     async playlistFetchHandler() {
         try {
-            await this.setState({ ...this.initialState })
+            await this.setState({ ...this.initialState });
             const {
                 type,
                 id
@@ -56,7 +56,13 @@ class PlaylistDisplay extends Component {
                     data = await this.props.fetchAlbumPlaylist(id, 'album');
                     break;
                 case "recentlyplayed":
-                    data = await this.props.fetchAlbumPlaylist(id, 'recentlyplayed');
+                    if (this.props.isAuthenticated)
+                        data = await this.props.fetchAlbumPlaylist(id, 'recentlyplayed');
+                    else {
+                        this.props.notify("Please Login to Use this Feature!")
+                        this.props.push("/")
+                        return;
+                    }
                     break;
                 default:
                     throw new Error("Invalid");
@@ -94,6 +100,11 @@ class PlaylistDisplay extends Component {
             this.playlistFetchHandler()
         }
     }
+
+    componentWillUnmount() {
+        this.setState({ ...this.initialState });
+    }
+
 
     render() {
         return (
