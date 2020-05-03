@@ -1,8 +1,6 @@
-import {
-	Router
-} from "express";
+import { Router } from "express";
 import User from "../models/User";
-import auth from "../config/auth";
+import auth from "../permissions/auth";
 
 const router = Router();
 
@@ -14,8 +12,7 @@ router.post("/recentlyplayed", async (req, res) => {
 			const user = await User.findById(userId);
 			if (user) {
 				let recentlyPlayedIds = user.recentlyPlayedSongs;
-				if (recentlyPlayedIds.indexOf(videoId) !== -1)
-					recentlyPlayedIds.splice(recentlyPlayedIds.indexOf(videoId), 1);
+				if (recentlyPlayedIds.indexOf(videoId) !== -1) recentlyPlayedIds.splice(recentlyPlayedIds.indexOf(videoId), 1);
 				recentlyPlayedIds.unshift(videoId);
 				recentlyPlayedIds = recentlyPlayedIds.slice(0, 30);
 				user.recentlyPlayedSongs = recentlyPlayedIds;
@@ -46,10 +43,7 @@ router.get("/recentlyplayed", auth, async (req, res) => {
 });
 
 router.post("/mycollections", async (req, res) => {
-	const {
-		userId,
-		albumId
-	} = req.body;
+	const { userId, albumId } = req.body;
 	try {
 		const user = await User.findById(userId);
 		if (user) {
@@ -75,10 +69,7 @@ router.post("/mycollections", async (req, res) => {
 });
 
 router.delete("/mycollections", async (req, res) => {
-	const {
-		userId,
-		albumId
-	} = req.body;
+	const { userId, albumId } = req.body;
 	try {
 		const user = await User.findById(userId);
 		if (user) {
@@ -106,10 +97,8 @@ router.delete("/mycollections", async (req, res) => {
 router.get("/mycollections", auth, async (req, res) => {
 	try {
 		let user = null;
-		if (req.query.metadata)
-			user = await User.findById(req.user.id);
-		else
-			user = await User.findById(req.user.id).populate("likedPlaylists");
+		if (req.query.metadata) user = await User.findById(req.user.id);
+		else user = await User.findById(req.user.id).populate("likedPlaylists");
 		res.send({
 			id: req.user.id,
 			status: true,
@@ -122,6 +111,5 @@ router.get("/mycollections", auth, async (req, res) => {
 		});
 	}
 });
-
 
 export default router;
