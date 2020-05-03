@@ -368,10 +368,16 @@ export const initMediaSession = async () => {
 		navigator.mediaSession.metadata = new MediaMetadata({
 			title: state.playerReducer.songTitle,
 			artwork: [{
-				src: state.playerReducer.thumbnail.split("?")[0],
-				sizes: '480x360',
-				type: 'image/jpg'
-			}]
+					src: state.playerReducer.thumbnail.split("?")[0],
+					sizes: '480x360',
+					type: 'image/jpg'
+				},
+				{
+					src: `https://i.ytimg.com/vi/${state.playerReducer.id}/maxresdefault.jpg`,
+					sizes: '1280x720',
+					type: 'image/jpg'
+				}
+			]
 		});
 
 		navigator.mediaSession.setActionHandler('play', () => {
