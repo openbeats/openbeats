@@ -4,6 +4,10 @@ import {
 import {
     variables
 } from "../config";
+import axios from "axios";
+import {
+    toastActions
+} from ".";
 
 export function updateSuggestionText(text) {
     return {
@@ -36,23 +40,28 @@ export async function fetchResults() {
     });
 
     const url = `${variables.baseUrl}/ytcat?q=${state.suggestionText.replace(/[^\w\s-]/gi, '')}&advanced=true`;
-    await fetch(url)
-        .then(res => res.json())
-        .then(async res => {
-            if (res.status) {
-                await store.dispatch({
-                    type: "FETCH_RESULTS",
-                    payload: {
-                        songs: res.data.songs,
-                        albums: res.data.albums,
-                        artists: res.data.artists,
-                        isSearching: false,
-                        keywordSuggestions: []
-                    }
-                })
-            }
-        })
-        .catch(err => console.error(err));
+    try {
+        const {
+            data
+        } = await axios.get(url);
+        const res = data;
+        if (res.status) {
+            await store.dispatch({
+                type: "FETCH_RESULTS",
+                payload: {
+                    songs: res.data.songs,
+                    albums: res.data.albums,
+                    artists: res.data.artists,
+                    isSearching: false,
+                    keywordSuggestions: []
+                }
+            })
+        } else {
+            throw new Error(res.data);
+        }
+    } catch (error) {
+        toastActions.showMessage(error.message.toString());
+    }
 
     return true;
 }
@@ -68,31 +77,34 @@ export async function getKeywordSuggestion(key) {
         }
     });
     const url = `${variables.baseUrl}/suggester?k=${key}`;
-    await fetch(url)
-        .then(res => res.json())
-        .then(async res => {
-            let temp = res.data.slice(0, 10);
-            let listener = document.addEventListener("click", async function () {
-                if (state.listener != null) {
-                    document.removeEventListener(state.listenter);
-                }
-                await store.dispatch({
-                    type: "FETCH_KEYWORD_SUGGESTION",
-                    payload: {
-                        keywordSuggestions: [],
-                        listener: null
-                    }
-                });
-            });
+    try {
+        const {
+            data
+        } = await axios.get(url);
+        const res = data;
+        let temp = res.data.slice(0, 10);
+        let listener = document.addEventListener("click", async function () {
+            if (state.listener != null) {
+                document.removeEventListener(state.listenter);
+            }
             await store.dispatch({
                 type: "FETCH_KEYWORD_SUGGESTION",
                 payload: {
-                    keywordSuggestions: temp,
-                    listener: listener
+                    keywordSuggestions: [],
+                    listener: null
                 }
             });
-        })
-        .catch(e => console.error(e))
+        });
+        await store.dispatch({
+            type: "FETCH_KEYWORD_SUGGESTION",
+            payload: {
+                keywordSuggestions: temp,
+                listener: listener
+            }
+        });
+    } catch (error) {
+        toastActions.showMessage(error.message.toString());
+    }
 
     return true;
 }
