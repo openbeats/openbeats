@@ -1,10 +1,6 @@
 import express from "express";
 import TopChart from "../models/TopChart";
-import {
-	fetchTopCharts,
-	englishTopCharts,
-	fetchMissedSongs
-} from "../core/topCharts";
+import { fetchTopCharts, englishTopCharts, fetchMissedSongs } from "../core/topCharts";
 import MissedFetch from "../models/MissedFetch";
 
 const router = express.Router();
@@ -14,13 +10,13 @@ router.get("/metadata", async (req, res) => {
 		const metachart = await TopChart.find().select("-songs");
 		res.send({
 			status: true,
-			allcharts: metachart
+			allcharts: metachart,
 		});
 	} catch (error) {
 		console.error(error.message);
 		res.send({
 			status: false,
-			error: "Internal Server Error."
+			error: "Internal Server Error.",
 		});
 	}
 });
@@ -34,7 +30,7 @@ router.get("/inittopcharts", (req, res) => {
 	}, 9000);
 	res.send({
 		status: true,
-		msg: "Topcharts fetch initiated"
+		msg: "Topcharts fetch initiated",
 	});
 });
 
@@ -54,16 +50,7 @@ router.get("/inittopcharts/missedsongs", async (req, res) => {
 router.get("/:toplistId", async (req, res) => {
 	try {
 		const toplistId = req.params.toplistId;
-		const {
-			name,
-			thumbnail,
-			language,
-			songs,
-			createdAt,
-			updatedAt,
-			createdBy,
-			totalSongs
-		} = await TopChart.findById(toplistId);
+		const { name, thumbnail, language, songs, createdAt, updatedAt, createdBy, totalSongs } = await TopChart.findById(toplistId);
 		if (!name) throw new Error("Not found..");
 		res.status(200).send({
 			status: true,
@@ -75,14 +62,14 @@ router.get("/:toplistId", async (req, res) => {
 				createdAt,
 				updatedAt,
 				createdBy,
-				totalSongs
-			}
+				totalSongs,
+			},
 		});
 	} catch (error) {
 		console.error(error.message);
 		res.status(200).send({
 			status: false,
-			error: error.message
+			error: error.message,
 		});
 	}
 });

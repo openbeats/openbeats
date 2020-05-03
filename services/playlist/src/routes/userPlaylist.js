@@ -220,4 +220,38 @@ router.get("/delete/:id", auth, async (req, res) => {
 	}
 });
 
+//Search by Name
+router.get("/fetchByName", async (req, res) => {
+	try {
+		const { query } = req.query;
+		const userPlaylists = await UserPlaylist.find(
+			{
+				$text: {
+					$search: `${query}`,
+					$caseSensitive: false,
+				},
+			},
+			{
+				_id: true,
+				name: 1,
+				thumbnail: 2,
+				totalSongs: 3,
+				score: {
+					$meta: "textScore",
+				},
+			}
+		).sort({ score: { $meta: "textScore" } });
+		return res.send({
+			status: true,
+			data: userPlaylists,
+		});
+	} catch (error) {
+		console.log(error.message);
+		res.send({
+			status: false,
+			data: error.message,
+		});
+	}
+});
+
 export default router;
