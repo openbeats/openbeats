@@ -25,33 +25,7 @@ import { Switch, Route } from "react-router";
 
 class Main extends Component {
 	componentDidMount() {
-		this.initiateListeners();
 		if (this.props.isAuthenticated) this.props.updateAlbumsInTheCollectionMetaData();
-	}
-	initiateListeners() {
-		const navCloseRef = document.getElementById("nav-close");
-		const navHamburgerRef = document.getElementById("nav-hamburger");
-		const navRef = document.getElementById("nav");
-		const mainRef = document.getElementById("main");
-		const playerWrapperRef = document.getElementById("player-wrapper");
-
-		navHamburgerRef.onclick = function (e) {
-			navRef.classList.add("nav-show");
-			playerWrapperRef.classList.remove("show-player");
-		};
-
-		navCloseRef.onclick = function (e) {
-			navRef.classList.remove("nav-show");
-		};
-
-		mainRef.onclick = function (e) {
-			navRef.classList.remove("nav-show");
-			playerWrapperRef.classList.remove("show-player");
-		};
-
-		playerWrapperRef.onclick = function (e) {
-			navRef.classList.remove("nav-show");
-		};
 	}
 
 	render() {
@@ -59,7 +33,7 @@ class Main extends Component {
 			<Fragment>
 				{this.props.showAddPlaylistDialog && <PlaylistManipulator />}
 				<LeftNav />
-				<main id="main">
+				<main>
 					<TopNav />
 					<section className="main-body">
 						<Switch>
