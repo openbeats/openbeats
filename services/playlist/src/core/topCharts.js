@@ -1,12 +1,8 @@
-import {
-	updateTopCharts
-} from "./updateTopCharts";
+import { updateTopCharts } from "./updateTopCharts";
 import TopChart from "../models/TopChart";
 import MissedFetch from "../models/MissedFetch";
 import fetchRetry from "./refetch";
-import {
-	config
-} from "../config";
+import { config } from "../config";
 
 export const fetchTopCharts = async () => {
 	try {
@@ -22,12 +18,11 @@ export const fetchTopCharts = async () => {
 			"mirchi-top-20",
 		];
 		for (let chartName of fetchlist) {
-			let language = chartName.substring(0, chartName.indexOf("-"));
-			language = language == "mirchi" ? "hindi" : language;
-			let name = chartName.replace(/-/g, " ");
-			if (name === "mirchi top 20") {
-				name = "hindi top 20"
-			}
+			let endIndex = chartName.indexOf("-");
+			let language = chartName.substring(0, endIndex);
+			language = language === "mirchi" ? "hindi" : language;
+			let name1 = chartName.substring(endIndex + 1).replace(/-/g, " ");
+			let name = `${name1[0].toUpperCase()}${name1.slice(1)} ${language[0].toUpperCase()}${language.slice(1)}`;
 			const chart = await TopChart.findOne({
 				name,
 			});
@@ -55,7 +50,7 @@ export const fetchTopCharts = async () => {
 export const englishTopCharts = async () => {
 	console.log("English topcharts started");
 	try {
-		const name = "English Top 30";
+		const name = "Top 30 English";
 		const language = "English";
 		let engChart = await TopChart.findOne({
 			name,
@@ -78,9 +73,7 @@ export const englishTopCharts = async () => {
 		const url = `http://ws.audioscrobbler.com/2.0/?method=chart.gettoptracks&api_key=${config.lastFmAPIKey}&format=json&perPage=20&limit=30`;
 		const engTop = await (await fetchRetry(`${url}`, 2)).json();
 		const trackArray = engTop.tracks.track;
-		const baseurl = config.isDev ?
-			config.baseurl.dev :
-			config.baseurl.prod;
+		const baseurl = config.isDev ? config.baseurl.dev : config.baseurl.prod;
 		let rank = 1;
 		const fetchList = [];
 		for (let track of trackArray) {
@@ -92,12 +85,10 @@ export const englishTopCharts = async () => {
 			fetchList.push(fetchObj);
 			rank = rank + 1;
 		}
-		Promise.all(fetchList.map(async (urlObj) => {
+		Promise.all(
+			fetchList.map(async urlObj => {
 				try {
-					let response = await (await fetchRetry(
-						urlObj.url,
-						2,
-					)).json();
+					let response = await (await fetchRetry(urlObj.url, 2)).json();
 					if (response.data.length && response.data.length !== 0) {
 						let song = response.data[0];
 						if (Object.is(urlObj.rank, 1)) {
@@ -106,12 +97,12 @@ export const englishTopCharts = async () => {
 						return {
 							rank: urlObj.rank,
 							...song,
-							title: urlObj.title
-						}
+							title: urlObj.title,
+						};
 					}
 					const missedsong = new MissedFetch({
 						...urlObj,
-						topchartid: engChart._id
+						topchartid: engChart._id,
 					});
 					await missedsong.save();
 				} catch (error) {
@@ -119,16 +110,18 @@ export const englishTopCharts = async () => {
 				}
 				return {
 					rank: urlObj.rank,
-					title: urlObj.title
+					title: urlObj.title,
 				};
-			})).then(async (data) => {
+			})
+		)
+			.then(async data => {
 				engChart.songs = data;
 				await engChart.save();
 				engChart.totalSongs = engChart.songs.length;
 				await engChart.save();
 				fetchMissedSongs();
 			})
-			.catch((err) => {
+			.catch(err => {
 				console.log(err.message);
 			});
 	} catch (error) {
@@ -143,16 +136,13 @@ export const fetchMissedSongs = async (forcerun = false) => {
 		if (missedSongs.length > 0) {
 			const successfullFullFetch = [];
 			for (let missedSong of missedSongs) {
-				const response = await (await fetchRetry(
-					missedSong.url,
-					2
-				)).json();
+				const response = await (await fetchRetry(missedSong.url, 2)).json();
 				const topChart = await TopChart.findById(missedSong.topchartid);
 				if (response.data && response.data.length !== 0) {
 					topChart.songs[missedSong.rank - 1] = {
 						...response.data[0],
 						title: missedSong.title,
-						rank: missedSong.rank
+						rank: missedSong.rank,
 					};
 					if (Object.is(missedSong.rank, 1)) {
 						topChart.thumbnail = response.data[0].thumbnail;
