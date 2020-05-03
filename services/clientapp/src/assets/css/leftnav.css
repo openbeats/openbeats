@@ -12,6 +12,7 @@ nav {
     display: flex;
     flex-direction: column;
     z-index: 10;
+    transition: all 0.2s ease-in;
 }
 
 .nav-content {
@@ -243,9 +244,6 @@ nav {
     display: none;
 }
 
-.nav-show {
-    display: block;
-}
 
 .playlist-login-notifier {
     font-size: 12px;
@@ -276,6 +274,13 @@ nav {
 }
 
 
+.nav-show {
+    /* display: block; */
+    left: 0px;
+
+}
+
+
 @media only screen and (max-width: 1000px) {
     .hamburger-holder {
         visibility: visible;
@@ -286,7 +291,9 @@ nav {
     }
 
     nav {
-        display: none;
+        /* display: none; */
+        left: -250px;
+
     }
 }
 

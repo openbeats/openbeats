@@ -62,7 +62,6 @@ app.get("/opencc/:id", addtorecentlyplayed, async (req, res) => {
 				}
 			});
 		} else {
-			console.log(songDetails)
 			songDetails = JSON.parse(songDetails);
 		}
 		setTimeout(() => {
