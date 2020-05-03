@@ -11,110 +11,94 @@ import {
 import {
   variables
 } from "../config";
-import Axios from "axios";
+import axios from "axios";
 
-export function loginHandler(email, password) {
-  setAuthLoader(true);
-  fetch(`${variables.baseUrl}/auth/login`, {
-      method: "POST",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-        "Access-Control-Allow-Origin": "*"
-      },
-      body: JSON.stringify({
-        email,
-        password
-      })
-    })
-    .then(async res => {
-      let resData = await res.json();
-      const {
-        status,
-        data
-      } = resData;
-      if (status !== false) {
-        let userDetails = {
-          name: data.name,
-          email: data.email,
-          id: data.id,
-          token: data.token,
-          avatar: data.avatar,
-          likedPlaylists: data.likedPlaylists
-        };
-        localStorage.setItem("userDetails", JSON.stringify(userDetails));
-        store.dispatch({
-          type: "LOGIN_USER",
-          payload: {
-            userDetails,
-            isAuthenticated: true
-          }
-        });
-        setAuthLoader(false);
-        store.dispatch(push("/"));
-      } else {
-        toastActions.showMessage(data.toString());
-        setAuthLoader(false);
-      }
-    })
-    .catch(err => {
-      toastActions.showMessage(
-        "Internal server error!\n please try again later or\n  email to support@openbeats.live"
-      );
+export async function loginHandler(email, password) {
+  try {
+    setAuthLoader(true);
+    const res = await axios.post(`${variables.baseUrl}/auth/login`, {
+      email,
+      password
     });
+    let resData = res.data;
+    const {
+      status,
+      data
+    } = resData;
+    if (status !== false) {
+      let userDetails = {
+        name: data.name,
+        email: data.email,
+        id: data.id,
+        token: data.token,
+        avatar: data.avatar,
+        likedPlaylists: data.likedPlaylists
+      };
+      localStorage.setItem("userDetails", JSON.stringify(userDetails));
+      store.dispatch({
+        type: "LOGIN_USER",
+        payload: {
+          userDetails,
+          isAuthenticated: true
+        }
+      });
+      setAuthLoader(false);
+      store.dispatch(push("/"));
+    } else {
+      toastActions.showMessage(data.toString());
+      setAuthLoader(false);
+    }
+
+  } catch (error) {
+    toastActions.showMessage(
+      "Internal server error!\n please try again later or\n  email to support@openbeats.live"
+    );
+    setAuthLoader(false);
+  }
 }
 
-export function registerHandler(name, email, password) {
-  setAuthLoader(true);
-  fetch(`${variables.baseUrl}/auth/register`, {
-      method: "POST",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-        "Access-Control-Allow-Origin": "*"
-      },
-      body: JSON.stringify({
-        email,
-        password,
-        name
-      })
-    })
-    .then(async res => {
-      let resData = await res.json();
-      const {
-        status,
-        data
-      } = resData;
-
-      if (status !== false) {
-        let userDetails = {
-          name: data.name,
-          email: data.email,
-          id: data.id,
-          token: data.token,
-          avatar: data.avatar,
-          likedPlaylists: data.likedPlaylists,
-        };
-        localStorage.setItem("userDetails", JSON.stringify(userDetails));
-        store.dispatch({
-          type: "LOGIN_USER",
-          payload: {
-            userDetails,
-            isAuthenticated: true
-          }
-        });
-        setAuthLoader(false);
-        store.dispatch(push("/"));
-      } else {
-        toastActions.showMessage(data.toString());
-        setAuthLoader(false);
-      }
-    })
-    .catch(err => {
-      toastActions.showMessage(
-        "Internal server error!\n please try again later or\n  email to support@openbeats.live"
-      );
+export async function registerHandler(name, email, password) {
+  try {
+    setAuthLoader(true);
+    const res = await axios.post(`${variables.baseUrl}/auth/register`, {
+      email,
+      password,
+      name
     });
+    const {
+      status,
+      data
+    } = res.data;
+    if (status !== false) {
+      let userDetails = {
+        name: data.name,
+        email: data.email,
+        id: data.id,
+        token: data.token,
+        avatar: data.avatar,
+        likedPlaylists: data.likedPlaylists,
+      };
+      localStorage.setItem("userDetails", JSON.stringify(userDetails));
+      store.dispatch({
+        type: "LOGIN_USER",
+        payload: {
+          userDetails,
+          isAuthenticated: true
+        }
+      });
+      setAuthLoader(false);
+      store.dispatch(push("/"));
+    } else {
+      toastActions.showMessage(data.toString());
+      setAuthLoader(false);
+    }
+
+  } catch (error) {
+    toastActions.showMessage(
+      "Internal server error!\n please try again later or\n  email to support@openbeats.live"
+    );
+    setAuthLoader(false);
+  }
 }
 
 function setAuthLoader(val) {
@@ -130,7 +114,7 @@ export async function resetPassword(password, token) {
   try {
     const {
       data
-    } = await Axios.post(`${variables.baseUrl}/auth/resetpassword`, {
+    } = await axios.post(`${variables.baseUrl}/auth/resetpassword`, {
       password,
       reset_password_token: token
     })
@@ -154,7 +138,7 @@ export async function resetEmailHandler(email) {
   try {
     const {
       data
-    } = await Axios.post(`${variables.baseUrl}/auth/forgotpassword`, {
+    } = await axios.post(`${variables.baseUrl}/auth/forgotpassword`, {
       email
     })
     if (data && data.status) {
@@ -217,7 +201,7 @@ export async function validateResetToken(token) {
   try {
     const {
       data
-    } = await Axios.post(`${variables.baseUrl}/auth/validateresettoken`, {
+    } = await axios.post(`${variables.baseUrl}/auth/validateresettoken`, {
       reset_password_token: token
     })
     if (data && data.status) {
