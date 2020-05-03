@@ -41,27 +41,27 @@ class Home extends Component {
 
     fetchTopCharts = async () => {
         const data = await this.props.fetchTopCharts();
-        this._isMounted && this.setState({ topChartsCollection: data })
+        this._isMounted && this.setState({ topChartsCollection: data, isLoading: false });
     }
 
     fetchMyCollections = async () => {
         const data = await this.props.fetchMyCollections();
-        this._isMounted && this.setState({ myCollections: data });
+        this._isMounted && this.setState({ myCollections: data, isLoading: false });
     }
 
     fetchPopularAlbums = async () => {
         const data = await this.props.fetchPopularAlbums();
-        this._isMounted && this.setState({ popularAlbums: data });
+        this._isMounted && this.setState({ popularAlbums: data, isLoading: false });
     }
 
     fetchLatestAlbums = async () => {
         const data = await this.props.fetchLatestAlbums();
-        this._isMounted && this.setState({ latestAlbums: data });
+        this._isMounted && this.setState({ latestAlbums: data, isLoading: false });
     }
 
     fetchPopularArtists = async () => {
         const data = await this.props.fetchPopularArtists();
-        this._isMounted && this.setState({ popularArtists: data });
+        this._isMounted && this.setState({ popularArtists: data, isLoading: false });
     }
 
     // List Preparing Part

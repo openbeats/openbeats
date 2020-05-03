@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { musicDummy } from "../assets/images";
 import { connect } from "react-redux";
-import "../assets/css/artists.css";
+import "../assets/css/artistholder.css";
 import { push } from "connected-react-router";
 import { toastActions, coreActions } from "../actions";
 
