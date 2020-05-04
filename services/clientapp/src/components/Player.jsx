@@ -22,6 +22,7 @@ class Player extends Component {
     this.state = {
       listenerStore: null,
       isMobilePlayerOpened: false,
+      loopId: 1
     };
     this.playerWrapperRef = null;
     this.listenerFunction = this.listenerFunction.bind(this);
@@ -31,6 +32,11 @@ class Player extends Component {
   componentDidMount() {
     this.initListeners();
     this.checkAndUpdateMobileVolume();
+  }
+
+  loopActionHandler = () => {
+    const nextLoopId = this.state.loopId + 1 <= 3 ? this.state.loopId + 1 : 1;
+    this.setState({ loopId: nextLoopId })
   }
 
   checkAndUpdateMobileVolume = () => {
@@ -96,17 +102,17 @@ class Player extends Component {
   toggleMobilePlayer = () => {
     if (!this.state.isMobilePlayerOpened) {
       this.setState({ isMobilePlayerOpened: true });
-      document.addEventListener("click", this.closeMobilePlayerHandler)
+      document.addEventListener("click", this.closeMobilePlayerHandler);
     } else {
       this.setState({ isMobilePlayerOpened: false });
-      document.removeEventListener("click", this.closeMobilePlayerHandler)
+      document.removeEventListener("click", this.closeMobilePlayerHandler);
     }
   }
 
   closeMobilePlayerHandler = e => {
     if (!this.playerWrapperRef.contains(e.target)) {
       this.setState({ isMobilePlayerOpened: false });
-      document.removeEventListener("click", this.closeMobilePlayerHandler)
+      document.removeEventListener("click", this.closeMobilePlayerHandler);
     }
   }
 
@@ -206,6 +212,11 @@ class Player extends Component {
               >
                 <img src={playernext} alt="" srcSet="" />
               </div>
+              <div className="cursor-pointer player-loop-control" onClick={(e) => {
+                this.loopActionHandler();
+              }}>
+                <i className={`${this.state.loopId === 1 ? "loop-off" : ''} ${this.state.loopId === 2 ? "fad fa-repeat-1" : 'fad fa-repeat'} master-color`} title={this.state.loopId === 1 ? "Click to repeat the current song!" : this.state.loopId === 2 ? "Click to repeat all the songs in the Queue!" : "Click to off the repeat mode!"}></i>
+              </div>
             </section>
             <section className="player-rightmost-control-holder">
               <div>
@@ -278,7 +289,7 @@ class Player extends Component {
               <i className="fas fa-times"></i>
             </div>
           </div>
-        </div>
+        </div >
         <div
           onClick={this.toggleMobilePlayer}
           className="mobile-music-notifier"
@@ -289,7 +300,7 @@ class Player extends Component {
               <i className="fas fa-play"></i>
             )}
         </div>
-      </Fragment>
+      </Fragment >
     );
   }
 }

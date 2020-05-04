@@ -97,10 +97,21 @@
 
 .player-control-core {
     display: flex;
-    width: 120px;
+    width: 200px;
     height: 100%;
     align-items: center;
     justify-content: space-between;
+}
+
+.player-loop-control {
+    font-size: 25px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.loop-off {
+    opacity: 0.5;
 }
 
 .next-previous {
