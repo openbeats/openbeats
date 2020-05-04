@@ -2,7 +2,6 @@ import express from "express";
 import User from "../models/User";
 import { config } from "../config";
 import { check, validationResult } from "express-validator";
-import gravatar from "gravatar";
 import bcrypt from "bcryptjs";
 import nodemailer from "nodemailer";
 import crypto from "crypto";
@@ -87,15 +86,7 @@ router.post(
 					data: "User with that email id already exist",
 				});
 			}
-			const avatar = gravatar.url(
-				email,
-				{
-					s: "200",
-					r: "pg",
-					d: "retro",
-				},
-				true
-			);
+			const avatar = `https://ui-avatars.com/api/?rounded=true&name=${encodeURIComponent(name.trim())}&bold=true&background=F32C2C&color=C1CCCC`;
 			user = new User({
 				name,
 				email,
