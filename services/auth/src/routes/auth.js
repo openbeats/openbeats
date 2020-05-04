@@ -11,10 +11,7 @@ const router = express.Router();
 
 router.post(
 	"/login",
-	[
-		check("email", "Please include a valid email").isEmail(),
-		check("password", "Please enter a password.").exists(),
-	],
+	[check("email", "Please include a valid email").isEmail(), check("password", "Please enter a password.").exists()],
 	async (req, res) => {
 		const errors = validationResult(req);
 		if (!errors.isEmpty()) {
@@ -22,7 +19,7 @@ router.post(
 				status: false,
 				data: errors
 					.array()
-					.map((ele) => `${ele.param} - ${ele.msg} `)
+					.map(ele => `${ele.param} - ${ele.msg} `)
 					.join("\n"),
 			});
 		}
@@ -64,10 +61,7 @@ router.post(
 	[
 		check("name", "Name is required").not().isEmpty(),
 		check("email", "Please include a valid email").isEmail(),
-		check(
-			"password",
-			"Please enter a password with 6 or more characters"
-		).isLength({
+		check("password", "Please enter a password with 6 or more characters").isLength({
 			min: 6,
 		}),
 	],
@@ -78,7 +72,7 @@ router.post(
 				status: false,
 				data: errors
 					.array()
-					.map((ele) => `${ele.param} - ${ele.msg} `)
+					.map(ele => `${ele.param} - ${ele.msg} `)
 					.join("\n"),
 			});
 		}
@@ -93,11 +87,15 @@ router.post(
 					data: "User with that email id already exist",
 				});
 			}
-			const avatar = gravatar.url(email, {
-				s: "200",
-				r: "pg",
-				d: "mm",
-			});
+			const avatar = gravatar.url(
+				email,
+				{
+					s: "200",
+					r: "pg",
+					d: "retro",
+				},
+				true
+			);
 			user = new User({
 				name,
 				email,
@@ -129,71 +127,68 @@ router.post(
 	}
 );
 
-router.post(
-	"/forgotpassword",
-	[check("email", "Please include a valid email").isEmail()],
-	async (req, res) => {
-		try {
-			const errors = validationResult(req);
-			if (!errors.isEmpty()) {
-				let msg = "";
-				if (errors.errors.length > 0) {
-					errors.errors.forEach((element) => {
-						msg += element.msg + "\n";
-					});
-				}
-				return res.send({
-					status: false,
-					data: msg,
+router.post("/forgotpassword", [check("email", "Please include a valid email").isEmail()], async (req, res) => {
+	try {
+		const errors = validationResult(req);
+		if (!errors.isEmpty()) {
+			let msg = "";
+			if (errors.errors.length > 0) {
+				errors.errors.forEach(element => {
+					msg += element.msg + "\n";
 				});
 			}
-
-			const { email } = req.body;
-
-			const user = await User.findOne({
-				email,
+			return res.send({
+				status: false,
+				data: msg,
 			});
+		}
 
-			if (!user) {
-				return res.send({
-					status: false,
-					data: "No user exist with that email address.",
-				});
-			}
+		const { email } = req.body;
 
-			const supportEmail = config.support.email;
-			const supportPassword = config.support.password;
+		const user = await User.findOne({
+			email,
+		});
 
-			const smtpTransport = nodemailer.createTransport({
-				service: "Gmail",
-				auth: {
-					user: supportEmail,
-					pass: supportPassword,
-				},
+		if (!user) {
+			return res.send({
+				status: false,
+				data: "No user exist with that email address.",
 			});
+		}
 
-			let randToken = crypto.randomBytes(20);
-			randToken = randToken.toString("hex");
+		const supportEmail = config.support.email;
+		const supportPassword = config.support.password;
 
-			user.reset_password_token = randToken;
-			await user.save();
+		const smtpTransport = nodemailer.createTransport({
+			service: "Gmail",
+			auth: {
+				user: supportEmail,
+				pass: supportPassword,
+			},
+		});
 
-			const payload = {
-				token: randToken,
-			};
+		let randToken = crypto.randomBytes(20);
+		randToken = randToken.toString("hex");
 
-			const token = jwt.sign(payload, config.jwtSecret, {
-				expiresIn: 60 * 60,
-			});
+		user.reset_password_token = randToken;
+		await user.save();
 
-			const url = `https://openbeats.live/auth/reset/${token}`;
+		const payload = {
+			token: randToken,
+		};
 
-			const data = {
-				to: user.email,
-				from: supportEmail,
-				template: "forgot-password-email",
-				subject: "Password help has arrived!",
-				html: `<!DOCTYPE html>
+		const token = jwt.sign(payload, config.jwtSecret, {
+			expiresIn: 60 * 60,
+		});
+
+		const url = `https://openbeats.live/auth/reset/${token}`;
+
+		const data = {
+			to: user.email,
+			from: supportEmail,
+			template: "forgot-password-email",
+			subject: "Password help has arrived!",
+			html: `<!DOCTYPE html>
             <html>
             <head>
                 <title>Forget Password Email</title>
@@ -208,28 +203,27 @@ router.post(
                 </div>
             </body>
             </html>`,
-			};
+		};
 
-			setTimeout(function () {
-				smtpTransport.sendMail(data, function (err, info) {
-					if (err) throw err;
-					console.log(info.response);
-				});
-			}, 0);
+		setTimeout(function () {
+			smtpTransport.sendMail(data, function (err, info) {
+				if (err) throw err;
+				console.log(info.response);
+			});
+		}, 0);
 
-			return res.send({
-				status: true,
-				data: "Kindly check your email for further instructions",
-			});
-		} catch (error) {
-			console.error(error.message);
-			return res.send({
-				status: false,
-				data: "Something went wrong.",
-			});
-		}
+		return res.send({
+			status: true,
+			data: "Kindly check your email for further instructions",
+		});
+	} catch (error) {
+		console.error(error.message);
+		return res.send({
+			status: false,
+			data: "Something went wrong.",
+		});
 	}
-);
+});
 
 router.post("/resetpassword", async (req, res) => {
 	try {
