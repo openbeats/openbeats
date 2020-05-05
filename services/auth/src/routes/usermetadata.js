@@ -4,6 +4,8 @@ import auth from "../permissions/auth";
 
 const router = Router();
 
+//Inter - service call which adds to recently played and to history
+
 router.post("/recentlyplayed", async (req, res) => {
 	const userId = req.body.userId;
 	const videoId = req.body.videoId;
@@ -11,14 +13,24 @@ router.post("/recentlyplayed", async (req, res) => {
 		try {
 			const user = await User.findById(userId);
 			if (user) {
+				//add recently played
 				let recentlyPlayedIds = user.recentlyPlayedSongs;
 				if (recentlyPlayedIds.indexOf(videoId) !== -1) recentlyPlayedIds.splice(recentlyPlayedIds.indexOf(videoId), 1);
 				recentlyPlayedIds.unshift(videoId);
 				recentlyPlayedIds = recentlyPlayedIds.slice(0, 30);
 				user.recentlyPlayedSongs = recentlyPlayedIds;
+				//add to history
+				let isFound = user.get(`history.${videoId}`);
+				if (!isFound) {
+					user.set(`history.${videoId}`, 1);
+				} else {
+					user.set(`history.${videoId}`, ++isFound);
+				}
 				await user.save();
 			}
-		} catch (error) {}
+		} catch (error) {
+			console.log(error.message);
+		}
 	}, 0);
 	res.send({
 		status: true,
