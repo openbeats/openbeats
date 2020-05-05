@@ -38,6 +38,10 @@ const userSchema = new mongoose.Schema({
 			type: String,
 		},
 	],
+	history: {
+		type: Map,
+		of: Number,
+	},
 	admin: {
 		status: {
 			type: Boolean,
