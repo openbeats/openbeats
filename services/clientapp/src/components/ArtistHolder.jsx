@@ -7,7 +7,7 @@ import { toastActions, coreActions } from "../actions";
 
 class ArtistHolder extends Component {
 	aritstClickHandler = async id => {
-		this.props.push("/artists/" + id);
+		this.props.push(`/artist/${id}/all`);
 	};
 
 	render() {

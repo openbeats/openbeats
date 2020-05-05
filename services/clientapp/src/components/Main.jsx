@@ -21,7 +21,7 @@ import {
 import { toastActions, coreActions, playlistManipulatorActions } from "../actions";
 import { connect } from "react-redux";
 import { push } from "connected-react-router";
-import { Switch, Route } from "react-router";
+import { Switch, Route, Redirect } from "react-router";
 
 class Main extends Component {
 	componentDidMount() {
@@ -65,7 +65,15 @@ class Main extends Component {
 							<Route exact path="/search" component={Result} />
 							<Route exact path="/topcharts" component={TopCharts} />
 							<Route exact path="/artists" component={Artists} />
-							<Route exact path="/artists/:id" component={ArtistAlbums} />
+							<Route exact path="/artist/:id/:type" component={ArtistAlbums} />
+							<Route
+								exact
+								path="/artist"
+								component={() => {
+									this.props.push("/artist/all");
+									return null;
+								}}
+							/>
 							<Route exact path="/albums/:type" component={Albums} />
 							<Route
 								exact
@@ -75,7 +83,12 @@ class Main extends Component {
 									return null;
 								}}
 							/>
-							<Route component={NoPage} />
+							<Route path="/404" component={NoPage} />
+							<Route
+								component={() => {
+									return <Redirect to="/404" />;
+								}}
+							/>
 						</Switch>
 					</section>
 				</main>
