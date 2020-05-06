@@ -22,7 +22,6 @@ class Player extends Component {
     this.state = {
       listenerStore: null,
       isMobilePlayerOpened: false,
-      loopId: 1
     };
     this.playerWrapperRef = null;
     this.listenerFunction = this.listenerFunction.bind(this);
@@ -32,11 +31,6 @@ class Player extends Component {
   componentDidMount() {
     this.initListeners();
     this.checkAndUpdateMobileVolume();
-  }
-
-  loopActionHandler = () => {
-    const nextLoopId = this.state.loopId + 1 <= 3 ? this.state.loopId + 1 : 1;
-    this.setState({ loopId: nextLoopId })
   }
 
   checkAndUpdateMobileVolume = () => {
@@ -213,9 +207,9 @@ class Player extends Component {
                 <img src={playernext} alt="" srcSet="" />
               </div>
               <div className="cursor-pointer player-loop-control" onClick={(e) => {
-                this.loopActionHandler();
+                this.props.setRepeatMode();
               }}>
-                <i className={`${this.state.loopId === 1 ? "loop-off" : ''} ${this.state.loopId === 2 ? "fad fa-repeat-1" : 'fad fa-repeat'} master-color`} title={this.state.loopId === 1 ? "Click to repeat the current song!" : this.state.loopId === 2 ? "Click to repeat all the songs in the Queue!" : "Click to off the repeat mode!"}></i>
+                <i className={`${this.props.repeatMode === 1 ? "loop-off" : ''} ${this.props.repeatMode === 2 ? "fal fa-repeat-1" : 'fal fa-repeat'} master-color`} title={this.props.repeatMode === 1 ? "Click to repeat the current song!" : this.props.repeatMode === 2 ? "Click to repeat all the songs in the Queue!" : "Click to off the repeat mode!"}></i>
               </div>
             </section>
             <section className="player-rightmost-control-holder">
@@ -318,6 +312,7 @@ const mapStateToProps = state => {
     isNextAvailable: state.nowPlayingReducer.isNextAvailable,
     thumbnail: state.playerReducer.thumbnail,
     songTitle: state.playerReducer.songTitle,
+    repeatMode: state.playerReducer.repeatMode,
     downloadProcess: state.playerReducer.downloadProcess,
     isTyping: state.searchReducer.isTyping,
     showAddPlaylistDialog: state.playlistManipulatorReducer.showAddPlaylistDialog
@@ -402,7 +397,10 @@ const mapDispatchToProps = dispatch => {
     },
     setFullVolumeForMobile: () => {
       playerActions.setFullVolumeForMobile();
-    }
+    },
+    setRepeatMode: () => {
+      playerActions.setRepeatMode();
+    },
   };
 };
 

@@ -49,6 +49,7 @@
     font-weight: bold;
     font-size: 30px;
     letter-spacing: 10px;
+    text-align: center;
 }
 
 .artist-albums-main-container {
@@ -57,4 +58,10 @@
     height: auto;
     padding: 25px;
     display: flex;
+}
+
+@media only screen and (max-width: 800px) {
+    .artist-albums-artist-name {
+        font-size: 18px;
+    }
 }
