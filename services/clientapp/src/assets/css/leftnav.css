@@ -281,7 +281,7 @@ nav {
 }
 
 
-@media only screen and (max-width: 1000px) {
+@media only screen and (max-width: 1100px) {
     .hamburger-holder {
         visibility: visible;
     }

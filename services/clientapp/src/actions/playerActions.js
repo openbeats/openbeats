@@ -439,3 +439,14 @@ export function detectMobile() {
 		return navigator.userAgent.match(toMatchItem);
 	});
 }
+
+export async function setRepeatMode() {
+	const playerReducer = await store.getState().playerReducer;
+	const nextLoopId = playerReducer.repeatMode + 1 <= 3 ? playerReducer.repeatMode + 1 : 1;
+	let message = nextLoopId === 1 ? "Repeat Mode Off!" : nextLoopId === 2 ? "Single Song Repeat Mode On!" : "All Songs Repeat Mode On!";
+	toastActions.showMessage(message);
+	store.dispatch({
+		type: "SET_REPEAT_MODE",
+		payload: nextLoopId
+	});
+}

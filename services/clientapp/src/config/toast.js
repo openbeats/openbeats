@@ -11,7 +11,7 @@ import '../assets/fontawesome/css/all.min.css';
 export const toastConfig = () => {
     const Close = () => <i className="fas fa-times"></i>;
     return toast.configure({
-        autoClose: 3000,
+        autoClose: 1500,
         position: "bottom-right",
         className: "toast-margin-bottom",
         bodyClassName: "toast-bg-color",
