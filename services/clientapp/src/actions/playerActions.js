@@ -205,13 +205,39 @@ export function seekAudio(e) {
 	return true;
 }
 
-export function musicEndHandler() {
-	let state = store.getState().nowPlayingReducer;
-	if (state.isPlaylist)
-		if (state.isPlaylist && state.playerQueue.length === state.currentIndex + 1)
-			nowPlayingActions.reQueue();
-		else nowPlayingActions.playNextSong();
-	else nowPlayingActions.updateCurrentPlaying(state.currentPlaying, false);
+export async function musicEndHandler() {
+	const state = await store.getState();
+	const nowPlayingReducer = state.nowPlayingReducer;
+	const playerReducer = state.playerReducer;
+	if (nowPlayingReducer.isPlaylist) {
+		if (nowPlayingReducer.isPlaylist && nowPlayingReducer.playerQueue.length === nowPlayingReducer.currentIndex + 1) {
+			// playlist end scenario
+			if (playerReducer.repeatMode === 1) {
+				// normal mode - repeat mode off
+				nowPlayingActions.reQueue();
+			} else if (playerReducer.repeatMode === 2) {
+				// last song in the queue repeat (edge case)
+				nowPlayingActions.playNextSong(true); // repeat mode on
+			} else if (playerReducer.repeatMode === 3) {
+				// all songs in the queue repeat
+				nowPlayingActions.reQueue(true);
+			}
+		} else {
+			// current song in the playlist end scenario;
+			if (playerReducer.repeatMode === 2) {
+				nowPlayingActions.playNextSong(true); // repeat mode on
+			} else {
+				nowPlayingActions.playNextSong();
+			}
+		}
+	} else {
+		// single song without playlist end scenario
+		// repeat mode 1 in this case is off
+		if (playerReducer.repeatMode !== 1)
+			nowPlayingActions.updateCurrentPlaying(nowPlayingReducer.currentPlaying); // repeat mode on
+		else
+			nowPlayingActions.updateCurrentPlaying(nowPlayingReducer.currentPlaying, false); // normal mode
+	}
 }
 
 export async function resetPlayer() {

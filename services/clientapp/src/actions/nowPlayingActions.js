@@ -51,7 +51,7 @@ export async function updatePlayerQueue(playlistData, key = 0) {
     selectFromPlaylist(key)
 }
 
-export function reQueue() {
+export function reQueue(playTrigger = false) {
     let state = store.getState().nowPlayingReducer;
     const audioData = state.playerQueue[0]
     const isNextAvailable = state.playerQueue.length > 0 ? true : false
@@ -65,13 +65,13 @@ export function reQueue() {
             isPreviousAvailable,
         }
     })
-    playerActions.initPlayer(audioData, false)
+    playerActions.initPlayer(audioData, playTrigger)
 }
 
-export async function playNextSong() {
+export async function playNextSong(isRepeat = false) {
 
     let state = store.getState().nowPlayingReducer;
-    if (state.isPlaylist && state.currentIndex + 1 < state.playerQueue.length) {
+    if (state.isPlaylist && state.currentIndex + 1 < state.playerQueue.length && !isRepeat) {
         let audioData = state.playerQueue[state.currentIndex + 1];
         let isNextAvailable = state.playerQueue.length - (state.currentIndex + 2) > 0 ? true : false;
         let isPreviousAvailable = state.currentIndex + 1 > 0 ? true : false
@@ -85,7 +85,9 @@ export async function playNextSong() {
             }
         })
         playerActions.initPlayer(audioData)
-
+    } else {
+        let audioData = state.playerQueue[state.currentIndex];
+        playerActions.initPlayer(audioData)
     }
 }
 
