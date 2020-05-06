@@ -53,16 +53,19 @@
 
 .search-icon {
   position: absolute;
-  right: 0px;
-  top: 10px;
+  right: 8px;
+  top: 0px;
   cursor: pointer;
   width: 35px;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   text-decoration: none;
   border: none;
-  background: none;
   cursor: pointer;
-  margin-right: 8px;
   background: var(--search-icon-background);
+  border-radius: 50%;
 }
 
 .search-icon>img {
@@ -199,10 +202,7 @@
   }
 
   .search-icon {
-    right: 0px;
-    top: 8px;
     width: 25px;
-    background: inherit;
   }
 
   .search-icon>img {
@@ -229,7 +229,6 @@
 
   .search-icon {
     width: 20px;
-    padding-left: 5px;
   }
 
   .search-icon>img {

@@ -134,7 +134,17 @@ class Albums extends Component {
 
 	AllAlbums = () => {
 		const currentAlbums = this.state.type === "latest" ? this.state.latestAlbums : this.state.popularAlbums;
-		return this.getAlbumsList(currentAlbums);
+		return <div className="home-section">
+			<div className="home-section-header">
+				<div className="left-section cursor-pointer">
+					<i className="fad fa-star"></i>
+					<span className="">{this.state.type === "latest" ? "Latest" : "Popular"} Albums</span>
+				</div>
+			</div>
+			<div className="albums-wrapper">
+				{this.getAlbumsList(currentAlbums)}
+			</div>
+		</div>
 	};
 
 	componentDidUpdate(nProps) {

@@ -85,6 +85,10 @@ nav {
     background: var(--nav-menu-hover-color);
 }
 
+.nav-menu-highlight {
+    background: var(--nav-menu-hover-color);
+}
+
 .nav-menu-icon-holder {
     width: 30%;
     text-align: right;

@@ -105,10 +105,9 @@ app.get("/ytcat", async (req, res) => {
 			data: await ytcat(req.query.q, fr),
 		});
 	} catch (error) {
-		console.log(error);
 		res.send({
-			status: false,
-			error: error.message,
+			status: true,
+			data: [],
 		});
 	}
 });

@@ -31,6 +31,7 @@ export function updateActualText(text) {
 
 export async function fetchResults() {
     let state = store.getState().searchReducer;
+
     await store.dispatch({
         type: "SEARCH_INITIAL_CLEAR",
         payload: {
@@ -38,8 +39,8 @@ export async function fetchResults() {
             isSearching: true
         }
     });
-
-    const url = `${variables.baseUrl}/ytcat?q=${state.suggestionText.replace(/[^\w\s-]/gi, '')}&advanced=true`;
+    let suggestionString = state.suggestionText.length > 0 ? state.suggestionText.replace(/[^\w\s-]/gi, '') : '';
+    const url = `${variables.baseUrl}/ytcat?advanced=true&q=${suggestionString}`;
     try {
         const {
             data
