@@ -174,6 +174,7 @@ router.get("/:id/releases", async (req, res) => {
 				name: 1,
 				thumbnail: 2,
 				totalSongs: 3,
+				createdAt: 4,
 				albumBy: 4,
 			}
 		).populate("albumBy");
@@ -212,6 +213,7 @@ router.get("/:id/featuring", async (req, res) => {
 				_id: true,
 				name: 1,
 				thumbnail: 2,
+				createdAt:4,
 				totalSongs: 3,
 			}
 		);
