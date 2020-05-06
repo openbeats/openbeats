@@ -56,6 +56,7 @@ class PlaylistDisplay extends Component {
                     data = await this.props.fetchAlbumPlaylist(id, 'album');
                     break;
                 case "recentlyplayed":
+                    this.props.setCurrentAction("Recently Played");
                     if (this.props.isAuthenticated)
                         data = await this.props.fetchAlbumPlaylist(id, 'recentlyplayed');
                     else {

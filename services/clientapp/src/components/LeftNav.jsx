@@ -75,14 +75,14 @@ class LeftNav extends Component {
           </section>
           <section className="nav-content">
             <section className="main-nav-menus">
-              <div className="nav-menu" onClick={() => this.props.push("/")}>
+              <div className={`nav-menu ${this.props.activeNavMenu === "Home" ? "nav-menu-highlight" : ""}`} onClick={() => this.props.push("/")}>
                 <div className="nav-menu-icon-holder">
                   <i className="fas fa-home master-color nav-menu-icon-size"></i>
                 </div>
                 <p className="nav-menu-text">Home</p>
               </div>
               <div
-                className="nav-menu"
+                className={`nav-menu ${this.props.activeNavMenu === "Top Charts" ? "nav-menu-highlight" : ""}`}
                 onClick={() => this.props.push("/topcharts")}
               >
                 <div className="nav-menu-icon-holder">
@@ -91,7 +91,7 @@ class LeftNav extends Component {
                 <p className="nav-menu-text">Top Charts</p>
               </div>
               <div
-                className="nav-menu"
+                className={`nav-menu ${this.props.activeNavMenu === "All Albums" || this.props.activeNavMenu === "Latest Albums" || this.props.activeNavMenu === "Popular Albums" ? "nav-menu-highlight" : ""}`}
                 onClick={() => this.props.push("/albums")}
               >
                 <div className="nav-menu-icon-holder">
@@ -100,7 +100,7 @@ class LeftNav extends Component {
                 <p className="nav-menu-text">Albums</p>
               </div>
               <div
-                className="nav-menu"
+                className={`nav-menu ${this.props.activeNavMenu === "Artists" ? "nav-menu-highlight" : ""}`}
                 onClick={() => this.props.push("/artists")}
               >
                 <div className="nav-menu-icon-holder">
@@ -109,7 +109,7 @@ class LeftNav extends Component {
                 <p className="nav-menu-text">Artists</p>
               </div>
               <div
-                className="nav-menu"
+                className={`nav-menu ${this.props.activeNavMenu === "My Collections" ? "nav-menu-highlight" : ""}`}
                 onClick={() => this.props.push("/mycollections")}
               >
                 <div className="nav-menu-icon-holder">
@@ -118,7 +118,7 @@ class LeftNav extends Component {
                 <p className="nav-menu-text">My Collections</p>
               </div>
               <div
-                className="nav-menu"
+                className={`nav-menu ${this.props.activeNavMenu === "Search Result" ? "nav-menu-highlight" : ""}`}
                 onClick={() => this.props.push("/search")}
               >
                 <div className="nav-menu-icon-holder">
@@ -127,16 +127,16 @@ class LeftNav extends Component {
                 <p className="nav-menu-text">Search</p>
               </div>
               <div
-                className="nav-menu"
+                className={`nav-menu ${this.props.activeNavMenu === "Now Playing" ? "nav-menu-highlight" : ""}`}
                 onClick={() => this.props.push("/nowplaying")}
               >
                 <div className="nav-menu-icon-holder">
                   <img className="nav-menu-icon-size" src={playerqueue} alt="" />
                 </div>
-                <p className="nav-menu-text">Queue</p>
+                <p className="nav-menu-text">Now Playing</p>
               </div>
               <div
-                className="nav-menu"
+                className={`nav-menu ${this.props.activeNavMenu === "Recently Played" ? "nav-menu-highlight" : ""}`}
                 onClick={() => this.props.push("/playlist/recentlyplayed/user")}
               >
                 <div className="nav-menu-icon-holder">
@@ -148,7 +148,7 @@ class LeftNav extends Component {
             <section className="nav-horizontal-rule"></section>
             <section className="nav-playlist-holder">
               <div
-                className="nav-menu cursor-pointer"
+                className={`nav-menu cursor-pointer ${this.props.activeNavMenu === "My Playlists" ? "nav-menu-highlight" : ""}`}
                 title="View All of Your Playlist"
                 onClick={() => this.props.push("/myplaylists")}
               >
@@ -240,7 +240,8 @@ const mapStateToProps = state => {
   return {
     isAuthenticated: state.authReducer.isAuthenticated,
     userPlaylistMetaData: state.playlistManipulatorReducer.userPlaylistMetaData,
-    userDetails: state.authReducer.userDetails
+    userDetails: state.authReducer.userDetails,
+    activeNavMenu: state.coreReducer.currentActionTitle,
   };
 };
 

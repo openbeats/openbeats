@@ -1,7 +1,12 @@
 import express from "express";
 import User from "../models/User";
-import { config } from "../config";
-import { check, validationResult } from "express-validator";
+import {
+	config
+} from "../config";
+import {
+	check,
+	validationResult
+} from "express-validator";
 import bcrypt from "bcryptjs";
 import nodemailer from "nodemailer";
 import crypto from "crypto";
@@ -22,15 +27,26 @@ router.post(
 					.join("\n"),
 			});
 		}
-		const { email, password } = req.body;
+		const {
+			email,
+			password
+		} = req.body;
 		try {
-			let user = await User.findOne({ email });
+			let user = await User.findOne({
+				email
+			});
 			if (!user) {
-				return res.json({ status: false, data: "Invalid Credentials" });
+				return res.json({
+					status: false,
+					data: "Invalid Credentials"
+				});
 			}
 			const isMatch = await bcrypt.compare(password, user.password);
 			if (!isMatch) {
-				return res.json({ status: false, data: "Invalid Credentials" });
+				return res.json({
+					status: false,
+					data: "Invalid Credentials"
+				});
 			}
 			const token = user.generateAuthToken();
 			const data = {
@@ -75,7 +91,11 @@ router.post(
 					.join("\n"),
 			});
 		}
-		const { name, email, password } = req.body;
+		const {
+			name,
+			email,
+			password
+		} = req.body;
 		try {
 			let user = await User.findOne({
 				email,
@@ -86,7 +106,7 @@ router.post(
 					data: "User with that email id already exist",
 				});
 			}
-			const avatar = `https://ui-avatars.com/api/?rounded=true&name=${encodeURIComponent(name.trim())}&bold=true&background=F32C2C&color=C1CCCC`;
+			const avatar = `https://ui-avatars.com/api/?rounded=true&name=${encodeURIComponent(name.trim())}&bold=true&background=F32C2C&color=FFFFFF`;
 			user = new User({
 				name,
 				email,
@@ -134,7 +154,9 @@ router.post("/forgotpassword", [check("email", "Please include a valid email").i
 			});
 		}
 
-		const { email } = req.body;
+		const {
+			email
+		} = req.body;
 
 		const user = await User.findOne({
 			email,
@@ -218,7 +240,10 @@ router.post("/forgotpassword", [check("email", "Please include a valid email").i
 
 router.post("/resetpassword", async (req, res) => {
 	try {
-		const { reset_password_token, password } = req.body;
+		const {
+			reset_password_token,
+			password
+		} = req.body;
 		const user = await User.findOne({
 			reset_password_token,
 		});
@@ -247,7 +272,9 @@ router.post("/resetpassword", async (req, res) => {
 
 router.post("/validateresettoken", async (req, res) => {
 	try {
-		const { reset_password_token } = req.body;
+		const {
+			reset_password_token
+		} = req.body;
 		const user = await User.findOne({
 			reset_password_token,
 		});
