@@ -236,3 +236,23 @@ export async function updateAlbumsInTheCollectionMetaData() {
             payload: data.data
         })
 }
+
+
+export async function downloadSongHandler(item) {
+    const state = await store.getState();
+    if (!state.authReducer.isAuthenticated) {
+        toastActions.showMessage("Please Login to use this feature!");
+        return true;
+    }
+    try {
+        const response = await fetch(`${variables.baseUrl}/downcc/${item.videoId}?title=${encodeURI(item.title)}`);
+        if (response.status === 200)
+            window.open(`${variables.baseUrl}/downcc/${item.videoId}?title=${encodeURI(item.title)}`, "_blank")
+        else
+            throw new Error("!");
+        return true;
+    } catch (error) {
+        toastActions.showMessage("Requested content not available right now!, try downloading alternate songs!");
+        return true;
+    }
+}

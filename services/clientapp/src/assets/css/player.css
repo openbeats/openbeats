@@ -257,7 +257,7 @@
     }
 }
 
-@media only screen and (max-width: 750px) {
+@media only screen and (max-width: 850px) {
     .player-wrapper {
         height: 200px;
         bottom: -200px;
@@ -394,7 +394,7 @@
     }
 }
 
-@media only screen and (min-width: 750px) {
+@media only screen and (min-width: 850px) {
     .minimize-mobile-toggle {
         display: none;
     }

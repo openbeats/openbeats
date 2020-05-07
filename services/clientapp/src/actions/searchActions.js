@@ -50,9 +50,9 @@ export async function fetchResults() {
             await store.dispatch({
                 type: "FETCH_RESULTS",
                 payload: {
-                    songs: res.data.songs,
-                    albums: res.data.albums,
-                    artists: res.data.artists,
+                    songs: res.data.songs ? res.data.songs : [],
+                    albums: res.data.albums ? res.data.albums : [],
+                    artists: res.data.artists ? res.data.artists : [],
                     isSearching: false,
                     keywordSuggestions: []
                 }
