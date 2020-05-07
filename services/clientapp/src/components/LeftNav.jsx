@@ -27,6 +27,8 @@ class LeftNav extends Component {
       isLeftNavOpened: false
     }
     this.navBarRef = null;
+    this.createNewPlaylistBtnRef = null;
+    this.createNewPlaylistFormHolderRef = null;
   }
 
   componentDidMount() {
@@ -46,10 +48,13 @@ class LeftNav extends Component {
   }
 
   closeLeftNavMenuHandler = (e) => {
-    // if (!this.navBarRef.contains(e.target)) {  // issue fix - close on clicking any menu
+    if (this.createNewPlaylistBtnRef && this.createNewPlaylistBtnRef.contains(e.target)) {
+      return;
+    } else if (this.createNewPlaylistFormHolderRef && this.createNewPlaylistFormHolderRef.contains(e.target)) {
+      return;
+    }
     this.setState({ isLeftNavOpened: false });
     document.removeEventListener("click", this.closeLeftNavMenuHandler);
-    // }
   }
 
 
@@ -172,11 +177,14 @@ class LeftNav extends Component {
                       this.props.updateTyping(true)
                       this.setState({ playlistName: '', isCreateNewPlaylistTriggered: true })
                     }}
+                    ref={d => this.createNewPlaylistBtnRef = d}
                   >
                     <img src={navplus} alt="" srcSet="" />
                   </div>
                   {this.state.isCreateNewPlaylistTriggered &&
-                    <li className="playlist-content-holder-text">
+                    <li className="playlist-content-holder-text"
+                      ref={d => this.createNewPlaylistFormHolderRef = d}
+                    >
                       <form onSubmit={async (e) => {
                         e.preventDefault();
                         if (await this.props.createNewPlaylist(this.props.userDetails.id, this.state.playlistName)) {
