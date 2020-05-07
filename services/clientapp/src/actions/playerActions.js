@@ -1,6 +1,7 @@
 import {
 	toastActions,
 	nowPlayingActions,
+	playlistManipulatorActions,
 	// playerActions
 } from ".";
 import {
@@ -406,10 +407,6 @@ export const initMediaSession = async () => {
 }
 
 export async function playerDownloadHandler(e) {
-	if (!store.getState().authReducer.isAuthenticated) {
-		toastActions.showMessage("Please Login to use this feature!");
-		return;
-	}
 	let state = store.getState().playerReducer;
 	store.dispatch({
 		type: "PLAYER_DOWNLOAD_HANDLE",
@@ -426,26 +423,16 @@ export async function playerDownloadHandler(e) {
 			},
 		});
 	} else {
-		try {
-			const response = await axios.get(`${variables.baseUrl}/downcc/${state.id}?title=${encodeURI(state.songTitle)}`)
-			if (response.status === 200) {
-				store.dispatch({
-					type: "PLAYER_DOWNLOAD_HANDLE",
-					payload: {
-						downloadProcess: false,
-					},
-				});
-				window.open(`${variables.baseUrl}/downcc/${state.id}?title=${encodeURI(state.songTitle)}`, "_blank");
-			} else
-				throw new Error("Not Available");
-		} catch (error) {
+		if (await playlistManipulatorActions.downloadSongHandler({
+				videoId: state.id,
+				title: state.songTitle
+			})) {
 			store.dispatch({
 				type: "PLAYER_DOWNLOAD_HANDLE",
 				payload: {
 					downloadProcess: false,
 				},
 			});
-			toastActions.showMessage("Requested content not available right now!, try downloading alternate songs!" + error.message.toString());
 		}
 	}
 }

@@ -105,10 +105,21 @@ app.get("/ytcat", async (req, res) => {
 			data: await ytcat(req.query.q, fr),
 		});
 	} catch (error) {
-		res.send({
-			status: true,
-			data: [],
-		});
+		if (req.query.advanced === "true") {
+			res.send({
+				status: true,
+				data: {
+					albums: [],
+					artists: [],
+					songs: []
+				},
+			});
+		} else {
+			res.send({
+				status: true,
+				data: [],
+			});
+		}
 	}
 });
 

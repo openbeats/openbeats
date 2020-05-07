@@ -2,35 +2,16 @@ import React, { Component } from 'react';
 import "../assets/css/song.css";
 import { playerpause, playerplay, playerdownload, pQueueRed, playlistadd } from '../assets/images';
 import Loader from 'react-loader-spinner';
-import { toastActions } from '../actions';
-import { variables } from '../config';
-import axios from "axios";
+import { toastActions, playlistManipulatorActions } from '../actions';
+import { connect } from 'react-redux';
 
-export default class Song extends Component {
+class Song extends Component {
 
     constructor(props) {
         super(props);
         this.state = {
             videoId: null
         }
-    }
-
-    async downloadSong(item) {
-        if (!this.props.isAuthenticated) {
-            toastActions.showMessage("Please Login to use this feature!");
-            this.setState({ videoId: null })
-            return
-        }
-        try {
-            const response = await axios.get(`${variables.baseUrl}/downcc/${item.videoId}?title=${encodeURI(item.title)}`);
-            if (response.status === 200)
-                window.open(`${variables.baseUrl}/downcc/${item.videoId}?title=${encodeURI(item.title)}`, "_blank")
-            else
-                throw new Error("!");
-        } catch (error) {
-            toastActions.showMessage("Requested content not available right now!, try downloading alternate songs!");
-        }
-        this.setState({ videoId: null })
     }
 
     render() {
@@ -76,7 +57,9 @@ export default class Song extends Component {
                                 onClick={async (e) => {
                                     e.preventDefault();
                                     await this.setState({ videoId: this.props.item.videoId });
-                                    this.downloadSong(this.props.item);
+                                    if (await this.props.downloadSongHandler(this.props.item)) {
+                                        this.setState({ videoId: null })
+                                    }
                                 }}
                                 className="t-none cursor-pointer" >
                                 {this.state.videoId === this.props.item.videoId ?
@@ -107,3 +90,28 @@ export default class Song extends Component {
         )
     }
 }
+
+const mapStateToProps = state => {
+    return {
+        isAuthenticated: state.authReducer.isAuthenticated,
+        userPlaylistMetaData: state.playlistManipulatorReducer.userPlaylistMetaData,
+        userDetails: state.authReducer.userDetails,
+        activeNavMenu: state.coreReducer.currentActionTitle,
+    };
+};
+
+const mapDispatchToProps = dispatch => {
+    return {
+        notify: message => {
+            toastActions.showMessage(message);
+        },
+        featureNotify: () => {
+            toastActions.featureNotify();
+        },
+        downloadSongHandler: async (item) => {
+            return await playlistManipulatorActions.downloadSongHandler(item);
+        }
+    };
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(Song);
