@@ -202,7 +202,7 @@ export async function addOrRemoveAlbumFromUserCollection(albumId, isAdd = true) 
                 }
             });
             if (data.status)
-                toastActions.showMessage("Album Deleted from the collection!");
+                toastActions.showMessage("Album Removed from the collection!");
             else
                 throw new Error(data.data.toString());
         }
