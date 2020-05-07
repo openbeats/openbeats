@@ -48,7 +48,11 @@ app.get("/opencc/:id", addtorecentlyplayed, async (req, res) => {
 			if (!audioFormats[0].contentLength) {
 				audioFormats = ytdl.filterFormats(info.formats, "audioandvideo");
 			}
-			songDetails.sourceUrl = audioFormats[0].url;
+			if (audioFormats.length > 0 && audioFormats[0].url && audioFormats[0].url !== undefined)
+				songDetails.sourceUrl = audioFormats[0].url;
+			else {
+				throw new Error("Cannot fetch the requested song...");
+			}
 			songDetails.HRThumbnail = isSafe(
 				() => info["player_response"]["microformat"]["playerMicroformatRenderer"]["thumbnail"]["thumbnails"][0]["url"]
 			);
