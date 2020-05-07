@@ -5,10 +5,8 @@ import { connect } from "react-redux";
 import { push } from "connected-react-router";
 import { musicDummy, playerdownload, pQueueWhite } from '../assets/images';
 import Loader from 'react-loader-spinner';
-import { variables } from '../config';
 import queryString from 'query-string';
 import { store } from '../store';
-import axios from "axios";
 
 class PlaylistDisplay extends Component {
 
@@ -93,25 +91,6 @@ class PlaylistDisplay extends Component {
             this.props.updatePlayerQueue(playlistData, key);
         } else {
             this.props.notify("Your playlist is empty! you can search and add songs to the playlist :-)")
-        }
-    }
-
-    downloadHandler = async (item) => {
-        if (!this.props.isAuthenticated) {
-            toastActions.showMessage("Please Login to use this feature!")
-            return
-        }
-        try {
-            const response = await axios.get(`${variables.baseUrl}/downcc/${item.videoId}?title=${encodeURI(item.title)}`);
-            if (response.status === 200) {
-                window.open(`${variables.baseUrl}/downcc/${item.videoId}?title=${encodeURI(item.title)}`, '_blank')
-                this.setState({ videoId: [...this.state.videoId.filter(id => id !== item.videoId)] });
-            }
-            else
-                throw new Error("!");
-        } catch (error) {
-            this.props.notify("Requested content not available right now!, try downloading alternate songs!" + error.message.toString());
-            this.setState({ videoId: [...this.state.videoId.filter(id => id !== item.videoId)] });
         }
     }
 
@@ -266,7 +245,9 @@ class PlaylistDisplay extends Component {
                                                 onClick={async (e) => {
                                                     e.preventDefault();
                                                     await this.setState({ videoId: [...this.state.videoId, item.videoId] })
-                                                    this.downloadHandler(item);
+                                                    if (await this.props.downloadSongHandler(item)) {
+                                                        this.setState({ videoId: [...this.state.videoId.filter(id => id !== item.videoId)] });
+                                                    }
                                                 }}
                                                 className="t-none cursor-pointer">
                                                 {this.state.videoId.includes(item.videoId) ?
@@ -393,6 +374,9 @@ const mapDispatchToProps = (dispatch) => {
                 toastActions.showMessage("Playlist you tried to add to the queue.. seems to be empty!")
             }
         },
+        downloadSongHandler: async (item) => {
+            return await playlistManipulatorActions.downloadSongHandler(item);
+        }
     }
 }
 
