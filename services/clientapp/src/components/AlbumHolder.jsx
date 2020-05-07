@@ -13,6 +13,8 @@ class AlbumHolder extends Component {
 
         }
         this.heartRef = null;
+        this.playRef = null;
+        this.addToQueueRef = null;
     }
 
     addOrRemoveAlbumFromCollectionHandler = () => {
@@ -38,8 +40,11 @@ class AlbumHolder extends Component {
     render() {
         return (
             <div className="album-holder-wrapper" onClick={(e) => {
-                if (this.heartRef && !this.heartRef.contains(e.target))
-                    this.albumViewCallBack(this.props.albumId);
+                if (this.heartRef && this.heartRef.contains(e.target))
+                    return;
+                else if (this.playRef && this.playRef.contains(e.target))
+                    return
+                this.albumViewCallBack(this.props.albumId);
             }} style={{ backgroundImage: `url(${this.props.albumThumbnail}), url(${musicDummy})` }}>
                 {this.props.addOrRemoveAlbumFromCollectionHandler &&
                     this.props.isAuthenticated &&
@@ -51,7 +56,7 @@ class AlbumHolder extends Component {
                 }
                 <div className="album-holder-play-icon-visible-on-hover">
                     <i className="far fa-eye" title="View this Album" onClick={() => this.albumViewCallBack(this.props.albumId)}></i>
-                    <i className="fas fa-play" title="Reset Current Queue and Play this Album" onClick={() => this.albumPlayCallBack(this.props.albumId)}></i>
+                    <i className="fas fa-play" title="Reset Current Queue and Play this Album" ref={d => this.playRef = d} onClick={() => this.albumPlayCallBack(this.props.albumId)}></i>
                     <i className="fas fa-plus-square" title="Add to The current Queue" onClick={() => this.albumAddToCurrentQueueCallBack(this.props.albumId)}></i>
                 </div>
                 <div className="album-holder-songs-total-holder">{this.props.albumTotalSongs}</div>
@@ -83,7 +88,7 @@ const mapDispatchToProps = (dispatch) => {
             toastActions.featureNotify()
         },
         addSongsToQueue: async (pId, type = 'album') => {
-            const data = await playlistManipulatorActions.fetchAlbumPlaylist(pId);
+            const data = await playlistManipulatorActions.fetchAlbumPlaylist(pId, type);
             if (data && data.status && data.data.songs.length) {
                 nowPlayingActions.addSongsToQueue(data.data.songs);
             } else {
