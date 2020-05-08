@@ -13,7 +13,7 @@ import {
 import dbconfig from "./config/db";
 import addtorecentlyplayed from "./config/addtorecentlyplayed";
 import Song from "./models/Song";
-import isSafe from "./utils/isSafe";
+//import isSafe from "./utils/isSafe";
 dbconfig();
 
 const PORT = process.env.PORT || config.isDev ? config.port.dev : config.port.prod;
@@ -37,9 +37,8 @@ app.get("/opencc/:id", addtorecentlyplayed, async (req, res) => {
 				resolve(value);
 			});
 		});
-		let songDetails = await isAvail;
-		if (!songDetails) {
-			songDetails = {};
+		let sourceUrl = await isAvail;
+		if (!sourceUrl) {
 			const info = await (await fetch(`${config.lambda}${videoID}`)).json();
 			if (!info.formats) {
 				throw new Error("Cannot fetch the requested song...");
@@ -49,14 +48,14 @@ app.get("/opencc/:id", addtorecentlyplayed, async (req, res) => {
 				audioFormats = ytdl.filterFormats(info.formats, "audioandvideo");
 			}
 			if (audioFormats.length > 0 && audioFormats[0].url && audioFormats[0].url !== undefined)
-				songDetails.sourceUrl = audioFormats[0].url;
+				sourceUrl = audioFormats[0].url;
 			else {
 				throw new Error("Cannot fetch the requested song...");
 			}
-			songDetails.HRThumbnail = isSafe(
-				() => info["player_response"]["microformat"]["playerMicroformatRenderer"]["thumbnail"]["thumbnails"][0]["url"]
-			);
-			redis.set(videoID, JSON.stringify(songDetails), err => {
+			// songDetails.HRThumbnail = isSafe(
+			// 	() => info["player_response"]["microformat"]["playerMicroformatRenderer"]["thumbnail"]["thumbnails"][0]["url"]
+			// );
+			redis.set(videoID, sourceUrl , err => {
 				if (err) console.error(err);
 				else {
 					redis.expire(videoID, 20000, err => {
@@ -64,16 +63,13 @@ app.get("/opencc/:id", addtorecentlyplayed, async (req, res) => {
 					});
 				}
 			});
-		} else {
-			songDetails = JSON.parse(songDetails);
 		}
 		setTimeout(() => {
 			addSongInDeAttachedMode(videoID, req.song);
 		}, 0);
 		return res.json({
 			status: true,
-			link: songDetails.sourceUrl,
-			HRThumbnail: songDetails.HRThumbnail
+			link: sourceUrl,
 		});
 	} catch (error) {
 		console.log(error);
