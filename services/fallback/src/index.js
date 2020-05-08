@@ -5,7 +5,7 @@ import axios from "axios";
 import fetch from "node-fetch";
 import redis from "./config/redis";
 import { config } from "./config";
-import isSafe from "./utils/isSafe";
+//import isSafe from "./utils/isSafe";
 // import dbconfig from "./config/db";
 // dbconfig();
 
@@ -17,10 +17,8 @@ middleware(app);
 app.get("/:id", async (req, res) => {
 	const videoID = req.params.id;
 	try {
-		redis.get(videoID, async (err, songDetails) => {
-			if (songDetails) {
-				songDetails = JSON.parse(songDetails);
-				const { sourceUrl } = songDetails;
+		redis.get(videoID, async (err, sourceUrl) => {
+			if (sourceUrl) {
 				const range = req.headers.range;
 				//when seeked range comes in header
 				if (range) {
@@ -46,18 +44,16 @@ app.get("/:id", async (req, res) => {
 					});
 				}
 			} else {
-				songDetails = {};
 				const info = await (await fetch(`${config.lambda}${videoID}`)).json();
 				let audioFormats = ytdl.filterFormats(info.formats, "audioonly");
 				if (!audioFormats[0].contentLength) {
 					audioFormats = ytdl.filterFormats(info.formats, "audioandvideo");
 				}
-				songDetails.sourceUrl = audioFormats[0].url;
-				songDetails.HRThumbnail = isSafe(
-					() => info["player_response"]["microformat"]["playerMicroformatRenderer"]["thumbnail"]["thumbnails"][0]["url"]
-				);
-				const { sourceUrl } = songDetails;
-				redis.set(videoID, JSON.stringify(songDetails), err => {
+				let sourceUrl = audioFormats[0].url;
+				// songDetails.HRThumbnail = isSafe(
+				// 	() => info["player_response"]["microformat"]["playerMicroformatRenderer"]["thumbnail"]["thumbnails"][0]["url"]
+				// );
+				redis.set(videoID, sourceUrl, err => {
 					if (err) console.error(err);
 					else {
 						redis.expire(videoID, 20000, err => {
