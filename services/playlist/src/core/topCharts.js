@@ -8,14 +8,14 @@ export const fetchTopCharts = async () => {
 	try {
 		console.log("fetch Top Charts Cron started ...");
 		const fetchlist = [
+			"tamil-top-20",
+			"malayalam-top-20",
+			"mirchi-top-20",
+			"telugu-top-20",
 			"bangla-top-10",
 			"kannada-top-20",
 			"punjabi-top-10",
-			"tamil-top-20",
-			"telugu-top-20",
-			"malayalam-top-20",
 			"marathi-top-20",
-			"mirchi-top-20",
 		];
 		for (let chartName of fetchlist) {
 			let endIndex = chartName.indexOf("-");
