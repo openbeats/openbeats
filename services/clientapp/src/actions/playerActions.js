@@ -304,14 +304,13 @@ export async function initPlayer(audioData, playMusic = true) {
 				await startPlayer(playMusic);
 			}
 		} else {
-			const dat = await axios.get(fallBackUrl);
-			const resData = dat.data;
-			if (resData.status === 200) {
+			const dat = await fetch(fallBackUrl);
+			if (dat.status === 200) {
 				if ((await store.getState().nowPlayingReducer.currentPlaying.videoId) === audioData.videoId) {
 					await store.dispatch({
 						type: "LOAD_AUDIO_DATA",
 						payload: {
-							masterUrl: resData.link,
+							masterUrl: null,
 							fallBackUrl,
 						},
 					});
@@ -321,9 +320,10 @@ export async function initPlayer(audioData, playMusic = true) {
 				throw new Error("Not Available")
 		}
 	} catch (error) {
-		toastActions.showMessage("Requested audio is not availabe right now! " + error.message.toString());
-		await store.dispatch(await resetPlayer());
-		nowPlayingActions.clearQueue();
+		toastActions.showMessage("Requested audio is not availabe right now! ");
+		musicEndHandler(); // fix (switch to next song on false link)
+		// await store.dispatch(await resetPlayer());
+		// nowPlayingActions.clearQueue();
 	}
 
 	return true;
@@ -358,16 +358,14 @@ export const initMediaSession = async () => {
 		navigator.mediaSession.metadata = new MediaMetadata({
 			title: state.playerReducer.songTitle,
 			artwork: [{
-					src: state.playerReducer.thumbnail.split("?")[0],
-					sizes: '480x360',
-					type: 'image/jpg'
-				},
-				{
-					src: `https://i.ytimg.com/vi/${state.playerReducer.id}/maxresdefault.jpg`,
-					sizes: '1280x720',
-					type: 'image/jpg'
-				}
-			]
+				src: `https://i.ytimg.com/vi/${state.playerReducer.id}/maxresdefault.jpg`,
+				sizes: '1280x720',
+				type: 'image/jpg'
+			}, {
+				src: state.playerReducer.thumbnail.split("?")[0],
+				sizes: '480x360',
+				type: 'image/jpg'
+			}]
 		});
 
 		navigator.mediaSession.setActionHandler('play', () => {
