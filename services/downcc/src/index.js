@@ -21,58 +21,61 @@ middleware(app);
 app.get("/:id", async (req, res) => {
 	const videoID = req.params.id;
 	try {
-		redis.get(videoID, async (err, sourceUrl) => {
-			if (sourceUrl) {
-				let downloadTitle = `${req.query.title ? req.query.title : videoID}`;
-				downloadTitle = `${downloadTitle.trim().replace(" ", "_").replace(/[^\w]/gi, "_")}@openbeats`;
-				res.setHeader("Content-disposition", "attachment; filename=" + downloadTitle + ".mp3");
-				res.setHeader("Content-Type", "audio/mpeg");
-				ffmpeg({
-						source: sourceUrl,
+		if (!ytdl.validateID(videoID)) throw new Error("Invalid id");
+		const streamDetails = new Promise((resolve, reject) => {
+			redis.get(videoID, async (err, sourceUrl) => {
+				if (sourceUrl) {
+					let downloadTitle = `${req.query.title ? req.query.title : videoID}`;
+					downloadTitle = `${downloadTitle.trim().replace(" ", "_").replace(/[^\w]/gi, "_")}@openbeats`;
+					return resolve({
+						sourceUrl,
+						downloadTitle
 					})
-					.setFfmpegPath(path)
-					.withAudioCodec("libmp3lame")
-					.toFormat("mp3")
-					.on("error", err => console.log(err.message))
-					.pipe(res, {
-						end: true,
-					});
-			} else {
-				const info = await (await fetch(`${config.lambda}${videoID}`)).json();
-				let audioFormats = ytdl.filterFormats(info.formats, "audioonly");
-				if (!audioFormats[0].contentLength) {
-					audioFormats = ytdl.filterFormats(info.formats, "audioandvideo");
-				}
-				let sourceUrl = audioFormats[0].url;
-				// songDetails.HRThumbnail = isSafe(
-				// 	() => info["player_response"]["microformat"]["playerMicroformatRenderer"]["thumbnail"]["thumbnails"][0]["url"]
-				// );
-				redis.set(videoID, sourceUrl, err => {
-					if (err) console.error(err);
-					else {
-						redis.expire(videoID, 20000, err => {
+				} else {
+					const info = await (await fetch(`${config.lambda}${videoID}`)).json();
+					if (!info.formats) {
+						return reject("Cannot fetch the requested song...")
+					}
+					let audioFormats = ytdl.filterFormats(info.formats, "audioonly");
+					if (!audioFormats[0].contentLength) {
+						audioFormats = ytdl.filterFormats(info.formats, "audioandvideo");
+					}
+					let sourceUrl;
+					if (audioFormats.length > 0 && audioFormats[0].url && audioFormats[0].url !== undefined) {
+						sourceUrl = audioFormats[0].url;
+						let downloadTitle = `${info.title.trim().replace(" ", "_").replace(/[^\w]/gi, "_")}@openbeats`;
+						redis.set(videoID, sourceUrl, err => {
 							if (err) console.error(err);
+							else {
+								redis.expire(videoID, 20000, err => {
+									if (err) console.error(err);
+								});
+							}
+						});
+						return resolve({
+							sourceUrl,
+							downloadTitle
 						});
 					}
-				});
-				let downloadTitle = `${info.title.trim().replace(" ", "_").replace(/[^\w]/gi, "_")}@openbeats`;
-				res.setHeader("Content-disposition", "attachment; filename=" + downloadTitle + ".mp3");
-				res.setHeader("Content-Type", "audio/mpeg");
-				ffmpeg({
-						source: sourceUrl,
-					})
-					.setFfmpegPath(path)
-					.withAudioCodec("libmp3lame")
-					.audioBitrate(audioFormats[0].audioBitrate)
-					.toFormat("mp3")
-					.on("error", err => console.log(err.message))
-					.pipe(res, {
-						end: true,
-					});
-			}
-		});
+					return reject("Cannot fetch the requested song...");
+				}
+			})
+		})
+		const details = await streamDetails;
+		res.setHeader("Content-disposition", "attachment; filename=" + details.downloadTitle + ".mp3");
+		res.setHeader("Content-Type", "audio/mpeg");
+		ffmpeg({
+				source: details.sourceUrl,
+			})
+			.setFfmpegPath(path)
+			.withAudioCodec("libmp3lame")
+			.toFormat("mp3")
+			.on("error", err => console.log(err.message))
+			.pipe(res, {
+				end: true,
+			});
 	} catch (error) {
-		res.send({
+		return res.send({
 			status: false,
 			link: null,
 		});
