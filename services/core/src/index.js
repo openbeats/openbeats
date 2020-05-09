@@ -47,7 +47,7 @@ app.get("/opencc/:id", addtorecentlyplayed, async (req, res) => {
 			if (!audioFormats[0].contentLength) {
 				audioFormats = ytdl.filterFormats(info.formats, "audioandvideo");
 			}
-			if (audioFormats.length > 0 && audioFormats[0].url && audioFormats[0].url !== undefined)
+			if (audioFormats.length > 0 && audioFormats[0].url && audioFormats[0].url !== undefined && audioFormats[0].url !== "undefined")
 				sourceUrl = audioFormats[0].url;
 			else {
 				throw new Error("Cannot fetch the requested song...");
@@ -55,7 +55,7 @@ app.get("/opencc/:id", addtorecentlyplayed, async (req, res) => {
 			// songDetails.HRThumbnail = isSafe(
 			// 	() => info["player_response"]["microformat"]["playerMicroformatRenderer"]["thumbnail"]["thumbnails"][0]["url"]
 			// );
-			redis.set(videoID, sourceUrl , err => {
+			redis.set(videoID, sourceUrl, err => {
 				if (err) console.error(err);
 				else {
 					redis.expire(videoID, 20000, err => {
