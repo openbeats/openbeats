@@ -32,9 +32,9 @@ app.get("/opencc/:id", addtorecentlyplayed, async (req, res) => {
 		const isAvail = new Promise((resolve, reject) => {
 			redis.get(videoID, (err, value) => {
 				if (err) {
-					reject(err);
+					return resolve(null);
 				}
-				resolve(value);
+				return resolve(value);
 			});
 		});
 		let sourceUrl = await isAvail;
@@ -47,14 +47,11 @@ app.get("/opencc/:id", addtorecentlyplayed, async (req, res) => {
 			if (!audioFormats[0].contentLength) {
 				audioFormats = ytdl.filterFormats(info.formats, "audioandvideo");
 			}
-			if (audioFormats.length > 0 && audioFormats[0].url && audioFormats[0].url !== undefined && audioFormats[0].url !== "undefined")
+			if (audioFormats.length > 0 && audioFormats[0].url && audioFormats[0].url !== undefined)
 				sourceUrl = audioFormats[0].url;
 			else {
 				throw new Error("Cannot fetch the requested song...");
 			}
-			// songDetails.HRThumbnail = isSafe(
-			// 	() => info["player_response"]["microformat"]["playerMicroformatRenderer"]["thumbnail"]["thumbnails"][0]["url"]
-			// );
 			redis.set(videoID, sourceUrl, err => {
 				if (err) console.error(err);
 				else {
@@ -137,7 +134,7 @@ const addSongInDeAttachedMode = async (videoId, song) => {
 		const findSong = await Song.findOne({
 			_id: videoId,
 		});
-		if (!findSong) {
+		if (!findSong && song) {
 			let item = null;
 			if (!song) {
 				item = (await ytcat(videoId, true))[0];
