@@ -27,6 +27,6 @@
     "morgan": "^1.9.1",
     "node-fetch": "^2.6.0",
     "redis": "^2.8.0",
-    "ytdl-core": "^2.1.1"
+    "ytdl-core": "^2.1.2"
   }
 }
