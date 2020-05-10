@@ -1,4 +1,6 @@
-import { Router } from "express";
+import {
+	Router
+} from "express";
 import rootUser from "../permissions/root";
 import adminUser from "../permissions/admin";
 import paginationMiddleware from "../config/paginationMiddleware";
@@ -10,9 +12,7 @@ router.get(
 	"/",
 	adminUser,
 	paginationMiddleware(
-		User,
-		{},
-		{
+		User, {}, {
 			_id: true,
 			name: 1,
 			email: 2,
@@ -29,6 +29,7 @@ router.get(
 				data: res.paginatedResults,
 			});
 		} catch (error) {
+			console.error(error.message);
 			return res.json({
 				status: false,
 				data: error.message,
@@ -39,7 +40,11 @@ router.get(
 
 router.put("/", adminUser, rootUser, async (req, res) => {
 	try {
-		const { userId, adminStatus, accessLevel } = req.body;
+		const {
+			userId,
+			adminStatus,
+			accessLevel
+		} = req.body;
 		if (!userId) throw new Error("Please pass userId,adminStatus,accessLevel");
 		const user = await User.findById(userId);
 		if (!user) throw new Error("User not found.");
@@ -51,6 +56,7 @@ router.put("/", adminUser, rootUser, async (req, res) => {
 			data: "Successfully made changes",
 		});
 	} catch (error) {
+		console.error(error.message);
 		return res.json({
 			status: false,
 			data: error.message,

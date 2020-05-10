@@ -75,6 +75,7 @@ app.get("/:id", async (req, res) => {
 				end: true,
 			});
 	} catch (error) {
+		console.error(error.message);
 		return res.status(408).send({
 			status: false,
 			link: null,

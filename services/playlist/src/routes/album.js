@@ -1,11 +1,24 @@
 import express from "express";
 import Album from "../models/Album";
-import { check, oneOf, body, validationResult } from "express-validator";
-import { config } from "../config";
+import {
+	check,
+	oneOf,
+	body,
+	validationResult
+} from "express-validator";
+import {
+	config
+} from "../config";
 import axios from "axios";
-import { Error } from "mongoose";
+import {
+	Error
+} from "mongoose";
 import paginationMiddleware from "../config/paginationMiddleware";
-import { isAdmin, canUpdateOrDeleteAlbum, scopedAlbums } from "../permissions";
+import {
+	isAdmin,
+	canUpdateOrDeleteAlbum,
+	scopedAlbums
+} from "../permissions";
 
 const router = express.Router();
 
@@ -22,8 +35,8 @@ router.post(
 			check("songs", "Please pass array of song objects to add.").isArray().not().isEmpty(),
 			oneOf([check("featuringArtists").exists().notEmpty(), check("albumBy").exists().notEmpty()]),
 			check("searchVals", "Please pass atleast one search tag in array.")
-				.isArray()
-				.custom(value => value.length > 0),
+			.isArray()
+			.custom(value => value.length > 0),
 		],
 	],
 	async (req, res) => {
@@ -38,7 +51,15 @@ router.post(
 						.join("\n"),
 				});
 			}
-			const { name, featuringArtists, searchTags, userId, albumBy, songs, searchVals } = req.body;
+			const {
+				name,
+				featuringArtists,
+				searchTags,
+				userId,
+				albumBy,
+				songs,
+				searchVals
+			} = req.body;
 
 			if (!name || !songs) {
 				throw new Error("Pass name, userId and songs in request body.");
@@ -69,7 +90,7 @@ router.post(
 				data: album,
 			});
 		} catch (error) {
-			console.log(error.message);
+			console.error(error.message);
 			res.send({
 				status: false,
 				data: error.message,
@@ -90,8 +111,8 @@ router.put(
 			check("featuringArtists", "Please pass atleast one artist tag in array.").if(body("featuringArtists").exists()).isArray(),
 			oneOf([check("featuringArtists").exists().notEmpty(), check("albumBy").exists().notEmpty()]),
 			check("searchVals", "Please pass atleast one search tag in array.")
-				.isArray()
-				.custom(value => value.length > 0),
+			.isArray()
+			.custom(value => value.length > 0),
 		],
 	],
 	async (req, res) => {
@@ -106,7 +127,15 @@ router.put(
 						.join("\n"),
 				});
 			}
-			const { name, featuringArtists, songs, searchTags, userId, albumBy, searchVals } = req.body;
+			const {
+				name,
+				featuringArtists,
+				songs,
+				searchTags,
+				userId,
+				albumBy,
+				searchVals
+			} = req.body;
 			if (!name || !songs) {
 				throw new Error("Pass name, userId and songs in request body.");
 			}
@@ -130,7 +159,7 @@ router.put(
 				data: req.album,
 			});
 		} catch (error) {
-			console.log(error.message);
+			console.error(error.message);
 			res.send({
 				status: false,
 				data: error.message,
@@ -145,9 +174,7 @@ router.get(
 	isAdmin,
 	scopedAlbums,
 	paginationMiddleware(
-		Album,
-		{},
-		{
+		Album, {}, {
 			_id: true,
 			name: 1,
 			thumbnail: 2,
@@ -155,12 +182,10 @@ router.get(
 			createdAt: 4,
 			createdBy: 5,
 		},
-		[
-			{
-				path: "createdBy",
-				select: "name",
-			},
-		]
+		[{
+			path: "createdBy",
+			select: "name",
+		}, ]
 	),
 	async (req, res) => {
 		try {
@@ -170,6 +195,7 @@ router.get(
 				data: res.paginatedResults,
 			});
 		} catch (error) {
+			console.error(error.message);
 			res.send({
 				status: false,
 				data: error.message,
@@ -182,9 +208,7 @@ router.get(
 router.get(
 	"/all",
 	paginationMiddleware(
-		Album,
-		{},
-		{
+		Album, {}, {
 			_id: true,
 			name: 1,
 			thumbnail: 2,
@@ -192,12 +216,10 @@ router.get(
 			createdAt: 4,
 			createdBy: 5,
 		},
-		[
-			{
-				path: "createdBy",
-				select: "name",
-			},
-		]
+		[{
+			path: "createdBy",
+			select: "name",
+		}, ]
 	),
 	async (req, res) => {
 		try {
@@ -207,6 +229,7 @@ router.get(
 				data: res.paginatedResults,
 			});
 		} catch (error) {
+			console.error(error.message);
 			res.send({
 				status: false,
 				data: error.message,
@@ -229,29 +252,30 @@ router.get("/findbytag", [check("query", "'query' param is required.").not().isE
 					.join("\n"),
 			});
 		}
-		const relatedAlbum = await Album.find(
-			{
-				$text: {
-					$search: `${req.query.query}`,
-					$caseSensitive: false,
-				},
+		const relatedAlbum = await Album.find({
+			$text: {
+				$search: `${req.query.query}`,
+				$caseSensitive: false,
 			},
-			{
-				_id: true,
-				name: 1,
-				thumbnail: 2,
-				totalSongs: 3,
-				score: {
-					$meta: "textScore",
-				},
+		}, {
+			_id: true,
+			name: 1,
+			thumbnail: 2,
+			totalSongs: 3,
+			score: {
+				$meta: "textScore",
+			},
+		}).sort({
+			score: {
+				$meta: "textScore"
 			}
-		).sort({ score: { $meta: "textScore" } });
+		});
 		res.send({
 			status: true,
 			data: relatedAlbum,
 		});
 	} catch (error) {
-		console.log(error.message);
+		console.error(error.message);
 		res.send({
 			status: false,
 			data: error.message,
@@ -293,7 +317,7 @@ router.get("/:id", async (req, res) => {
 			data: fetchedAlbum,
 		});
 	} catch (error) {
-		console.log(error.message);
+		console.error(error.message);
 		res.send({
 			status: false,
 			data: error.message,
@@ -310,7 +334,7 @@ router.delete("/:id", isAdmin, canUpdateOrDeleteAlbum, async (req, res) => {
 			data: "Album got deleted successfully.",
 		});
 	} catch (error) {
-		console.log(error.message);
+		console.error(error.message);
 		res.send({
 			status: false,
 			data: error.message,

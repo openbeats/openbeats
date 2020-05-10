@@ -1,6 +1,12 @@
 import SearchTag from "../models/SearchTag";
-import { Router } from "express";
-import { check, oneOf, validationResult } from "express-validator";
+import {
+	Router
+} from "express";
+import {
+	check,
+	oneOf,
+	validationResult
+} from "express-validator";
 import paginationMiddleware from "../config/paginationMiddleware";
 
 const router = Router();
@@ -8,7 +14,9 @@ const router = Router();
 //Search Creation
 router.post("/create", async (req, res) => {
 	try {
-		let { searchVal } = req.body;
+		let {
+			searchVal
+		} = req.body;
 		searchVal = searchVal.toLowerCase();
 		const searchtag = new SearchTag({
 			searchVal,
@@ -19,7 +27,7 @@ router.post("/create", async (req, res) => {
 			data: searchtag,
 		});
 	} catch (error) {
-		console.log(error.message);
+		console.error(error.message);
 		res.send({
 			status: false,
 			data: error.message,
@@ -37,7 +45,10 @@ router.get("/fetch", oneOf([check("tagId").exists(), check("startsWith").exists(
 				data: "Please provide either tagId or startsWith as query params.",
 			});
 		}
-		const { tagId, startsWith } = req.query;
+		const {
+			tagId,
+			startsWith
+		} = req.query;
 		if (tagId) {
 			const searchTag = await SearchTag.findById(tagId);
 			if (!searchTag) throw new Error("Search tag not found.");
@@ -63,7 +74,7 @@ router.get("/fetch", oneOf([check("tagId").exists(), check("startsWith").exists(
 			data: [],
 		});
 	} catch (error) {
-		console.log(error.message);
+		console.error(error.message);
 		res.send({
 			status: false,
 			data: error.message,
@@ -86,7 +97,7 @@ router.get("/all", paginationMiddleware(SearchTag), async (req, res) => {
 			data: res.paginatedResults,
 		});
 	} catch (error) {
-		console.log(error.message);
+		console.error(error.message);
 		res.send({
 			status: false,
 			data: error.message,
@@ -97,7 +108,9 @@ router.get("/all", paginationMiddleware(SearchTag), async (req, res) => {
 //updates searchTag
 router.put("/:id", async (req, res) => {
 	try {
-		const { searchVal } = req.body;
+		const {
+			searchVal
+		} = req.body;
 		const searchTag = await SearchTag.findById(req.params.id);
 		if (!searchVal) {
 			throw new Error("searchVal is required.");
@@ -109,7 +122,7 @@ router.put("/:id", async (req, res) => {
 			data: searchTag,
 		});
 	} catch (error) {
-		console.log(error.message);
+		console.error(error.message);
 		return res.send({
 			status: false,
 			data: error.message,
@@ -126,7 +139,7 @@ router.delete("/:id", async (req, res) => {
 			data: "SearchTag got deleted successfully.",
 		});
 	} catch (error) {
-		console.log(error.message);
+		console.error(error.message);
 		res.send({
 			status: false,
 			data: error.message,
