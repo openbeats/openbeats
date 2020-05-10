@@ -217,7 +217,6 @@ router.post("/forgotpassword", [check("email", "Please include a valid email").i
             </body>
             </html>`,
 		};
-
 		setTimeout(function () {
 			smtpTransport.sendMail(data, function (err, info) {
 				if (err) throw err;
@@ -262,7 +261,7 @@ router.post("/resetpassword", async (req, res) => {
 			data: "Password has been reseted successfully.",
 		});
 	} catch (error) {
-		console.log(error.message);
+		console.error(error.message);
 		res.send({
 			status: false,
 			data: "Internal Server Error",
@@ -289,7 +288,7 @@ router.post("/validateresettoken", async (req, res) => {
 			data: "valid token",
 		});
 	} catch (error) {
-		console.log(error.message);
+		console.error(error.message);
 		res.send({
 			status: false,
 			data: "Internal Server Error",
