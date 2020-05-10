@@ -42,10 +42,7 @@ export async function fetchResults() {
     let suggestionString = state.suggestionText.length > 0 ? state.suggestionText.replace(/[^\w\s-]/gi, '') : '';
     const url = `${variables.baseUrl}/ytcat?advanced=true&q=${suggestionString}`;
     try {
-        const {
-            data
-        } = await axios.get(url);
-        const res = data;
+        const res = await getSearchResultSafely(url);
         if (res.status) {
             await store.dispatch({
                 type: "FETCH_RESULTS",
@@ -62,9 +59,37 @@ export async function fetchResults() {
         }
     } catch (error) {
         toastActions.showMessage(error.message.toString());
+        await store.dispatch({
+            type: "FETCH_RESULTS",
+            payload: {
+                songs: [],
+                albums: [],
+                artists: [],
+                isSearching: false,
+                keywordSuggestions: []
+            }
+        })
     }
 
     return true;
+}
+
+export async function getSearchResultSafely(url) {
+    let fetchCount = 3;
+    while (fetchCount > 0) {
+        const {
+            data
+        } = await axios.get(url);
+        const res = data;
+        if (res.status && res.data.songs.length) {
+            return res;
+        }
+        fetchCount--;
+    }
+    return {
+        status: false,
+        link: null
+    };
 }
 
 export async function getKeywordSuggestion(key) {
