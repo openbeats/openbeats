@@ -1,8 +1,12 @@
 import express from "express";
 import UserPlaylist from "../models/UserPlaylist";
 import axios from "axios";
-import { uniq } from "lodash";
-import { config } from "../config";
+import {
+	uniq
+} from "lodash";
+import {
+	config
+} from "../config";
 import auth from "../permissions/auth";
 
 const router = express.Router();
@@ -13,7 +17,9 @@ const baseUrl = `${config.isDev ? config.baseurl.dev : config.baseurl.prod}`;
 // create empty Playlist
 router.post("/create", auth, async (req, res) => {
 	try {
-		const { name } = req.body;
+		const {
+			name
+		} = req.body;
 		const userPlaylist = new UserPlaylist({
 			name,
 			createdBy: req.user.id,
@@ -34,7 +40,10 @@ router.post("/create", auth, async (req, res) => {
 // add songs into Playlist
 router.post("/addsongs", auth, async (req, res) => {
 	try {
-		const { songs, playlistId } = req.body;
+		const {
+			songs,
+			playlistId
+		} = req.body;
 		const playlist = await UserPlaylist.findOne({
 			_id: playlistId,
 			createdBy: req.user.id,
@@ -76,17 +85,16 @@ router.post("/addsongs", auth, async (req, res) => {
 // get all playlist metadata
 router.get("/getallplaylistmetadata", auth, async (req, res) => {
 	try {
-		const metaData = await UserPlaylist.find(
-			{
-				createdBy: req.user.id,
-			},
-			{
-				_id: true,
-				name: 1,
-				thumbnail: 2,
-				totalSongs: 3,
-			}
-		);
+		const metaData = await UserPlaylist.find({
+			createdBy: req.user.id,
+		}, {
+			_id: true,
+			name: 1,
+			thumbnail: 2,
+			totalSongs: 3,
+		}).sort({
+			_id: -1,
+		});
 		res.send({
 			status: true,
 			data: metaData,
@@ -126,18 +134,18 @@ router.get("/getplaylist/:id", auth, async (req, res) => {
 // delete songs from playlist
 router.post("/deletesong", auth, async (req, res) => {
 	try {
-		const { playlistId, songId } = req.body;
-		await UserPlaylist.findOneAndUpdate(
-			{
-				_id: playlistId,
-				createdBy: req.user.id,
+		const {
+			playlistId,
+			songId
+		} = req.body;
+		await UserPlaylist.findOneAndUpdate({
+			_id: playlistId,
+			createdBy: req.user.id,
+		}, {
+			$pull: {
+				songs: songId,
 			},
-			{
-				$pull: {
-					songs: songId,
-				},
-			}
-		);
+		});
 		const playlist = await UserPlaylist.findOne({
 			_id: playlistId,
 		});
@@ -171,7 +179,10 @@ router.post("/deletesong", auth, async (req, res) => {
 // update name of the playlist
 router.post("/updatename", auth, async (req, res) => {
 	try {
-		const { name, playlistId } = req.body;
+		const {
+			name,
+			playlistId
+		} = req.body;
 		const playlist = await UserPlaylist.findOne({
 			_id: playlistId,
 			createdBy: req.user.id,
@@ -223,24 +234,27 @@ router.get("/delete/:id", auth, async (req, res) => {
 //Search by Name
 router.get("/fetchByName", async (req, res) => {
 	try {
-		const { query } = req.query;
-		const userPlaylists = await UserPlaylist.find(
-			{
-				$text: {
-					$search: `${query}`,
-					$caseSensitive: false,
-				},
+		const {
+			query
+		} = req.query;
+		const userPlaylists = await UserPlaylist.find({
+			$text: {
+				$search: `${query}`,
+				$caseSensitive: false,
 			},
-			{
-				_id: true,
-				name: 1,
-				thumbnail: 2,
-				totalSongs: 3,
-				score: {
-					$meta: "textScore",
-				},
+		}, {
+			_id: true,
+			name: 1,
+			thumbnail: 2,
+			totalSongs: 3,
+			score: {
+				$meta: "textScore",
+			},
+		}).sort({
+			score: {
+				$meta: "textScore"
 			}
-		).sort({ score: { $meta: "textScore" } });
+		});
 		return res.send({
 			status: true,
 			data: userPlaylists,
