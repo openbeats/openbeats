@@ -6,7 +6,7 @@ import {
     variables
 } from "../config";
 import {
-    toastActions
+    toastActions,
 } from ".";
 import {
     UPDATE_LIKED_PLAYLISTS_METADATA
@@ -39,16 +39,6 @@ export function clearAddPlaylistDialog() {
 export async function fetchAlbumPlaylist(playlistId, type = "album") {
     try {
         let url = '';
-        let options = {};
-        const isAuthenticated = await store.getState().authReducer.isAuthenticated;
-        if (isAuthenticated) {
-            const token = await store.getState().authReducer.userDetails.token;
-            options = {
-                headers: {
-                    'x-auth-token': token
-                }
-            };
-        }
         switch (type) {
             case 'album':
                 url = `${variables.baseUrl}/playlist/album/${playlistId}`;
@@ -68,7 +58,7 @@ export async function fetchAlbumPlaylist(playlistId, type = "album") {
         if (url.length === 0) throw new Error("Inavalid Album url");
         const {
             data
-        } = await axios.get(url, options)
+        } = await axios.get(url)
         return data;
     } catch (error) {
         toastActions.showMessage(error.toString());
@@ -76,13 +66,13 @@ export async function fetchAlbumPlaylist(playlistId, type = "album") {
     }
 }
 
-export async function fetchUserPlaylistMetadata(userId) {
+export async function fetchUserPlaylistMetadata() {
     try {
 
         let metaData = [];
         const {
             data
-        } = await axios.get(`${variables.baseUrl}/playlist/userplaylist/getallplaylistmetadata/${userId}`)
+        } = await axios.get(`${variables.baseUrl}/playlist/userplaylist/getallplaylistmetadata`)
 
         metaData = data.data
         store.dispatch({
@@ -108,7 +98,6 @@ export async function fetchChartsPlaylistMetadata() {
 
         metaData = data.allcharts
         return metaData
-
 
     } catch (error) {
         console.error(error)
@@ -153,7 +142,7 @@ export async function createNewPlaylist(userId, name) {
             userId
         })
         toastActions.showMessage("Playlist created successfully!")
-        await fetchUserPlaylistMetadata(userId)
+        await fetchUserPlaylistMetadata()
     } catch (error) {
         toastActions.showMessage(error.toString())
     }
@@ -166,7 +155,7 @@ export async function deleteUserPlaylist(pId) {
     try {
         await axios.get(`${variables.baseUrl}/playlist/userplaylist/delete/${pId}`)
         toastActions.showMessage("playlist Deleted successfully");
-        await fetchUserPlaylistMetadata(store.getState().authReducer.userDetails.id);
+        await fetchUserPlaylistMetadata();
         return true;
     } catch (error) {
         toastActions.showMessage(error.toString())
@@ -181,7 +170,7 @@ export async function changeUserPlaylistName(playlistId, name) {
             playlistId
         })
         toastActions.showMessage("playlist name updated successfully");
-        fetchUserPlaylistMetadata(store.getState().authReducer.userDetails.id);
+        fetchUserPlaylistMetadata();
         return true;
     } catch (error) {
         toastActions.showMessage(error.toString())
@@ -213,7 +202,7 @@ export async function addOrRemoveAlbumFromUserCollection(albumId, isAdd = true) 
                 }
             });
             if (data.status)
-                toastActions.showMessage("Album Deleted from the collection!");
+                toastActions.showMessage("Album Removed from the collection!");
             else
                 throw new Error(data.data.toString());
         }
@@ -227,15 +216,9 @@ export async function addOrRemoveAlbumFromUserCollection(albumId, isAdd = true) 
 
 export async function fetchAllAlbumsInTheCollection() {
     try {
-        const token = await store.getState().authReducer.userDetails.token;
-        const options = {
-            headers: {
-                'x-auth-token': token
-            }
-        };
         const {
             data
-        } = await axios.get(`${variables.baseUrl}/auth/metadata/mycollections`, options);
+        } = await axios.get(`${variables.baseUrl}/auth/metadata/mycollections`);
         return data;
     } catch (error) {
         toastActions.showMessage(error.toString());
@@ -244,18 +227,32 @@ export async function fetchAllAlbumsInTheCollection() {
 }
 
 export async function updateAlbumsInTheCollectionMetaData() {
-    const token = await store.getState().authReducer.userDetails.token;
-    const options = {
-        headers: {
-            'x-auth-token': token
-        }
-    };
     const {
         data
-    } = await axios.get(`${variables.baseUrl}/auth/metadata/mycollections?metadata=true`, options);
+    } = await axios.get(`${variables.baseUrl}/auth/metadata/mycollections?metadata=true`);
     if (data.status)
         store.dispatch({
             type: UPDATE_LIKED_PLAYLISTS_METADATA,
             payload: data.data
         })
+}
+
+export async function downloadSongHandler(item) {
+    const state = await store.getState();
+    if (!state.authReducer.isAuthenticated) {
+        toastActions.showMessage("Please Login to use this feature!");
+        return true;
+    }
+    try {
+        const url = `${variables.baseUrl}/downcc/${item.videoId}?title=${encodeURI(item.title)}`;
+        const response = await fetch(url);
+        if (response.status !== 408)
+            window.open(url, "_blank")
+        else
+            throw new Error("!");
+        return true;
+    } catch (error) {
+        toastActions.showMessage("Server load is high!, try again after sometime!");
+        return true;
+    }
 }

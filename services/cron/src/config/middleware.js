@@ -1,6 +1,9 @@
 import cors from "cors";
 import express from "express";
 import morgan from "morgan";
+import {
+  config
+} from ".";
 
 export default app => {
   app.use(cors());
@@ -8,5 +11,5 @@ export default app => {
   app.use(express.urlencoded({
     extended: true
   }));
-  app.use(morgan("dev"));
+  app.use(morgan(config.isDev ? "dev" : "tiny"));
 };

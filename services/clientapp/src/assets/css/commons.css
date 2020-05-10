@@ -3,6 +3,11 @@
   z-index: 100000000000;
 }
 
+.toast-margin-top {
+  margin-top: 60px;
+  z-index: 100000000000;
+}
+
 .toast-bg-color {
   background: #242424;
   width: 100%;

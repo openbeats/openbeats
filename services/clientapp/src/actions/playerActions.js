@@ -1,8 +1,9 @@
 import {
 	toastActions,
 	nowPlayingActions,
+	playlistManipulatorActions,
 	// playerActions
-} from "../actions";
+} from ".";
 import {
 	store
 } from "../store";
@@ -18,6 +19,7 @@ import {
 import {
 	Base64
 } from "js-base64";
+import axios from "axios";
 
 export function playPauseToggle() {
 	const playerRef = document.getElementById("music-player");
@@ -127,6 +129,22 @@ export function updateVolume(e) {
 	};
 }
 
+export function setFullVolumeForMobile() {
+	let payload = {};
+	const playerRef = document.getElementById("music-player");
+
+	playerRef.volume = 1.0;
+	playerRef.muted = false;
+	payload = {
+		isMuted: false,
+		playerVolume: playerRef.volume,
+	};
+	store.dispatch({
+		type: "UPDATE_VOLUME",
+		payload
+	});
+}
+
 export function setTotalDuration() {
 	const playerRef = document.getElementById("music-player");
 	var durmins = Math.floor(playerRef.duration / 60);
@@ -188,13 +206,39 @@ export function seekAudio(e) {
 	return true;
 }
 
-export function musicEndHandler() {
-	let state = store.getState().nowPlayingReducer;
-	if (state.isPlaylist)
-		if (state.isPlaylist && state.playerQueue.length === state.currentIndex + 1)
-			nowPlayingActions.reQueue();
-		else nowPlayingActions.playNextSong();
-	else nowPlayingActions.updateCurrentPlaying(state.currentPlaying, false);
+export async function musicEndHandler() {
+	const state = await store.getState();
+	const nowPlayingReducer = state.nowPlayingReducer;
+	const playerReducer = state.playerReducer;
+	if (nowPlayingReducer.isPlaylist) {
+		if (nowPlayingReducer.isPlaylist && nowPlayingReducer.playerQueue.length === nowPlayingReducer.currentIndex + 1) {
+			// playlist end scenario
+			if (playerReducer.repeatMode === 1) {
+				// normal mode - repeat mode off
+				nowPlayingActions.reQueue();
+			} else if (playerReducer.repeatMode === 2) {
+				// last song in the queue repeat (edge case)
+				nowPlayingActions.playNextSong(true); // repeat mode on
+			} else if (playerReducer.repeatMode === 3) {
+				// all songs in the queue repeat
+				nowPlayingActions.reQueue(true);
+			}
+		} else {
+			// current song in the playlist end scenario;
+			if (playerReducer.repeatMode === 2) {
+				nowPlayingActions.playNextSong(true); // repeat mode on
+			} else {
+				nowPlayingActions.playNextSong();
+			}
+		}
+	} else {
+		// single song without playlist end scenario
+		// repeat mode 1 in this case is off
+		if (playerReducer.repeatMode !== 1)
+			nowPlayingActions.updateCurrentPlaying(nowPlayingReducer.currentPlaying); // repeat mode on
+		else
+			nowPlayingActions.updateCurrentPlaying(nowPlayingReducer.currentPlaying, false); // normal mode
+	}
 }
 
 export async function resetPlayer() {
@@ -239,88 +283,65 @@ export async function initPlayer(audioData, playMusic = true) {
 		},
 	});
 
-	const isAuthenticated = await store.getState().authReducer.isAuthenticated;
-	const options = {};
-	if (isAuthenticated) {
-		const token = await store.getState().authReducer.userDetails.token;
-		options.headers = {
-			"x-auth-token": token,
-		};
-	}
 	const audioDataB64 = Base64.encode(JSON.stringify(audioData));
-	const masterUrl = `${
-		variables.baseUrl
-	}/opencc/${audioData.videoId.trim()}?info=${audioDataB64}`;
-	const fallBackUrl = `${
-		variables.baseUrl
-	}/fallback/${audioData.videoId.trim()}`;
+	const masterUrl = `${variables.baseUrl}/opencc/${audioData.videoId.trim()}?info=${audioDataB64}`;
+	const fallBackUrl = `${variables.baseUrl}/fallback/${audioData.videoId.trim()}`;
 
-	await fetch(masterUrl, options)
-		.then(async res => {
-			const resjson = await res.json();
-			return resjson;
-		})
-		.then(async res => {
-			if (res.status) {
-				if (
-					store.getState().nowPlayingReducer.currentPlaying.videoId ===
-					audioData.videoId
-				) {
+	try {
+		const res = await getAudioLinkSafely(masterUrl);
+		if (res.status) {
+			if (store.getState().nowPlayingReducer.currentPlaying.videoId === audioData.videoId) {
+				await store.dispatch({
+					type: "LOAD_AUDIO_DATA",
+					payload: {
+						masterUrl: res.link,
+						fallBackUrl,
+					},
+				});
+				await startPlayer(playMusic);
+			}
+		} else {
+			const dat = await fetch(fallBackUrl);
+			if (dat.status !== 408) {
+				if ((await store.getState().nowPlayingReducer.currentPlaying.videoId) === audioData.videoId) {
 					await store.dispatch({
 						type: "LOAD_AUDIO_DATA",
 						payload: {
-							masterUrl: res.link,
+							masterUrl: null,
 							fallBackUrl,
 						},
 					});
 					await startPlayer(playMusic);
 				}
-			} else {
-				await fetch(fallBackUrl)
-					.then(async res => {
-						if (res.status === 200) {
-							if (
-								(await store.getState().nowPlayingReducer.currentPlaying
-									.videoId) === audioData.videoId
-							) {
-								await store.dispatch({
-									type: "LOAD_AUDIO_DATA",
-									payload: {
-										masterUrl: res.link,
-										fallBackUrl,
-									},
-								});
-								await startPlayer(playMusic);
-							}
-						} else {
-							toastActions.showMessage(
-								"Requested audio is not availabe right now! try alternate search!",
-							);
-							await store.dispatch(await resetPlayer());
-							nowPlayingActions.clearQueue();
-						}
-					})
-					.catch(async err => {
-						toastActions.showMessage(
-							"Requested audio is not availabe right now!" + String(err),
-						);
-						await store.dispatch(await resetPlayer());
-						nowPlayingActions.clearQueue();
-					});
-			}
-		})
-		.catch(async err => {
-			if (String(err).indexOf("AbortError:") > -1) {
-				// toastActions.showMessage("Slow and Steady Wins the Race!")
-			} else {
-				toastActions.showMessage(
-					"Requested audio is not availabe right now! " + String(err),
-				);
-				await store.dispatch(await resetPlayer());
-				nowPlayingActions.clearQueue();
-			}
-		});
+			} else
+				throw new Error("Not Available")
+		}
+	} catch (error) {
+		toastActions.showMessage("Requested audio is not availabe right now! ");
+		musicEndHandler(); // fix (switch to next song on false link)
+		// await store.dispatch(await resetPlayer());
+		// nowPlayingActions.clearQueue();
+	}
+
 	return true;
+}
+
+export const getAudioLinkSafely = async (url) => {
+	let fetchCount = 10;
+	while (fetchCount > 0) {
+		const {
+			data
+		} = await axios.get(url);
+		const res = data;
+		if (res.status) {
+			return res;
+		}
+		fetchCount--;
+	}
+	return {
+		status: false,
+		link: null
+	};
 }
 
 export async function startPlayer(shallIPlay = true) {
@@ -341,16 +362,64 @@ export async function startPlayer(shallIPlay = true) {
 			isAudioBuffering: false,
 		},
 	});
+	initMediaSession();
 	return true;
 }
 
-export function playerDownloadHandler(e) {
-	if (!store.getState().authReducer.isAuthenticated) {
-		toastActions.showMessage("Please Login to use this feature!");
-		// playerActions.resetPlayer();
-		// store.dispatch(push("/auth"));
-		return;
+export const initMediaSession = async () => {
+	let state = await store.getState();
+	if ('mediaSession' in navigator) {
+		/* eslint-disable-next-line */
+		navigator.mediaSession.metadata = new MediaMetadata({
+			title: state.playerReducer.songTitle,
+			artwork: [{
+				src: `https://i.ytimg.com/vi/${state.playerReducer.id}/maxresdefault.jpg`,
+				sizes: '1280x720',
+				type: 'image/jpg'
+			}, {
+				src: state.playerReducer.thumbnail.split("?")[0],
+				sizes: '480x360',
+				type: 'image/jpg'
+			}]
+		});
+
+		navigator.mediaSession.setActionHandler('play', () => {
+			playPauseToggle();
+		});
+
+		navigator.mediaSession.setActionHandler('pause', () => {
+			playPauseToggle();
+		});
+
+		navigator.mediaSession.setActionHandler("stop", () => {
+			resetPlayer();
+		});
+
+		navigator.mediaSession.setActionHandler('seekbackward', () => {
+			audioSeekHandler(false);
+		});
+
+		navigator.mediaSession.setActionHandler('seekforward', () => {
+			audioSeekHandler(true);
+		});
+
+		if (state.nowPlayingReducer.isPreviousAvailable)
+			navigator.mediaSession.setActionHandler('previoustrack', () => {
+				nowPlayingActions.playPreviousSong();
+			});
+		else
+			navigator.mediaSession.setActionHandler('previoustrack', null);
+
+		if (state.nowPlayingReducer.isNextAvailable)
+			navigator.mediaSession.setActionHandler('nexttrack', () => {
+				nowPlayingActions.playNextSong();
+			});
+		else
+			navigator.mediaSession.setActionHandler('nexttrack', null);
 	}
+}
+
+export async function playerDownloadHandler(e) {
 	let state = store.getState().playerReducer;
 	store.dispatch({
 		type: "PLAYER_DOWNLOAD_HANDLE",
@@ -367,47 +436,43 @@ export function playerDownloadHandler(e) {
 			},
 		});
 	} else {
-		fetch(
-				`${variables.baseUrl}/downcc/${state.id}?title=${encodeURI(
-				state.songTitle,
-			)}`,
-			)
-			.then(res => {
-				if (res.status === 200) {
-					store.dispatch({
-						type: "PLAYER_DOWNLOAD_HANDLE",
-						payload: {
-							downloadProcess: false,
-						},
-					});
-					window.open(
-						`${variables.baseUrl}/downcc/${state.id}?title=${encodeURI(
-							state.songTitle,
-						)}`,
-						"_self",
-					);
-				} else {
-					store.dispatch({
-						type: "PLAYER_DOWNLOAD_HANDLE",
-						payload: {
-							downloadProcess: false,
-						},
-					});
-					toastActions.showMessage(
-						"Requested content not available right now!, try downloading alternate songs!",
-					);
-				}
-			})
-			.catch(err => {
-				store.dispatch({
-					type: "PLAYER_DOWNLOAD_HANDLE",
-					payload: {
-						downloadProcess: false,
-					},
-				});
-				toastActions.showMessage(
-					"Requested content not available right now!, try downloading alternate songs!",
-				);
+		if (await playlistManipulatorActions.downloadSongHandler({
+				videoId: state.id,
+				title: state.songTitle
+			})) {
+			store.dispatch({
+				type: "PLAYER_DOWNLOAD_HANDLE",
+				payload: {
+					downloadProcess: false,
+				},
 			});
+		}
 	}
+}
+
+export function detectMobile() {
+	const toMatch = [
+		/Android/i,
+		/webOS/i,
+		/iPhone/i,
+		/iPad/i,
+		/iPod/i,
+		/BlackBerry/i,
+		/Windows Phone/i
+	];
+
+	return toMatch.some((toMatchItem) => {
+		return navigator.userAgent.match(toMatchItem);
+	});
+}
+
+export async function setRepeatMode() {
+	const playerReducer = await store.getState().playerReducer;
+	const nextLoopId = playerReducer.repeatMode + 1 <= 3 ? playerReducer.repeatMode + 1 : 1;
+	let message = nextLoopId === 1 ? "Repeat Mode Off!" : nextLoopId === 2 ? "Single Song Repeat Mode On!" : "All Songs Repeat Mode On!";
+	toastActions.showMessage(message);
+	store.dispatch({
+		type: "SET_REPEAT_MODE",
+		payload: nextLoopId
+	});
 }

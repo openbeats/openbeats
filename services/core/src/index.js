@@ -2,8 +2,7 @@ import middleware from "./config/middleware";
 import express from "express";
 import {
 	ytcat,
-	suggestbeat,
-	copycat
+	suggestbeat
 } from "./core";
 import ytdl from "ytdl-core";
 import fetch from "node-fetch";
@@ -14,12 +13,10 @@ import {
 import dbconfig from "./config/db";
 import addtorecentlyplayed from "./config/addtorecentlyplayed";
 import Song from "./models/Song";
+//import isSafe from "./utils/isSafe";
 dbconfig();
 
-const PORT =
-	process.env.PORT || config.isDev ?
-	config.port.dev :
-	config.port.prod;
+const PORT = process.env.PORT || config.isDev ? config.port.dev : config.port.prod;
 const app = express();
 
 middleware(app);
@@ -32,65 +29,48 @@ app.get("/opencc/:id", addtorecentlyplayed, async (req, res) => {
 	try {
 		const videoID = req.params.id;
 		if (!ytdl.validateID(videoID)) throw new Error("INvalid id");
-		redis.get(videoID, async (err, value) => {
-			try {
-				if (value) {
-					let sourceUrl = value;
-					setTimeout(() => {
-						addSongInDeAttachedMode(videoID, req.song);
-					}, 0);
-					res.send({
-						status: true,
-						link: sourceUrl,
-					});
-				} else {
-					const info = await (
-						await fetch(`${config.lambda}${videoID}`)
-					).json();
-					if (info.formats) {
-						setTimeout(() => {
-							addSongInDeAttachedMode(videoID, req.song);
-						}, 0);
-						let audioFormats = ytdl.filterFormats(info.formats, "audioonly");
-						if (!audioFormats[0].contentLength) {
-							audioFormats = ytdl.filterFormats(info.formats, "audioandvideo");
-						}
-						let sourceUrl = audioFormats[0].url;
-						redis.set(videoID, sourceUrl, err => {
-							if (err) console.error(err);
-							else {
-								redis.expire(videoID, 20000, err => {
-									if (err) console.error(err);
-								});
-							}
-						});
-						res.send({
-							status: true,
-							link: sourceUrl,
-						});
-					} else {
-						throw new Error("Cannot Fetch the requested song");
-					}
+		const isAvail = new Promise((resolve, reject) => {
+			redis.get(videoID, (err, value) => {
+				if (err) {
+					return resolve(null);
 				}
-			} catch (error) {
-				let link = null;
-				let status = 404;
-				if (ytdl.validateID(videoID)) {
-					link = await copycat(videoID);
-					if (link)
-						setTimeout(() => {
-							addSongInDeAttachedMode(videoID, req.song);
-						}, 0);
-					status = 200;
-				}
-				res.send({
-					status: status === 200 ? true : false,
-					link: link,
-				});
+				return resolve(value);
+			});
+		});
+		let sourceUrl = await isAvail;
+		if (!sourceUrl) {
+			const info = await (await fetch(`${config.lambda}${videoID}`)).json();
+			if (!info.formats) {
+				throw new Error("Cannot fetch the requested song...");
 			}
+			let audioFormats = ytdl.filterFormats(info.formats, "audioonly");
+			if (!audioFormats[0].contentLength) {
+				audioFormats = ytdl.filterFormats(info.formats, "audioandvideo");
+			}
+			if (audioFormats.length > 0 && audioFormats[0].url && audioFormats[0].url !== undefined)
+				sourceUrl = audioFormats[0].url;
+			else {
+				throw new Error("Cannot fetch the requested song...");
+			}
+			redis.set(videoID, sourceUrl, err => {
+				if (err) console.error(err);
+				else {
+					redis.expire(videoID, 20000, err => {
+						if (err) console.error(err);
+					});
+				}
+			});
+		}
+		setTimeout(() => {
+			addSongInDeAttachedMode(videoID, req.song);
+		}, 0);
+		return res.json({
+			status: true,
+			link: sourceUrl,
 		});
 	} catch (error) {
-		res.send({
+		console.log(error);
+		return res.send({
 			status: false,
 			link: null,
 		});
@@ -101,16 +81,42 @@ app.get("/ytcat", async (req, res) => {
 	try {
 		if (!req.query.q) throw new Error("Missing required query param q.");
 		const fr = (req.query.fr && true) || false;
+		if (req.query.advanced === "true") {
+			let baseUrl = config.playlistBaseUrl.prod;
+			if (config.isDev) {
+				baseUrl = config.playlistBaseUrl.dev;
+			}
+			const data = {};
+			const albums = await (await fetch(baseUrl + `/album/findbytag?query=${req.query.q}`)).json();
+			data.albums = albums["data"];
+			const artists = await (await fetch(baseUrl + `/artist/fetch?query=${req.query.q}`)).json();
+			data.artists = artists["data"];
+			data.songs = await ytcat(req.query.q, fr);
+			return res.send({
+				status: true,
+				data,
+			});
+		}
 		res.send({
 			status: true,
 			data: await ytcat(req.query.q, fr),
 		});
 	} catch (error) {
-		console.log(error);
-		res.send({
-			status: false,
-			error: error.message,
-		});
+		if (req.query.advanced === "true") {
+			res.send({
+				status: true,
+				data: {
+					albums: [],
+					artists: [],
+					songs: []
+				},
+			});
+		} else {
+			res.send({
+				status: true,
+				data: [],
+			});
+		}
 	}
 });
 
@@ -128,13 +134,13 @@ const addSongInDeAttachedMode = async (videoId, song) => {
 		const findSong = await Song.findOne({
 			_id: videoId,
 		});
-		if (!findSong) {
+		if (!findSong && song) {
 			let item = null;
 			if (!song) {
 				item = (await ytcat(videoId, true))[0];
 			} else {
 				item = {
-					...song
+					...song,
 				};
 			}
 			item["_id"] = item.videoId;
@@ -164,6 +170,7 @@ app.post("/addsongs", async (req, res) => {
 			data: "Songs Added successfully!",
 		});
 	} catch (error) {
+		console.error(error.message);
 		res.send({
 			status: true,
 			data: "some of the songs already exists in the collection!",
@@ -181,6 +188,7 @@ app.delete("/deletesong/:id", async (req, res) => {
 			data: "Song Deleted successfully!",
 		});
 	} catch (error) {
+		console.error(error.message);
 		res.send({
 			status: false,
 			data: error.message,
@@ -199,6 +207,7 @@ app.get("/getsong/:id", async (req, res) => {
 			});
 		else throw new Error("Song Not found!");
 	} catch (error) {
+		console.error(error.message);
 		res.send({
 			status: false,
 			data: error.message,
@@ -219,13 +228,14 @@ app.post("/getsongs", async (req, res) => {
 		const songs = await Promise.all(songsPromise)
 			.then(songsArr => songsArr)
 			.catch(err => {
-				throw new Error(err.toString())
+				throw new Error(err.toString());
 			});
 		res.send({
 			status: true,
 			data: songs,
 		});
 	} catch (error) {
+		console.error(error.message);
 		res.send({
 			status: false,
 			data: error.message,

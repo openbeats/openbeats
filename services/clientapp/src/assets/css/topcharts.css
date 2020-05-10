@@ -1,0 +1,15 @@
+.topcharts-wrapper {
+    width: 100%;
+    height: auto;
+    padding: 10px;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+}
+
+@media only screen and (max-width: 800px) {
+    .topcharts-wrapper {
+        align-items: center;
+        justify-content: center;
+    }
+}

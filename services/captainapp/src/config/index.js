@@ -1,14 +1,17 @@
-const type = 'development';
+const type = "development";
 // production or development or staging
-
-let baseURL = "https://api.openbeats.live"
-if (type === 'staging')
-    baseURL = "https://staging-api.openbeats.live"
-
+let clientURL = "https://staging.openbeats.live";
+let baseURL = "https://staging-api.openbeats.live";
+if (type === "production") {
+	baseURL = "https://api.openbeats.live";
+	clientURL = "https://openbeats.live";
+}
 const variables = {
-    baseUrl: baseURL
-}
-
+	baseUrl: baseURL,
+	clientUrl: clientURL,
+};
+const isDev = type === "development" ? true : false;
 export {
-    variables
-}
+	variables,
+	isDev
+};

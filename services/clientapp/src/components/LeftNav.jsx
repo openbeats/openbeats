@@ -6,10 +6,8 @@ import { push } from "connected-react-router";
 import { store } from "../store";
 import {
   masterLogo,
-  // navhome,
   navchart,
   navartist,
-  // navalbum,
   navhistory,
   navplaylist,
   navplus,
@@ -26,7 +24,11 @@ class LeftNav extends Component {
     this.state = {
       isCreateNewPlaylistTriggered: false,
       playlistName: '',
+      isLeftNavOpened: false
     }
+    this.navBarRef = null;
+    this.createNewPlaylistBtnRef = null;
+    this.createNewPlaylistFormHolderRef = null;
   }
 
   componentDidMount() {
@@ -35,13 +37,34 @@ class LeftNav extends Component {
     }
   }
 
+  closeLefNavMenu = () => {
+    if (!this.state.isLeftNavOpened) {
+      this.setState({ isLeftNavOpened: true });
+      document.addEventListener("click", this.closeLeftNavMenuHandler);
+    } else {
+      this.setState({ isLeftNavOpened: false });
+      document.removeEventListener("click", this.closeLeftNavMenuHandler);
+    }
+  }
+
+  closeLeftNavMenuHandler = (e) => {
+    if (this.createNewPlaylistBtnRef && this.createNewPlaylistBtnRef.contains(e.target)) {
+      return;
+    } else if (this.createNewPlaylistFormHolderRef && this.createNewPlaylistFormHolderRef.contains(e.target)) {
+      return;
+    }
+    this.setState({ isLeftNavOpened: false });
+    document.removeEventListener("click", this.closeLeftNavMenuHandler);
+  }
+
+
   render() {
     return (
       <Fragment>
-        <div id="nav-hamburger" className="hamburger-holder">
+        <div onClick={this.closeLefNavMenu} className="hamburger-holder">
           <img src={hamburger} alt="" srcSet="" />
         </div>
-        <nav id="nav">
+        <nav ref={d => this.navBarRef = d} className={`${this.state.isLeftNavOpened ? 'nav-show' : ''}`}>
           <section className="master-logo">
             <img
               className="cursor-pointer"
@@ -51,21 +74,20 @@ class LeftNav extends Component {
               src={masterLogo}
               alt=""
             />
-            <div id="nav-close" className="nav-close-holder">
+            <div onClick={this.closeLefNavMenu} className="nav-close-holder">
               <img src={navclose} alt="" srcSet="" />
             </div>
           </section>
           <section className="nav-content">
             <section className="main-nav-menus">
-              <div className="nav-menu" onClick={() => this.props.push("/")}>
+              <div className={`nav-menu ${this.props.activeNavMenu === "Home" ? "nav-menu-highlight" : ""}`} onClick={() => this.props.push("/")}>
                 <div className="nav-menu-icon-holder">
                   <i className="fas fa-home master-color nav-menu-icon-size"></i>
-                  {/* <img className="nav-menu-icon-size" src={navhome} alt="" /> */}
                 </div>
                 <p className="nav-menu-text">Home</p>
               </div>
               <div
-                className="nav-menu"
+                className={`nav-menu ${this.props.activeNavMenu === "Top Charts" ? "nav-menu-highlight" : ""}`}
                 onClick={() => this.props.push("/topcharts")}
               >
                 <div className="nav-menu-icon-holder">
@@ -74,17 +96,16 @@ class LeftNav extends Component {
                 <p className="nav-menu-text">Top Charts</p>
               </div>
               <div
-                className="nav-menu"
+                className={`nav-menu ${this.props.activeNavMenu === "All Albums" || this.props.activeNavMenu === "Latest Albums" || this.props.activeNavMenu === "Popular Albums" ? "nav-menu-highlight" : ""}`}
                 onClick={() => this.props.push("/albums")}
               >
                 <div className="nav-menu-icon-holder">
                   <i className="master-color fad fa-album-collection nav-menu-icon-size"></i>
-                  {/* <img className="nav-menu-icon-size" src={navalbum} alt="" /> */}
                 </div>
                 <p className="nav-menu-text">Albums</p>
               </div>
               <div
-                className="nav-menu"
+                className={`nav-menu ${this.props.activeNavMenu === "Artists" ? "nav-menu-highlight" : ""}`}
                 onClick={() => this.props.push("/artists")}
               >
                 <div className="nav-menu-icon-holder">
@@ -93,17 +114,16 @@ class LeftNav extends Component {
                 <p className="nav-menu-text">Artists</p>
               </div>
               <div
-                className="nav-menu"
+                className={`nav-menu ${this.props.activeNavMenu === "My Collections" ? "nav-menu-highlight" : ""}`}
                 onClick={() => this.props.push("/mycollections")}
               >
                 <div className="nav-menu-icon-holder">
                   <i className="master-color fas fa-heart-square nav-menu-icon-size"></i>
-                  {/* <img className="nav-menu-icon-size" src={navalbum} alt="" /> */}
                 </div>
                 <p className="nav-menu-text">My Collections</p>
               </div>
               <div
-                className="nav-menu"
+                className={`nav-menu ${this.props.activeNavMenu === "Search Result" ? "nav-menu-highlight" : ""}`}
                 onClick={() => this.props.push("/search")}
               >
                 <div className="nav-menu-icon-holder">
@@ -112,16 +132,16 @@ class LeftNav extends Component {
                 <p className="nav-menu-text">Search</p>
               </div>
               <div
-                className="nav-menu"
+                className={`nav-menu ${this.props.activeNavMenu === "Now Playing" ? "nav-menu-highlight" : ""}`}
                 onClick={() => this.props.push("/nowplaying")}
               >
                 <div className="nav-menu-icon-holder">
                   <img className="nav-menu-icon-size" src={playerqueue} alt="" />
                 </div>
-                <p className="nav-menu-text">Queue</p>
+                <p className="nav-menu-text">Now Playing</p>
               </div>
               <div
-                className="nav-menu"
+                className={`nav-menu ${this.props.activeNavMenu === "Recently Played" ? "nav-menu-highlight" : ""}`}
                 onClick={() => this.props.push("/playlist/recentlyplayed/user")}
               >
                 <div className="nav-menu-icon-holder">
@@ -133,7 +153,7 @@ class LeftNav extends Component {
             <section className="nav-horizontal-rule"></section>
             <section className="nav-playlist-holder">
               <div
-                className="nav-menu cursor-pointer"
+                className={`nav-menu cursor-pointer ${this.props.activeNavMenu === "My Playlists" ? "nav-menu-highlight" : ""}`}
                 title="View All of Your Playlist"
                 onClick={() => this.props.push("/myplaylists")}
               >
@@ -157,11 +177,14 @@ class LeftNav extends Component {
                       this.props.updateTyping(true)
                       this.setState({ playlistName: '', isCreateNewPlaylistTriggered: true })
                     }}
+                    ref={d => this.createNewPlaylistBtnRef = d}
                   >
                     <img src={navplus} alt="" srcSet="" />
                   </div>
                   {this.state.isCreateNewPlaylistTriggered &&
-                    <li className="playlist-content-holder-text">
+                    <li className="playlist-content-holder-text"
+                      ref={d => this.createNewPlaylistFormHolderRef = d}
+                    >
                       <form onSubmit={async (e) => {
                         e.preventDefault();
                         if (await this.props.createNewPlaylist(this.props.userDetails.id, this.state.playlistName)) {
@@ -225,7 +248,8 @@ const mapStateToProps = state => {
   return {
     isAuthenticated: state.authReducer.isAuthenticated,
     userPlaylistMetaData: state.playlistManipulatorReducer.userPlaylistMetaData,
-    userDetails: state.authReducer.userDetails
+    userDetails: state.authReducer.userDetails,
+    activeNavMenu: state.coreReducer.currentActionTitle,
   };
 };
 

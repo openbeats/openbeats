@@ -7,6 +7,7 @@ import redis from "./config/redis";
 import {
 	config
 } from "./config";
+//import isSafe from "./utils/isSafe";
 // import dbconfig from "./config/db";
 // dbconfig();
 
@@ -18,80 +19,63 @@ middleware(app);
 app.get("/:id", async (req, res) => {
 	const videoID = req.params.id;
 	try {
-		redis.get(videoID, async (err, value) => {
-			if (value) {
-				let sourceUrl = value;
-				const range = req.headers.range;
-				//when seeked range comes in header
-				if (range) {
-					axios({
-						method: "get",
-						url: sourceUrl,
-						responseType: "stream",
-						headers: {
-							Range: range,
-						},
-					}).then(function (response) {
-						res.writeHead(206, response.headers);
-						response.data.pipe(res);
-					});
-				} else {
-					axios({
-						method: "get",
-						url: sourceUrl,
-						responseType: "stream",
-					}).then(function (response) {
-						res.writeHead(200, response.headers);
-						response.data.pipe(res);
-					});
-				}
-
-			} else {
-				const info = await (
-					await fetch(`${config.lambda}${videoID}`)
-				).json();
-				let audioFormats = ytdl.filterFormats(info.formats, "audioonly");
-				if (!audioFormats[0].contentLength) {
-					audioFormats = ytdl.filterFormats(info.formats, "audioandvideo");
-				}
-				let sourceUrl = audioFormats[0].url;
-				redis.set(videoID, sourceUrl, err => {
-					if (err) console.error(err);
-					else {
-						redis.expire(videoID, 20000, err => {
-							if (err) console.error(err);
-						});
+		if (!ytdl.validateID(videoID)) throw new Error("Invalid id");
+		const getStreamUrl = new Promise((resolve, reject) => {
+			redis.get(videoID, async (err, sourceUrl) => {
+				if (!sourceUrl) {
+					const info = await (await fetch(`${config.lambda}${videoID}`)).json();
+					if (!info.formats) {
+						return reject("Cannot fetch the requested song...");
 					}
-				});
-				const range = req.headers.range;
-				//when seeked range comes in header
-				if (range) {
-					axios({
-						method: "get",
-						url: sourceUrl,
-						responseType: "stream",
-						headers: {
-							Range: range,
-						},
-					}).then(function (response) {
-						res.writeHead(206, response.headers);
-						response.data.pipe(res);
-					});
-				} else {
-					axios({
-						method: "get",
-						url: sourceUrl,
-						responseType: "stream",
-					}).then(function (response) {
-						res.writeHead(200, response.headers);
-						response.data.pipe(res);
-					});
+					let audioFormats = ytdl.filterFormats(info.formats, "audioonly");
+					if (!audioFormats[0].contentLength) {
+						audioFormats = ytdl.filterFormats(info.formats, "audioandvideo");
+					}
+					let sourceUrl;
+					if (audioFormats.length > 0 && audioFormats[0].url && audioFormats[0].url !== undefined) {
+						sourceUrl = audioFormats[0].url;
+						redis.set(videoID, sourceUrl, err => {
+							if (err) console.error(err);
+							else {
+								redis.expire(videoID, 20000, err => {
+									if (err) console.error(err);
+								});
+							}
+						});
+						return resolve(sourceUrl);
+					}
+					return reject("Cannot fetch the requested song...");
 				}
-			}
+				return resolve(sourceUrl);
+			});
 		});
+		const range = req.headers.range;
+		const sourceUrl = await getStreamUrl;
+		if (range) {
+			axios({
+				method: "get",
+				url: sourceUrl,
+				responseType: "stream",
+				headers: {
+					Range: range,
+				},
+			}).then(function (response) {
+				res.writeHead(206, response.headers);
+				response.data.pipe(res);
+			});
+		} else {
+			axios({
+				method: "get",
+				url: sourceUrl,
+				responseType: "stream",
+			}).then(function (response) {
+				res.writeHead(200, response.headers);
+				response.data.pipe(res);
+			});
+		}
 	} catch (error) {
-		console.error(error);
-		res.status(404).send({
+		console.error(error.message);
+		return res.status(408).send({
 			status: false,
 			link: null,
 		});

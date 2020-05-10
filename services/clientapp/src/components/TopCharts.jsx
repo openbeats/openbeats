@@ -4,6 +4,7 @@ import { push } from 'connected-react-router';
 import { toastActions, coreActions, playlistManipulatorActions } from '../actions';
 import { connect } from 'react-redux';
 import { AlbumHolder } from ".";
+import "../assets/css/topcharts.css";
 
 class TopCharts extends Component {
 
@@ -35,7 +36,7 @@ class TopCharts extends Component {
                     width={80}
                 />
             </div> :
-            <div className="my-playlists-wrapper">
+            <div className="topcharts-wrapper">
                 {this.state.topCharts.map((item, key) => (
                     <AlbumHolder
                         key={key}

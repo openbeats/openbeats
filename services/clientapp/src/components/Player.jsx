@@ -20,14 +20,21 @@ class Player extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      listenerStore: null
+      listenerStore: null,
+      isMobilePlayerOpened: false,
     };
+    this.playerWrapperRef = null;
     this.listenerFunction = this.listenerFunction.bind(this);
     this.updatePlayerPlayState = this.updatePlayerPlayState.bind(this);
     this.updatePlayerPauseState = this.updatePlayerPauseState.bind(this);
   }
   componentDidMount() {
     this.initListeners();
+    this.checkAndUpdateMobileVolume();
+  }
+
+  checkAndUpdateMobileVolume = () => {
+    if (this.props.detectMobile()) this.props.setFullVolumeForMobile();
   }
 
   componentWillUnmount() {
@@ -86,10 +93,28 @@ class Player extends Component {
     }
   }
 
+  toggleMobilePlayer = () => {
+    if (!this.state.isMobilePlayerOpened) {
+      this.setState({ isMobilePlayerOpened: true });
+      document.addEventListener("click", this.closeMobilePlayerHandler);
+    } else {
+      this.setState({ isMobilePlayerOpened: false });
+      document.removeEventListener("click", this.closeMobilePlayerHandler);
+    }
+  }
+
+  closeMobilePlayerHandler = e => {
+    if (!this.playerWrapperRef.contains(e.target)) {
+      this.setState({ isMobilePlayerOpened: false });
+      document.removeEventListener("click", this.closeMobilePlayerHandler);
+    }
+  }
+
+
   render() {
     return (
       <Fragment>
-        <div className="player-wrapper " id="player-wrapper">
+        <div className={`player-wrapper ${this.state.isMobilePlayerOpened ? "show-player" : ''}`} id="player-wrapper" ref={d => this.playerWrapperRef = d}>
           <audio
             id="music-player"
             onLoadedMetadata={() => this.props.setTotalDuration()}
@@ -181,6 +206,11 @@ class Player extends Component {
               >
                 <img src={playernext} alt="" srcSet="" />
               </div>
+              <div className="cursor-pointer player-loop-control" onClick={(e) => {
+                this.props.setRepeatMode();
+              }}>
+                <i className={`${this.props.repeatMode === 1 ? "loop-off" : ''} ${this.props.repeatMode === 2 ? "fal fa-repeat-1" : 'fal fa-repeat'} master-color`} title={this.props.repeatMode === 1 ? "Click to repeat the current song!" : this.props.repeatMode === 2 ? "Click to repeat all the songs in the Queue!" : "Click to off the repeat mode!"}></i>
+              </div>
             </section>
             <section className="player-rightmost-control-holder">
               <div>
@@ -248,22 +278,14 @@ class Player extends Component {
             </section>
             <div
               className="minimize-mobile-toggle"
-              onClick={() => {
-                const playerWrapperRef = document.getElementById(
-                  "player-wrapper"
-                );
-                playerWrapperRef.classList.remove("show-player");
-              }}
+              onClick={this.toggleMobilePlayer}
             >
               <i className="fas fa-times"></i>
             </div>
           </div>
-        </div>
+        </div >
         <div
-          onClick={() => {
-            const playerWrapperRef = document.getElementById("player-wrapper");
-            playerWrapperRef.classList.add("show-player");
-          }}
+          onClick={this.toggleMobilePlayer}
           className="mobile-music-notifier"
         >
           {this.props.isMusicPlaying ? (
@@ -272,7 +294,7 @@ class Player extends Component {
               <i className="fas fa-play"></i>
             )}
         </div>
-      </Fragment>
+      </Fragment >
     );
   }
 }
@@ -290,6 +312,7 @@ const mapStateToProps = state => {
     isNextAvailable: state.nowPlayingReducer.isNextAvailable,
     thumbnail: state.playerReducer.thumbnail,
     songTitle: state.playerReducer.songTitle,
+    repeatMode: state.playerReducer.repeatMode,
     downloadProcess: state.playerReducer.downloadProcess,
     isTyping: state.searchReducer.isTyping,
     showAddPlaylistDialog: state.playlistManipulatorReducer.showAddPlaylistDialog
@@ -368,7 +391,16 @@ const mapDispatchToProps = dispatch => {
           reset: true
         }
       })
-    }
+    },
+    detectMobile: () => {
+      return playerActions.detectMobile();
+    },
+    setFullVolumeForMobile: () => {
+      playerActions.setFullVolumeForMobile();
+    },
+    setRepeatMode: () => {
+      playerActions.setRepeatMode();
+    },
   };
 };
 

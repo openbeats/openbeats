@@ -53,6 +53,13 @@
     padding: 10px
 }
 
+@media only screen and (max-width: 1000px) {
+    .artist-add-dialog-content-holder {
+        grid-template-rows: 50% 50%;
+        grid-template-columns: auto;
+    }
+}
+
 .artist-add-dialog-content-holder>.artist-add-dialog-input-container {
     width: 100%;
     height: 100%;
