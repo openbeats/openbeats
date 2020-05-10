@@ -305,7 +305,7 @@ export async function initPlayer(audioData, playMusic = true) {
 			}
 		} else {
 			const dat = await fetch(fallBackUrl);
-			if (dat.status === 200) {
+			if (dat.status !== 408) {
 				if ((await store.getState().nowPlayingReducer.currentPlaying.videoId) === audioData.videoId) {
 					await store.dispatch({
 						type: "LOAD_AUDIO_DATA",
