@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: obs-playlist
 spec:
-  replicas: 1
+  replicas: 3
   selector:
     matchLabels:
       type: backend
