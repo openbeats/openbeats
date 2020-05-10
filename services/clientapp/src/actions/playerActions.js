@@ -329,6 +329,24 @@ export async function initPlayer(audioData, playMusic = true) {
 	return true;
 }
 
+export const getAudioLinkSafely = async (url) => {
+	let fetchCount = 3;
+	while (fetchCount > 0) {
+		const {
+			data
+		} = await axios.get(url);
+		const res = data;
+		if (res.status) {
+			return res;
+		}
+		fetchCount--;
+	}
+	return {
+		status: false,
+		link: null
+	};
+}
+
 export async function startPlayer(shallIPlay = true) {
 	let state = store.getState().playerReducer;
 	const player = document.getElementById("music-player");
