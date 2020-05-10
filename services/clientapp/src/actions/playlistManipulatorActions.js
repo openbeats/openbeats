@@ -237,7 +237,6 @@ export async function updateAlbumsInTheCollectionMetaData() {
         })
 }
 
-
 export async function downloadSongHandler(item) {
     const state = await store.getState();
     if (!state.authReducer.isAuthenticated) {
