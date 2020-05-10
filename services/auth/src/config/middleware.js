@@ -1,14 +1,15 @@
 import cors from "cors";
 import express from "express";
 import morgan from "morgan";
-import passport from "passport";
-import passportStrategy from "./passport";
+import {
+	config
+} from ".";
 
-export default app => {
-	passportStrategy();
+export default (app) => {
 	app.use(cors());
 	app.use(express.json());
-	app.use(express.urlencoded({ extended: true }));
-	app.use(morgan("dev"));
-	app.use(passport.initialize());
+	app.use(express.urlencoded({
+		extended: true
+	}));
+	app.use(morgan(config.isDev ? "dev" : "tiny"));
 };

@@ -7,8 +7,6 @@ import { toast } from "react-toastify";
 class ChipsInput extends Component {
 	constructor(props) {
 		super(props);
-		console.log(this.props);
-
 		this.state = {
 			chipSuggestion: [],
 			suggestionString: "",
@@ -33,7 +31,7 @@ class ChipsInput extends Component {
 					setChips = intersectionBy(
 						chipsFromServer.data,
 						this.props.chipCollection,
-						"_id",
+						"_id"
 					);
 					setChips = differenceBy(chipsFromServer.data, setChips, "_id");
 					this.setState({ chipSuggestion: [...setChips] });
@@ -43,7 +41,6 @@ class ChipsInput extends Component {
 				document.addEventListener("click", this.clearSuggestionInputListener);
 				document.addEventListener("keyup", this.clearSuggestionInputListener);
 			} else {
-				console.error(chipsFromServer);
 				toast.error(chipsFromServer.data.toString());
 			}
 		} else {
@@ -52,6 +49,8 @@ class ChipsInput extends Component {
 	};
 
 	deleteChip = (index) => {
+		this.props.chipCollection[index]["_id"] === this.props.albumBy &&
+			this.setAlbumBy(this.props.chipCollection[index]["_id"]);
 		let newChips = this.props.chipCollection.filter((i, k) => k !== index);
 		this.props.setChipsCallback(newChips);
 	};
@@ -115,7 +114,7 @@ class ChipsInput extends Component {
 		document.removeEventListener("click", this.clearSuggestionInputListener);
 		document.removeEventListener("keyup", this.clearSuggestionInputListener);
 		const newChipData = await this.props.createNewChipCallback(
-			this.state.suggestionString,
+			this.state.suggestionString
 		);
 		if (newChipData.status) {
 			await this.setState({ chipSuggestion: [newChipData.data] });
@@ -129,14 +128,10 @@ class ChipsInput extends Component {
 				className="tag-input-holder mt-1"
 				ref={(d) => (this.suggestionBlockRef = d)}>
 				<div className="tags-chips-container">
-					{this.props.chipCollection.map((item, key) => (
-						<div
-							className={`chip-container ${
-								this.props.chipTitle === "Artist" && "pr-5"
-							}`}
-							key={key}>
-							<span>{item[this.state.suggestionNameField]}</span>
-							{this.props.chipTitle === "Artist" && (
+					{this.props.chipCollection.map((item, key) =>
+						this.props.chipTitle === "Artist" ? (
+							<div className="chip-container pr-5" key={key}>
+								<span>{item[this.state.suggestionNameField]}</span>
 								<div
 									className="chip-container-crown-button cursor-pointer"
 									onClick={() => this.setAlbumBy(item._id)}>
@@ -145,14 +140,23 @@ class ChipsInput extends Component {
 											this.props.albumBy === item._id && `crown-select`
 										}`}></i>
 								</div>
-							)}
-							<div
-								className="chip-container-cancel-button cursor-pointer"
-								onClick={() => this.deleteChip(key)}>
-								<i className="fas fa-times text-white"></i>
+								<div
+									className="chip-container-cancel-button cursor-pointer"
+									onClick={() => this.deleteChip(key)}>
+									<i className="fas fa-times text-white"></i>
+								</div>
 							</div>
-						</div>
-					))}
+						) : (
+							<div className="chip-container" key={key}>
+								<span>{item[this.state.suggestionNameField]}</span>
+								<div
+									className="chip-container-cancel-button cursor-pointer"
+									onClick={() => this.deleteChip(key)}>
+									<i className="fas fa-times text-white"></i>
+								</div>
+							</div>
+						)
+					)}
 				</div>
 				<div className="tag-input-container">
 					<input

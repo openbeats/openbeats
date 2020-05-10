@@ -9,7 +9,7 @@ class TopNav extends Component {
 	constructor(props) {
 		super(props);
 		this.state = {
-			showUserOptions: false
+			showUserOptions: false,
 		};
 		this.userOpt = this.userOpt.bind(this);
 	}
@@ -68,8 +68,7 @@ class TopNav extends Component {
 						onSubmit={async e => {
 							e.preventDefault();
 							await this.props.fetchResults();
-						}}
-					>
+						}}>
 						<input
 							type="text"
 							onKeyUp={async e => {
@@ -94,12 +93,7 @@ class TopNav extends Component {
 									await this.props.fetchResults();
 								}}
 								key={key}
-								className={`suggested-keyword ${
-									this.props.currentTextIndex === key + 1
-										? "highlight-current"
-										: ""
-									}`}
-							>
+								className={`suggested-keyword ${this.props.currentTextIndex === key + 1 ? "highlight-current" : ""}`}>
 								{item[0]}
 							</div>
 						))}
@@ -118,21 +112,14 @@ class TopNav extends Component {
 								alt=""
 								srcSet=""
 							/>
-							<div
-								className={`usr-opt user-option-display-holder ${
-									this.state.showUserOptions ? "" : "make-invisible"
-									}`}
-							>
-								<div className="usr-opt list user-name-holder">
-									{this.props.userDetails.name}
-								</div>
+							<div className={`usr-opt user-option-display-holder ${this.state.showUserOptions ? "" : "make-invisible"}`}>
+								<div className="usr-opt list user-name-holder">{this.props.userDetails.name}</div>
 								<hr />
 								<div
 									onClick={() => {
 										this.props.logoutHandler();
 									}}
-									className="usr-opt list logout-button-holder cursor-pointer"
-								>
+									className="usr-opt list logout-button-holder cursor-pointer">
 									<div>
 										<i className="usr-opt fas fa-sign-out-alt toast-base-color logout-icon"></i>
 									</div>
@@ -141,10 +128,7 @@ class TopNav extends Component {
 							</div>
 						</div>
 					) : (
-							<div
-								className="auth-login-register-holder cursor-pointer"
-								onClick={() => this.props.push("/auth")}
-							>
+							<div className="auth-login-register-holder cursor-pointer" onClick={() => this.props.push("/auth")}>
 								<i className="fas fa-power-off red-color auth-power-on"></i>
 								<span className="hide-me">&nbsp;&nbsp;Login/Register</span>
 							</div>
@@ -163,7 +147,7 @@ const mapStateToProps = state => {
 		currentTextIndex: state.searchReducer.currentTextIndex,
 		actualText: state.searchReducer.actualText,
 		isAuthenticated: state.authReducer.isAuthenticated,
-		userDetails: state.authReducer.userDetails
+		userDetails: state.authReducer.userDetails,
 	};
 };
 
@@ -196,7 +180,7 @@ const mapDispatchToProps = dispatch => {
 		},
 		logoutHandler: () => {
 			authActions.logoutHandler();
-		}
+		},
 	};
 };
 

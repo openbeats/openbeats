@@ -5,7 +5,6 @@ import { connect } from "react-redux";
 import { push } from "connected-react-router";
 import { musicDummy, playerdownload, pQueueWhite } from '../assets/images';
 import Loader from 'react-loader-spinner';
-import { variables } from '../config';
 import queryString from 'query-string';
 import { store } from '../store';
 
@@ -20,13 +19,12 @@ class PlaylistDisplay extends Component {
             type: "",
             playlistThumbnail: musicDummy,
             downloadProcess: false,
-            videoId: [],
             isLoading: true,
             editedName: "",
             editPlaylistName: false,
+            videoId: []
         }
         this.state = { ...this.initialState };
-        this.videoId = []
     }
 
     async componentDidMount() {
@@ -39,7 +37,7 @@ class PlaylistDisplay extends Component {
 
     async playlistFetchHandler() {
         try {
-            await this.setState({ ...this.initialState })
+            await this.setState({ ...this.initialState });
             const {
                 type,
                 id
@@ -56,7 +54,14 @@ class PlaylistDisplay extends Component {
                     data = await this.props.fetchAlbumPlaylist(id, 'album');
                     break;
                 case "recentlyplayed":
-                    data = await this.props.fetchAlbumPlaylist(id, 'recentlyplayed');
+                    this.props.setCurrentAction("Recently Played");
+                    if (this.props.isAuthenticated)
+                        data = await this.props.fetchAlbumPlaylist(id, 'recentlyplayed');
+                    else {
+                        this.props.notify("Please Login to Use this Feature!")
+                        this.props.push("/")
+                        return;
+                    }
                     break;
                 default:
                     throw new Error("Invalid");
@@ -94,6 +99,11 @@ class PlaylistDisplay extends Component {
             this.playlistFetchHandler()
         }
     }
+
+    componentWillUnmount() {
+        this.setState({ ...this.initialState });
+    }
+
 
     render() {
         return (
@@ -231,33 +241,15 @@ class PlaylistDisplay extends Component {
                                             }
                                         </span>
                                         <span>
-                                            <a download
+                                            <div download
                                                 onClick={async (e) => {
-                                                    e.preventDefault()
-                                                    if (!this.props.isAuthenticated) {
-                                                        toastActions.showMessage("Please Login to use this feature!")
-                                                        return
+                                                    e.preventDefault();
+                                                    await this.setState({ videoId: [...this.state.videoId, item.videoId] })
+                                                    if (await this.props.downloadSongHandler(item)) {
+                                                        this.setState({ videoId: [...this.state.videoId.filter(id => id !== item.videoId)] });
                                                     }
-                                                    this.videoId.push(item.videoId)
-                                                    this.setState({ videoId: this.videoId })
-                                                    await fetch(`${variables.baseUrl}/downcc/${item.videoId}?title=${encodeURI(item.title)}`)
-                                                        .then(res => {
-                                                            if (res.status === 200) {
-                                                                this.videoId.splice(this.videoId.indexOf(item.videoId), 1)
-                                                                this.setState({ videoId: this.videoId })
-                                                                window.open(`${variables.baseUrl}/downcc/${item.videoId}?title=${encodeURI(item.title)}`, '_self')
-                                                            } else {
-                                                                this.videoId.splice(this.videoId.indexOf(item.videoId), 1)
-                                                                this.setState({ videoId: this.videoId })
-                                                                this.props.notify("Requested content not available right now!, try downloading alternate songs!");
-                                                            }
-                                                        }).catch(err => {
-                                                            this.videoId.splice(this.videoId.indexOf(item.videoId), 1)
-                                                            this.setState({ videoId: this.videoId })
-                                                            this.props.notify("Requested content not available right now!, try downloading alternate songs!");
-                                                        })
                                                 }}
-                                                className="t-none cursor-pointer" href={`${variables.baseUrl}/downcc/${item.videoId}?title=${encodeURI(item.title)}`}>
+                                                className="t-none cursor-pointer">
                                                 {this.state.videoId.includes(item.videoId) ?
                                                     <Loader
                                                         type="Oval"
@@ -269,7 +261,7 @@ class PlaylistDisplay extends Component {
                                                     :
                                                     <img className="playlist-display-songs-icon-2" src={playerdownload} alt="" />
                                                 }
-                                            </a>
+                                            </div>
                                         </span>
                                         {this.state.type === 'user' &&
                                             <span>
@@ -382,6 +374,9 @@ const mapDispatchToProps = (dispatch) => {
                 toastActions.showMessage("Playlist you tried to add to the queue.. seems to be empty!")
             }
         },
+        downloadSongHandler: async (item) => {
+            return await playlistManipulatorActions.downloadSongHandler(item);
+        }
     }
 }
 

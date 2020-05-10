@@ -47,6 +47,10 @@
     font-size: 20px;
 }
 
+.bucket-heading-title {
+    font-size: inherit;
+}
+
 .songsbucket-empty-action {
     width: 100%;
     height: 100%;
@@ -73,6 +77,7 @@
 /* width */
 .songsbucket-body::-webkit-scrollbar {
     width: 8px;
+    height: 8px;
     border-radius: 10px;
 }
 
@@ -119,13 +124,15 @@
 
 .songsbucket-search-result-node {
     width: 100%;
-    height: 50px;
     border-bottom: 0.5px solid rgba(255, 255, 255, 0.8);
     display: grid;
     align-items: center;
     grid-template-columns: 50px 50px 50px 80px auto;
     color: white;
     font-size: 14px;
+    height: auto;
+    padding-top: 5px;
+    padding-bottom: 5px;
 }
 
 .songsbucket-song-drag-handle-holder {
@@ -178,6 +185,55 @@
 .songsbucket-actions {
     display: flex;
     align-items: center;
-    justify-content: center;
+    justify-content: space-evenly;
     font-size: 18px;
+}
+
+.bucket-song-title {
+    font-size: inherit;
+}
+
+@media only screen and (max-width: 1000px) {
+    .songsbucket-wrapper {
+        height: 300px;
+    }
+
+    .songsbucket-search-result-node {
+        grid-template-columns: 10px 0px 0px 60px auto;
+        height: auto;
+        padding-top: 5px;
+        padding-bottom: 5px;
+    }
+
+    .songsbucket-actions {
+        justify-content: space-evenly;
+        align-items: center;
+        font-size: 14px;
+    }
+
+    .bucket-song-title {
+        font-size: 12px;
+    }
+
+    .songsbucket-song-drag-handle-holder {
+        font-size: 14px;
+    }
+
+    .songsbucket-totalsongs {
+        width: 25px;
+        height: 25px;
+        font-size: 12px;
+    }
+
+    .bucket-heading-title {
+        font-size: 13px;
+    }
+
+    .songsbucket-header {
+        grid-template-columns: 40px auto 40px;
+    }
+
+    .songsbucket-song-current-position-indicator {
+        visibility: hidden;
+    }
 }

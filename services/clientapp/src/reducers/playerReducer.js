@@ -1,6 +1,6 @@
 import {
     musicDummy
-} from "../assets/images"
+} from "../assets/images";
 
 const initialState = {
     masterUrl: null,
@@ -16,6 +16,7 @@ const initialState = {
     id: null,
     isAudioBuffering: false,
     downloadProcess: false,
+    repeatMode: 1, // 1 for off, 2 for repeat current song, 3 for repeat all songs in the queue
 }
 
 const playerReducer = (state = initialState, action) => {
@@ -72,6 +73,12 @@ const playerReducer = (state = initialState, action) => {
             state = {
                 ...state,
                 ...action.payload
+            };
+            break;
+        case "SET_REPEAT_MODE":
+            state = {
+                ...state,
+                repeatMode: action.payload
             };
             break;
         case "RESET_PLAYER":

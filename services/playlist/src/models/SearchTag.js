@@ -1,10 +1,7 @@
 import mongoose from "mongoose";
 
 const searchTagSchema = new mongoose.Schema({
-  searchVal: String,
+	searchVal: String,
 });
 
-export default mongoose.model(
-  "SearchTag",
-  searchTagSchema
-);
+export default mongoose.model("SearchTag", searchTagSchema);

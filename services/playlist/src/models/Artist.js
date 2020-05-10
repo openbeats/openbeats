@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import User from "./reference/User";
 
 const artistSchema = new mongoose.Schema({
 	name: String,
@@ -8,8 +9,20 @@ const artistSchema = new mongoose.Schema({
 	},
 	popularityCount: {
 		type: Number,
-		default: 0
-	}
+		default: 0,
+	},
+	updatedBy: {
+		type: mongoose.Schema.Types.ObjectId,
+		ref: "User",
+	},
+	createdBy: {
+		type: mongoose.Schema.Types.ObjectId,
+		ref: "User",
+	},
+});
+
+artistSchema.index({
+	name: "text",
 });
 
 export default mongoose.model("Artist", artistSchema);
