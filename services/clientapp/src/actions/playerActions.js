@@ -288,10 +288,7 @@ export async function initPlayer(audioData, playMusic = true) {
 	const fallBackUrl = `${variables.baseUrl}/fallback/${audioData.videoId.trim()}`;
 
 	try {
-		const {
-			data
-		} = await axios.get(masterUrl);
-		const res = data;
+		const res = await getAudioLinkSafely(masterUrl);
 		if (res.status) {
 			if (store.getState().nowPlayingReducer.currentPlaying.videoId === audioData.videoId) {
 				await store.dispatch({
@@ -330,7 +327,7 @@ export async function initPlayer(audioData, playMusic = true) {
 }
 
 export const getAudioLinkSafely = async (url) => {
-	let fetchCount = 3;
+	let fetchCount = 10;
 	while (fetchCount > 0) {
 		const {
 			data

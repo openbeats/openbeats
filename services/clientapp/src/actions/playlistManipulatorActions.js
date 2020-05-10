@@ -6,7 +6,7 @@ import {
     variables
 } from "../config";
 import {
-    toastActions
+    toastActions,
 } from ".";
 import {
     UPDATE_LIKED_PLAYLISTS_METADATA
@@ -245,14 +245,15 @@ export async function downloadSongHandler(item) {
         return true;
     }
     try {
-        const response = await fetch(`${variables.baseUrl}/downcc/${item.videoId}?title=${encodeURI(item.title)}`);
-        if (response.status === 200)
-            window.open(`${variables.baseUrl}/downcc/${item.videoId}?title=${encodeURI(item.title)}`, "_blank")
+        const url = `${variables.baseUrl}/downcc/${item.videoId}?title=${encodeURI(item.title)}`;
+        const response = await fetch(url);
+        if (response.status !== 408)
+            window.open(url, "_blank")
         else
             throw new Error("!");
         return true;
     } catch (error) {
-        toastActions.showMessage("Requested content not available right now!, try downloading alternate songs!");
+        toastActions.showMessage("Server load is high!, try again after sometime!");
         return true;
     }
 }
