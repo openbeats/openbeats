@@ -30,6 +30,7 @@ router.post("/create", auth, async (req, res) => {
 			data: playlistData,
 		});
 	} catch (error) {
+		console.error(error.message);
 		res.send({
 			status: false,
 			data: error.toString(),
@@ -75,6 +76,7 @@ router.post("/addsongs", auth, async (req, res) => {
 			throw new Error("something went wrong!");
 		}
 	} catch (error) {
+		console.error(error.message);
 		res.send({
 			status: false,
 			data: error.message,
@@ -100,6 +102,7 @@ router.get("/getallplaylistmetadata", auth, async (req, res) => {
 			data: metaData,
 		});
 	} catch (error) {
+		console.error(error.message);
 		res.send({
 			status: false,
 			data: error.toString(),
@@ -124,6 +127,7 @@ router.get("/getplaylist/:id", auth, async (req, res) => {
 			data: fetchedAlbum,
 		});
 	} catch (error) {
+		console.error(error.message);
 		res.send({
 			status: false,
 			data: error.message,
@@ -169,6 +173,7 @@ router.post("/deletesong", auth, async (req, res) => {
 			data: "Song has been deleted successfully",
 		});
 	} catch (error) {
+		console.error(error.message);
 		res.send({
 			status: false,
 			data: error.toString(),
@@ -200,6 +205,7 @@ router.post("/updatename", auth, async (req, res) => {
 			data: "Playlist name changed successfully!",
 		});
 	} catch (error) {
+		console.error(error.message);
 		res.send({
 			status: false,
 			data: error.toString(),
@@ -224,6 +230,7 @@ router.get("/delete/:id", auth, async (req, res) => {
 			data: "playlist deleted successfully!",
 		});
 	} catch (error) {
+		console.error(error.message);
 		res.send({
 			status: false,
 			data: error.toString(),
@@ -260,7 +267,7 @@ router.get("/fetchByName", async (req, res) => {
 			data: userPlaylists,
 		});
 	} catch (error) {
-		console.log(error.message);
+		console.error(error.message);
 		res.send({
 			status: false,
 			data: error.message,

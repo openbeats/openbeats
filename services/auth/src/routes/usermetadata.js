@@ -1,4 +1,6 @@
-import { Router } from "express";
+import {
+	Router
+} from "express";
 import User from "../models/User";
 import auth from "../permissions/auth";
 
@@ -29,7 +31,7 @@ router.post("/recentlyplayed", async (req, res) => {
 				await user.save();
 			}
 		} catch (error) {
-			console.log(error.message);
+			console.error(error.message);
 		}
 	}, 0);
 	res.send({
@@ -47,6 +49,7 @@ router.get("/recentlyplayed", auth, async (req, res) => {
 			data: user["$$populatedVirtuals"]["recentlyPlayedSongsList"],
 		});
 	} catch (error) {
+		console.error(error.message);
 		res.send({
 			status: false,
 			data: "Internal server error.",
@@ -55,7 +58,10 @@ router.get("/recentlyplayed", auth, async (req, res) => {
 });
 
 router.post("/mycollections", async (req, res) => {
-	const { userId, albumId } = req.body;
+	const {
+		userId,
+		albumId
+	} = req.body;
 	try {
 		const user = await User.findById(userId);
 		if (user) {
@@ -73,6 +79,7 @@ router.post("/mycollections", async (req, res) => {
 			throw new Error("User Not found!");
 		}
 	} catch (error) {
+		console.error(error.message);
 		res.send({
 			status: false,
 			data: error.message,
@@ -81,7 +88,10 @@ router.post("/mycollections", async (req, res) => {
 });
 
 router.delete("/mycollections", async (req, res) => {
-	const { userId, albumId } = req.body;
+	const {
+		userId,
+		albumId
+	} = req.body;
 	try {
 		const user = await User.findById(userId);
 		if (user) {
@@ -99,6 +109,7 @@ router.delete("/mycollections", async (req, res) => {
 			throw new Error("User Not found!");
 		}
 	} catch (error) {
+		console.error(error.message);
 		res.send({
 			status: false,
 			data: error.message,

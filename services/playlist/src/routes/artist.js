@@ -1,17 +1,33 @@
 import Artist from "../models/Artist";
 import Album from "../models/Album";
-import { Router } from "express";
-import { check, oneOf, validationResult } from "express-validator";
+import {
+	Router
+} from "express";
+import {
+	check,
+	oneOf,
+	validationResult
+} from "express-validator";
 import paginationMiddleware from "../config/paginationMiddleware";
-import { saveAsserts, deleteAssert } from "../core/digitalOceanSpaces";
-import { isAdmin, canDeleteArtist, canUpdateArtist } from "../permissions";
+import {
+	saveAsserts,
+	deleteAssert
+} from "../core/digitalOceanSpaces";
+import {
+	isAdmin,
+	canDeleteArtist,
+	canUpdateArtist
+} from "../permissions";
 
 const router = Router();
 
 //artist creation
 router.post("/create", isAdmin, async (req, res) => {
 	try {
-		const { name, thumbnail } = req.body;
+		const {
+			name,
+			thumbnail
+		} = req.body;
 		if (!name) {
 			throw new Error("name is required.");
 		}
@@ -27,7 +43,7 @@ router.post("/create", isAdmin, async (req, res) => {
 			data: artist,
 		});
 	} catch (error) {
-		console.log(error.message);
+		console.error(error.message);
 		res.send({
 			status: false,
 			data: error.message,
@@ -45,7 +61,10 @@ router.get("/fetch", oneOf([check("tagId").exists(), check("query").exists()]), 
 				data: "Please provide either artistId or query as query params.",
 			});
 		}
-		const { tagId, query } = req.query;
+		const {
+			tagId,
+			query
+		} = req.query;
 
 		if (tagId) {
 			const artist = await Artist.findById(tagId);
@@ -54,19 +73,20 @@ router.get("/fetch", oneOf([check("tagId").exists(), check("query").exists()]), 
 				data: artist,
 			});
 		} else if (query) {
-			const artists = await Artist.find(
-				{
-					$text: {
-						$search: `${query}`,
-						$caseSensitive: false,
-					},
+			const artists = await Artist.find({
+				$text: {
+					$search: `${query}`,
+					$caseSensitive: false,
 				},
-				{
-					score: {
-						$meta: "textScore",
-					},
+			}, {
+				score: {
+					$meta: "textScore",
+				},
+			}).sort({
+				score: {
+					$meta: "textScore"
 				}
-			).sort({ score: { $meta: "textScore" } });
+			});
 			return res.send({
 				status: true,
 				data: artists,
@@ -77,7 +97,7 @@ router.get("/fetch", oneOf([check("tagId").exists(), check("query").exists()]), 
 			data: [],
 		});
 	} catch (error) {
-		console.log(error.message);
+		console.error(error.message);
 		res.send({
 			status: false,
 			data: error.message,
@@ -87,14 +107,21 @@ router.get("/fetch", oneOf([check("tagId").exists(), check("query").exists()]), 
 
 router.get("/suggest", async (req, res) => {
 	try {
-		const { query } = req.query;
-		const artists = await Artist.find({ name: { $regex: `${query}`, $options: `i` } }).limit(5);
+		const {
+			query
+		} = req.query;
+		const artists = await Artist.find({
+			name: {
+				$regex: `${query}`,
+				$options: `i`
+			}
+		}).limit(5);
 		return res.send({
 			status: true,
 			data: artists,
 		});
 	} catch (error) {
-		console.log(error.message);
+		console.error(error.message);
 		res.send({
 			status: false,
 			data: error.message,
@@ -111,7 +138,7 @@ router.get("/all", paginationMiddleware(Artist), async (req, res) => {
 			data: res.paginatedResults,
 		});
 	} catch (error) {
-		console.log(error.message);
+		console.error(error.message);
 		res.send({
 			status: false,
 			data: error.message,
@@ -122,7 +149,10 @@ router.get("/all", paginationMiddleware(Artist), async (req, res) => {
 //update artist
 router.put("/:id", isAdmin, canUpdateArtist, async (req, res) => {
 	try {
-		const { name, thumbnail } = req.body;
+		const {
+			name,
+			thumbnail
+		} = req.body;
 		if (!name || !thumbnail) {
 			throw new Error("Name is required.");
 		}
@@ -136,7 +166,7 @@ router.put("/:id", isAdmin, canUpdateArtist, async (req, res) => {
 			data: req.artist,
 		});
 	} catch (error) {
-		console.log(error.message);
+		console.error(error.message);
 		return res.send({
 			status: false,
 			data: error.message,
@@ -148,13 +178,15 @@ router.put("/:id", isAdmin, canUpdateArtist, async (req, res) => {
 router.delete("/:id", isAdmin, canDeleteArtist, async (req, res) => {
 	try {
 		deleteAssert(req.artist.thumbnail);
-		await Artist.deleteOne({ _id: req.artist._id });
+		await Artist.deleteOne({
+			_id: req.artist._id
+		});
 		res.send({
 			status: true,
 			data: "Artist got deleted successfully.",
 		});
 	} catch (error) {
-		console.log(error.message);
+		console.error(error.message);
 		res.send({
 			status: false,
 			data: error.message,
@@ -165,19 +197,16 @@ router.delete("/:id", isAdmin, canDeleteArtist, async (req, res) => {
 // fetch artist specific albums..
 router.get("/:id/releases", async (req, res) => {
 	try {
-		const releasedAlbum = await Album.find(
-			{
-				albumBy: req.params.id,
-			},
-			{
-				_id: true,
-				name: 1,
-				thumbnail: 2,
-				totalSongs: 3,
-				createdAt: 4,
-				albumBy: 4,
-			}
-		).populate("albumBy");
+		const releasedAlbum = await Album.find({
+			albumBy: req.params.id,
+		}, {
+			_id: true,
+			name: 1,
+			thumbnail: 2,
+			totalSongs: 3,
+			createdAt: 4,
+			albumBy: 4,
+		}).populate("albumBy");
 		setTimeout(async () => {
 			const artist = await Artist.findById(req.params.id);
 			if (typeof artist.popularityCount === "number") {
@@ -192,7 +221,7 @@ router.get("/:id/releases", async (req, res) => {
 			data: releasedAlbum,
 		});
 	} catch (error) {
-		console.log(error.message);
+		console.error(error.message);
 		res.send({
 			status: false,
 			data: error.message,
@@ -203,20 +232,17 @@ router.get("/:id/releases", async (req, res) => {
 // fetch artist featuring albums..
 router.get("/:id/featuring", async (req, res) => {
 	try {
-		const featuringAlbum = await Album.find(
-			{
-				featuringArtists: {
-					$in: [req.params.id],
-				},
+		const featuringAlbum = await Album.find({
+			featuringArtists: {
+				$in: [req.params.id],
 			},
-			{
-				_id: true,
-				name: 1,
-				thumbnail: 2,
-				createdAt:4,
-				totalSongs: 3,
-			}
-		);
+		}, {
+			_id: true,
+			name: 1,
+			thumbnail: 2,
+			createdAt: 4,
+			totalSongs: 3,
+		});
 		setTimeout(async () => {
 			const artist = await Artist.findById(req.params.id);
 			if (typeof artist.popularityCount === "number") {
@@ -231,7 +257,7 @@ router.get("/:id/featuring", async (req, res) => {
 			data: featuringAlbum,
 		});
 	} catch (error) {
-		console.log(error.message);
+		console.error(error.message);
 		res.send({
 			status: false,
 			data: error.message,
