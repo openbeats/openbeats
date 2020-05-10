@@ -170,6 +170,7 @@ app.post("/addsongs", async (req, res) => {
 			data: "Songs Added successfully!",
 		});
 	} catch (error) {
+		console.error(error.message);
 		res.send({
 			status: true,
 			data: "some of the songs already exists in the collection!",
@@ -187,6 +188,7 @@ app.delete("/deletesong/:id", async (req, res) => {
 			data: "Song Deleted successfully!",
 		});
 	} catch (error) {
+		console.error(error.message);
 		res.send({
 			status: false,
 			data: error.message,
@@ -205,6 +207,7 @@ app.get("/getsong/:id", async (req, res) => {
 			});
 		else throw new Error("Song Not found!");
 	} catch (error) {
+		console.error(error.message);
 		res.send({
 			status: false,
 			data: error.message,
@@ -232,6 +235,7 @@ app.post("/getsongs", async (req, res) => {
 			data: songs,
 		});
 	} catch (error) {
+		console.error(error.message);
 		res.send({
 			status: false,
 			data: error.message,
