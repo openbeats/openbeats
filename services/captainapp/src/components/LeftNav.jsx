@@ -60,8 +60,8 @@ class LeftNav extends Component {
 		return (
 			<div ref={d => this.leftNavRef = d} className={`leftnav-wrapper ${this.state.openMobileLeftNav ? "open-mobile-leftnav" : ''}`}>
 				<div className="hamburger-holder cursor-pointer" onClick={this.toggleMobileLeftNav}>
-					{this.state.openMobileLeftNav && <i class="fas fa-angle-left"></i>}
-					{!this.state.openMobileLeftNav && <i class="fas fa-angle-right"></i>}
+					{this.state.openMobileLeftNav && <i className="fas fa-angle-left"></i>}
+					{!this.state.openMobileLeftNav && <i className="fas fa-angle-right"></i>}
 				</div>
 				<ul className="leftnav-menu">
 					<div className="leftnav-item hanging-music-player-holder">

@@ -18,12 +18,43 @@ class HangingPlayer extends Component {
     }
 
     initHangingPlayer = async () => {
-        const songData = (await axios.get(`${variables.baseUrl}/opencc/${this.props.hangingPlayer.songData.videoId}`)).data;
+        const songData = await this.getAudioLinkSafely(`${variables.baseUrl}/opencc/${this.props.hangingPlayer.songData.videoId}`);
         if (songData.status) {
             this.audioPlayer.src = songData.link;
             this.audioPlayer.load();
             this.audioPlayer.play();
+        } else {
+            const fallbackUrl = `${variables.baseUrl}/fallback/${this.props.hangingPlayer.songData.videoId}`;
+            const fallbackData = await fetch(fallbackUrl);
+            if (fallbackData.status !== 408) {
+                this.audioPlayer.src = fallbackUrl;
+                this.audioPlayer.load();
+                this.audioPlayer.play();
+            } else {
+                this.audioPlayer.pause();
+                this.audioPlayer.currentTime = 0;
+                this.audioPlayer.src = "";
+                this.props.resetHangingPlayer();
+            }
         }
+    }
+
+    getAudioLinkSafely = async (url) => {
+        let fetchCount = 10;
+        while (fetchCount > 0) {
+            const {
+                data
+            } = await axios.get(url);
+            const res = data;
+            if (res.status) {
+                return res;
+            }
+            fetchCount--;
+        }
+        return {
+            status: false,
+            link: null
+        };
     }
 
     resetPlayer = () => {
