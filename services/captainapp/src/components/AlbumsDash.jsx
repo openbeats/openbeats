@@ -135,9 +135,13 @@ class AlbumsDash extends Component {
 		this.setState({ songsCollection: [] });
 	};
 
-	addSongsToTheBucketCallBack = song => {
-		if (findIndex(this.state.songsCollection, song) === -1) this.setState({ songsCollection: [...this.state.songsCollection, song] });
-		else toast.error("Song is Already in the bucket!");
+	addSongsToTheBucketCallBack = async song => {
+		if (findIndex(this.state.songsCollection, song) === -1) {
+			await this.setState({ songsCollection: [...this.state.songsCollection, song] });
+			toast.info(<p>Song has been added to bucket.<br />Total count <strong>{this.state.songsCollection.length}</strong></p>);
+		} else {
+			toast.error("Song is Already in the bucket!");
+		}
 	};
 
 	arrangeSongsCallBack = songs => {
@@ -190,7 +194,8 @@ class AlbumsDash extends Component {
 								<div className="artist-tags-title font-weight-bold">
 									Artist Tags<span className="text-danger">*</span>
 								</div>
-								<div className="artist-tags-title-desc">(Please add only one artist, if you want this album to comes under specific Artist)</div>
+								<div className="artist-tags-title-desc">(Tap on the crown badge, if you want this album to comes under specific artist's releases.
+								By default if only one artist tag is selected, album will be in that artist's releases.)</div>
 								<ChipsInput
 									chipTitle={"Artist"}
 									albumBy={this.state.albumBy}

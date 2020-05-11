@@ -1,6 +1,6 @@
 var mongo = require("mongodb");
 var url = "mongodb+srv://obs-db:openbeats%40123@obs-db-prijj.mongodb.net";
-var dbNameString = "obs-db";
+var dbNameString = "obs-db-staging";
 var songsCollectionString = "songs";
 let usersCollectionString = "users";
 var userPlaylistCollectionString = "userPlaylists";
@@ -47,7 +47,9 @@ const updateAvatar = async () => {
 	const userCollection = await mydb.collection(usersCollectionString);
 	let playlistData = await (await userCollection.find({})).toArray();
 	for (let index = 0; index < playlistData.length; index++) {
-		var myquery = { _id: playlistData[index]._id };
+		var myquery = {
+			_id: playlistData[index]._id
+		};
 		var newvalues = {
 			$set: {
 				avatar: `https://ui-avatars.com/api/?rounded=true&name=${encodeURIComponent(
@@ -98,16 +100,13 @@ const updateMev2 = async doLater => {
 			if (item.songs.length) {
 				console.log(item.id);
 
-				await userPlaylistCollection.updateOne(
-					{
-						_id: item.id,
+				await userPlaylistCollection.updateOne({
+					_id: item.id,
+				}, {
+					$set: {
+						recentlyPlayedSongs: [...item.songs],
 					},
-					{
-						$set: {
-							recentlyPlayedSongs: [...item.songs],
-						},
-					}
-				);
+				});
 			}
 
 			//console.log(user);
@@ -123,16 +122,13 @@ const updateMe = async doLater => {
 		console.log("update", key, item.id, item.songs.length);
 		const userPlaylistCollection = mydb.collection(userPlaylistCollectionString);
 		if (item.songs.length)
-			userPlaylistCollection.updateOne(
-				{
-					_id: item.id,
+			userPlaylistCollection.updateOne({
+				_id: item.id,
+			}, {
+				$set: {
+					songs: [...item.songs],
 				},
-				{
-					$set: {
-						songs: [...item.songs],
-					},
-				}
-			);
+			});
 	});
 };
 
