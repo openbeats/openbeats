@@ -38,21 +38,37 @@ export default class SongSearcher extends Component {
 		document.addEventListener("keyup", this.clearSuggestionInputListener);
 	};
 
-	fetchSongSuggestion = async () => {
+	async fetchSongSuggestion() {
 		document.removeEventListener("click", this.clearSuggestionInputListener);
 		document.removeEventListener("keyup", this.clearSuggestionInputListener);
 		if (this.state.songSuggestionFetchUrl) {
-			let suggestionData = (
-				await axios.get(
-					this.state.songSuggestionFetchUrl + this.state.suggestionString
-				)
-			).data;
+			let suggestionData = await this.getSearchResultSafely(
+				this.state.songSuggestionFetchUrl + this.state.suggestionString
+			);
 			this.setState({
 				songsCollection: suggestionData.data,
 				suggestionStringArray: []
 			});
 		}
 	};
+
+	async getSearchResultSafely(url) {
+		let fetchCount = 3;
+		while (fetchCount > 0) {
+			const {
+				data
+			} = await axios.get(url);
+			const res = data;
+			if (res.status && res.data.length) {
+				return res;
+			}
+			fetchCount--;
+		}
+		return {
+			status: false,
+			data: []
+		};
+	}
 
 	playSongTrial = (index) => {
 		this.props.songTrialTrigger(this.state.songsCollection[index]);
