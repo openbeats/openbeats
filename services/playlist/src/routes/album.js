@@ -156,7 +156,7 @@ router.put(
 			req.album.featuringArtists = featuringArtists;
 			req.album.searchTags = searchTags;
 			req.album.searchVals = searchVals;
-			req.album.language = language;
+			req.album.languageArr = language;
 			req.album.emotion = emotion;
 			req.album.isCustom = isCustom;
 			const addSongsCoreUrl = `${baseUrl}/addsongs`;
