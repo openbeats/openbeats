@@ -55,10 +55,12 @@ router.post(
 				name,
 				featuringArtists,
 				searchTags,
-				userId,
 				albumBy,
 				songs,
-				searchVals
+				searchVals,
+				language,
+				emotion,
+				isCustom
 			} = req.body;
 
 			if (!name || !songs) {
@@ -77,6 +79,9 @@ router.post(
 			newAlbum.featuringArtists = featuringArtists;
 			newAlbum.searchTags = searchTags;
 			newAlbum.searchVals = searchVals;
+			newAlbum.languageArr = language;
+			newAlbum.emotion = emotion;
+			newAlbum.isCustom = isCustom;
 			const addSongsCoreUrl = `${baseUrl}/addsongs`;
 			axios
 				.post(addSongsCoreUrl, {
@@ -90,7 +95,7 @@ router.post(
 				data: album,
 			});
 		} catch (error) {
-			console.error(error.message);
+			console.error(error);
 			res.send({
 				status: false,
 				data: error.message,
@@ -132,9 +137,11 @@ router.put(
 				featuringArtists,
 				songs,
 				searchTags,
-				userId,
 				albumBy,
-				searchVals
+				searchVals,
+				language,
+				emotion,
+				isCustom
 			} = req.body;
 			if (!name || !songs) {
 				throw new Error("Pass name, userId and songs in request body.");
@@ -149,6 +156,9 @@ router.put(
 			req.album.featuringArtists = featuringArtists;
 			req.album.searchTags = searchTags;
 			req.album.searchVals = searchVals;
+			req.album.language = language;
+			req.album.emotion = emotion;
+			req.album.isCustom = isCustom;
 			const addSongsCoreUrl = `${baseUrl}/addsongs`;
 			axios.post(addSongsCoreUrl, {
 				songs,
@@ -219,7 +229,7 @@ router.get(
 		[{
 			path: "createdBy",
 			select: "name",
-		}, ]
+		}]
 	),
 	async (req, res) => {
 		try {

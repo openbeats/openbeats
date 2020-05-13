@@ -4,7 +4,7 @@
   "description": "openbeats playlist service",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon index.js"
+    "start": "nodemon --trace-warnings index.js"
   },
   "keywords": [
     "openbeats playlist service"
@@ -12,10 +12,10 @@
   "author": "ThayalanGR",
   "license": "ISC",
   "devDependencies": {
-    "nodemon": "^2.0.2"
+    "nodemon": "^2.0.3"
   },
   "dependencies": {
-    "aws-sdk": "^2.663.0",
+    "aws-sdk": "^2.675.0",
     "axios": "^0.19.2",
     "babel-polyfill": "^6.26.0",
     "babel-preset-env": "^1.7.0",
@@ -24,11 +24,11 @@
     "cheerio": "^1.0.0-rc.3",
     "cors": "^2.8.5",
     "express": "^4.17.1",
-    "express-validator": "^6.4.0",
+    "express-validator": "^6.4.1",
     "jsonwebtoken": "^8.5.1",
     "lodash": "^4.17.15",
-    "mongoose": "^5.7.13",
-    "morgan": "^1.9.1",
+    "mongoose": "^5.9.13",
+    "morgan": "^1.10.0",
     "node-fetch": "^2.6.0"
   }
 }
