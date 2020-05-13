@@ -14,6 +14,24 @@ import {
 import thunk from "redux-thunk";
 // import logger from "redux-logger";
 import reducers from "./reducers";
+import GoogleAnalytics from 'react-ga';
+
+
+// Google analytics integration
+GoogleAnalytics.initialize('UA-166283761-1');
+const googleAnalyticsTrackingMiddleware = store => next => action => {
+	if (action.type === '@@router/LOCATION_CHANGE') {
+		const nextPage = `${action.payload.location.pathname}${action.payload.location.search}`;
+		trackPage(nextPage);
+	}
+	return next(action);
+};
+
+const trackPage = page => {
+	GoogleAnalytics.pageview(page);
+};
+
+
 const history = createBrowserHistory();
 const store = createStore(
 	combineReducers({
@@ -21,6 +39,7 @@ const store = createStore(
 		...reducers,
 	}), {},
 	applyMiddleware(
+		googleAnalyticsTrackingMiddleware,
 		routerMiddleware(history),
 		thunk,
 		// logger,
