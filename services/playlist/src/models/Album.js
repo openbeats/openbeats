@@ -8,27 +8,40 @@ const albumSchema = new mongoose.Schema({
 		type: String,
 		default: "https://openbeats.live/static/media/dummy_music_holder.a3d0de2e.jpg",
 	},
-	songs: [
-		{
-			type: String,
-		},
-	],
+	songs: [{
+		type: String,
+	}],
 	albumBy: {
 		type: mongoose.Schema.Types.ObjectId,
 		ref: "Artist",
 		default: null,
 	},
-	featuringArtists: [
-		{
-			type: mongoose.Schema.Types.ObjectId,
-			ref: "Artist",
-		},
-	],
-	searchVals: { type: [String] },
-	searchTags: [{ type: mongoose.Schema.Types.ObjectId, ref: "SearchTag" }],
+	featuringArtists: [{
+		type: mongoose.Schema.Types.ObjectId,
+		ref: "Artist",
+	}],
+	languageArr: [{
+		type: mongoose.Schema.Types.ObjectId,
+		ref: "Language",
+	}],
+	emotion: [{
+		type: mongoose.Schema.Types.ObjectId,
+		ref: "Emotion",
+	}],
+	searchVals: {
+		type: [String]
+	},
+	searchTags: [{
+		type: mongoose.Schema.Types.ObjectId,
+		ref: "SearchTag"
+	}],
 	totalSongs: {
 		type: Number,
 		default: 0,
+	},
+	isCustom: {
+		type: Boolean,
+		default: false
 	},
 	createdAt: {
 		type: Date,
@@ -52,7 +65,10 @@ const albumSchema = new mongoose.Schema({
 	},
 });
 
-albumSchema.index({ name: "text", searchVals: "text" });
+albumSchema.index({
+	name: "text",
+	searchVals: "text"
+});
 
 albumSchema.virtual("songsList", {
 	ref: "Song",

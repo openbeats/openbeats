@@ -12,6 +12,8 @@ import {
     UPDATE_LIKED_PLAYLISTS_METADATA
 } from "../types";
 
+import GoogleAnalytics from "react-ga";
+
 export async function showAddPlaylistDialog(song) {
     const isAuthenticated = await store.getState().authReducer.isAuthenticated;
     if (isAuthenticated)
@@ -246,9 +248,15 @@ export async function downloadSongHandler(item) {
     try {
         const url = `${variables.baseUrl}/downcc/${item.videoId}?title=${encodeURI(item.title)}`;
         const response = await fetch(url);
-        if (response.status !== 408)
+        if (response.status !== 408) {
             window.open(url, "_blank")
-        else
+            // google analytics integration
+            GoogleAnalytics.event({
+                category: 'Download',
+                action: `${item.title} - ${item.videoId}`,
+                label: `by ${state.authReducer.userDetails.name} - ${state.authReducer.userDetails.id}`,
+            });
+        } else
             throw new Error("!");
         return true;
     } catch (error) {
