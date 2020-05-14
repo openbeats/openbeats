@@ -7,6 +7,13 @@ on:
       - staging
     paths:
       - services/captainapp/**
+  pull_request:
+    types: [closed]
+    branches: 
+      - production
+      - staging
+    paths:
+      - services/captainapp/**
       
 env: 
   SERVICE_PATH: services/captainapp

@@ -7,6 +7,13 @@ on:
       - staging
     paths:
       - services/fallback/**
+  pull_request:
+    types: [closed]
+    branches: 
+      - production
+      - staging
+    paths:
+      - services/fallback/**
       
 env: 
   SERVICE_PATH: services/fallback

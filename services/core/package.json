@@ -12,7 +12,7 @@
     "author": "ThayalanGR",
     "license": "ISC",
     "devDependencies": {
-        "nodemon": "^2.0.2"
+        "nodemon": "^2.0.3"
     },
     "dependencies": {
         "babel-polyfill": "^6.26.0",
@@ -26,7 +26,7 @@
         "form-data": "^3.0.0",
         "jsonwebtoken": "^8.5.1",
         "lowdb": "^1.0.0",
-        "mongoose": "^5.9.5",
+        "mongoose": "^5.9.13",
         "morgan": "^1.10.0",
         "node-cron": "^2.0.3",
         "node-fetch": "^2.6.0",

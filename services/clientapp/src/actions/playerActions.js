@@ -20,6 +20,8 @@ import {
 	Base64
 } from "js-base64";
 import axios from "axios";
+import GoogleAnalytics from "react-ga";
+
 
 export function playPauseToggle() {
 	const playerRef = document.getElementById("music-player");
@@ -345,12 +347,13 @@ export const getAudioLinkSafely = async (url) => {
 }
 
 export async function startPlayer(shallIPlay = true) {
-	let state = store.getState().playerReducer;
+	let state = store.getState();
+	let playerReducer = state.playerReducer;
 	const player = document.getElementById("music-player");
 	const source1 = document.getElementById("audio-source-1");
 	const source2 = document.getElementById("audio-source-2");
-	source1.src = state.masterUrl;
-	source2.src = state.fallBackUrl;
+	source1.src = playerReducer.masterUrl;
+	source2.src = playerReducer.fallBackUrl;
 	await player.load();
 	if (shallIPlay) {
 		await player.play();
@@ -363,6 +366,20 @@ export async function startPlayer(shallIPlay = true) {
 		},
 	});
 	initMediaSession();
+
+
+	// google analytics integration
+	let userName = 'Floating User',
+		userId = 'floater';
+	if (state.authReducer.isAuthenticated) {
+		userName = state.authReducer.userDetails.name;
+		userId = state.authReducer.userDetails.id
+	}
+	GoogleAnalytics.event({
+		category: 'Play',
+		action: `${playerReducer.songTitle} - ${playerReducer.id}`,
+		label: `by ${userName} - ${userId}`,
+	});
 	return true;
 }
 
