@@ -9,6 +9,7 @@ import {
 	validationResult
 } from "express-validator";
 import paginationMiddleware from "../config/paginationMiddleware";
+import setFindQuery from "../config/setFindQuery";
 import {
 	saveAsserts,
 	deleteAssert
@@ -115,7 +116,7 @@ router.get("/suggest", async (req, res) => {
 				$regex: `${query}`,
 				$options: `i`
 			}
-		}).limit(5);
+		}).limit(5).lean();
 		return res.send({
 			status: true,
 			data: artists,
@@ -187,7 +188,7 @@ router.delete("/:id", isAdmin, canDeleteArtist, async (req, res) => {
 		});
 	} catch (error) {
 		console.error(error.message);
-		res.send({
+		return res.send({
 			status: false,
 			data: error.message,
 		});
@@ -195,34 +196,34 @@ router.delete("/:id", isAdmin, canDeleteArtist, async (req, res) => {
 });
 
 // fetch artist specific albums..
-router.get("/:id/releases", async (req, res) => {
+router.get("/:id/releases", setFindQuery("albumBy", "id"), paginationMiddleware(Album, {}, {
+	_id: true,
+	name: 1,
+	thumbnail: 2,
+	totalSongs: 3,
+	createdAt: 4,
+	albumBy: 4,
+}), async (req, res) => {
 	try {
-		const releasedAlbum = await Album.find({
-			albumBy: req.params.id,
-		}, {
-			_id: true,
-			name: 1,
-			thumbnail: 2,
-			totalSongs: 3,
-			createdAt: 4,
-			albumBy: 4,
-		}).populate("albumBy");
 		setTimeout(async () => {
 			const artist = await Artist.findById(req.params.id);
-			if (typeof artist.popularityCount === "number") {
-				artist.popularityCount += 1;
-			} else {
-				artist.popularityCount = 1;
+			if (artist) {
+				if (typeof artist.popularityCount === "number") {
+					artist.popularityCount += 1;
+				} else {
+					artist.popularityCount = 1;
+				}
+				artist.save();
 			}
-			artist.save();
 		}, 0);
+		if (res.pagnationError) throw new Error(res.pagnationError);
 		return res.send({
 			status: true,
-			data: releasedAlbum,
+			data: res.paginatedResults,
 		});
 	} catch (error) {
 		console.error(error.message);
-		res.send({
+		return res.send({
 			status: false,
 			data: error.message,
 		});
@@ -230,35 +231,33 @@ router.get("/:id/releases", async (req, res) => {
 });
 
 // fetch artist featuring albums..
-router.get("/:id/featuring", async (req, res) => {
+router.get("/:id/featuring", setFindQuery("featuringArtists", "id", "$in"), paginationMiddleware(Album, {}, {
+	_id: true,
+	name: 1,
+	thumbnail: 2,
+	createdAt: 4,
+	totalSongs: 3,
+}), async (req, res) => {
 	try {
-		const featuringAlbum = await Album.find({
-			featuringArtists: {
-				$in: [req.params.id],
-			},
-		}, {
-			_id: true,
-			name: 1,
-			thumbnail: 2,
-			createdAt: 4,
-			totalSongs: 3,
-		});
 		setTimeout(async () => {
 			const artist = await Artist.findById(req.params.id);
-			if (typeof artist.popularityCount === "number") {
-				artist.popularityCount += 1;
-			} else {
-				artist.popularityCount = 1;
+			if (artist) {
+				if (typeof artist.popularityCount === "number") {
+					artist.popularityCount += 1;
+				} else {
+					artist.popularityCount = 1;
+				}
+				artist.save();
 			}
-			artist.save();
 		}, 0);
-		res.send({
+		if (res.pagnationError) throw new Error(res.pagnationError);
+		return res.send({
 			status: true,
-			data: featuringAlbum,
+			data: res.paginatedResults,
 		});
 	} catch (error) {
 		console.error(error.message);
-		res.send({
+		return res.send({
 			status: false,
 			data: error.message,
 		});
