@@ -1,6 +1,16 @@
-import { config } from "../config";
+import {
+	config
+} from "../config";
 import axios from "axios";
-const { S3, Endpoint } = require("aws-sdk");
+const {
+	S3,
+	Endpoint
+} = require("aws-sdk");
+//Image Compression Required Library
+import imagemin from "imagemin";
+import mozjpeg from "imagemin-mozjpeg";
+import sharp from "sharp";
+import isJpg from "is-jpg";
 
 const ACCESS_KEY = config.spacesAPIKey;
 const SECRET_KEY = config.spacesAPISecret;
@@ -11,32 +21,63 @@ const s3 = new S3({
 	secretAccessKey: SECRET_KEY,
 });
 
+//Resize Image and sends as Buffer
+const resizeImage = async (input, width, height) => (sharp(input).resize(width, height)).toBuffer();
+
+//Input Buffer => Output JPEG Buffer
+const convertToJpg = async (input) => {
+	if (isJpg(input)) {
+		return input;
+	}
+	return sharp(input)
+		.jpeg()
+		.toBuffer();
+};
+
 //Uploads to assert to Digital Ocean and updates assert reference
 export const saveAsserts = async (assert, assertId, url, assertModel, property) => {
 	try {
+
+		//Fetches Image as Image Buffer
 		const response = await axios.get(`${url}`, {
 			responseType: "arraybuffer",
 		});
-		const contentType = response.headers["content-type"];
-		const contentLength = response.headers["content-length"];
-		const content = response.data;
+
+		//If ouput is not Image Buffer Throws Error
+		if (!(Buffer.isBuffer(response["data"]))) {
+			throw new Error("Url given can't be converted as Image Buffer");
+		}
+
+		//Resize Image to 300*300
+		const content = await resizeImage(response["data"], 300, 300);
+
+		//Reduces Quality
+		const miniBuffer = await imagemin.buffer(content, {
+			plugins: [convertToJpg, mozjpeg({
+				quality: 70
+			})]
+		});
+
+		//Set Up File Config
 		const fileconfig = {
 			Bucket: "openbeats",
-			Key: `${config.subFolder}/${assert}/${assertId}.${contentType.split("/")[1]}`,
-			ContentType: contentType,
-			ContentLength: contentLength,
+			Key: `${config.subFolder}/${assert}/${assertId}.jpeg`,
 			ACL: "public-read",
-			Body: content,
+			Body: miniBuffer,
 		};
+
+		//Uploads file
 		const uploadandNotify = new Promise((resolve, reject) =>
 			s3.putObject(fileconfig, (err, data) =>
-				err
-					? reject(err)
-					: resolve(
-							`${spacesEndpoint.protocol}//${fileconfig.Bucket}.${spacesEndpoint.host}/${fileconfig.Key}`
-					  )
+				err ?
+				reject(err) :
+				resolve(
+					`${spacesEndpoint.protocol}//${fileconfig.Bucket}.${spacesEndpoint.host}/${fileconfig.Key}`
+				)
 			)
 		);
+
+		//Gets Endpoint of Image Uploaded and updates assert property
 		const endpoint = await uploadandNotify
 			.then(endpoint => endpoint)
 			.catch(err => {
@@ -47,11 +88,14 @@ export const saveAsserts = async (assert, assertId, url, assertModel, property) 
 			update[property] = endpoint;
 			await assertModel.findByIdAndUpdate(assertId, update);
 		}
+
 	} catch (error) {
 		console.error(error);
 	}
 };
 
+
+//To delete assert Images when object is deleted
 export const deleteAssert = async url => {
 	const searchVal = "com/";
 	const fileconfig = {
