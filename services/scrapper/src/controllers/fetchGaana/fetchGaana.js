@@ -4,7 +4,9 @@ import cheerio from "cheerio";
 import axios from "axios";
 import puppeteer from "puppeteer";
 import crypto from "crypto";
-import { config } from "../../config";
+import {
+  config
+} from "../../config";
 
 // holds the ytCat url
 const obsHost = config.isDev ? config.baseurl.dev : config.baseurl.prod;
@@ -16,8 +18,9 @@ const RipperCollection = require("../../models/ripperCollection");
 const checkForExsistingRipperDB = async (hashedAlbumURL) => {
   try {
     // query the database
-    const ripperDoc = await RipperCollection.findOne(
-      { ripId: hashedAlbumURL },
+    const ripperDoc = await RipperCollection.findOne({
+        ripId: hashedAlbumURL
+      },
       (err, doc) => {
         if (err) {
           console.log("Database FindOne error: " + err);
@@ -64,21 +67,24 @@ const processExistingObjDB = async (ripperJobDoc) => {
       case "Processing":
         return {
           status: true,
-          data: ripperJobDoc.ripData,
+            data: ripperJobDoc.ripData,
         };
       case "Error":
         // deleting the document to allow retrying
-        await RipperCollection.deleteOne(
-          { ripId: ripperJobDoc.ripId },
+        await RipperCollection.deleteOne({
+            ripId: ripperJobDoc.ripId
+          },
           (err) => {
             console.log("Error in document deleting");
           }
         );
-        return { status: false };
+        return {
+          status: false
+        };
       case "Completed":
         return {
           status: true,
-          data: ripperJobDoc.ripData,
+            data: ripperJobDoc.ripData,
         };
     }
   } catch (err) {
@@ -114,15 +120,13 @@ const databaseOperations = async (req, res, hashedAlbumURL) => {
       if (existingDbObjRes["status"] === true) {
         res.send({
           status: true,
-          isProcessing:
-            ripperJobExistence.ripProgress === "Processing" ? true : false,
+          isProcessing: ripperJobExistence.ripProgress === "Processing" ? true : false,
           data: existingDbObjRes["data"],
         });
       } else if (existingDbObjRes["status"] === false) {
         res.send({
           status: false,
-          error:
-            "An error has occurred in parsing the playlist. Please contact admin or try again.",
+          error: "An error has occurred in parsing the playlist. Please contact admin or try again.",
         });
       } else {
         res.send({
@@ -167,9 +171,9 @@ const updateRipperJobDB = async (
       // checking if the progress value isn't error
       if (currentDoc.ripProgress !== "Error") {
         // updating the database
-        await RipperCollection.updateOne(
-          { ripId: hashedAlbumURL },
-          {
+        await RipperCollection.updateOne({
+            ripId: hashedAlbumURL
+          }, {
             ripData: ripDataObj,
             ripProgress: !finalPush ? "Processing" : "Completed",
           },
@@ -177,18 +181,20 @@ const updateRipperJobDB = async (
             if (err) console.log("Error while updating data " + err);
             else
               console.log(
-                finalPush
-                  ? "Job complete and database updated!"
-                  : "Database Updated"
+                finalPush ?
+                "Job complete and database updated!" :
+                "Database Updated"
               );
           }
         );
       } else console.log("Error progress detected, not updating database");
     } else {
       // updating the database
-      await RipperCollection.updateOne(
-        { ripId: hashedAlbumURL },
-        { ripProgress: "Error" },
+      await RipperCollection.updateOne({
+          ripId: hashedAlbumURL
+        }, {
+          ripProgress: "Error"
+        },
         (err) => {
           if (err) console.log("Error while updating data " + err);
           else console.log("Error detected and database updated!");
@@ -210,7 +216,9 @@ const getHTMLContent = async (playlistURL, hashedAlbumURL) => {
     // navigate to the playlist page
     const page = await browser.newPage();
     // navigating to playlist page and waiting till the page loads
-    await page.goto(playlistURL, { waitUntil: "networkidle2" });
+    await page.goto(playlistURL, {
+      waitUntil: "networkidle2"
+    });
     // getting html content of the page
     const html = await page.content();
     // close the page
@@ -311,15 +319,19 @@ const getAlbumInfo = async (htmlContent, hashedAlbumURL) => {
     // checking if the albumTitle is still empty (if this is a movie album)
     if (albumTitle.length === 0) albumTitle = $(".album_songheading").text();
 
+    console.error("before", $, hashedAlbumURL)
     // try getting the song list through non-film album method
     let songsLst = await getSongLstNonFilmStructure($, hashedAlbumURL);
+    console.error("before", songsLst)
 
     // checking if the artists have been fetched (if the album is a film album)
     if (songsLst[0]["artist"] === undefined)
       songsLst = await getSongLstFilmStructure($, hashedAlbumURL);
 
     // creating album object
-    const albumObj = { albumTitle: albumTitle };
+    const albumObj = {
+      albumTitle: albumTitle
+    };
     // pushing album songs into albumObj
     albumObj["songsLst"] = songsLst;
     return albumObj;
@@ -430,6 +442,10 @@ exports.fetchGannaSongs = async (req, res, next) => {
     // if response has not already been sent
     if (res.headersSent)
       // sending error response
-      res.send({ status: false, error: err, errorPos: "Main method throw" });
+      res.send({
+        status: false,
+        error: err,
+        errorPos: "Main method throw"
+      });
   }
 };
