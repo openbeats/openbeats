@@ -14,42 +14,44 @@ export default (model, query = {}, options = {}, populateQuery = []) => {
 			const endIndex = page * limit;
 			const data = {};
 
-			endIndex < (await model.countDocuments())
-				? (data.next = {
-						page: page + 1,
-						limit,
-				  })
-				: (data.next = null);
+			endIndex < (await model.countDocuments()) ?
+				(data.next = {
+					page: page + 1,
+					limit,
+				}) :
+				(data.next = null);
 
-			startIndex > 0
-				? (data.previous = {
-						page: page - 1,
-						limit,
-				  })
-				: (data.previous = null);
+			startIndex > 0 ?
+				(data.previous = {
+					page: page - 1,
+					limit,
+				}) :
+				(data.previous = null);
 
 			if (type === "latest") {
 				const sortOrder = {
 					_id: -1,
 				};
-				data.result = await model.find(query, options).sort(sortOrder).populate(populateQuery).limit(limit).skip(startIndex);
+				data.result = await model.find(query, options).sort(sortOrder).populate(populateQuery).limit(limit).skip(startIndex).lean();
 			} else if (type === "popular") {
 				const sortOrder = {
 					popularityCount: -1,
 				};
-				data.result = await model.find(query, options).sort(sortOrder).populate(populateQuery).limit(limit).skip(startIndex);
+				data.result = await model.find(query, options).sort(sortOrder).populate(populateQuery).limit(limit).skip(startIndex).lean();
 			} else {
-				if (req.scopedAlbums) {
-					query = req.scopedAlbums;
+				if (req.findQuery) {
+					query = req.findQuery;
+				} else if (req.scopedAlbums) {
+					query = req.scopedAlbums
 				}
-				data.result = await model.find(query, options).populate(populateQuery).limit(limit).skip(startIndex);
+				data.result = await model.find(query, options).populate(populateQuery).limit(limit).skip(startIndex).lean();
 			}
 			if (!(data.result.length > 0)) data.result = [];
 			res.paginatedResults = data;
-			next();
+			return next();
 		} catch (error) {
 			res.pagnationError = error.message;
-			next();
+			return next();
 		}
 	};
 };

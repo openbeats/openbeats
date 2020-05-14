@@ -6,6 +6,8 @@ import topcharts from "./routes/topcharts";
 import album from "./routes/album";
 import artist from "./routes/artist";
 import searchtag from "./routes/searchtag";
+import emotion from "./routes/emotion";
+import language from "./routes/language";
 
 dbconfig();
 
@@ -20,6 +22,8 @@ app.use("/userplaylist", userPlaylistRoutes);
 app.use("/topcharts", topcharts);
 app.use("/artist", artist);
 app.use("/searchtag", searchtag);
+app.use("/emotion", emotion);
+app.use("/language", language);
 
 app.listen(PORT, () => {
 	console.log(`openbeats playlist service up and running on ${PORT}!`);
