@@ -73,3 +73,7 @@ spec:
             backend:
               serviceName: obs-cron
               servicePort: 2000
+          - path: /scrapper(/|$)(.*)
+            backend:
+              serviceName: obs-cron
+              servicePort: 2000
