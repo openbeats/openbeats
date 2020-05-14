@@ -8,7 +8,7 @@ if (type === "production") {
 }
 export const config = {
   baseurl: {
-    dev: "http://localhost:2004",
+    dev: "http://staging-api.openbeats.live",
     prod: "http://obs-core:2000",
   },
   mongoURI_DEV: mongoURI,
