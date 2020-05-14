@@ -6,6 +6,9 @@ if (type === 'production')
 const variables = {
   baseUrl: baseURL
 }
+const deploymentType = type;
+
 export {
-  variables
+  variables,
+  deploymentType
 }
