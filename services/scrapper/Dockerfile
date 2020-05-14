@@ -20,6 +20,8 @@ COPY . .
 
 RUN npm install --silent
 
+RUN npm install puppeteer
+
 EXPOSE 2000
 
 ENTRYPOINT ["dumb-init", "--"]
