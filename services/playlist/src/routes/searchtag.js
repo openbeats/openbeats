@@ -50,7 +50,7 @@ router.get("/fetch", oneOf([check("tagId").exists(), check("startsWith").exists(
 			startsWith
 		} = req.query;
 		if (tagId) {
-			const searchTag = await SearchTag.findById(tagId);
+			const searchTag = await SearchTag.findById(tagId).lean();
 			if (!searchTag) throw new Error("Search tag not found.");
 			return res.send({
 				status: true,
@@ -63,7 +63,7 @@ router.get("/fetch", oneOf([check("tagId").exists(), check("startsWith").exists(
 					$regex: `${startsWith}`,
 					$options: "i",
 				},
-			}).limit(10);
+			}).limit(5).lean();
 			return res.send({
 				status: true,
 				data: searchTags,
