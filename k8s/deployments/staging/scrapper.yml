@@ -27,7 +27,7 @@ metadata:
 spec:
   type: NodePort
   ports:
-    - port: 2000
+  - port: 2000
   selector:
     type: backend
     service: obs-scrapper
