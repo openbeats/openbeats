@@ -22,4 +22,6 @@ RUN npm install --silent
 
 EXPOSE 2000
 
+ENTRYPOINT ["dumb-init", "--"]
+
 CMD [ "node", "index.js" ]
