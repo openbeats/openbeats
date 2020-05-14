@@ -15,10 +15,14 @@ import thunk from "redux-thunk";
 // import logger from "redux-logger";
 import reducers from "./reducers";
 import GoogleAnalytics from 'react-ga';
+import {
+	deploymentType
+} from "./config";
 
 
 // Google analytics integration
-GoogleAnalytics.initialize('UA-166283761-1');
+const trackingId = deploymentType === "production" ? "UA-166283761-1" : "UA-166283761-2";
+GoogleAnalytics.initialize(trackingId);
 const googleAnalyticsTrackingMiddleware = store => next => action => {
 	if (action.type === '@@router/LOCATION_CHANGE') {
 		const nextPage = `${action.payload.location.pathname}${action.payload.location.search}`;
