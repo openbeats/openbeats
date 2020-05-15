@@ -1,10 +1,17 @@
 import React, { Component } from "react";
 import { Route, Switch } from "react-router";
 import { Auth, Main, Reset, Forgot } from "./components";
-import { Provider } from "react-redux";
+import { Provider, connect } from "react-redux";
 import { store } from "./store";
+import { authActions } from "./actions";
 
 class App extends Component {
+  componentDidMount() {
+    if (this.props.isAuthenticated) {
+      this.props.verifyUserToken();
+    }
+  }
+
   render() {
     return (
       <Provider store={store}>
@@ -18,4 +25,19 @@ class App extends Component {
     );
   }
 }
-export default App;
+
+const mapStateToProps = state => {
+  return {
+    isAuthenticated: state.authReducer.isAuthenticated,
+  };
+};
+
+const mapDispatchToProps = dispatch => {
+  return {
+    verifyUserToken: () => {
+      authActions.verifyUserToken();
+    }
+  };
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(App);

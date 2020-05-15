@@ -6,14 +6,14 @@ import "../assets/css/nopage.css";
 
 function NoPage({ push }) {
 	return (
-		<div className="nopage-center">
+		<div className="nopage-center width-100 height-100 display-flex align-items-center justify-content-center">
 			<img src={NoPageIllustration} alt="" />
-			<span className="error-msg">
+			<span className="error-msg mt-5">
 				<strong>Oops! </strong>Looks like you have been lost in music...
 			</span>
-			<span className="ghost-button-semi-transparent" onClick={push}>
+			<button type="submit" className="native-login-button cursor-pointer ghost-button-semi-transparent mt-5" onClick={() => push()}>
 				Take me Home
-			</span>
+     	   </button>
 		</div>
 	);
 }
