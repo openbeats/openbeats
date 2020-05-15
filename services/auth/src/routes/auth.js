@@ -302,7 +302,6 @@ router.post("/verifytoken", async (req, res) => {
 	try {
 		const xtoken = req.body.token;
 		const decoded = jwt.verify(xtoken, config.jwtSecret);
-		res.send(decoded);
 		if (decoded.user && decoded.user.id && decoded.user.admin) {
 			res.send({
 				status: true,
