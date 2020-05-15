@@ -65,10 +65,10 @@ class Albums extends Component {
 
 	fetchFeaturingHandler = async () => {
 		try {
-			const artistFeaturingFetchUrl = `${variables.baseUrl}/playlist/artist/${this.state.artistId}/featuring`;
+			const artistFeaturingFetchUrl = `${variables.baseUrl}/playlist/artist/${this.state.artistId}/featuring?page=1&limit=1000`;
 			const artistFeaturing = (await axios.get(artistFeaturingFetchUrl)).data;
 			if (artistFeaturing.status) {
-				this.setState({ featuring: artistFeaturing.data });
+				this.setState({ featuring: artistFeaturing.data.result });
 			} else {
 				throw new Error(artistFeaturing.data);
 			}
@@ -80,10 +80,10 @@ class Albums extends Component {
 
 	fetchReleasesHandler = async () => {
 		try {
-			const artistReleasesFetchUrl = `${variables.baseUrl}/playlist/artist/${this.state.artistId}/releases`;
+			const artistReleasesFetchUrl = `${variables.baseUrl}/playlist/artist/${this.state.artistId}/releases?page=1&limit=1000`;
 			const artistReleases = (await axios.get(artistReleasesFetchUrl)).data;
 			if (artistReleases.status) {
-				this.setState({ releases: artistReleases.data });
+				this.setState({ releases: artistReleases.data.result });
 			} else {
 				throw new Error(artistReleases.data);
 			}

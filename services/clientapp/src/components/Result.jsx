@@ -10,29 +10,8 @@ class Result extends Component {
         this.props.setCurrentAction("Search Result");
     }
 
-    getSongsList = () => {
-        return (
-            this.props.songs.map((item, key) => (
-                <Song
-                    key={key}
-                    item={item}
-                    isPlaylist={this.props.isPlaylist}
-                    currentPlaying={this.props.currentPlaying}
-                    isAudioBuffering={this.props.isAudioBuffering}
-                    isMusicPlaying={this.props.isMusicPlaying}
-                    playPauseToggle={this.props.playPauseToggle}
-                    updateCurrentPlaying={this.props.updateCurrentPlaying}
-                    downloadSong={this.downloadSong}
-                    isAuthenticated={this.props.isAuthenticated}
-                    addSongsToQueue={this.props.addSongsToQueue}
-                    showAddPlaylistDialog={this.props.showAddPlaylistDialog}
-                />
-            ))
-        )
-    }
-
     getAlbumsList() {
-        return this.props.albums.map((item, key) => (
+        return this.props.albums.length > 0 ? this.props.albums.map((item, key) => (
             <AlbumHolder
                 key={key}
                 albumName={item.name}
@@ -46,39 +25,52 @@ class Result extends Component {
                 isAuthenticated={this.props.isAuthenticated}
                 isAlbumIsInCollection={this.props.likedPlaylists.indexOf(item._id) === -1 ? false : true}
             />
-        ))
+        )) : <></>
     }
 
     getArtistsList() {
-        return this.props.artists.map((item, key) => (
+        return this.props.artists.length > 0 ? this.props.artists.map((item, key) => (
             <ArtistHolder
                 key={key}
                 name={item.name}
                 thumbnail={item.thumbnail}
                 id={item._id}
             />
-        ))
+        )) : <></>
     }
 
 
     Songs = () => {
-        return this.props.songs.length > 0 && <div className="home-section">
+        return this.props.songs.length > 0 ? <div className="home-section">
             <div className="home-section-header">
                 <div className="left-section" >
                     <i className="fad fa-music-alt"></i>
                     <span className="">Songs</span>
                 </div>
             </div>
-            <div className="home-section-body">
-                <HorizontalView
-                    elementList={this.getSongsList()}
-                />
+            <div className="song-results-wrapper">
+                {this.props.songs.map((item, key) => (
+                    <Song
+                        key={key}
+                        item={item}
+                        isPlaylist={this.props.isPlaylist}
+                        currentPlaying={this.props.currentPlaying}
+                        isAudioBuffering={this.props.isAudioBuffering}
+                        isMusicPlaying={this.props.isMusicPlaying}
+                        playPauseToggle={this.props.playPauseToggle}
+                        updateCurrentPlaying={this.props.updateCurrentPlaying}
+                        downloadSong={this.downloadSong}
+                        isAuthenticated={this.props.isAuthenticated}
+                        addSongsToQueue={this.props.addSongsToQueue}
+                        showAddPlaylistDialog={this.props.showAddPlaylistDialog}
+                    />
+                ))}
             </div>
-        </div>
+        </div> : <></>
     }
 
     Artists = () => {
-        return this.props.artists.length > 0 && <div className="home-section">
+        return this.props.artists.length > 0 ? <div className="home-section">
             <div className="home-section-header">
                 <div className="left-section" >
                     <i className="fad fa-user-music"></i>
@@ -90,11 +82,11 @@ class Result extends Component {
                     elementList={this.getArtistsList()}
                 />
             </div>
-        </div>
+        </div> : <></>
     }
 
     Albums = () => {
-        return this.props.albums.length > 0 && <div className="home-section">
+        return this.props.albums.length > 0 ? <div className="home-section">
             <div className="home-section-header">
                 <div className="left-section" >
                     <i className="fad fa-album"></i>
@@ -106,7 +98,7 @@ class Result extends Component {
                     elementList={this.getAlbumsList()}
                 />
             </div>
-        </div>
+        </div> : <></>
     }
 
     render() {
@@ -114,9 +106,9 @@ class Result extends Component {
             !this.props.isSearching ?
                 this.props.songs.length > 0 || this.props.albums.length > 0 || this.props.artists.length > 0 ?
                     <div className="search-result-container">
-                        <this.Songs />
                         <this.Albums />
                         <this.Artists />
+                        <this.Songs />
                     </div>
                     :
                     <div className="dummy-music-holder">

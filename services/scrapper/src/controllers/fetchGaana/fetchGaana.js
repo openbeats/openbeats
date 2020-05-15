@@ -43,7 +43,7 @@ const createRipperJobDB = async (hashedAlbumURL) => {
     const newRipperJobDoc = {
       ripId: hashedAlbumURL,
       ripProgress: "Processing",
-      ripData: {},
+      ripData: [],
     };
     // creating instance of the model with the new document
     const ripperJob = new RipperCollection(newRipperJobDoc);
@@ -211,6 +211,7 @@ const getHTMLContent = async (playlistURL, hashedAlbumURL) => {
   try {
     // initializing puppeteer instance
     const browser = await puppeteer.launch({
+      headless: true,
       args: ["--no-sandbox", "--disable-setuid-sandbox"],
     });
     // navigate to the playlist page
@@ -221,6 +222,7 @@ const getHTMLContent = async (playlistURL, hashedAlbumURL) => {
     });
     // getting html content of the page
     const html = await page.content();
+    console.log(html, "gotcha")
     // close the page
     browser.close();
     // returning the html content
@@ -319,8 +321,10 @@ const getAlbumInfo = async (htmlContent, hashedAlbumURL) => {
     // checking if the albumTitle is still empty (if this is a movie album)
     if (albumTitle.length === 0) albumTitle = $(".album_songheading").text();
 
+    console.error("before", $, hashedAlbumURL)
     // try getting the song list through non-film album method
     let songsLst = await getSongLstNonFilmStructure($, hashedAlbumURL);
+    console.error("before", songsLst)
 
     // checking if the artists have been fetched (if the album is a film album)
     if (songsLst[0]["artist"] === undefined)
@@ -334,7 +338,7 @@ const getAlbumInfo = async (htmlContent, hashedAlbumURL) => {
     albumObj["songsLst"] = songsLst;
     return albumObj;
   } catch (err) {
-    console.log("Error in getting album info");
+    console.log("Error in getting album info", err);
     // handling errors while also updating database
     await handleErrors(hashedAlbumURL);
   }
