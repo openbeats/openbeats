@@ -22,10 +22,10 @@ class MyPlaylists extends Component {
 
     render() {
         return (
-            <div className="my-playlists-wrapper">
+            this.props.userPlaylistMetaData.length > 0 ? <div className="my-playlists-wrapper">
                 {this.props.userPlaylistMetaData.map((item, key) => (
                     <div className="playlist-panel-wrapper" key={key}>
-                        <div className="playlist-panel-image cursor-pointer" title="Play All songs!" onClick={() => this.props.push(`/playlist/user/${item._id}`)} style={{ backgroundImage: `url(${item.thumbnail ? item.thumbnail : musicDummy})` }}>
+                        <div className="playlist-panel-image cursor-pointer" title="Play All songs!" onClick={() => this.props.push(`/playlist/user/${item._id}`)} style={{ backgroundImage: `url(${item.thumbnail}), url(${musicDummy})` }}>
                             <div className="playlist-total-songs-display">
                                 <img src={playlistSvg} alt="" srcSet="" />
                                 <p>{item.totalSongs}</p>
@@ -77,8 +77,10 @@ class MyPlaylists extends Component {
                             </div>
                         </div>
                     </div>
-                ))}
-            </div>
+                ))
+                }
+            </div> :
+                this.props.userPlaylistMetaData.length === 0 && <div className="height-100 width-100 font-weight-bold d-flex align-items-center justify-content-center text-align-center">You haven't created any playlist yet :( <br /><br /> Create your playlist now !</div>
         )
     }
 }
