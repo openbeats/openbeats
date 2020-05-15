@@ -18,10 +18,12 @@ const router = Router();
 router.post("/create", isAdmin, async (req, res) => {
   try {
     let {
-      name
+      name,
+      thumbnail
     } = req.body;
     const emotion = new Emotion({
       name,
+      thumbnail,
       createdBy: req.user.id
     });
     await emotion.save();
@@ -47,12 +49,14 @@ router.post("/create", isAdmin, async (req, res) => {
 router.put("/:id", isAdmin, async (req, res) => {
   try {
     let {
-      name
+      name,
+      thumbnail
     } = req.body;
     if ([2, 3].includes(req.user.admin.accessLevel)) {
       const emotion = await Emotion.findById(req.params.id);
       if (!emotion) throw new Error("No emotion exist with that Id.");
       emotion.name = name;
+      emotion.thumbnail = thumbnail;
       emotion.updatedBy = req.user.id;
       await emotion.save();
       return res.send({
@@ -87,18 +91,19 @@ router.get("/all", paginationMiddleware(Emotion), async (req, res) => {
   }
 });
 
-router.get("/fetch", oneOf([check("tagId").exists(), check("startsWith").exists()]), async (req, res) => {
+router.get("/fetch", oneOf([check("tagId").exists(), check("startsWith").exists(), check("query").exists()]), async (req, res) => {
   try {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return res.json({
         status: false,
-        data: "Please provide either tagId or startsWith as query params.",
+        data: "Please provide either tagId, startsWith or query as queryparams.",
       });
     }
     const {
       tagId,
-      startsWith
+      startsWith,
+      query,
     } = req.query;
     if (tagId) {
       const emotion = await Emotion.findById(tagId).lean();
@@ -118,6 +123,26 @@ router.get("/fetch", oneOf([check("tagId").exists(), check("startsWith").exists(
       return res.send({
         status: true,
         data: emotions,
+      });
+    }
+    if (query) {
+      const emotion = await Emotion.find({
+        $text: {
+          $search: `${query}`,
+          $caseSensitive: false,
+        },
+      }, {
+        score: {
+          $meta: "textScore",
+        },
+      }).sort({
+        score: {
+          $meta: "textScore"
+        }
+      }).lean();
+      return res.send({
+        status: true,
+        data: emotion,
       });
     }
     return res.send({

@@ -18,10 +18,12 @@ const router = Router();
 router.post("/create", isAdmin, async (req, res) => {
   try {
     let {
-      name
+      name,
+      thumbnail
     } = req.body;
     const language = new Language({
       name,
+      thumbnail,
       createdBy: req.user.id
     });
     await language.save();
@@ -55,6 +57,7 @@ router.put("/:id", isAdmin, async (req, res) => {
         throw new Error("No language exist with that Id.")
       };
       language.name = name;
+      language.thumbnail = thumbnail;
       language.updatedBy = req.user.id;
       await language.save();
       return res.send({
@@ -89,18 +92,19 @@ router.get("/all", paginationMiddleware(Language), async (req, res) => {
   }
 });
 
-router.get("/fetch", oneOf([check("tagId").exists(), check("startsWith").exists()]), async (req, res) => {
+router.get("/fetch", oneOf([check("tagId").exists(), check("startsWith").exists(), check("query").exists()]), async (req, res) => {
   try {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return res.json({
         status: false,
-        data: "Please provide either tagId or startsWith as query params.",
+        data: "Please provide either tagId, startsWith or query as queryparams.",
       });
     }
     const {
       tagId,
-      startsWith
+      startsWith,
+      query,
     } = req.query;
     if (tagId) {
       const language = await Language.findById(tagId).lean();
@@ -122,6 +126,28 @@ router.get("/fetch", oneOf([check("tagId").exists(), check("startsWith").exists(
         data: languages,
       });
     }
+
+    if (query) {
+      const language = await Language.find({
+        $text: {
+          $search: `${query}`,
+          $caseSensitive: false,
+        },
+      }, {
+        score: {
+          $meta: "textScore",
+        },
+      }).sort({
+        score: {
+          $meta: "textScore"
+        }
+      }).lean();
+      return res.send({
+        status: true,
+        data: language,
+      });
+    }
+
     return res.send({
       status: false,
       data: [],
