@@ -211,6 +211,7 @@ const getHTMLContent = async (playlistURL, hashedAlbumURL) => {
   try {
     // initializing puppeteer instance
     const browser = await puppeteer.launch({
+      headless: true,
       args: ["--no-sandbox", "--disable-setuid-sandbox"],
     });
     // navigate to the playlist page
@@ -221,6 +222,7 @@ const getHTMLContent = async (playlistURL, hashedAlbumURL) => {
     });
     // getting html content of the page
     const html = await page.content();
+    console.log(html, "gotcha")
     // close the page
     browser.close();
     // returning the html content
@@ -336,7 +338,7 @@ const getAlbumInfo = async (htmlContent, hashedAlbumURL) => {
     albumObj["songsLst"] = songsLst;
     return albumObj;
   } catch (err) {
-    console.log("Error in getting album info");
+    console.log("Error in getting album info", err);
     // handling errors while also updating database
     await handleErrors(hashedAlbumURL);
   }

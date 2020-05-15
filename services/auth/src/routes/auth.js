@@ -10,6 +10,8 @@ import {
 import bcrypt from "bcryptjs";
 import nodemailer from "nodemailer";
 import crypto from "crypto";
+import jwt from "jsonwebtoken";
+
 
 const router = express.Router();
 
@@ -295,5 +297,26 @@ router.post("/validateresettoken", async (req, res) => {
 		});
 	}
 });
+
+router.post("/verifytoken", async (req, res) => {
+	try {
+		const xtoken = req.body.token;
+		const decoded = jwt.verify(xtoken, config.jwtSecret);
+		if (Object.keys(decoded).includes("user")) {
+			res.send({
+				status: true,
+				data: "valid token"
+			})
+		} else {
+			throw new Error("Invalid token");
+		}
+	} catch (error) {
+		console.log(error);
+		res.send({
+			status: false,
+			data: "invalid token"
+		})
+	}
+})
 
 export default router;
