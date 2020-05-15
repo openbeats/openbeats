@@ -16,17 +16,14 @@
 }
 
 .playlist-display-thumbnail-holder {
-    max-width: 400px;
-    max-height: 300px;
+    width: 450px;
+    height: 250px;
     overflow: hidden;
     box-sizing: border-box;
     margin-top: 20px;
-}
-
-.playlist-display-thumbnail-holder>img {
-    width: 100%;
-    height: 100%;
-    border-radius: 10px;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: cover;
 }
 
 .playlist-display-title-holder {

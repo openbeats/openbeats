@@ -1,7 +1,6 @@
 .result-node {
-    min-width: 18em;
-    min-height: 6em;
     height: 6em;
+    width: 20em;
     margin: 10px;
     display: flex;
     box-sizing: border-box;

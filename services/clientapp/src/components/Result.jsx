@@ -69,10 +69,8 @@ class Result extends Component {
                     <span className="">Songs</span>
                 </div>
             </div>
-            <div className="home-section-body">
-                <HorizontalView
-                    elementList={this.getSongsList()}
-                />
+            <div className="song-results-wrapper">
+                <this.getSongsList />
             </div>
         </div>
     }
@@ -114,9 +112,9 @@ class Result extends Component {
             !this.props.isSearching ?
                 this.props.songs.length > 0 || this.props.albums.length > 0 || this.props.artists.length > 0 ?
                     <div className="search-result-container">
-                        <this.Songs />
                         <this.Albums />
                         <this.Artists />
+                        <this.Songs />
                     </div>
                     :
                     <div className="dummy-music-holder">

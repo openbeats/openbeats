@@ -120,8 +120,7 @@ class PlaylistDisplay extends Component {
                     </div> :
                     <Fragment>
                         <div className="playlist-display-left-section-wrapper">
-                            <div className="playlist-display-thumbnail-holder">
-                                <img src={this.state.playlistThumbnail} alt="" srcSet="" />
+                            <div className="playlist-display-thumbnail-holder" style={{ backgroundImage: `url(${this.state.playlistThumbnail}), url(${musicDummy})` }} >
                             </div>
                             {this.state.type === "user" && this.state.editPlaylistName ?
                                 <form onSubmit={async (e) => {
