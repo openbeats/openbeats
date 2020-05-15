@@ -12,7 +12,7 @@ import {
 	ConnectedRouter,
 } from "connected-react-router";
 import thunk from "redux-thunk";
-// import logger from "redux-logger";
+import logger from "redux-logger";
 import reducers from "./reducers";
 import GoogleAnalytics from 'react-ga';
 import {
@@ -46,7 +46,7 @@ const store = createStore(
 		googleAnalyticsTrackingMiddleware,
 		routerMiddleware(history),
 		thunk,
-		// logger,
+		logger,
 	),
 );
 
