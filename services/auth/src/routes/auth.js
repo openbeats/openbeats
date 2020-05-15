@@ -302,16 +302,15 @@ router.post("/verifytoken", async (req, res) => {
 	try {
 		const xtoken = req.body.token;
 		const decoded = jwt.verify(xtoken, config.jwtSecret);
-		if (Object.keys(decoded).includes("user")) {
+		res.send(decoded);
+		if (decoded.user && decoded.user.id && decoded.user.admin) {
 			res.send({
 				status: true,
 				data: "valid token"
-			})
-		} else {
+			});
+		} else
 			throw new Error("Invalid token");
-		}
 	} catch (error) {
-		console.log(error);
 		res.send({
 			status: false,
 			data: "invalid token"

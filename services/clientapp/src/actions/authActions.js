@@ -217,5 +217,22 @@ export async function validateResetToken(token) {
     console.error(error)
     return false;
   }
+}
 
+export async function verifyUserToken() {
+  const state = await store.getState();
+  try {
+    if (state.authReducer.isAuthenticated) {
+      const {
+        data
+      } = await axios.post(`${variables.baseUrl}/auth/verifytoken`, {
+        token: state.authReducer.userDetails.token
+      });
+      if (data.status) return true;
+      else throw new Error("Invalid Token")
+    } else throw new Error("Invalid Token");
+  } catch (error) {
+    logoutHandler();
+    return false;
+  }
 }
