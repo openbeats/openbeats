@@ -69,8 +69,13 @@ class Result extends Component {
                     <span className="">Songs</span>
                 </div>
             </div>
-            <div className="song-results-wrapper">
+            {/* <div className="song-results-wrapper">
                 <this.getSongsList />
+            </div> */}
+            <div className="home-section-body">
+                <HorizontalView
+                    elementList={this.getSongsList()}
+                />
             </div>
         </div> : <></>
     }
