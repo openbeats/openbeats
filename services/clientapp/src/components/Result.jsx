@@ -12,7 +12,7 @@ class Result extends Component {
 
     getSongsList = () => {
         return (
-            this.props.songs.map((item, key) => (
+            this.props.songs.length > 0 ? this.props.songs.map((item, key) => (
                 <Song
                     key={key}
                     item={item}
@@ -27,12 +27,12 @@ class Result extends Component {
                     addSongsToQueue={this.props.addSongsToQueue}
                     showAddPlaylistDialog={this.props.showAddPlaylistDialog}
                 />
-            ))
+            )) : <></>
         )
     }
 
     getAlbumsList() {
-        return this.props.albums.map((item, key) => (
+        return this.props.albums.length > 0 ? this.props.albums.map((item, key) => (
             <AlbumHolder
                 key={key}
                 albumName={item.name}
@@ -46,23 +46,23 @@ class Result extends Component {
                 isAuthenticated={this.props.isAuthenticated}
                 isAlbumIsInCollection={this.props.likedPlaylists.indexOf(item._id) === -1 ? false : true}
             />
-        ))
+        )) : <></>
     }
 
     getArtistsList() {
-        return this.props.artists.map((item, key) => (
+        return this.props.artists.length > 0 ? this.props.artists.map((item, key) => (
             <ArtistHolder
                 key={key}
                 name={item.name}
                 thumbnail={item.thumbnail}
                 id={item._id}
             />
-        ))
+        )) : <></>
     }
 
 
     Songs = () => {
-        return this.props.songs.length > 0 && <div className="home-section">
+        return this.props.songs.length > 0 ? <div className="home-section">
             <div className="home-section-header">
                 <div className="left-section" >
                     <i className="fad fa-music-alt"></i>
@@ -72,11 +72,11 @@ class Result extends Component {
             <div className="song-results-wrapper">
                 <this.getSongsList />
             </div>
-        </div>
+        </div> : <></>
     }
 
     Artists = () => {
-        return this.props.artists.length > 0 && <div className="home-section">
+        return this.props.artists.length > 0 ? <div className="home-section">
             <div className="home-section-header">
                 <div className="left-section" >
                     <i className="fad fa-user-music"></i>
@@ -88,11 +88,11 @@ class Result extends Component {
                     elementList={this.getArtistsList()}
                 />
             </div>
-        </div>
+        </div> : <></>
     }
 
     Albums = () => {
-        return this.props.albums.length > 0 && <div className="home-section">
+        return this.props.albums.length > 0 ? <div className="home-section">
             <div className="home-section-header">
                 <div className="left-section" >
                     <i className="fad fa-album"></i>
@@ -104,7 +104,7 @@ class Result extends Component {
                     elementList={this.getAlbumsList()}
                 />
             </div>
-        </div>
+        </div> : <></>
     }
 
     render() {
