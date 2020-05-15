@@ -10,27 +10,6 @@ class Result extends Component {
         this.props.setCurrentAction("Search Result");
     }
 
-    getSongsList = () => {
-        return (
-            this.props.songs.length > 0 ? this.props.songs.map((item, key) => (
-                <Song
-                    key={key}
-                    item={item}
-                    isPlaylist={this.props.isPlaylist}
-                    currentPlaying={this.props.currentPlaying}
-                    isAudioBuffering={this.props.isAudioBuffering}
-                    isMusicPlaying={this.props.isMusicPlaying}
-                    playPauseToggle={this.props.playPauseToggle}
-                    updateCurrentPlaying={this.props.updateCurrentPlaying}
-                    downloadSong={this.downloadSong}
-                    isAuthenticated={this.props.isAuthenticated}
-                    addSongsToQueue={this.props.addSongsToQueue}
-                    showAddPlaylistDialog={this.props.showAddPlaylistDialog}
-                />
-            )) : <></>
-        )
-    }
-
     getAlbumsList() {
         return this.props.albums.length > 0 ? this.props.albums.map((item, key) => (
             <AlbumHolder
