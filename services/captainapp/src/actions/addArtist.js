@@ -1,33 +1,11 @@
-import { store } from "../store";
-import { TOGGLE_ADD_ARTIST_DIALOG } from "../types";
 import axios from "axios";
-import { variables } from "../config";
-import { toast } from "react-toastify";
+import {
+	variables
+} from "../config";
+import {
+	toast
+} from "react-toastify";
 
-export const toggleAddArtistDialog = (isOpened, isEdit, artistId, artistName, artistImageUrl) => {
-	let promiseResolve;
-	const promise = new Promise(function (resolve, reject) {
-		promiseResolve = resolve;
-	});
-
-	const callBack = data => {
-		promiseResolve(data);
-	};
-
-	store.dispatch({
-		type: TOGGLE_ADD_ARTIST_DIALOG,
-		payload: {
-			isOpened,
-			isEdit,
-			artistId,
-			artistName,
-			artistImageUrl,
-			addArtistCallBack: callBack,
-		},
-	});
-
-	return promise;
-};
 
 export const addArtistHandler = async (name, url, isEdit, artistId) => {
 	let resultData = null;
