@@ -13,6 +13,7 @@ import {
 import dbconfig from "./config/db";
 import addtorecentlyplayed from "./config/addtorecentlyplayed";
 import Song from "./models/Song";
+import isSafe from "./utils/isSafe";
 //import isSafe from "./utils/isSafe";
 dbconfig();
 
@@ -28,7 +29,7 @@ app.get("/", (req, res) => {
 app.get("/opencc/:id", addtorecentlyplayed, async (req, res) => {
 	try {
 		const videoID = req.params.id;
-		if (!ytdl.validateID(videoID)) throw new Error("INvalid id");
+		if (!ytdl.validateID(videoID)) throw new Error("Invalid id");
 		const isAvail = new Promise((resolve, reject) => {
 			redis.get(videoID, (err, value) => {
 				if (err) {
@@ -39,27 +40,33 @@ app.get("/opencc/:id", addtorecentlyplayed, async (req, res) => {
 		});
 		let sourceUrl = await isAvail;
 		if (!sourceUrl) {
-			const info = await (await fetch(`${config.lambda}${videoID}`)).json();
-			if (!info.formats) {
-				throw new Error("Cannot fetch the requested song...");
+			let info = await (await fetch(`${config.lambda}${videoID}`)).json();
+
+			//checks if there is url property in info object if not calls azure function
+			if (!(isSafe(() => info.formats[0].url))) {
+				info = await (await fetch(`${config.azureFunction}${videoID}`)).json();
+				if (!(isSafe(() => info.formats[0].url))) {
+					throw new Error("Cannot fetch the requested song...");
+				}
 			}
+
 			let audioFormats = ytdl.filterFormats(info.formats, "audioonly");
 			if (!audioFormats[0].contentLength) {
 				audioFormats = ytdl.filterFormats(info.formats, "audioandvideo");
 			}
-			if (audioFormats.length > 0 && audioFormats[0].url && audioFormats[0].url !== undefined)
+			if (audioFormats.length > 0 && audioFormats[0].url && audioFormats[0].url !== undefined) {
 				sourceUrl = audioFormats[0].url;
-			else {
+				redis.set(videoID, sourceUrl, err => {
+					if (err) console.error(err);
+					else {
+						redis.expire(videoID, 20000, err => {
+							if (err) console.error(err);
+						});
+					}
+				});
+			} else {
 				throw new Error("Cannot fetch the requested song...");
 			}
-			redis.set(videoID, sourceUrl, err => {
-				if (err) console.error(err);
-				else {
-					redis.expire(videoID, 20000, err => {
-						if (err) console.error(err);
-					});
-				}
-			});
 		}
 		setTimeout(() => {
 			addSongInDeAttachedMode(videoID, req.song);
@@ -91,7 +98,12 @@ app.get("/ytcat", async (req, res) => {
 			data.albums = albums["data"];
 			const artists = await (await fetch(baseUrl + `/artist/fetch?query=${req.query.q}`)).json();
 			data.artists = artists["data"];
+			const languages = await (await fetch(baseUrl + `/language/fetch?query=${req.query.q}`)).json();
+			data.languages = languages["data"];
+			const emotions = await (await fetch(baseUrl + `/emotion/fetch?query=${req.query.q}`)).json();
+			data.emotions = emotions["data"];
 			data.songs = await ytcat(req.query.q, fr);
+
 			return res.send({
 				status: true,
 				data,
@@ -108,7 +120,9 @@ app.get("/ytcat", async (req, res) => {
 				data: {
 					albums: [],
 					artists: [],
-					songs: []
+					songs: [],
+					languages: [],
+					emotions: [],
 				},
 			});
 		} else {
