@@ -1,46 +1,46 @@
 import React, { Component } from "react";
 import "../assets/styles/artistadddialog.css";
 import { connect } from "react-redux";
-import { addArtistActions } from "../actions";
+import { addArtistActions, toggleResourceDialog } from "../actions";
 
-class ArtistAddDialog extends Component {
+class ResourceAddDialog extends Component {
 	constructor(props) {
 		super(props);
 		this.state = {
 			isEdit: this.props.isEdit,
-			artistId: this.props.artistId || "",
-			artistName: this.props.addArtistInitName || "",
-			artistImageUrl: this.props.artistInitImageUrl || "",
-			fallbackArtistImageUrl: "https://openbeats.live/static/media/dummy_music_holder.a3d0de2e.jpg",
+			resourceType: this.props.resourceType,
+			resourceId: this.props.resourceId || "",
+			resourceName: this.props.resourceName || "",
+			resourceImageUrl: this.props.resourceImageUrl || "",
 		};
 	}
 	checkURL = e => {
-		this.setState({ artistImageUrl: e.target.value });
+		this.setState({ resourceImageUrl: e.target.value });
 	};
 
 	saveActionHandler = async () => {
 		const addArtistResult = await this.props.addArtistHandler(
-			this.state.artistName,
-			this.state.artistImageUrl,
+			this.state.resourceName,
+			this.state.resourceImageUrl,
 			this.state.isEdit,
-			this.state.artistId
+			this.state.resourceId
 		);
 		if (addArtistResult) {
-			if (this.props.addArtistCallBack) this.props.addArtistCallBack(addArtistResult);
-			this.props.toggleAddArtistDialog(false);
+			if (this.props.resourceCreateCallBack) this.props.resourceCreateCallBack(addArtistResult);
+			this.props.toggleResourceDialog(false);
 		}
 	};
 
 	cancelActionHandler = () => {
-		if (this.props.addArtistCallBack) this.props.addArtistCallBack({ status: false, data: "cancelled" });
-		this.props.toggleAddArtistDialog(false);
+		if (this.props.resourceCreateCallBack) this.props.resourceCreateCallBack({ status: false, data: "cancelled" });
+		this.props.toggleResourceDialog(false);
 	};
 
 	componentWillUnmount() {
 		this.setState({
-			artistName: "",
-			artistImageUrl: "",
-			artistId: "",
+			resourceName: "",
+			resourceImageUrl: "",
+			resourceId: "",
 		});
 	}
 
@@ -107,18 +107,19 @@ class ArtistAddDialog extends Component {
 
 const mapStateToProps = state => {
 	return {
-		isEdit: state.addArtist.isEdit,
-		artistId: state.addArtist.artistId,
-		addArtistInitName: state.addArtist.artistName,
-		artistInitImageUrl: state.addArtist.artistImageUrl,
-		addArtistCallBack: state.addArtist.addArtistCallBack,
+		isEdit: state.addResource.isEdit,
+		resourceType: state.addResource.resourceType,
+		resourceId: state.addResource.resourceId,
+		resourceName: state.addResource.resourceName,
+		resourceImageUrl: state.addResource.resourceImageUrl,
+		resourceCreateCallBack: state.addResource.resourceCreateCallBack,
 	};
 };
 
 const mapDispatchToProps = dispatch => {
 	return {
-		toggleAddArtistDialog: value => {
-			addArtistActions.toggleAddArtistDialog(value);
+		toggleResourceDialog: value => {
+			toggleResourceDialog.toggleResorceDialog({ isOpened: value });
 		},
 		addArtistHandler: (name, url, isEdit, artistId) => {
 			return addArtistActions.addArtistHandler(name, url, isEdit, artistId);
@@ -126,4 +127,4 @@ const mapDispatchToProps = dispatch => {
 	};
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(ArtistAddDialog);
+export default connect(mapStateToProps, mapDispatchToProps)(ResourceAddDialog);

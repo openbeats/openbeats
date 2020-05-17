@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { LeftNav, Albums, Artists, Users, AlbumsDash, ArtistAddDialog } from ".";
+import { LeftNav, Albums, Artists, Users, AlbumsDash, ResourceAddDialog } from ".";
 import { Switch, Route } from "react-router";
 import Home from "./Home";
 import "../assets/styles/main.css";
@@ -18,7 +18,7 @@ class Main extends Component {
 						<Route path="/artists" component={Artists} />
 						{[2, 3].includes(this.props.adminDetails.accessLevel) && <Route path="/userbase" component={Users} />}
 					</Switch>
-					{this.props.isAddArtistOpended && <ArtistAddDialog />}
+					{this.props.isAddArtistOpended && <ResourceAddDialog />}
 				</div>
 			</div>
 		);
@@ -27,7 +27,7 @@ class Main extends Component {
 
 const mapStateToProps = state => {
 	return {
-		isAddArtistOpended: state.addArtist.isOpened,
+		isAddArtistOpended: state.addResource.isOpened,
 		adminDetails: state.auth.adminDetails,
 	};
 };
