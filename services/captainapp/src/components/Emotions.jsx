@@ -9,30 +9,30 @@ import { push } from "connected-react-router";
 import { toast } from "react-toastify";
 import Loader from "react-loader-spinner";
 
-class Artists extends Component {
+class Emotions extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      artistsCollection: [],
+      emotionsCollection: [],
       isLoading: true,
     };
   }
 
   componentDidMount() {
-    this.props.setCurrentNavItem("artists");
-    this.fetchArtists();
+    this.props.setCurrentNavItem("emotions");
+    this.fetchEmotions();
   }
 
-  async createArtist() {
+  async createEmotion(e) {
     try {
       const payload = {
         isOpened: true,
-        resourceType: "Artist",
+        resourceType: "Emotion",
       };
       const data = await this.props.toggleResourceDialog(payload);
       if (data["status"]) {
-        await this.fetchArtists();
-        toast.success("Artist Created Successfully!");
+        await this.fetchEmotions();
+        toast.success("Emotion Created Successfully!");
       } else {
         toast.error(data["data"]);
       }
@@ -42,14 +42,14 @@ class Artists extends Component {
     }
   }
 
-  async fetchArtists() {
+  async fetchEmotions() {
     try {
-      const artistFetchUrl = `${variables.baseUrl}/playlist/artist/all?page=1&limit=1000`;
-      const resultData = (await axios.get(artistFetchUrl)).data;
+      const emotionFetchUrl = `${variables.baseUrl}/playlist/emotion/all?page=1&limit=1000`;
+      const resultData = (await axios.get(emotionFetchUrl)).data;
       if (resultData.status) {
-        this.setState({ artistsCollection: resultData.data.result });
+        this.setState({ emotionsCollection: resultData.data.result });
       } else {
-        this.setState({ artistsCollection: [] });
+        this.setState({ emotionsCollection: [] });
       }
       this.setState({ isLoading: false });
     } catch (error) {
@@ -61,23 +61,23 @@ class Artists extends Component {
     return [2, 3].includes(this.props.adminDetails.accessLevel) || createdBy === this.props.adminDetails.id;
   }
 
-  async editArtist(index) {
+  async editEmotion(index) {
     try {
-      const editArtistId = this.state.artistsCollection[index]._id;
-      const artistName = this.state.artistsCollection[index].name;
-      const artistUrl = this.state.artistsCollection[index].thumbnail;
+      const editEmotionId = this.state.emotionsCollection[index]._id;
+      const emotionName = this.state.emotionsCollection[index].name;
+      const emotionUrl = this.state.emotionsCollection[index].thumbnail;
       const payload = {
         isOpened: true,
         isEdit: true,
-        resourceType: "Artist",
-        resourceId: editArtistId,
-        resourceName: artistName,
-        resourceImageUrl: artistUrl,
+        resourceType: "Emotion",
+        resourceId: editEmotionId,
+        resourceName: emotionName,
+        resourceImageUrl: emotionUrl,
       };
       const data = await this.props.toggleResourceDialog(payload);
       if (data["status"]) {
-        await this.fetchArtists();
-        toast.success("Artist Updated Successfully!");
+        await this.fetchEmotions();
+        toast.success("Emotion Updated Successfully!");
       } else {
         toast.error(data["data"]);
       }
@@ -89,14 +89,15 @@ class Artists extends Component {
   deletePermission() {
     return [2, 3].includes(this.props.adminDetails.accessLevel);
   }
-  async deleteArtist(index) {
+
+  async deleteEmotion(index) {
     try {
-      const deleteArtistId = this.state.artistsCollection[index]._id;
-      const deleteArtistUrl = `${variables.baseUrl}/playlist/artist/${deleteArtistId}`;
-      const resultData = (await axios.delete(deleteArtistUrl)).data;
+      const deleteEmotionId = this.state.emotionsCollection[index]._id;
+      const deleteEmotionUrl = `${variables.baseUrl}/playlist/emotion/${deleteEmotionId}`;
+      const resultData = (await axios.delete(deleteEmotionUrl)).data;
       if (resultData.status) {
-        await this.fetchArtists();
-        toast.success("Artist Deleted Successfully!");
+        await this.fetchEmotions();
+        toast.success("Emotion Deleted Successfully!");
       } else toast.error(resultData.data.toString());
     } catch (error) {
       toast.error(error.toString());
@@ -108,10 +109,10 @@ class Artists extends Component {
       <div className="albums-wrapper">
         <div className="albums-header">
           <div className="album-indicator d-flex align-items-center font-weight-bold base-color h5-responsive">
-            <i className="fas fa-angle-right mr-1 right-angel"></i>Artists
+            <i className="fas fa-angle-right mr-1 right-angel"></i>Emotions
 					</div>
-          <div className="create-album-link font-weight-bold cursor-pointer text-white" onClick={e => this.createArtist()}>
-            <i className="far fa-plus mr-1"></i>&nbsp;Add Artist
+          <div className="create-album-link font-weight-bold cursor-pointer text-white" onClick={e => this.createEmotion(e)}>
+            <i className="far fa-plus mr-1"></i>&nbsp;Add Emotion
 					</div>
         </div>
         {this.state.isLoading ? (
@@ -121,24 +122,24 @@ class Artists extends Component {
         ) : (
             <Fragment>
               <div className="albums-container">
-                {this.state.artistsCollection.map((item, key) => (
+                {this.state.emotionsCollection.map((item, key) => (
                   <div className="album-holder" style={{ backgroundImage: `url(${item.thumbnail})` }} key={key}>
                     {this.editPermission(item.createdBy) ? (
-                      <div className="album-btn-rounded album-edit-button cursor-pointer" onClick={e => this.editArtist(key)}>
+                      <div className="album-btn-rounded album-edit-button cursor-pointer" onClick={e => this.editEmotion(key)}>
                         <i className="fas fa-pencil-alt"></i>
                       </div>
                     ) : (
                         <a
                           className="album-btn-rounded album-view-button cursor-pointer"
                           title={`View on ${variables.clientUrl}`}
-                          href={`${variables.clientUrl}/artist/${item._id}/all`}
+                          href={`${variables.clientUrl}/emotion/${item._id}`}
                           target="_blank"
                           rel="noopener noreferrer">
                           <i className="fas fa-eye"></i>
                         </a>
                       )}
                     {this.deletePermission() && (
-                      <div className="album-btn-rounded album-delete-button cursor-pointer" onClick={e => this.deleteArtist(key)}>
+                      <div className="album-btn-rounded album-delete-button cursor-pointer" onClick={e => this.deleteEmotion(key)}>
                         <i className="far fa-trash-alt"></i>
                       </div>
                     )}
@@ -147,7 +148,7 @@ class Artists extends Component {
                     </div>
                   </div>
                 ))}
-                {this.state.artistsCollection.length === 0 && (
+                {this.state.emotionsCollection.length === 0 && (
                   <div className="font-weight-bold h5-responsive w-100 h-100 d-flex align-items-center text-dark justify-content-center">
                     No Albums found in the Server!
                   </div>
@@ -181,4 +182,4 @@ const mapDispatchToProps = dispatch => {
   };
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(Artists);
+export default connect(mapStateToProps, mapDispatchToProps)(Emotions);

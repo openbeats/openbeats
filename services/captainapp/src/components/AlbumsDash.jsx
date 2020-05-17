@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import "../assets/styles/albumsdash.css";
 import { ChipsInput, SongSearcher, SongsBucket } from ".";
 import { connect } from "react-redux";
-import { addSearchTagActions, hangingPlayerActions, toggleResourceDialog } from "../actions";
+import { addSearchTagActions, hangingPlayerActions, toggleResource } from "../actions";
 import { store } from "../store";
 import { push } from "connected-react-router";
 import { variables } from "../config";
@@ -27,6 +27,7 @@ class AlbumsDash extends Component {
 			languageChipsCollection: [],
 			emotionChipsCollection: [],
 			isUpdate: false,
+			isCustom: false,
 			updateAlbumId: null,
 		};
 	}
@@ -43,8 +44,13 @@ class AlbumsDash extends Component {
 					albumName: albumData.data.name,
 					artistChipsCollection: albumData.data.featuringArtists,
 					searchChipsCollection: albumData.data.searchTags,
+					languageChipsCollection: albumData.data.languageArr,
+					emotionChipsCollection: albumData.data.emotion,
 					artistChips: albumData.data.featuringArtists.map(item => item._id),
 					searchChips: albumData.data.searchTags.map(item => item._id),
+					languageChips: albumData.data.languageArr.map(item => item._id),
+					emotionChips: albumData.data.emotion.map(item => item._id),
+					isCustom: albumData.data.isCustom,
 				};
 				if (albumData.data.albumBy !== null) {
 					prepareData.artistChipsCollection = [...prepareData.artistChipsCollection, albumData.data.albumBy];
@@ -69,13 +75,14 @@ class AlbumsDash extends Component {
 			const preparedData = {
 				name: this.state.albumName,
 				searchTags: this.state.searchChips,
-				searchVals: this.state.searchChipsCollection.map(item => item.searchVal),
+				searchVals: [...this.state.searchChipsCollection.map(item => item.searchVal), ...this.state.languageChipsCollection.map(item => item.name), ...this.state.emotionChipsCollection.map(item => item.name)],
 				featuringArtists: this.state.artistChips.length === 1 ? [] : this.state.artistChips.filter(artistId => artistId !== this.state.albumBy),
+				language: this.state.languageChips,
+				emotion: this.state.emotionChips,
 				albumBy: this.state.artistChips.length === 1 ? this.state.artistChips[0] : this.state.albumBy,
 				songs: this.state.songsCollection,
+				isCustom: this.state.isCustom,
 			};
-			console.log(JSON.stringify(preparedData));
-
 			if (!this.state.isUpdate) {
 				const resultData = (await axios.post(`${variables.baseUrl}/playlist/album/create`, preparedData)).data;
 				if (resultData.status) {
@@ -182,6 +189,11 @@ class AlbumsDash extends Component {
 		await this.props.toggleHangingPlayer(true);
 	};
 
+	isCustomHandler = (e) => {
+		const isCustom = !(this.state.isCustom);
+		this.setState({ isCustom });
+	}
+
 	render() {
 		return (
 			<div className="albumsdash-wrapper">
@@ -253,7 +265,7 @@ class AlbumsDash extends Component {
 								</div>
 								<div className="artist-tags-title-desc">(Please add Emotions related to this album)</div>
 								<ChipsInput
-									chipTitle={"Search Tag"}
+									chipTitle={"Emotion"}
 									setChipsCallback={this.setEmotionChips}
 									suggestionFetchUrl={`${variables.baseUrl}/playlist/emotion/fetch?startsWith=`}
 									suggestionNameField={"name"}
@@ -285,7 +297,8 @@ class AlbumsDash extends Component {
 									<div className="artist-tags-title-desc">(Toggle if this album is Custom made)</div>
 								</div>
 								<label className="switch">
-									<input type="checkbox" />
+									<input type="checkbox" checked={this.state.isCustom}
+										onChange={this.isCustomHandler} />
 									<span className="slider round"></span>
 								</label>
 							</div>
@@ -328,13 +341,10 @@ const mapDispatchToProps = dispatch => {
 		toggleResourceDialog: (resourceName, resourceType) => {
 			const payload = {
 				isOpened: true,
-				isEdit: false,
 				resourceType,
-				resourceId: null,
 				resourceName,
-				resourceImageUrl: "",
 			};
-			return toggleResourceDialog(payload);
+			return toggleResource.toggleResorceDialog(payload);
 		},
 		addSearchTagHandler: searchVal => {
 			return addSearchTagActions.addSearchTagHandler(searchVal);
