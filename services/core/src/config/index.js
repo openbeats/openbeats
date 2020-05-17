@@ -22,6 +22,7 @@ export const config = {
 		prod: "obs-redis",
 	},
 	lambda: "https://orvpax9d6b.execute-api.ap-south-1.amazonaws.com/default/obs-core?vid=",
+	azureFunction: "https://obs-ytdl.azurewebsites.net/api/ytdl?vid=",
 	port: {
 		dev: 2004,
 		prod: 2000,
