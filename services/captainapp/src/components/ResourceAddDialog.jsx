@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import "../assets/styles/artistadddialog.css";
 import { connect } from "react-redux";
-import { addArtistActions, toggleResourceDialog } from "../actions";
+import { addResourceActions, toggleResource } from "../actions";
 
 class ResourceAddDialog extends Component {
 	constructor(props) {
@@ -19,14 +19,15 @@ class ResourceAddDialog extends Component {
 	};
 
 	saveActionHandler = async () => {
-		const addArtistResult = await this.props.addArtistHandler(
+		const addResourceResult = await this.props.addResourceHandler(
+			this.state.resourceType,
+			this.state.resourceId,
 			this.state.resourceName,
 			this.state.resourceImageUrl,
 			this.state.isEdit,
-			this.state.resourceId
 		);
-		if (addArtistResult) {
-			if (this.props.resourceCreateCallBack) this.props.resourceCreateCallBack(addArtistResult);
+		if (addResourceResult) {
+			if (this.props.resourceCreateCallBack) this.props.resourceCreateCallBack(addResourceResult);
 			this.props.toggleResourceDialog(false);
 		}
 	};
@@ -51,7 +52,7 @@ class ResourceAddDialog extends Component {
 					<div className="artist-add-dialog-header">
 						<div className="artist-add-dialog-header-left-items">
 							<i className="fas fa-angle-right mr-1 right-angel mr-2"></i>
-							<span>Add Artist</span>
+							<span>Add {this.state.resourceType}</span>
 						</div>
 						<div className="artist-add-dialog-header-right-items">
 							<div className="d-flex">
@@ -67,24 +68,24 @@ class ResourceAddDialog extends Component {
 					<div className="artist-add-dialog-content-holder">
 						<div className="artist-add-dialog-input-container">
 							<div className="artist-name-input d-flex flex-column align-items-center justify-content-center mb-4">
-								<div className="font-weight-bold mb-2 add-artist-input-title">Artist Name</div>
+								<div className="font-weight-bold mb-2 add-artist-input-title">{this.state.resourceType} Name</div>
 								<input
 									className="input input-sm rounded artist-name-input"
 									required
-									value={this.state.artistName}
-									onChange={e => this.setState({ artistName: e.target.value })}
-									placeholder="Anirudh Ravichandar"
+									value={this.state.resourceName}
+									onChange={e => this.setState({ resourceName: e.target.value })}
+									placeholder={`Enter ${this.state.resourceType.toLowerCase()} name here`}
 									type="text"
 								/>
 							</div>
 							<div className="artist-name-input d-flex flex-column align-items-center justify-content-center mt-4">
-								<div className="font-weight-bold mb-2 add-artist-input-title">Artist Image Url</div>
+								<div className="font-weight-bold mb-2 add-artist-input-title">{this.state.resourceType} Image Url</div>
 								<input
 									className="input input-sm rounded artist-name-input"
 									required
-									value={this.state.artistImageUrl}
+									value={this.state.resourceImageUrl}
 									onChange={e => this.checkURL(e)}
-									placeholder="https://imageurl.com/image.jpg"
+									placeholder={`Enter thumbnail image url here`}
 									type="text"
 								/>
 							</div>
@@ -93,7 +94,7 @@ class ResourceAddDialog extends Component {
 							<div
 								className="add-artist-image-display-panel"
 								style={{
-									backgroundImage: `url(${this.state.artistImageUrl}), url(${this.state.fallbackArtistImageUrl})`,
+									backgroundImage: `url(${this.state.resourceImageUrl}), url(${`https://via.placeholder.com/500/F3F3F3/000000/?text=${this.state.resourceType}+image+appears+here...`})`,
 								}}>
 								{" "}
 							</div>
@@ -119,10 +120,19 @@ const mapStateToProps = state => {
 const mapDispatchToProps = dispatch => {
 	return {
 		toggleResourceDialog: value => {
-			toggleResourceDialog.toggleResorceDialog({ isOpened: value });
+			const payload = {
+				isOpened: value,
+				isEdit: false,
+				resourceType: null,
+				resourceId: null,
+				resourceName: "",
+				resourceImageUrl: "",
+				resourceCreateCallBack: null
+			};
+			toggleResource.toggleResorceDialog(payload);
 		},
-		addArtistHandler: (name, url, isEdit, artistId) => {
-			return addArtistActions.addArtistHandler(name, url, isEdit, artistId);
+		addResourceHandler: (resourceType, resourceId, resourceName, resourceImageUrl, isEdit) => {
+			return addResourceActions.addResourceHandler(resourceType, resourceId, resourceName, resourceImageUrl, isEdit);
 		},
 	};
 };
