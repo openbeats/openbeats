@@ -50,7 +50,7 @@ class LeftNav extends Component {
 	}
 
 	closeLeftNavMenu = e => {
-		if (!this.leftNavRef.contains(e.target)) {
+		if (!this.leftNavRef?.contains(e.target)) {
 			this.setState({ openMobileLeftNav: false });
 			document.removeEventListener("click", this.closeLeftNavMenu);
 		}
@@ -106,6 +106,32 @@ class LeftNav extends Component {
 						<div className={`content ${this.props.currentNavItem === "artists" ? "item-active" : ""}`}>
 							<i className="fas fa-user-music"></i>
 							<span>Artists</span>
+						</div>
+					</Link>
+					<Link
+						to="/languages"
+						onClick={() => {
+							this.props.setCurrentNavItem("languages");
+							this.toggleMobileLeftNav();
+						}}
+						className={`leftnav-item`}
+						title="Add, Update and delete languages">
+						<div className={`content ${this.props.currentNavItem === "languages" ? "item-active" : ""}`}>
+							<i className="fas fa-language"></i>
+							<span>Languages</span>
+						</div>
+					</Link>
+					<Link
+						to="/emotions"
+						onClick={() => {
+							this.props.setCurrentNavItem("emotions");
+							this.toggleMobileLeftNav();
+						}}
+						className={`leftnav-item`}
+						title="Add, Update and delete emotions">
+						<div className={`content ${this.props.currentNavItem === "emotions" ? "item-active" : ""}`}>
+							<i className="fas fa-star"></i>
+							<span>Emotions</span>
 						</div>
 					</Link>
 					{[2, 3].includes(this.props.adminDetails.accessLevel) &&

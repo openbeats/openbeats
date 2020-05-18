@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import "../assets/styles/albumsdash.css";
 import { ChipsInput, SongSearcher, SongsBucket } from ".";
 import { connect } from "react-redux";
-import { addArtistActions, addSearchTagActions, hangingPlayerActions } from "../actions";
+import { addSearchTagActions, hangingPlayerActions, toggleResource } from "../actions";
 import { store } from "../store";
 import { push } from "connected-react-router";
 import { variables } from "../config";
@@ -19,10 +19,15 @@ class AlbumsDash extends Component {
 			albumName: "",
 			artistChips: [],
 			searchChips: [],
+			languageChips: [],
+			emotionChips: [],
 			songsCollection: [],
 			artistChipsCollection: [],
 			searchChipsCollection: [],
+			languageChipsCollection: [],
+			emotionChipsCollection: [],
 			isUpdate: false,
+			isCustom: false,
 			updateAlbumId: null,
 		};
 	}
@@ -39,8 +44,13 @@ class AlbumsDash extends Component {
 					albumName: albumData.data.name,
 					artistChipsCollection: albumData.data.featuringArtists,
 					searchChipsCollection: albumData.data.searchTags,
+					languageChipsCollection: albumData.data.languageArr,
+					emotionChipsCollection: albumData.data.emotion,
 					artistChips: albumData.data.featuringArtists.map(item => item._id),
 					searchChips: albumData.data.searchTags.map(item => item._id),
+					languageChips: albumData.data.languageArr.map(item => item._id),
+					emotionChips: albumData.data.emotion.map(item => item._id),
+					isCustom: albumData.data.isCustom,
 				};
 				if (albumData.data.albumBy !== null) {
 					prepareData.artistChipsCollection = [...prepareData.artistChipsCollection, albumData.data.albumBy];
@@ -65,13 +75,14 @@ class AlbumsDash extends Component {
 			const preparedData = {
 				name: this.state.albumName,
 				searchTags: this.state.searchChips,
-				searchVals: this.state.searchChipsCollection.map(item => item.searchVal),
+				searchVals: [...this.state.searchChipsCollection.map(item => item.searchVal), ...this.state.languageChipsCollection.map(item => item.name), ...this.state.emotionChipsCollection.map(item => item.name)],
 				featuringArtists: this.state.artistChips.length === 1 ? [] : this.state.artistChips.filter(artistId => artistId !== this.state.albumBy),
+				language: this.state.languageChips,
+				emotion: this.state.emotionChips,
 				albumBy: this.state.artistChips.length === 1 ? this.state.artistChips[0] : this.state.albumBy,
 				songs: this.state.songsCollection,
+				isCustom: this.state.isCustom,
 			};
-			console.log(JSON.stringify(preparedData));
-
 			if (!this.state.isUpdate) {
 				const resultData = (await axios.post(`${variables.baseUrl}/playlist/album/create`, preparedData)).data;
 				if (resultData.status) {
@@ -111,8 +122,18 @@ class AlbumsDash extends Component {
 		this.setState({ searchChipsCollection: chips, searchChips: chipsId });
 	};
 
+	setLanguageChips = chips => {
+		const chipsId = chips.map(item => item._id);
+		this.setState({ languageChipsCollection: chips, languageChips: chipsId });
+	}
+
+	setEmotionChips = chips => {
+		const chipsId = chips.map(item => item._id);
+		this.setState({ emotionChipsCollection: chips, emotionChips: chipsId });
+	}
+
 	createNewArtist = async artistStringName => {
-		const data = await this.props.toggleAddArtistDialog(artistStringName);
+		const data = await this.props.toggleResourceDialog(artistStringName, "Artist");
 		return data;
 	};
 
@@ -120,6 +141,16 @@ class AlbumsDash extends Component {
 		const data = await this.props.addSearchTagHandler(searchString);
 		return data;
 	};
+
+	createNewLanguage = async language => {
+		const data = await this.props.toggleResourceDialog(language, "Language");
+		return data;
+	}
+
+	createNewEmotion = async emotion => {
+		const data = await this.props.toggleResourceDialog(emotion, "Emotion");
+		return data;
+	}
 
 	albumsDashCancelHandler = () => {
 		this.props.pushPath("/albums");
@@ -158,6 +189,11 @@ class AlbumsDash extends Component {
 		await this.props.toggleHangingPlayer(true);
 	};
 
+	isCustomHandler = (e) => {
+		const isCustom = !(this.state.isCustom);
+		this.setState({ isCustom });
+	}
+
 	render() {
 		return (
 			<div className="albumsdash-wrapper">
@@ -194,8 +230,8 @@ class AlbumsDash extends Component {
 								<div className="artist-tags-title font-weight-bold">
 									Artist Tags<span className="text-danger">*</span>
 								</div>
-								<div className="artist-tags-title-desc">(Tap on the crown badge, if you want this album to comes under specific artist's releases.
-								By default if only one artist tag is selected, album will be in that artist's releases.)</div>
+								<div className="artist-tags-title-desc">(Tap on the crown badge, if you want this album to comes under specific artist's releases,
+								by default if only one artist tag is selected, album will be in that artist's releases)</div>
 								<ChipsInput
 									chipTitle={"Artist"}
 									albumBy={this.state.albumBy}
@@ -206,6 +242,36 @@ class AlbumsDash extends Component {
 									createNewChipCallback={this.createNewArtist}
 									placeholder={"Search Artist Here..."}
 									chipCollection={this.state.artistChipsCollection}
+								/>
+							</div>
+							<div className="albumdash-artist-tags-holder mt-2">
+								<div className="artist-tags-title font-weight-bold">
+									Languages
+								</div>
+								<div className="artist-tags-title-desc">(Please add Languages related to this album)</div>
+								<ChipsInput
+									chipTitle={"Language"}
+									setChipsCallback={this.setLanguageChips}
+									suggestionFetchUrl={`${variables.baseUrl}/playlist/language/fetch?startsWith=`}
+									suggestionNameField={"name"}
+									createNewChipCallback={this.createNewLanguage}
+									placeholder={"Search Languages Here..."}
+									chipCollection={this.state.languageChipsCollection}
+								/>
+							</div>
+							<div className="albumdash-artist-tags-holder mt-2">
+								<div className="artist-tags-title font-weight-bold">
+									Emotions
+								</div>
+								<div className="artist-tags-title-desc">(Please add Emotions related to this album)</div>
+								<ChipsInput
+									chipTitle={"Emotion"}
+									setChipsCallback={this.setEmotionChips}
+									suggestionFetchUrl={`${variables.baseUrl}/playlist/emotion/fetch?startsWith=`}
+									suggestionNameField={"name"}
+									createNewChipCallback={this.createNewEmotion}
+									placeholder={"Search Emotions Here..."}
+									chipCollection={this.state.emotionChipsCollection}
 								/>
 							</div>
 							<div className="albumdash-artist-tags-holder mt-2">
@@ -222,6 +288,19 @@ class AlbumsDash extends Component {
 									placeholder={"Search Search Tags Here..."}
 									chipCollection={this.state.searchChipsCollection}
 								/>
+							</div>
+							<div className="albumdash-artist-tags-holder mt-2 display-flex">
+								<div>
+									<div className="artist-tags-title font-weight-bold">
+										Custom Album
+								</div>
+									<div className="artist-tags-title-desc">(Toggle if this album is Custom made)</div>
+								</div>
+								<label className="switch">
+									<input type="checkbox" checked={this.state.isCustom}
+										onChange={this.isCustomHandler} />
+									<span className="slider round"></span>
+								</label>
 							</div>
 						</div>
 					</div>
@@ -259,8 +338,13 @@ const mapDispatchToProps = dispatch => {
 		pushPath: path => {
 			store.dispatch(push(path));
 		},
-		toggleAddArtistDialog: artistName => {
-			return addArtistActions.toggleAddArtistDialog(true, false, null, artistName, null);
+		toggleResourceDialog: (resourceName, resourceType) => {
+			const payload = {
+				isOpened: true,
+				resourceType,
+				resourceName,
+			};
+			return toggleResource.toggleResorceDialog(payload);
 		},
 		addSearchTagHandler: searchVal => {
 			return addSearchTagActions.addSearchTagHandler(searchVal);
