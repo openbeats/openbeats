@@ -454,9 +454,9 @@ export async function playerDownloadHandler(e) {
 		});
 	} else {
 		if (await playlistManipulatorActions.downloadSongHandler({
-				videoId: state.id,
-				title: state.songTitle
-			})) {
+			videoId: state.id,
+			title: state.songTitle
+		})) {
 			store.dispatch({
 				type: "PLAYER_DOWNLOAD_HANDLE",
 				payload: {
