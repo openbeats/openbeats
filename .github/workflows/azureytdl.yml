@@ -1,8 +1,8 @@
-name: Build Docker Image And Push
+name: Azure function ytdl build and push
 
 on:
   push:
-    branches: 
+    branches:
       - production
       - staging
     paths:
@@ -10,13 +10,13 @@ on:
 
   pull_request:
     types: [closed]
-    branches: 
+    branches:
       - production
       - staging
     paths:
       - serverless/ytdl-azure-function/**
 
-env: 
+env:
   SERVICE_PATH: serverless/ytdl-azure-function
 
 jobs:
