@@ -1,4 +1,4 @@
-name: Azure function ytdl build and push
+name: ytdl-azure
 
 on:
   push:
