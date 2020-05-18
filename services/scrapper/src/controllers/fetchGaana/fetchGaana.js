@@ -1,12 +1,10 @@
 // importing required packages
-import axios from "axios";
-import crypto from "crypto";
-import {
-  config
-} from "../../config";
+const cheerio = require("cheerio");
+const axios = require("axios");
+const crypto = require("crypto");
 
 // holds the ytCat url
-const obsHost = config.isDev ? config.baseurl.dev : config.baseurl.prod;
+const obsHost = "https://staging-api.openbeats.live";
 
 // importing required models
 const RipperCollection = require("../../models/ripperCollection");
@@ -104,7 +102,7 @@ const databaseOperations = async (req, res, hashedAlbumURL) => {
         res.send({
           status: true,
           isProcessing: true,
-          data: {},
+          data: [],
         });
         return true;
       } else {
@@ -157,7 +155,7 @@ const updateRipperJobDB = async (
       // creating object to update the ripData in database with
       const ripDataObj = {
         albumTitle: albumObj["albumTitle"],
-        audioTitlesInGaana: albumObj["songsList"].length,
+        audioTitlesInGaana: albumObj["songsLst"].length,
         audioObjsFetched: ytCatObjs.length,
         data: ytCatObjs,
       };
@@ -199,7 +197,7 @@ const updateRipperJobDB = async (
       );
     }
   } catch (err) {
-    console.log("Error in updating database " + err);
+    console.log("Error in updating database");
   }
 };
 
@@ -208,7 +206,6 @@ const getHTMLContent = async (playlistURL, hashedAlbumURL) => {
   try {
     // initializing puppeteer instance
     const browser = await puppeteer.launch({
-      headless: true,
       args: ["--no-sandbox", "--disable-setuid-sandbox"],
     });
     // navigate to the playlist page
@@ -219,13 +216,12 @@ const getHTMLContent = async (playlistURL, hashedAlbumURL) => {
     });
     // getting html content of the page
     const html = await page.content();
-    console.log(html, "gotcha")
     // close the page
     browser.close();
     // returning the html content
     return html;
   } catch (err) {
-    console.log("Puppeteer Error " + err);
+    console.log("Puppeteer Error");
     // handling errors while also updating database
     await handleErrors(hashedAlbumURL);
   }
@@ -307,48 +303,33 @@ const getSongLstFilmStructure = async ($, hashedAlbumURL) => {
 };
 
 // gets the audio song titles from the html document and album title
-const getAlbumInfo = async (playlistURL, hashedAlbumURL) => {
+const getAlbumInfo = async (htmlContent, hashedAlbumURL) => {
   try {
-    // // loading html content into cheerio
-    // const $ = cheerio.load(htmlContent);
-    // // fetching the album title
-    // let albumTitle = $("._d_tp_det").find("h1").text();
-    // // checking if albumTitle returned empty (if this is a trending list)
-    // if (albumTitle.length === 0) albumTitle = $(".trendingtitle").text();
-    // // checking if the albumTitle is still empty (if this is a movie album)
-    // if (albumTitle.length === 0) albumTitle = $(".album_songheading").text();
+    // loading html content into cheerio
+    const $ = cheerio.load(htmlContent);
+    // fetching the album title
+    let albumTitle = $("._d_tp_det").find("h1").text();
+    // checking if albumTitle returned empty (if this is a trending list)
+    if (albumTitle.length === 0) albumTitle = $(".trendingtitle").text();
+    // checking if the albumTitle is still empty (if this is a movie album)
+    if (albumTitle.length === 0) albumTitle = $(".album_songheading").text();
 
-    // console.error("before", $, hashedAlbumURL)
-    // // try getting the song list through non-film album method
-    // let songsLst = await getSongLstNonFilmStructure($, hashedAlbumURL);
-    // console.error("before", songsLst)
+    // try getting the song list through non-film album method
+    let songsLst = await getSongLstNonFilmStructure($, hashedAlbumURL);
 
-    // // checking if the artists have been fetched (if the album is a film album)
-    // if (songsLst[0]["artist"] === undefined)
-    //   songsLst = await getSongLstFilmStructure($, hashedAlbumURL);
+    // checking if the artists have been fetched (if the album is a film album)
+    if (songsLst[0]["artist"] === undefined)
+      songsLst = await getSongLstFilmStructure($, hashedAlbumURL);
 
-    // // creating album object
-    // const albumObj = {
-    //   albumTitle: albumTitle
-    // };
-    // // pushing album songs into albumObj
-    // albumObj["songsLst"] = songsLst;
-
-    // fetch the albumObj from the scrapper
-    const responseObj = await axios.get("https://0e0cb008.ngrok.io/fetchsongs/gaana?playlisturl=" + playlistURL);
-    console.log(responseObj.data);
-    if (responseObj.data["status"] === true) {
-      // setting album obj
-      const albumObj = responseObj.data["playlistInformation"];
-      return albumObj;
-    } else {
-      // handling errors while also updating database
-      await handleErrors(hashedAlbumURL);
-      return null;
-    }
-
+    // creating album object
+    const albumObj = {
+      albumTitle: albumTitle
+    };
+    // pushing album songs into albumObj
+    albumObj["songsLst"] = songsLst;
+    return albumObj;
   } catch (err) {
-    console.log("Error in getting album info", err);
+    console.log("Error in getting album info");
     // handling errors while also updating database
     await handleErrors(hashedAlbumURL);
   }
@@ -357,22 +338,15 @@ const getAlbumInfo = async (playlistURL, hashedAlbumURL) => {
 // gets the ytCat objects for all songs
 const getYTCatObjs = async (hashedAlbumURL, albumObj) => {
   // get the songLst from the albumObj
-  const songLst = albumObj["songsList"];
+  const songLst = albumObj["songsLst"];
   // holds the list of YTCatObjects
-  const ytCatObjs = {};
+  const ytCatObjs = [];
   // iterating through each audioTitle
   for (const song of songLst) {
-    // counter for loop
-    let retryCounter = -1;
     // run till error is returned or the value is fetched
     while (true) {
-      // incrementing counter variable
-      retryCounter += 1;
-      // check if retry count has crossed threshold
-      if (retryCounter === 10) break;
-
-      // console.log(song);
-      // console.log("GETTING " + song["title"]);
+      console.log(song);
+      console.log("GETTING " + song["title"]);
       try {
         // setting up URL to ping
         let ytcatUrl =
@@ -382,14 +356,14 @@ const getYTCatObjs = async (hashedAlbumURL, albumObj) => {
           " " +
           song["artist"] +
           " lyrics&fr=true";
-        // console.log(ytcatUrl);
+        console.log(ytcatUrl);
         // sending ytCat request
         let ytCatResponse = await axios.get(ytcatUrl);
         // cheking for response status
         if (ytCatResponse.status === 200) {
           // checking if data is returned
           if (ytCatResponse.data["data"].length > 0) {
-            // console.log("GOT", "\n");
+            console.log("GOT", "\n");
             // pushing data into list
             ytCatObjs.push(ytCatResponse.data["data"][0]);
             // sending object to add song to database
@@ -417,7 +391,7 @@ const getYTCatObjs = async (hashedAlbumURL, albumObj) => {
 // function to call to update the database as error and end the application
 const handleErrors = async (hashedAlbumURL) => {
   // updating database
-  await updateRipperJobDB(null, null, hashedAlbumURL, false);
+  await updateRipperJobDB(null, null, hashedAlbumURL);
 };
 // fetches the gaana song list
 exports.fetchGannaSongs = async (req, res, next) => {
@@ -425,7 +399,7 @@ exports.fetchGannaSongs = async (req, res, next) => {
     // hashing the fetched album url
     const hashedAlbumURL = crypto
       .createHash("md5")
-      .update(req.body["playlistUrl"])
+      .update(req.body["playlistURL"])
       .digest("hex");
     // initiating database operations
     const databaseOperationsRes = await databaseOperations(
@@ -436,19 +410,14 @@ exports.fetchGannaSongs = async (req, res, next) => {
 
     // checking if the job is new and processing has to start
     if (databaseOperationsRes) {
-      // getting the playlist url
-      const playlistURL = req.body["playlistUrl"];
-      // // getting html content from the playlist url
-      // const htmlContent = await getHTMLContent(playlistURL, hashedAlbumURL);
+      // getting html content from the playlist url
+      const htmlContent = req.body["htmlContent"];
       // getting the list of audio titles and album title
-      const albumObj = await getAlbumInfo(playlistURL, hashedAlbumURL);
-      if (albumObj != null) {
-        //  gets the ytCat objects for all songs
-        const ytCatObjs = await getYTCatObjs(hashedAlbumURL, albumObj);
-        //updates the database POST job completion
-        await updateRipperJobDB(albumObj, ytCatObjs, hashedAlbumURL, true);
-      }
-
+      const albumObj = await getAlbumInfo(htmlContent, hashedAlbumURL);
+      //  gets the ytCat objects for all songs
+      const ytCatObjs = await getYTCatObjs(hashedAlbumURL, albumObj);
+      //updates the database POST job completion
+      await updateRipperJobDB(albumObj, ytCatObjs, hashedAlbumURL, true);
     }
   } catch (err) {
     console.log("Main method error: " + err);
