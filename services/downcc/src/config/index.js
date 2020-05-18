@@ -13,6 +13,7 @@ export const config = {
     jwtSecret: "WeAreAwesome",
     saltRound: 10,
     lambda: "https://orvpax9d6b.execute-api.ap-south-1.amazonaws.com/default/obs-core?vid=",
+    azureFunction: "https://obs-ytdl.azurewebsites.net/api/ytdl?vid=",
     redis: {
         prod: "obs-redis",
         dev: "localhost"
