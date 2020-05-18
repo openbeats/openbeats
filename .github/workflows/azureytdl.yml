@@ -20,7 +20,7 @@ env:
   SERVICE_PATH: serverless/ytdl-azure-function
 
 jobs:
-  deploy:
+  production:
     runs-on: ubuntu-latest
     steps:
       - name: Check out code
