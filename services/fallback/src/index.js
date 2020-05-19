@@ -7,7 +7,7 @@ import redis from "./config/redis";
 import {
 	config
 } from "./config";
-//import isSafe from "./utils/isSafe";
+import isSafe from "./utils/isSafe";
 // import dbconfig from "./config/db";
 // dbconfig();
 

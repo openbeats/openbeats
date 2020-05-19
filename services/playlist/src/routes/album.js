@@ -298,7 +298,7 @@ router.get("/:id", async (req, res) => {
 	try {
 		let album = null;
 		if (req.query.edit === "true") {
-			album = await Album.findById(req.params.id).populate("searchTags").populate("featuringArtists").populate("albumBy").populate("songsList");
+			album = await Album.findById(req.params.id).populate(["searchTags", "featuringArtists", "albumBy", "songsList", "languageArr", "emotion"]);
 		} else {
 			album = await Album.findById(req.params.id).populate("songsList");
 		}
