@@ -17,20 +17,14 @@ const checkForExsistingRipperDB = async (hashedAlbumURL) => {
   try {
     // query the database
     const ripperDoc = await RipperCollection.findOne({
-        ripId: hashedAlbumURL
-      },
-      (err, doc) => {
-        if (err) {
-          console.log("Database FindOne error: " + err);
-          return null;
-        } else return doc;
-      }
-    );
+      ripId: hashedAlbumURL
+    });
 
     // returning the result
     return ripperDoc;
   } catch (err) {
     console.log("Error in checkForExsistingRipperDB " + err);
+    return null;
   }
 };
 
@@ -41,7 +35,7 @@ const createRipperJobDB = async (hashedAlbumURL) => {
     const newRipperJobDoc = {
       ripId: hashedAlbumURL,
       ripProgress: "Processing",
-      ripData: [],
+      ripData: {},
     };
     // creating instance of the model with the new document
     const ripperJob = new RipperCollection(newRipperJobDoc);
@@ -72,8 +66,10 @@ const processExistingObjDB = async (ripperJobDoc) => {
         await RipperCollection.deleteOne({
             ripId: ripperJobDoc.ripId
           },
-          (err) => {
-            console.log("Error in document deleting " + err);
+          (err, doc) => {
+            if (err)
+              console.log("Error in document deleting " + err);
+
           }
         );
         return {
@@ -105,7 +101,7 @@ const databaseOperations = async (req, res, hashedAlbumURL) => {
         res.send({
           status: true,
           isProcessing: true,
-          data: [],
+          data: {},
         });
         return true;
       } else {
@@ -327,8 +323,8 @@ const getYTCatObjs = async (hashedAlbumURL, albumObj) => {
   for (const song of songLst) {
     // run till error is returned or the value is fetched
     while (true) {
-      console.log(song);
-      console.log("GETTING " + song["title"]);
+      // console.log(song);
+      // console.log("GETTING " + song["title"]);
       try {
         // setting up URL to ping
         let ytcatUrl =
@@ -338,14 +334,14 @@ const getYTCatObjs = async (hashedAlbumURL, albumObj) => {
           " " +
           song["artist"] +
           " lyrics&fr=true";
-        console.log(ytcatUrl);
+        // console.log(ytcatUrl);
         // sending ytCat request
         let ytCatResponse = await axios.get(ytcatUrl);
         // cheking for response status
         if (ytCatResponse.status === 200) {
           // checking if data is returned
           if (ytCatResponse.data["data"].length > 0) {
-            console.log("GOT", "\n");
+            // console.log("GOT", "\n");
             // pushing artists into list
             albumArtists.push(song["artist"]);
             // pushing titles into list
@@ -360,17 +356,16 @@ const getYTCatObjs = async (hashedAlbumURL, albumObj) => {
               // sending object to add song to database
               await updateRipperJobDB(albumObj, ytCatObjs, hashedAlbumURL, albumArtists, albumTitles, false);
             }
-
             break;
           } else {
-            console.log("Returned NULL... Retrying");
+            // console.log("Returned NULL... Retrying");
           }
         } else {
           await handleErrors(hashedAlbumURL);
           break;
         }
       } catch (err) {
-        console.log(song["title"] + " " + err);
+        // console.log(song["title"] + " " + err);
         await handleErrors(hashedAlbumURL);
         break;
       }
