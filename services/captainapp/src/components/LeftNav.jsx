@@ -135,7 +135,7 @@ class LeftNav extends Component {
 						</div>
 					</Link>
 					{[2, 3].includes(this.props.adminDetails.accessLevel) &&
-						<Link to="userbase" onClick={() => {
+						<Link to="/userbase" onClick={() => {
 							this.props.setCurrentNavItem("userbase");
 							this.toggleMobileLeftNav();
 						}} className={`leftnav-item`} title="View users">

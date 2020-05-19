@@ -14,7 +14,7 @@
     height: 100%;
     display: flex;
     align-items: center;
-    justify-content: center;
+    justify-content: space-around;
 }
 
 .song-searcher-header-input {
@@ -40,6 +40,17 @@
     color: gray;
 }
 
+.gaana {
+    width: auto;
+    height: 35px;
+    background: rgba(0, 0, 0, 0.5);
+    color: white;
+    font-size: 12px;
+    border-radius: 20px;
+    padding: 5px;
+    text-align: center;
+    box-shadow: 0 0 10px 0 gray;
+}
 
 
 .song-searcher-search-icon-holder {
@@ -167,6 +178,7 @@
     font-size: inherit;
     margin-left: 10px;
 }
+
 
 
 @media only screen and (max-width: 1000px) {
