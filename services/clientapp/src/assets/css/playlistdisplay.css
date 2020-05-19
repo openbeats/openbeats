@@ -107,7 +107,8 @@
 .playlist-display-right-section-wrapper {
     width: 60%;
     padding: 10px;
-    height: 100%;
+    height: auto;
+    padding-bottom: 200px;
 }
 
 .playlist-display-songs-holder {
