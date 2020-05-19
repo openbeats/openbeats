@@ -23,7 +23,7 @@ const checkForExsistingRipperDB = async (hashedAlbumURL) => {
     // returning the result
     return ripperDoc;
   } catch (err) {
-    console.log("Error in checkForExsistingRipperDB " + err);
+    console.error("Error in checkForExsistingRipperDB " + err);
     return null;
   }
 };
@@ -44,7 +44,7 @@ const createRipperJobDB = async (hashedAlbumURL) => {
     // returning confirmation
     return true;
   } catch (err) {
-    console.log("Error in createRipperJobDB " + err);
+    console.error("Error in createRipperJobDB " + err);
     return false;
   }
 };
@@ -68,7 +68,7 @@ const processExistingObjDB = async (ripperJobDoc) => {
           },
           (err, doc) => {
             if (err)
-              console.log("Error in document deleting " + err);
+              console.error("Error in document deleting " + err);
 
           }
         );
@@ -82,7 +82,7 @@ const processExistingObjDB = async (ripperJobDoc) => {
         };
     }
   } catch (err) {
-    console.log("Error in processExistingObjDb " + err);
+    console.error("Error in processExistingObjDb " + err);
   }
 };
 
@@ -132,7 +132,7 @@ const databaseOperations = async (req, res, hashedAlbumURL) => {
       return false;
     }
   } catch (err) {
-    console.log("Error in databaseOperations " + err);
+    console.error("Error in databaseOperations " + err);
     res.send({
       status: false,
       error: "Database Operations initialization function error",
@@ -174,12 +174,12 @@ const updateRipperJobDB = async (
           },
           (err) => {
             if (err) console.log("Error while updating data " + err);
-            else
-              console.log(
-                finalPush ?
-                "Job complete and database updated!" :
-                "Database Updated"
-              );
+            // else
+            //   console.error(
+            //     finalPush ?
+            //     "Job complete and database updated!" :
+            //     "Database Updated"
+            //   );
           }
         );
       } else console.log("Error progress detected, not updating database");
@@ -197,7 +197,7 @@ const updateRipperJobDB = async (
       );
     }
   } catch (err) {
-    console.log("Error in updating database");
+    console.error("Error in updating database");
   }
 };
 
@@ -226,7 +226,7 @@ const getSongLstNonFilmStructure = async ($, hashedAlbumURL) => {
     // returning songLst
     return songsLst;
   } catch (err) {
-    console.log("Error in getSongLstNonFilmStructure" + err);
+    console.error("Error in getSongLstNonFilmStructure" + err);
     // handling errors while also updating database
     await handleErrors(hashedAlbumURL);
   }
@@ -270,7 +270,7 @@ const getSongLstFilmStructure = async ($, hashedAlbumURL) => {
     // returning the song lst
     return songsLst;
   } catch (err) {
-    console.log("Error in getSongLstFilmStructure" + err);
+    console.error("Error in getSongLstFilmStructure" + err);
     // handling errors while also updating database
     await handleErrors(hashedAlbumURL);
   }
@@ -303,7 +303,7 @@ const getAlbumInfo = async (htmlContent, hashedAlbumURL) => {
     albumObj["songsLst"] = songsLst;
     return albumObj;
   } catch (err) {
-    console.log("Error in getting album info");
+    console.error("Error in getting album info");
     // handling errors while also updating database
     await handleErrors(hashedAlbumURL);
   }
@@ -408,14 +408,14 @@ exports.fetchGannaSongs = async (req, res, next) => {
         // //updates the database POST job completion
         // await updateRipperJobDB(albumObj, ytCatObjs, hashedAlbumURL, true);
       } else {
-        console.log("No Html data recieved");
+        console.error("No Html data recieved");
         // handling errors while also updating the database
         handleErrors(hashedAlbumURL);
       }
 
     }
   } catch (err) {
-    console.log("Main method error: " + err);
+    console.error("Main method error: " + err);
     // handling errors while also updating the database
     handleErrors(hashedAlbumURL);
     // if response has not already been sent
