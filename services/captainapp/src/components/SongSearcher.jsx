@@ -153,6 +153,10 @@ export default class SongSearcher extends Component {
 							})}
 						</div>
 					</div>
+					<div className="gaana">
+						Gaana {" "}
+						<i className="fa fa-download"></i>
+					</div>
 				</div>
 				<div className="song-searcher-body">
 					{this.state.songsCollection.length === 0 && (
