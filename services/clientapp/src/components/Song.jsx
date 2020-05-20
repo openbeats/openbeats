@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import "../assets/css/song.css";
 import { playerpause, playerplay, playerdownload, pQueueRed, playlistadd } from '../assets/images';
 import Loader from 'react-loader-spinner';
-import { toastActions, playlistManipulatorActions } from '../actions';
+import { toastActions, playlistManipulatorActions, nowPlayingActions, playerActions } from '../actions';
 import { connect } from 'react-redux';
 
 class Song extends Component {
@@ -16,7 +16,7 @@ class Song extends Component {
 
     render() {
         return (
-            <div className={`result-node ${!this.props.isPlaylist && this.props.currentPlaying && this.props.currentPlaying.videoId === this.props.item.videoId ? "highlight-active-result" : ""}`}>
+            <div className={`result-node ${this.props.currentPlaying && this.props.currentPlaying.videoId === this.props.item.videoId ? "highlight-active-result" : ""}`}>
                 <div className="result-node-thumb">
                     <img src={this.props.item.thumbnail} alt="" />
                 </div>
@@ -29,7 +29,7 @@ class Song extends Component {
                             {this.props.item.duration}
                         </div>
                         <div className="result-node-actions">
-                            {!this.props.isPlaylist && this.props.currentPlaying && this.props.currentPlaying.videoId === this.props.item.videoId ?
+                            {this.props.currentPlaying && this.props.currentPlaying.videoId === this.props.item.videoId ?
                                 !this.props.isAudioBuffering ?
                                     this.props.isMusicPlaying ?
                                         <img onClick={async (e) => {
@@ -48,7 +48,7 @@ class Song extends Component {
                                     />
                                 :
                                 <img onClick={async (e) => {
-                                    await this.props.updateCurrentPlaying(this.props.item)
+                                    await this.props.updateCurrentPlaying(this.props.item, this.props.index)
                                 }} className="action-image-size play-icon-result cursor-pointer" src={playerplay} alt="" />
                             }
 
@@ -83,6 +83,12 @@ class Song extends Component {
                                     this.props.showAddPlaylistDialog(this.props.item)
                                 }
                             } className="action-image-size cursor-pointer" title="Add to playlist" src={playlistadd} alt="" />
+                            {this.props.deleteSongFromUserPlaylist &&
+                                <i
+                                    title="Delete this song from this playlist!"
+                                    className="action-image-size cursor-pointer fas fa-trash-alt playlist-display-songs-icon"
+                                    onClick={() => this.props.deleteSongFromUserPlaylist(this.props.item)}></i>
+                            }
                         </div>
                     </div>
                 </div>
@@ -97,6 +103,10 @@ const mapStateToProps = state => {
         userPlaylistMetaData: state.playlistManipulatorReducer.userPlaylistMetaData,
         userDetails: state.authReducer.userDetails,
         activeNavMenu: state.coreReducer.currentActionTitle,
+        isAudioBuffering: state.playerReducer.isAudioBuffering,
+        currentPlaying: state.nowPlayingReducer.currentPlaying,
+        isPlaylist: state.nowPlayingReducer.isPlaylist,
+        isMusicPlaying: state.playerReducer.isMusicPlaying,
     };
 };
 
@@ -110,7 +120,16 @@ const mapDispatchToProps = dispatch => {
         },
         downloadSongHandler: async (item) => {
             return await playlistManipulatorActions.downloadSongHandler(item);
-        }
+        },
+        showAddPlaylistDialog: (song) => {
+            playlistManipulatorActions.showAddPlaylistDialog(song)
+        },
+        addSongsToQueue: (song) => {
+            nowPlayingActions.addSongsToQueue([song]);
+        },
+        playPauseToggle: () => {
+            dispatch(playerActions.playPauseToggle())
+        },
     };
 };
 
