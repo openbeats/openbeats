@@ -100,7 +100,7 @@ const initiateScrappingSequence = async (htmlContent, playlistUrlType, hashedPla
   }
   else {
     // deleting the currently created databse object
-    await RipperCollection.deleteOne({ ripId: hashedPlaylistUrl });
+    await RipperCollection.updateOne({ ripId: hashedPlaylistUrl }, { ripProgress: "Completed", ripData: "Already exists with another url" });
     sendResponse("The playlist already exists in database. Please contact database admin to resolve issue.", 0);
     logConsole("It already Exists in database", false);
   }
