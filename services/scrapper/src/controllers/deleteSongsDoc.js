@@ -2,10 +2,10 @@
 import crypto from "crypto";
 
 // importing required models
-const RipperCollection = require("../../models/ripperCollection");
+const RipperCollection = require("../models/ripperCollection");
 
 // deletes the requested gaana collection doc from database
-module.exports.deleteGaanaDoc = async (req, res, next) => {
+exports.deleteSongsDoc = async (req, res) => {
   // computing the required hash
   const hashedAlbumURL = crypto
     .createHash("md5")
@@ -14,8 +14,8 @@ module.exports.deleteGaanaDoc = async (req, res, next) => {
 
   // deleting the required document
   await RipperCollection.findOneAndRemove({
-      ripId: hashedAlbumURL
-    },
+    ripId: hashedAlbumURL
+  },
     (err, doc) => {
       if (err) {
         console.log("Error in deleting document " + err);

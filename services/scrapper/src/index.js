@@ -1,7 +1,7 @@
 import middleware from "./config/middleware";
 import express from "express";
 import dbconfig from "./config/db";
-import fetchSongs from "./routes/fetchsongs";
+import fetchSongs from "./routes/fetchSongsRoute";
 
 dbconfig();
 
@@ -11,7 +11,7 @@ const app = express();
 
 middleware(app);
 
-app.use("/gaana", fetchSongs);
+app.use("/fetchsongs", fetchSongs);
 
 app.listen(PORT, () => {
   console.log(`openbeats scrapping service up and running on ${PORT}!`);
