@@ -74,7 +74,13 @@ const initiateScrappingSequence = async (htmlContent, playlistUrlType, hashedPla
 
   // iterating through each song to fetch its ytcat object
   for (const songItem of playlistInformation.songList) {
+
     logConsole(songItem, false);
+
+    // fetching ytCatObject
+    let tempYtCatObj = await fetchYTCatObjs(songItem);
+
+    
   }
 };
 
@@ -172,15 +178,39 @@ const getGaanaSongListInFilmStructure = async ($) => {
 
 // function to fetch ytcat objects for the songs scrapped
 const fetchYTCatObjs = async (songItem) => {
-  // counter for loop
+  // counter for number of times to retry fetching ytcat object
   let retryCounter = -1;
 
   while (true) {
     retryCounter += 1;
+
     if (retryCounter === 10) break;
 
+    // setting up URL to ping
+    let ytcatUrl =
+      obsHost +
+      "/ytcat?q=" +
+      songItem["title"].replace(/[^\w\s-]/gi, "") +
+      " " +
+      songItem["artist"] +
+      " lyrics&fr=true";
 
+    // sending ytCat request
+    let ytCatResponse = await axios.get(ytcatUrl);
+
+    // cheking for response status
+    if (ytCatResponse.status === 200) {
+
+      // checking if data is returned
+      if (ytCatResponse.data["data"].length > 0)
+        return ytCatResponse.data["data"][0];
+      else
+        logConsole("Returned NULL. Retrying", false);
+    } else
+      break;
   }
+  // default return
+  return null;
 };
 
 
