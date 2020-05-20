@@ -33,6 +33,12 @@ const sendResponse = (responseBody, responseType) => {
           message: responseBody
         });
         break;
+      case 1:
+        globalRes.send({
+          status: true,
+          data: responseBody
+        });
+        break;
       default:
         break;
     }
@@ -51,6 +57,119 @@ const filterPlaylistUrl = (playlistUrl) => {
   else
     return null;
 };
+
+// initiates scrapping sequence based on streaming service
+const initiateScrappingSequence = async (htmlContent, playlistUrlType, hashedPlaylistUrl) => {
+  // holds the playlist information post-scrapping
+  let playlistInformation;
+  if (playlistUrlType === "gaana") {
+    logConsole("Initiated scrapping gaana playlist structure");
+    // scraps playlist content in gaana structure
+    playlistInformation = await scrapGaanaPlaylist(htmlContent);
+    
+    
+
+  }
+};
+
+// scraps playlist content in gaana structure
+const scrapGaanaPlaylist = async (htmlContent) => {
+  // loading html content into cheerio
+  const $ = cheerio.load(htmlContent);
+  // fetching the album title
+  let albumTitle = $("._d_tp_det").find("h1").text();
+  // checking if albumTitle returned empty (if this is a trending list)
+  if (albumTitle.length === 0) albumTitle = $(".trendingtitle").text();
+  // checking if the albumTitle is still empty (if this is a movie album)
+  if (albumTitle.length === 0) albumTitle = $(".album_songheading").text();
+
+  // try getting the song list through non-film album method
+  let songsLst = await getGaanaSongListInNonFilmStructure($);
+
+  // checking if the artists have been fetched (if the album is a film album)
+  if (songsLst[0]["artist"] === undefined)
+    songsLst = await getGaanaSongListInFilmStructure($);
+
+  // creating album object
+  const albumObj = {
+    albumTitle: albumTitle
+  };
+  // pushing album songs into albumObj
+  albumObj["songsLst"] = songsLst;
+  return albumObj;
+};
+
+// get song list through non-film album method
+const getGaanaSongListInNonFilmStructure = async ($) => {
+
+  // holds the list of song titles
+  const songsLst = [];
+  // fetching all Divs containing all songs
+  const songDivs = $(".content-container").find(".track_npqitemdetail");
+  // iterating through each div
+  songDivs.each((i, songDiv) => {
+    // constains instance of each song
+    let songObj = {};
+    // getting the song title
+    songObj["title"] = $(songDiv).find("span").text();
+    // cycling through the artists and getting the first one
+    $(songDiv)
+      .find("a")
+      .each(async (i, artistAnchor) => {
+        songObj["artist"] = await $(artistAnchor).text();
+      });
+    // checking if the audio artist is undefined, which would mean this is a movie album and thus, the artist name is in different
+    songsLst.push(songObj);
+  });
+  // returning songLst
+  return songsLst;
+};
+
+// get song list through film album method
+const getGaanaSongListInFilmStructure = async ($) => {
+
+  // holds the list of song titles
+  const songsLst = [];
+  // getting to the unordered list containing all songs
+  const allSongUL = await $(".content-container")
+    .find(".s_c")
+    .find("ul")
+    .toArray()[1];
+
+  // finding all the list items (songs in the unordered list)
+  const songsLstItems = await $(allSongUL)
+    .find('li[draggable="true"]')
+    .toArray();
+
+  // iterating through each song list item which contains multiple other list items
+  for (const multiListItems of songsLstItems) {
+    // constains instance of each song
+    let songObj = {};
+    // getting to the list item containing the song details
+    let songDetailLstItem = await $(multiListItems).find("li").toArray()[2];
+    // getting the song title stored in the 3rd list item
+    songObj["title"] = await $(
+      $(songDetailLstItem).find("a").toArray()[0]
+    ).text();
+    // getting the song artist stored in the 3rd list item
+    songObj["artist"] = await $(
+      $(songDetailLstItem).find("a").toArray()[1]
+    ).text();
+
+    // pushing song object into list
+    songsLst.push(songObj);
+  }
+
+  // returning the song lst
+  return songsLst;
+
+};
+
+// function to fetch ytcat objects for the songs scrapped
+const fetchYTCatObjs = async () => {
+
+};
+
 
 // function to get url and fetch songs
 exports.fetchSongs = async (req, res) => {
@@ -71,9 +190,39 @@ exports.fetchSongs = async (req, res) => {
 
       if (playlistUrlType !== null) {
 
-        logConsole("Starting playlist url");
-        sendResponse("Starting", 0);
+        const hashedPlaylistUrl = crypto
+          .createHash("md5")
+          .update(playlistUrl)
+          .digest("hex");
+        logConsole("Generated hash for playlistUrl: " + hashedPlaylistUrl, false);
 
+        // checks if playlist already exists in database
+        const playlistDBDocument = await RipperCollection.findOne({ ripId: hashedPlaylistUrl });
+
+        if (playlistDBDocument === null) {
+          logConsole("Playlist does not exist in database", false);
+
+          const htmlContent = req.body.htmlContent;
+
+          // create document for the playlist in database
+          const newPlaylistDocument = RipperCollection({
+            ripId: hashedPlaylistUrl,
+            ripService: playlistUrlType,
+            ripProgress: "InProgress",
+            ripData: {},
+          });
+          await newPlaylistDocument.save();
+          logConsole("Document created for playlist in database", false);
+
+          // initiate the scrapping sequence
+          initiateScrappingSequence(htmlContent, playlistUrlType, hashedPlaylistUrl);
+
+          sendResponse({ streamingService: playlistUrlType, processing: true, data: {} }, 1);
+
+        } else {
+          logConsole("Playlist exist in database", false);
+          sendResponse({ streamingService: playlistUrlType, processing: true, data: {} }, 1);
+        }
       } else
         throw "Unsupported playlist url";
     } else
