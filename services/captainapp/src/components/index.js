@@ -12,6 +12,7 @@ import ResourceAddDialog from "./ResourceAddDialog";
 import SongSearcher from "./SongSearcher";
 import SongsBucket from "./SongsBucket";
 import HangingPlayer from "./HangingPlayer";
+import GannaScrapperDialog from "./GannaScrapperDialog"
 
 export {
   Auth,
@@ -27,5 +28,6 @@ export {
   ResourceAddDialog,
   SongSearcher,
   SongsBucket,
-  HangingPlayer
+  HangingPlayer,
+  GannaScrapperDialog
 };

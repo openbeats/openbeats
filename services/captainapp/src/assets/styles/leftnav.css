@@ -76,7 +76,7 @@
     font-size: 25px;
 }
 
-.leftnav-item:nth-child(n+2):nth-child(-n+5) {
+.leftnav-item:nth-child(n+2):nth-child(-n+6) {
     margin-bottom: 25px;
 }
 
