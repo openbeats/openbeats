@@ -1,8 +1,11 @@
 import React, { Component } from "react";
 import "../assets/styles/songsearcher.css";
+import gannaLogo from "../assets/images/GaanaIcon.png"
+import { connect } from "react-redux";
+import { gannaScrapper } from "../actions"
 import axios from "axios";
 
-export default class SongSearcher extends Component {
+class SongSearcher extends Component {
 	constructor(props) {
 		super(props);
 		this.state = {
@@ -153,6 +156,9 @@ export default class SongSearcher extends Component {
 							})}
 						</div>
 					</div>
+					<div className="gaana" onClick={e => this.props.toggleScrapperDialog(true, this.props.addSongsCallback)}>
+						<img className="" src={gannaLogo} alt="" />
+					</div>
 				</div>
 				<div className="song-searcher-body">
 					{this.state.songsCollection.length === 0 && (
@@ -193,3 +199,18 @@ export default class SongSearcher extends Component {
 		);
 	}
 }
+
+const mapStateToProps = state => {
+	return {};
+};
+
+const mapDispatchToProps = dispatch => {
+	return {
+		toggleScrapperDialog: (value, songsBucketCallback) => {
+			const payload = { isOpened: value, songsBucketCallback: songsBucketCallback };
+			return gannaScrapper.toggleScrapperDialog(payload);
+		}
+	};
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(SongSearcher);
