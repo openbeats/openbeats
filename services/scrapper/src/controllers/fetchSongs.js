@@ -34,10 +34,9 @@ const sendResponse = (responseBody, responseType) => {
         });
         break;
       case 1:
-        globalRes.send({
-          status: true,
-          data: responseBody
-        });
+        globalRes.send(
+          responseBody
+        );
         break;
       default:
         break;
@@ -62,35 +61,50 @@ const filterPlaylistUrl = (playlistUrl) => {
 const initiateScrappingSequence = async (htmlContent, playlistUrlType, hashedPlaylistUrl) => {
   // holds the playlist information post-scrapping
   let playlistInformation;
-  // holds the YTCat objects for the songs
-  const ytCatObjs = [];
+  // holds the YTCat objects, artists and titles for the songs
+  const ytCatObjs = [], artitsts = [], titles = [];
+
   if (playlistUrlType === "gaana") {
     logConsole("Initiated scrapping gaana playlist structure", false);
     // scraps playlist content in gaana structure
     playlistInformation = await scrapGaanaPlaylist(htmlContent);
   }
 
-  logConsole("Fetched gaana playlist song information");
+  logConsole("Fetched gaana playlist song information", false);
 
-  // iterating through each song to fetch its ytcat object
-  for (const songItem of playlistInformation.songList) {
+  // check if the playlist already exsists in database using album title
+  const playlistCheckDocUsingTitle = await RipperCollection.findOne({ "ripData.albumTitle": playlistInformation.albumTitle, ripService: playlistUrlType });
 
-    logConsole("Fetching ytcat object for " + songItem["title"]);
+  if (playlistCheckDocUsingTitle === null) {
 
-    // fetching ytCatObject for the current songItem
-    let tempYtCatObj = await fetchYTCatObjs(songItem);
+    // iterating through each song to fetch its ytcat object
+    for (const songItem of playlistInformation.songList) {
 
-    if (tempYtCatObj !== null) {
-      ytCatObjs.push(tempYtCatObj);
-      // checking if this is the last object to be fetched
-      if (songItem === playlistInformation.songList[playlistInformation.songList.length - 1])
-        // sending ytCat object to be inserted into the database
-        await updateDatabaseDocument(hashedPlaylistUrl, ytCatObjs, playlistInformation, true);
-      else
-        await updateDatabaseDocument(hashedPlaylistUrl, ytCatObjs, playlistInformation, false);
+      logConsole("Fetching ytcat object for " + songItem["title"], false);
+
+      // fetching ytCatObject for the current songItem
+      let tempYtCatObj = await fetchYTCatObjs(songItem);
+
+      if (tempYtCatObj !== null) {
+        ytCatObjs.push(tempYtCatObj);
+        artitsts.push(songItem.artist);
+        titles.push(songItem.title);
+        // checking if this is the last object to be fetched
+        if (songItem === playlistInformation.songList[playlistInformation.songList.length - 1])
+          // sending ytCat object to be inserted into the database
+          await updateDatabaseDocument(hashedPlaylistUrl, ytCatObjs, playlistInformation, artitsts, titles, true);
+        else
+          await updateDatabaseDocument(hashedPlaylistUrl, ytCatObjs, playlistInformation, artitsts, titles, false);
+      }
     }
-
   }
+  else {
+    // deleting the currently created databse object
+    await RipperCollection.deleteOne({ ripId: hashedPlaylistUrl });
+    sendResponse("The playlist already exists in database. Please contact database admin to resolve issue.", 0);
+    logConsole("It already Exists in database", false);
+  }
+
 };
 
 // scraps playlist content in gaana structure
@@ -223,7 +237,7 @@ const fetchYTCatObjs = async (songItem) => {
 };
 
 // updates the database on fetching the ytcat values
-const updateDatabaseDocument = async (hashedPlaylistUrl, ytCatObjs, playlistInformation, finalSong) => {
+const updateDatabaseDocument = async (hashedPlaylistUrl, ytCatObjs, playlistInformation, artitsts, titles, finalSong) => {
 
   // fetching the document for the current job from database (to check for error update)
   const currentDoc = await RipperCollection.findOne({
@@ -237,16 +251,42 @@ const updateDatabaseDocument = async (hashedPlaylistUrl, ytCatObjs, playlistInfo
         albumTitle: playlistInformation.albumTitle,
         audioTitlesInGaana: playlistInformation.songList.length,
         audioObjsFetched: ytCatObjs.length,
+        artists: artitsts,
+        titles: titles,
         data: ytCatObjs,
       },
     };
     // updating database
-    await RipperCollection.findOneAndUpdate({
+    await RipperCollection.updateOne({
       ripId: hashedPlaylistUrl,
     }, updateData);
   }
 };
 
+// updates the database value of the current playlist as error
+const updateDatabaseForError = async (hashedPlaylistUrl) => {
+  await RipperCollection.updateOne({ ripId: hashedPlaylistUrl }, { ripProgress: "Error" });
+};
+
+// sends back the current status of the playlist database values to the user
+const sendCurrentDatabaseValues = async (hashedPlaylistUrl) => {
+
+  const currentDoc = await RipperCollection.findOne({ ripId: hashedPlaylistUrl });
+
+  if (currentDoc.ripProgress !== "Error")
+    sendResponse({
+      status: true,
+      streamingService: currentDoc.ripService,
+      processing: (currentDoc.ripProgress === "Completed") ? false : true,
+      data: currentDoc.ripData,
+    }, 1);
+  else {
+    // deleting the error document
+    await RipperCollection.deleteOne({ ripId: hashedPlaylistUrl });
+    sendResponse("An Error has occurred. Please try again or refer to the logs", 0);
+  }
+
+};
 
 // function to get url and fetch songs
 exports.fetchSongs = async (req, res) => {
@@ -295,7 +335,7 @@ exports.fetchSongs = async (req, res) => {
             // initiate the scrapping sequence
             initiateScrappingSequence(htmlContent, playlistUrlType, hashedPlaylistUrl);
 
-            sendResponse({ streamingService: playlistUrlType, processing: true, data: {} }, 1);
+            sendResponse({ status: true, streamingService: playlistUrlType, processing: true, data: {} }, 1);
           } else {
             logConsole("Error: No HTML data received", true);
             sendResponse("Error Occurred: No HTML data recieved", 0);
@@ -303,7 +343,7 @@ exports.fetchSongs = async (req, res) => {
 
         } else {
           logConsole("Playlist exist in database", false);
-          sendResponse({ streamingService: playlistUrlType, processing: true, data: {} }, 1);
+          await sendCurrentDatabaseValues(hashedPlaylistUrl);
         }
       } else
         throw "Unsupported playlist url";
@@ -313,6 +353,7 @@ exports.fetchSongs = async (req, res) => {
   } catch (error) {
     logConsole("Error: " + error, true);
     sendResponse("Error Occurred: " + error, 0);
+    await updateDatabaseForError(hashedPlaylistUrl);
   }
 
 };
