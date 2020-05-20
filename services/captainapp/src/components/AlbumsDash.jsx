@@ -311,6 +311,7 @@ class AlbumsDash extends Component {
 								songSuggestionFetchUrl={`${variables.baseUrl}/ytcat?q=`}
 								addSongsToTheBucketCallBack={this.addSongsToTheBucketCallBack}
 								songTrialTrigger={this.songTrialTrigger}
+								addSongsCallback={this.arrangeSongsCallBack}
 							/>
 						</div>
 						<div className="albumdash-song-bucket-holder">
