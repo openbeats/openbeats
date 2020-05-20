@@ -12,6 +12,10 @@ const ripperCollectionSchema = new Schema(
       required: true,
       unique: true,
     },
+    ripService: {
+      type: String,
+      required: true
+    },
     ripProgress: {
       type: String,
       required: true,
@@ -19,6 +23,7 @@ const ripperCollectionSchema = new Schema(
     ripData: {
       type: Schema.Types.Mixed,
       required: true,
+      default: {}
     },
   },
   { timestamps: true }

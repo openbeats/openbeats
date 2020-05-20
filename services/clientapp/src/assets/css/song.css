@@ -60,18 +60,11 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    width: 75%;
-}
-
-.play-icon-result {
-    margin-bottom: 3px;
-}
-
-.queue-icon-result {
-    margin-bottom: 3px;
+    width: 80%;
 }
 
 
 .action-image-size {
-    height: 17px;
+    height: 16px;
+    font-size: 14px;
 }
