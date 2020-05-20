@@ -23,6 +23,7 @@ const ripperCollectionSchema = new Schema(
     ripData: {
       type: Schema.Types.Mixed,
       required: true,
+      default: {}
     },
   },
   { timestamps: true }
