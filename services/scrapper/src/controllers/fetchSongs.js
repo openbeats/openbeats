@@ -25,7 +25,7 @@ const logConsole = (message, isErrorLog) => {
 
 // used to send responses to the client
 const sendResponse = (responseBody, responseType) => {
-  if (!globalRes.headersSent)
+  if (!globalRes.headersSent) {
     switch (responseType) {
       case 0:
         globalRes.send({
@@ -36,6 +36,8 @@ const sendResponse = (responseBody, responseType) => {
       default:
         break;
     }
+    logConsole("Response sent to client", false);
+  }
   else
     logConsole("Response already sent", true);
 };
@@ -59,26 +61,27 @@ exports.fetchSongs = async (req, res) => {
     globalRes = res;
 
     const playlistUrl = req.body.playlistUrl;
-
-    logConsole(req.body);
-
     logConsole("Playlist url recieved: " + playlistUrl, false);
 
-    // filtering the playlist url to find the service hosting the playlist
-    const playlistUrlType = filterPlaylistUrl(playlistUrl);
+    if (playlistUrl !== undefined) {
 
-    logConsole("Playlist hosting service: " + playlistUrlType, false);
+      // filtering the playlist url to find the service hosting the playlist
+      const playlistUrlType = filterPlaylistUrl(playlistUrl);
+      logConsole("Playlist hosting service: " + playlistUrlType, false);
 
-    if (playlistUrlType !== null) {
+      if (playlistUrlType !== null) {
 
-      logConsole("Starting playlist url");
+        logConsole("Starting playlist url");
+        sendResponse("Starting", 0);
 
+      } else
+        throw "Unsupported playlist url";
     } else
-      throw "Invalid playlist url";
+      throw "Please send playlist url";
 
   } catch (error) {
     logConsole("Error: " + error, true);
-    sendResponse("Error Occurred: " + error);
+    sendResponse("Error Occurred: " + error, 0);
   }
 
 };
