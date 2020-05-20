@@ -7,6 +7,7 @@ import { musicDummy, playerdownload, pQueueWhite } from '../assets/images';
 import Loader from 'react-loader-spinner';
 import queryString from 'query-string';
 import { store } from '../store';
+import { Song } from ".";
 
 class PlaylistDisplay extends Component {
 
@@ -122,162 +123,178 @@ class PlaylistDisplay extends Component {
                         <div className="playlist-display-left-section-wrapper">
                             <div className="playlist-display-thumbnail-holder" style={{ backgroundImage: `url(${this.state.playlistThumbnail}), url(${musicDummy})` }} >
                             </div>
-                            {this.state.type === "user" && this.state.editPlaylistName ?
-                                <form onSubmit={async (e) => {
-                                    e.preventDefault();
-                                    this.setState({ editPlaylistName: false })
-                                    this.props.updateTyping(false)
-                                    if (await this.props.changeUserPlaylistName(this.state.playlistId, this.state.editedName)) {
-                                        await this.playlistFetchHandler();
-                                    }
-                                }} className="edit-playlist-name playlist-display-title-holder">
-                                    <input type="text" value={this.state.editedName} onChange={(e) => this.setState({ editedName: e.target.value })} />
-                                    <div className="edit-playlist-button-holder">
-                                        <button className="cursor-pointer" type="submit">save</button>
-                                        <button className="cursor-pointer" onClick={() => {
-                                            this.props.updateTyping(false);
-                                            this.setState({ editPlaylistName: false });
-                                        }}>cancel</button>
+                            <div className="playlist-display-description-actions-holder">
+                                {this.state.type === "user" && this.state.editPlaylistName ?
+                                    <form onSubmit={async (e) => {
+                                        e.preventDefault();
+                                        this.setState({ editPlaylistName: false })
+                                        this.props.updateTyping(false)
+                                        if (await this.props.changeUserPlaylistName(this.state.playlistId, this.state.editedName)) {
+                                            await this.playlistFetchHandler();
+                                        }
+                                    }} className="edit-playlist-name playlist-display-title-holder">
+                                        <input type="text" value={this.state.editedName} onChange={(e) => this.setState({ editedName: e.target.value })} />
+                                        <div className="edit-playlist-button-holder">
+                                            <button className="cursor-pointer" type="submit">save</button>
+                                            <button className="cursor-pointer" onClick={() => {
+                                                this.props.updateTyping(false);
+                                                this.setState({ editPlaylistName: false });
+                                            }}>cancel</button>
+                                        </div>
+                                    </form>
+                                    : <div className="playlist-display-title-holder">
+                                        {this.state.playlistName}
+                                        {this.state.type === "user" && <i onClick={() => {
+                                            this.props.updateTyping(true);
+                                            this.setState({ editPlaylistName: true });
+                                        }} className="fas fa-pencil-alt ml-3 cursor-pointer f-s-15"></i>}
                                     </div>
-                                </form>
-                                : <div className="playlist-display-title-holder">
-                                    {this.state.playlistName}
-                                    {this.state.type === "user" && <i onClick={() => {
-                                        this.props.updateTyping(true);
-                                        this.setState({ editPlaylistName: true });
-                                    }} className="fas fa-pencil-alt ml-3 cursor-pointer f-s-15"></i>}
+                                }
+                                <div className="playlist-display-songs-count-holder">
+                                    {`( ${this.state.playlistItems.length} Songs )`}
                                 </div>
-                            }
-                            <div className="playlist-display-songs-count-holder">
-                                {`( ${this.state.playlistItems.length} Songs )`}
-                            </div>
-                            <div className="playlist-display-play-pause-holder">
-                                {
-                                    this.props.playlistId !== this.state.playlistId ?
-                                        <div onClick={() => { this.initQueue(); }}>
-                                            <i className="fas fa-play"></i> Play
+                                <div className="playlist-display-play-pause-holder">
+                                    {
+                                        this.props.playlistId !== this.state.playlistId ?
+                                            <div onClick={() => { this.initQueue(); }}>
+                                                <i className="fas fa-play"></i> Play
                                         </div>
-                                        :
-                                        this.props.isMusicPlaying ?
-                                            <div onClick={() => { this.props.playPauseToggle() }}>
-                                                <i className="fas fa-pause"></i> pause
-                                            </div>
                                             :
-                                            <div onClick={() => { this.props.playPauseToggle() }}>
-                                                <i className="fas fa-play"></i> play
+                                            this.props.isMusicPlaying ?
+                                                <div onClick={() => { this.props.playPauseToggle() }}>
+                                                    <i className="fas fa-pause"></i> pause
                                             </div>
-                                }
-                            </div>
-                            <div className="playlist-display-miscellanious-holder">
-                                {this.state.type === 'user' ?
-                                    <Fragment>
-                                        {/* <i className="fas fa-unlock cursor-pointer"></i> */}
-                                        {/* <i className="fas fa-globe-americas cursor-pointer" title="Make Playlist Public"></i> */}
-                                        <img onClick={() => this.props.addSongsToQueue(this.state.playlistItems)} className="cursor-pointer" title="Add to Queue" src={pQueueWhite} alt="" srcSet="" />
-                                        <i className="fas fa-lock cursor-pointer pl-3 pr-3" title="Make Playlist Private"></i>
-                                        <i className="fas fa-trash-alt cursor-pointer" title="Delete Playlist" onClick={() => this.props.deleteUserPlaylist(this.state.playlistId)}></i>
-                                    </Fragment> :
-                                    <Fragment>
-                                        <div onClick={() => this.props.addSongsToQueue(this.state.playlistItems)} className="d-flex align-items-center justify-content-center cursor-pointer">
-                                            <img title="Add to Queue" src={pQueueWhite} alt="" srcSet="" />
-                                            <span className="pl-2 f-s-16">Add to Queue!</span>
-                                        </div>
-                                        {/* <i className="fas fa-heart cursor-pointer"></i> */}
-                                    </Fragment>
-                                }
+                                                :
+                                                <div onClick={() => { this.props.playPauseToggle() }}>
+                                                    <i className="fas fa-play"></i> play
+                                            </div>
+                                    }
+                                </div>
+                                <div className="playlist-display-miscellanious-holder">
+                                    {this.state.type === 'user' ?
+                                        <Fragment>
+                                            {/* <i className="fas fa-unlock cursor-pointer"></i> */}
+                                            {/* <i className="fas fa-globe-americas cursor-pointer" title="Make Playlist Public"></i> */}
+                                            <img onClick={() => this.props.addSongsToQueue(this.state.playlistItems)} className="cursor-pointer" title="Add to Queue" src={pQueueWhite} alt="" srcSet="" />
+                                            <i className="fas fa-lock cursor-pointer pl-3 pr-3" title="Make Playlist Private"></i>
+                                            <i className="fas fa-trash-alt cursor-pointer" title="Delete Playlist" onClick={() => this.props.deleteUserPlaylist(this.state.playlistId)}></i>
+                                        </Fragment> :
+                                        <Fragment>
+                                            <div onClick={() => this.props.addSongsToQueue(this.state.playlistItems)} className="d-flex align-items-center justify-content-center cursor-pointer">
+                                                <img title="Add to Queue" src={pQueueWhite} alt="" srcSet="" />
+                                                <span className="pl-2 f-s-16">Add to Queue!</span>
+                                            </div>
+                                            {/* <i className="fas fa-heart cursor-pointer"></i> */}
+                                        </Fragment>
+                                    }
+                                </div>
                             </div>
                         </div>
                         <div className="playlist-display-right-section-wrapper">
                             {this.state.playlistItems.length ? this.state.playlistItems.map((item, key) => (
-                                <Fragment key={key}>
-                                    <div className={`playlist-display-songs-holder ${this.props.isPlaylist && this.props.currentPlaying.videoId === item.videoId ? 'highlight-active' : ''}`} >
-                                        <span className="playlist-display-songs-serial-no">
-                                            {key + 1}.
-                                        </span>
-                                        <span
-                                            className="cursor-pointer"
-                                        >
-                                            {this.props.isPlaylist && this.props.currentPlaying.videoId === item.videoId ?
-                                                this.props.isAudioBuffering ?
-                                                    <Loader
-                                                        type="Rings"
-                                                        color="#F32C2C"
-                                                        height={30}
-                                                        width={30}
-                                                        className="playlist-display-songs-icon"
-                                                    />
-                                                    :
-                                                    this.props.isMusicPlaying ?
-                                                        <i
-                                                            onClick={
-                                                                () => {
-                                                                    this.props.playPauseToggle()
-                                                                }
-                                                            }
-                                                            className="fas fa-pause playlist-display-songs-icon"
+                                // <Fragment key={key}>
+                                //     <div className={`playlist-display-songs-holder ${this.props.isPlaylist && this.props.currentPlaying.videoId === item.videoId ? 'highlight-active' : ''}`} >
+                                //         <span className="playlist-display-songs-serial-no">
+                                //             {key + 1}.
+                                //         </span>
+                                //         <span
+                                //             className="cursor-pointer"
+                                //         >
+                                //             {this.props.isPlaylist && this.props.currentPlaying.videoId === item.videoId ?
+                                //                 this.props.isAudioBuffering ?
+                                //                     <Loader
+                                //                         type="Rings"
+                                //                         color="#F32C2C"
+                                //                         height={30}
+                                //                         width={30}
+                                //                         className="playlist-display-songs-icon"
+                                //                     />
+                                //                     :
+                                //                     this.props.isMusicPlaying ?
+                                //                         <i
+                                //                             onClick={
+                                //                                 () => {
+                                //                                     this.props.playPauseToggle()
+                                //                                 }
+                                //                             }
+                                //                             className="fas fa-pause playlist-display-songs-icon"
 
-                                                        ></i>
-                                                        :
-                                                        <i
-                                                            onClick={
-                                                                () => {
-                                                                    this.props.playPauseToggle()
-                                                                }
-                                                            }
-                                                            className="fas fa-play playlist-display-songs-icon"
+                                //                         ></i>
+                                //                         :
+                                //                         <i
+                                //                             onClick={
+                                //                                 () => {
+                                //                                     this.props.playPauseToggle()
+                                //                                 }
+                                //                             }
+                                //                             className="fas fa-play playlist-display-songs-icon"
 
-                                                        ></i>
-                                                :
-                                                <i
-                                                    onClick={() => {
-                                                        if (this.props.playlistId === this.state.playlistId) {
-                                                            this.props.selectFromPlaylist(key)
-                                                        } else {
-                                                            this.initQueue(key)
-                                                        }
-                                                    }}
-                                                    className="fas fa-play playlist-display-songs-icon"></i>
-                                            }
-                                        </span>
-                                        <span>
-                                            <div download
-                                                onClick={async (e) => {
-                                                    e.preventDefault();
-                                                    await this.setState({ videoId: [...this.state.videoId, item.videoId] })
-                                                    if (await this.props.downloadSongHandler(item)) {
-                                                        this.setState({ videoId: [...this.state.videoId.filter(id => id !== item.videoId)] });
-                                                    }
-                                                }}
-                                                className="t-none cursor-pointer">
-                                                {this.state.videoId.includes(item.videoId) ?
-                                                    <Loader
-                                                        type="Oval"
-                                                        color="#F32C2C"
-                                                        height={20}
-                                                        width={20}
-                                                        className="playlist-display-songs-icon-2"
-                                                    />
-                                                    :
-                                                    <img className="playlist-display-songs-icon-2" src={playerdownload} alt="" />
-                                                }
-                                            </div>
-                                        </span>
-                                        {this.state.type === 'user' &&
-                                            <span>
-                                                <i className="fas fa-trash-alt playlist-display-songs-icon cursor-pointer"
-                                                    onClick={async () => {
-                                                        await this.props.removeSongFromPlaylist(this.state.playlistId, item._id)
-                                                        await this.playlistFetchHandler()
-                                                    }}
-                                                ></i>
-                                            </span>
-                                        }
-                                        <span>
-                                            <div className="playlist-display-songs-title">{item.title}</div>
-                                            <div className="playlist-display-songs-duration">{item.duration}</div>
-                                        </span>
-                                    </div>
-                                </Fragment>
+                                //                         ></i>
+                                //                 :
+                                //                 <i
+                                //                     onClick={() => {
+                                //                         if (this.props.playlistId === this.state.playlistId) {
+                                //                             this.props.selectFromPlaylist(key)
+                                //                         } else {
+                                //                             this.initQueue(key)
+                                //                         }
+                                //                     }}
+                                //                     className="fas fa-play playlist-display-songs-icon"></i>
+                                //             }
+                                //         </span>
+                                //         <span>
+                                //             <div download
+                                //                 onClick={async (e) => {
+                                //                     e.preventDefault();
+                                //                     await this.setState({ videoId: [...this.state.videoId, item.videoId] })
+                                //                     if (await this.props.downloadSongHandler(item)) {
+                                //                         this.setState({ videoId: [...this.state.videoId.filter(id => id !== item.videoId)] });
+                                //                     }
+                                //                 }}
+                                //                 className="t-none cursor-pointer">
+                                //                 {this.state.videoId.includes(item.videoId) ?
+                                //                     <Loader
+                                //                         type="Oval"
+                                //                         color="#F32C2C"
+                                //                         height={20}
+                                //                         width={20}
+                                //                         className="playlist-display-songs-icon-2"
+                                //                     />
+                                //                     :
+                                //                     <img className="playlist-display-songs-icon-2" src={playerdownload} alt="" />
+                                //                 }
+                                //             </div>
+                                //         </span>
+                                //         {this.state.type === 'user' &&
+                                //             <span>
+                                //                 <i className="fas fa-trash-alt playlist-display-songs-icon cursor-pointer"
+                                //                     onClick={async () => {
+                                //                         await this.props.removeSongFromPlaylist(this.state.playlistId, item._id)
+                                //                         await this.playlistFetchHandler()
+                                //                     }}
+                                //                 ></i>
+                                //             </span>
+                                //         }
+                                //         <span>
+                                //             <div className="playlist-display-songs-title">{item.title}</div>
+                                //             <div className="playlist-display-songs-duration">{item.duration}</div>
+                                //         </span>
+                                //     </div>
+                                // </Fragment>
+                                <Song
+                                    key={key}
+                                    item={item}
+                                    isPlaylist={this.props.isPlaylist}
+                                    currentPlaying={this.props.currentPlaying}
+                                    isAudioBuffering={this.props.isAudioBuffering}
+                                    isMusicPlaying={this.props.isMusicPlaying}
+                                    playPauseToggle={this.props.playPauseToggle}
+                                    updateCurrentPlaying={this.props.updateCurrentPlaying}
+                                    downloadSong={this.downloadSong}
+                                    isAuthenticated={this.props.isAuthenticated}
+                                    addSongsToQueue={this.props.addSongsToQueue}
+                                    showAddPlaylistDialog={this.props.showAddPlaylistDialog}
+                                />
                             )) :
                                 <Fragment>
                                     {this.state.type === "user" &&
