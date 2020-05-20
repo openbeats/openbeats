@@ -75,12 +75,21 @@ const initiateScrappingSequence = async (htmlContent, playlistUrlType, hashedPla
   // iterating through each song to fetch its ytcat object
   for (const songItem of playlistInformation.songList) {
 
-    logConsole(songItem, false);
+    logConsole("Fetching ytcat object for " + songItem["title"]);
 
-    // fetching ytCatObject
+    // fetching ytCatObject for the current songItem
     let tempYtCatObj = await fetchYTCatObjs(songItem);
 
-    
+    if (tempYtCatObj !== null) {
+      ytCatObjs.push(tempYtCatObj);
+      // checking if this is the last object to be fetched
+      if (songItem === playlistInformation.songList[playlistInformation.songList.length - 1])
+        // sending ytCat object to be inserted into the database
+        await updateDatabaseDocument(hashedPlaylistUrl, ytCatObjs, playlistInformation, true);
+      else
+        await updateDatabaseDocument(hashedPlaylistUrl, ytCatObjs, playlistInformation, false);
+    }
+
   }
 };
 
@@ -211,6 +220,31 @@ const fetchYTCatObjs = async (songItem) => {
   }
   // default return
   return null;
+};
+
+// updates the database on fetching the ytcat values
+const updateDatabaseDocument = async (hashedPlaylistUrl, ytCatObjs, playlistInformation, finalSong) => {
+
+  // fetching the document for the current job from database (to check for error update)
+  const currentDoc = await RipperCollection.findOne({
+    ripId: hashedPlaylistUrl,
+  });
+
+  if (currentDoc.ripProgress !== "Error") {
+    const updateData = {
+      ripProgress: (finalSong) ? "Completed" : "InProgress",
+      ripData: {
+        albumTitle: playlistInformation.albumTitle,
+        audioTitlesInGaana: playlistInformation.songList.length,
+        audioObjsFetched: ytCatObjs.length,
+        data: ytCatObjs,
+      },
+    };
+    // updating database
+    await RipperCollection.findOneAndUpdate({
+      ripId: hashedPlaylistUrl,
+    }, updateData);
+  }
 };
 
 
