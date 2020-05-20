@@ -62,13 +62,19 @@ const filterPlaylistUrl = (playlistUrl) => {
 const initiateScrappingSequence = async (htmlContent, playlistUrlType, hashedPlaylistUrl) => {
   // holds the playlist information post-scrapping
   let playlistInformation;
+  // holds the YTCat objects for the songs
+  const ytCatObjs = [];
   if (playlistUrlType === "gaana") {
-    logConsole("Initiated scrapping gaana playlist structure");
+    logConsole("Initiated scrapping gaana playlist structure", false);
     // scraps playlist content in gaana structure
     playlistInformation = await scrapGaanaPlaylist(htmlContent);
-    
-    
+  }
 
+  logConsole("Fetched gaana playlist song information");
+
+  // iterating through each song to fetch its ytcat object
+  for (const songItem of playlistInformation.songList) {
+    logConsole(songItem, false);
   }
 };
 
@@ -92,10 +98,9 @@ const scrapGaanaPlaylist = async (htmlContent) => {
 
   // creating album object
   const albumObj = {
-    albumTitle: albumTitle
+    albumTitle: albumTitle,
+    songList: songsLst
   };
-  // pushing album songs into albumObj
-  albumObj["songsLst"] = songsLst;
   return albumObj;
 };
 
@@ -166,8 +171,16 @@ const getGaanaSongListInFilmStructure = async ($) => {
 };
 
 // function to fetch ytcat objects for the songs scrapped
-const fetchYTCatObjs = async () => {
+const fetchYTCatObjs = async (songItem) => {
+  // counter for loop
+  let retryCounter = -1;
 
+  while (true) {
+    retryCounter += 1;
+    if (retryCounter === 10) break;
+
+
+  }
 };
 
 
@@ -204,20 +217,25 @@ exports.fetchSongs = async (req, res) => {
 
           const htmlContent = req.body.htmlContent;
 
-          // create document for the playlist in database
-          const newPlaylistDocument = RipperCollection({
-            ripId: hashedPlaylistUrl,
-            ripService: playlistUrlType,
-            ripProgress: "InProgress",
-            ripData: {},
-          });
-          await newPlaylistDocument.save();
-          logConsole("Document created for playlist in database", false);
+          if (htmlContent != undefined) {
+            // create document for the playlist in database
+            const newPlaylistDocument = RipperCollection({
+              ripId: hashedPlaylistUrl,
+              ripService: playlistUrlType,
+              ripProgress: "InProgress",
+              ripData: {},
+            });
+            await newPlaylistDocument.save();
+            logConsole("Document created for playlist in database", false);
 
-          // initiate the scrapping sequence
-          initiateScrappingSequence(htmlContent, playlistUrlType, hashedPlaylistUrl);
+            // initiate the scrapping sequence
+            initiateScrappingSequence(htmlContent, playlistUrlType, hashedPlaylistUrl);
 
-          sendResponse({ streamingService: playlistUrlType, processing: true, data: {} }, 1);
+            sendResponse({ streamingService: playlistUrlType, processing: true, data: {} }, 1);
+          } else {
+            logConsole("Error: No HTML data received", true);
+            sendResponse("Error Occurred: No HTML data recieved", 0);
+          }
 
         } else {
           logConsole("Playlist exist in database", false);
@@ -234,3 +252,8 @@ exports.fetchSongs = async (req, res) => {
   }
 
 };
+
+// handling promise rejection errors
+process.on("unhandledRejection", error => {
+  logConsole("Error: " + error, true);
+});
