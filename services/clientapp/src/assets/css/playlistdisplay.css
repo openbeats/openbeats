@@ -52,9 +52,7 @@
 
 .playlist-display-title-holder {
     color: var(--text-color-sub-1);
-    margin-top: 25px;
-    font-size: 22px;
-    padding: 0 10px 0 10px;
+    font-size: 28px;
     margin-bottom: 8px;
     text-transform: capitalize;
 }
@@ -179,4 +177,8 @@
 }
 
 
-@media only screen and (max-width: 1200px) {}
+@media only screen and (max-width: 1200px) {
+    .playlist-display-title-holder {
+        font-size: 25px;
+    }
+}
