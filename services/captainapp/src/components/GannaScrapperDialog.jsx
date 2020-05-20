@@ -45,23 +45,23 @@ class GannaScrapperDialog extends Component {
 
   initFetchHandler = async () => {
     const formData = new FormData();
-    formData.append("playlistURL", this.state.gannaUrl);
+    formData.append("playlistUrl", this.state.gannaUrl);
     formData.append("htmlContent", this.state.htmlContent);
-    axios.post({
+    axios({
       method: 'post',
       url: `${variables.baseUrl}/scrapper/fetchsongs`,
       data: formData,
       headers: { 'Content-Type': 'multipart/form-data' }
-    }, reqBody)
+    })
       .then((response) => {
+        this.setState({ isProcessing: true });
         const initFetch = response.data;
         if (initFetch.status) {
-          if (initFetch.isProcessing) {
-            this.setState({ isProcessing: true });
+          if (initFetch.processing) {
             this.initFetchHandler();
           } else {
             this.setState({ isProcessing: false });
-            const songs = initFetch.data.audioObjs
+            const songs = initFetch.data.data
             const numOfSongs = initFetch.data.audioObjsFetched
             if (Array.isArray(songs)) {
               this.props.songsBucketCallback(songs);
@@ -115,7 +115,7 @@ class GannaScrapperDialog extends Component {
                   <div className="ganna-dialog-header">
                     <div className="ganna-dialog-header-left-items">
                       <i className="fas fa-angle-right mr-1 right-angel mr-2"></i>
-                      <span>Fetch songs from Ganna Playlists</span>
+                      <span>Fetch songs from Ganna/Wynk Playlists</span>
                     </div>
                     <div className="create-album-link bg-danger cursor-pointer" onClick={this.closeHandler}>
                       <i className="fas fa-times"></i>
@@ -123,7 +123,7 @@ class GannaScrapperDialog extends Component {
                   </div>
                   <div className="ganna-dialog-input-container">
                     <div className="ganna-name-input d-flex flex-column align-items-center justify-content-center mb-4">
-                      <div className="font-weight-bold mb-2 ganna-input-title">Ganna Album Url</div>
+                      <div className="font-weight-bold mb-2 ganna-input-title">Album Url</div>
                       <input
                         className="ganna-input input-sm rounded ganna-name-input"
                         required
