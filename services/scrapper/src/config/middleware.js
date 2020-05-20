@@ -4,22 +4,15 @@ import morgan from "morgan";
 import {
   config
 } from ".";
-import {
-  json,
-  urlencoded
-} from "body-parser";
+import multer from "multer";
+var upload = multer();
 
 export default (app) => {
   app.use(cors());
-  app.use(json({
-    limit: "5mb"
-  }));
-  app.use(
-    urlencoded({
-      limit: "5mb",
-      extended: true,
-      parameterLimit: 50000
-    })
-  );
+  app.use(express.json());
+  // for parsing multipart/form-data
+  app.use(upload.array());
+  app.use(express.static('public'));
+  app.use(express.urlencoded({ extended: true }));
   app.use(morgan(config.isDev ? "dev" : "tiny"));
 };
