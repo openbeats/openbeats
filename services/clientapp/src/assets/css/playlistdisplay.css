@@ -1,36 +1,58 @@
 .playlist-display-wrapper {
     width: 100%;
-    height: inherit;
+    height: auto;
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
 }
 
 .playlist-display-left-section-wrapper {
-    width: 40%;
+    width: 100%;
+    height: 250px;
     text-align: center;
     display: flex;
     flex-direction: column;
     align-items: center;
-    margin-bottom: 30px;
-    padding: 0 10px 0 10px;
+    position: relative;
+}
+
+.playlist-display-left-section-wrapper::before {
+    content: '';
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    left: 0;
+    top: 0;
+    background-image: linear-gradient(to right, rgba(0, 0, 0, 1), rgba(0, 0, 0, .9), transparent);
+    z-index: 10;
 }
 
 .playlist-display-thumbnail-holder {
-    width: 450px;
-    height: 250px;
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 50%;
+    height: 100%;
     overflow: hidden;
     box-sizing: border-box;
-    margin-top: 20px;
     background-repeat: no-repeat;
     background-position: center;
     background-size: cover;
 }
 
+.playlist-display-description-actions-holder {
+    position: relative;
+    z-index: 10;
+    width: 100%;
+    display: flex;
+    height: 100%;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+}
+
 .playlist-display-title-holder {
     color: var(--text-color-sub-1);
-    margin-top: 25px;
-    font-size: 22px;
-    padding: 0 10px 0 10px;
+    font-size: 28px;
     margin-bottom: 8px;
     text-transform: capitalize;
 }
@@ -105,9 +127,14 @@
 }
 
 .playlist-display-right-section-wrapper {
-    width: 60%;
+    width: 100%;
     padding: 10px;
-    height: 100%;
+    height: auto;
+    padding-bottom: 200px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
 }
 
 .playlist-display-songs-holder {
@@ -151,15 +178,7 @@
 
 
 @media only screen and (max-width: 1200px) {
-    .playlist-display-wrapper {
-        flex-direction: column;
-    }
-
-    .playlist-display-left-section-wrapper {
-        width: 100%;
-    }
-
-    .playlist-display-right-section-wrapper {
-        width: 100%;
+    .playlist-display-title-holder {
+        font-size: 25px;
     }
 }

@@ -3,7 +3,7 @@ import { master } from "../assets/images";
 import Loader from 'react-loader-spinner';
 import "../assets/css/result.css";
 import { connect } from "react-redux";
-import { toastActions, coreActions, nowPlayingActions, playerActions, playlistManipulatorActions } from '../actions';
+import { coreActions, nowPlayingActions, playlistManipulatorActions } from '../actions';
 import { Song, HorizontalView, ArtistHolder, AlbumHolder } from '.';
 class Result extends Component {
     componentDidMount() {
@@ -52,17 +52,9 @@ class Result extends Component {
                 {this.props.songs.map((item, key) => (
                     <Song
                         key={key}
+                        index={key}
                         item={item}
-                        isPlaylist={this.props.isPlaylist}
-                        currentPlaying={this.props.currentPlaying}
-                        isAudioBuffering={this.props.isAudioBuffering}
-                        isMusicPlaying={this.props.isMusicPlaying}
-                        playPauseToggle={this.props.playPauseToggle}
                         updateCurrentPlaying={this.props.updateCurrentPlaying}
-                        downloadSong={this.downloadSong}
-                        isAuthenticated={this.props.isAuthenticated}
-                        addSongsToQueue={this.props.addSongsToQueue}
-                        showAddPlaylistDialog={this.props.showAddPlaylistDialog}
                     />
                 ))}
             </div>
@@ -134,10 +126,6 @@ const mapStateToProps = (state) => {
         artists: state.searchReducer.artists,
         albums: state.searchReducer.albums,
         isSearching: state.searchReducer.isSearching,
-        currentPlaying: state.nowPlayingReducer.currentPlaying,
-        isPlaylist: state.nowPlayingReducer.isPlaylist,
-        isMusicPlaying: state.playerReducer.isMusicPlaying,
-        isAudioBuffering: state.playerReducer.isAudioBuffering,
         isAuthenticated: state.authReducer.isAuthenticated,
         likedPlaylists: state.authReducer.likedPlaylists,
     }
@@ -146,26 +134,11 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
     return {
-        featureNotify: () => {
-            toastActions.featureNotify();
-        },
-        updateCurrentPlaying: (audioData) => {
+        updateCurrentPlaying: (audioData, key = null) => {
             nowPlayingActions.updateCurrentPlaying(audioData)
-        },
-        notify: (message) => {
-            toastActions.showMessage(message)
         },
         setCurrentAction: (action) => {
             dispatch(coreActions.setCurrentAction(action))
-        },
-        playPauseToggle: () => {
-            dispatch(playerActions.playPauseToggle())
-        },
-        showAddPlaylistDialog: (song) => {
-            playlistManipulatorActions.showAddPlaylistDialog(song)
-        },
-        addSongsToQueue: (song) => {
-            nowPlayingActions.addSongsToQueue([song]);
         },
         addOrRemoveAlbumFromUserCollection: async (isAdd = true, albumId) => {
             return await playlistManipulatorActions.addOrRemoveAlbumFromUserCollection(albumId, isAdd);

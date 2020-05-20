@@ -114,6 +114,24 @@ class LeftNav extends Component {
                 <p className="nav-menu-text">Artists</p>
               </div>
               <div
+                className={`nav-menu ${this.props.activeNavMenu === "Languages" ? "nav-menu-highlight" : ""}`}
+                onClick={() => this.props.push("/languages")}
+              >
+                <div className="nav-menu-icon-holder">
+                  <i className="master-color fad fa-language nav-menu-icon-size"></i>
+                </div>
+                <p className="nav-menu-text">Languages</p>
+              </div>
+              <div
+                className={`nav-menu ${this.props.activeNavMenu === "Emotions" ? "nav-menu-highlight" : ""}`}
+                onClick={() => this.props.push("/emotions")}
+              >
+                <div className="nav-menu-icon-holder">
+                  <i className="master-color fad fa-dove nav-menu-icon-size"></i>
+                </div>
+                <p className="nav-menu-text">Emotions</p>
+              </div>
+              <div
                 className={`nav-menu ${this.props.activeNavMenu === "My Collections" ? "nav-menu-highlight" : ""}`}
                 onClick={() => this.props.push("/mycollections")}
               >
