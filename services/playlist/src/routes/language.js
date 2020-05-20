@@ -11,6 +11,10 @@ import isAdmin from "../permissions/admin"
 import paginationMiddleware from "../config/paginationMiddleware";
 import setFindQuery from "../config/setFindQuery"
 import Album from "../models/Album"
+import {
+  saveAsserts,
+  deleteAssert
+} from "../core/digitalOceanSpaces";
 
 const router = Router();
 
@@ -27,6 +31,7 @@ router.post("/create", isAdmin, async (req, res) => {
       createdBy: req.user.id
     });
     await language.save();
+    saveAsserts("languages", language._id, thumbnail, Language, "thumbnail");
     return res.send({
       status: true,
       data: language,
@@ -49,23 +54,25 @@ router.post("/create", isAdmin, async (req, res) => {
 router.put("/:id", isAdmin, async (req, res) => {
   try {
     let {
-      name
+      name,
+      thumbnail
     } = req.body;
-    if ([2, 3].includes(req.user.admin.accessLevel)) {
-      const language = await Language.findById(req.params.id);
+    const language = await Language.findById(req.params.id);
+    if ([2, 3].includes(req.user.admin.accessLevel) || language.createdBy.toString() === req.user.id) {
       if (!language) {
-        throw new Error("No language exist with that Id.")
+        throw new Error("No language exist with that Id.");
       };
       language.name = name;
       language.thumbnail = thumbnail;
       language.updatedBy = req.user.id;
       await language.save();
+      saveAsserts("languages", language._id, thumbnail, Language, "thumbnail");
       return res.send({
         status: true,
         data: language,
       });
     }
-    throw new Error("You do not have permission to perform this action.")
+    throw new Error("You do not have permission to perform this action.");
   } catch (error) {
     console.error(error.message);
     return res.send({
@@ -188,7 +195,11 @@ router.get("/:languageId/albums", setFindQuery("languageArr", "languageId", "$in
 router.delete("/:id", isAdmin, async (req, res) => {
   try {
     if ([2, 3].includes(req.user.admin.accessLevel)) {
-      await Language.findByIdAndDelete(req.params.id);
+      const language = await Language.findById(req.params.id).lean();
+      deleteAssert(language.thumbnail);
+      await Language.deleteOne({
+        _id: language._id
+      });
       return res.send({
         status: true,
         data: "Deleted Successfully..",
