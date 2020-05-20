@@ -20,8 +20,8 @@ let globalRes;
 const logConsole = (message, isErrorLog) => {
   if (isErrorLog)
     console.error(message);
-  else
-    console.log(message);
+  // else
+  //   console.log(message);
 };
 
 // used to send responses to the client
