@@ -12,8 +12,8 @@ class GannaScrapperDialog extends Component {
     super(props);
     this.state = {
       gannaUrl: "",
-      isGannaUrl: false,
-      htmlContent: "",
+      htmlContentfile: {},
+      htmlContentfileName: "",
       isNotValid: true,
       isProcessing: false,
       totalTitles: null,
@@ -21,47 +21,47 @@ class GannaScrapperDialog extends Component {
       scrapperReqCounter: 0,
     };
   }
+
   closeHandler = () => {
     this.props.toggleScrapperDialog(false)
   }
 
   gannaUrlChangeHandler = async (e) => {
     await this.setState({ gannaUrl: e.target.value });
-    if (this.state.gannaUrl !== "") {
-      this.setState({ isGannaUrl: true });
-    } else {
-      this.setState({ isGannaUrl: false });
-    }
   }
 
   htmlContentChnageHandler = async (e) => {
-    await this.setState({ htmlContent: e.target.value });
+    await this.setState({ htmlContentfile: e.target.files[0], htmlContentfileName: e.target.files[0].name });
     this.checkIsNotValid();
   }
 
   checkIsNotValid = () => {
-    (this.state.gannaUrl !== "" || this.state.htmlContent !== "") ? (this.setState({ isNotValid: false })) : (this.setState({ isNotValid: true }))
+    (this.state.gannaUrl !== "" || this.state.htmlContentfile.name) ? (this.setState({ isNotValid: false })) : (this.setState({ isNotValid: true }))
+  }
+  submitHandler = (e) => {
+    e.preventDefault();
+    this.initFetchHandler();
   }
 
   initFetchHandler = async () => {
     const formData = new FormData();
-    formData.append("playlistURL", this.state.gannaUrl);
-    formData.append("htmlContent", this.state.htmlContent);
-    axios.post({
+    formData.append("playlistUrl", this.state.gannaUrl);
+    formData.append("htmlContent", this.state.htmlContentfile);
+    axios({
       method: 'post',
       url: `${variables.baseUrl}/scrapper/fetchsongs`,
       data: formData,
       headers: { 'Content-Type': 'multipart/form-data' }
-    }, reqBody)
+    })
       .then((response) => {
+        this.setState({ isProcessing: true });
         const initFetch = response.data;
         if (initFetch.status) {
-          if (initFetch.isProcessing) {
-            this.setState({ isProcessing: true });
+          if (initFetch.processing) {
             this.initFetchHandler();
           } else {
             this.setState({ isProcessing: false });
-            const songs = initFetch.data.audioObjs
+            const songs = initFetch.data.data
             const numOfSongs = initFetch.data.audioObjsFetched
             if (Array.isArray(songs)) {
               this.props.songsBucketCallback(songs);
@@ -95,7 +95,7 @@ class GannaScrapperDialog extends Component {
                 <div class="modal-dialog" role="document">
                   <div class="modal-content">
                     <div class="modal-header">
-                      <h5 class="modal-title" id="exampleModalLongTitle">Modal title</h5>
+                      <h5 class="modal-title" id="exampleModalLongTitle">Fetch Initiated</h5>
                     </div>
                     <div class="modal-body">
                       <span>{(this.state.totalTitles && this.state.fetchedTitles) ? (`${this.state.fetchedTitles} out ${this.state.totalTitles} songs fetched..`) : ("Fetching songs...")}</span>
@@ -115,36 +115,23 @@ class GannaScrapperDialog extends Component {
                   <div className="ganna-dialog-header">
                     <div className="ganna-dialog-header-left-items">
                       <i className="fas fa-angle-right mr-1 right-angel mr-2"></i>
-                      <span>Fetch songs from Ganna Playlists</span>
+                      <span>Fetch songs from Ganna/Wynk Playlists</span>
                     </div>
                     <div className="create-album-link bg-danger cursor-pointer" onClick={this.closeHandler}>
                       <i className="fas fa-times"></i>
                     </div>
                   </div>
-                  <div className="ganna-dialog-input-container">
-                    <div className="ganna-name-input d-flex flex-column align-items-center justify-content-center mb-4">
-                      <div className="font-weight-bold mb-2 ganna-input-title">Ganna Album Url</div>
-                      <input
-                        className="ganna-input input-sm rounded ganna-name-input"
-                        required
-                        value={this.state.gannaUrl}
-                        onChange={this.gannaUrlChangeHandler}
-                        placeholder=""
-                        type="text"
-                      />
+                  <div className="ganna-dialog-input-container m-5">
+                    <div className="form-group">
+                      <label htmlFor="albumUrl">Album Url</label>
+                      <input type="email" className="form-control" id="albumUrl" aria-describedby="albumUrlHelp" placeholder="Enter Album Url" value={this.state.gannaUrl} onChange={this.gannaUrlChangeHandler} />
                     </div>
-                    {this.state.isGannaUrl && (
-                      <div className="ganna-name-input d-flex flex-column align-items-center justify-content-center mb-4">
-                        <div className="font-weight-bold mb-2 ganna-input-title">Go to the below link and paste the HTML content</div>
-                        <span>{`view-source:${this.state.gannaUrl}`}</span>
-                      </div>
-                    )}
-                    <div className="ganna-name-input d-flex flex-column align-items-center justify-content-center mb-4">
-                      <div className="font-weight-bold mb-2 ganna-input-title">Html Content</div>
-                      <textarea className="ganna-input" aria-label="With textarea" value={this.state.htmlContent} onChange={this.htmlContentChnageHandler}></textarea>
+                    <div className="form-group">
+                      <label htmlFor="htmlFile">HTML Content</label>
+                      <input type="file" className="form-control-file" id="htmlFile" onChange={this.htmlContentChnageHandler} />
                     </div>
-                    <div className="ganna-name-input d-flex flex-column align-items-center justify-content-center mb-4">
-                      <button type="button" className="btn btn-success" disabled={this.state.isNotValid} onClick={this.initFetchHandler} >Init Fetch</button>
+                    <div className="form-group">
+                      <button type="button" className="btn btn-success" disabled={this.state.isNotValid} onClick={this.submitHandler} >Init Fetch</button>
                     </div>
                   </div>
                 </>
