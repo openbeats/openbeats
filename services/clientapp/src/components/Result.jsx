@@ -4,7 +4,7 @@ import Loader from 'react-loader-spinner';
 import "../assets/css/result.css";
 import { connect } from "react-redux";
 import { coreActions, nowPlayingActions, playlistManipulatorActions } from '../actions';
-import { Song, HorizontalView, ArtistHolder, AlbumHolder } from '.';
+import { Song, HorizontalView, ArtistHolder, AlbumHolder, Language, Emotion } from '.';
 class Result extends Component {
     componentDidMount() {
         this.props.setCurrentAction("Search Result");
@@ -31,6 +31,26 @@ class Result extends Component {
     getArtistsList() {
         return this.props.artists.length > 0 ? this.props.artists.map((item, key) => (
             <ArtistHolder
+                key={key}
+                name={item.name}
+                thumbnail={item.thumbnail}
+                id={item._id}
+            />
+        )) : <></>
+    }
+    getLanguagesList() {
+        return this.props.languages.length > 0 ? this.props.languages.map((item, key) => (
+            <Language
+                key={key}
+                name={item.name}
+                thumbnail={item.thumbnail}
+                id={item._id}
+            />
+        )) : <></>
+    }
+    geEmotionsList() {
+        return this.props.emotions.length > 0 ? this.props.emotions.map((item, key) => (
+            <Emotion
                 key={key}
                 name={item.name}
                 thumbnail={item.thumbnail}
@@ -77,6 +97,38 @@ class Result extends Component {
         </div> : <></>
     }
 
+    Languages = () => {
+        return this.props.languages.length > 0 ? <div className="home-section">
+            <div className="home-section-header">
+                <div className="left-section" >
+                    <i className="fad fa-language"></i>
+                    <span className="">Languages</span>
+                </div>
+            </div>
+            <div className="home-section-body">
+                <HorizontalView
+                    elementList={this.getLanguagesList()}
+                />
+            </div>
+        </div> : <></>
+    }
+
+    Emotions = () => {
+        return this.props.emotions.length > 0 ? <div className="home-section">
+            <div className="home-section-header">
+                <div className="left-section" >
+                    <i className="fad fa-dove"></i>
+                    <span className="">Emotions</span>
+                </div>
+            </div>
+            <div className="home-section-body">
+                <HorizontalView
+                    elementList={this.geEmotionsList()}
+                />
+            </div>
+        </div> : <></>
+    }
+
     Albums = () => {
         return this.props.albums.length > 0 ? <div className="home-section">
             <div className="home-section-header">
@@ -100,6 +152,8 @@ class Result extends Component {
                     <div className="search-result-container">
                         <this.Albums />
                         <this.Artists />
+                        <this.Emotions />
+                        <this.Languages />
                         <this.Songs />
                     </div>
                     :
@@ -125,6 +179,8 @@ const mapStateToProps = (state) => {
         songs: state.searchReducer.songs,
         artists: state.searchReducer.artists,
         albums: state.searchReducer.albums,
+        emotions: state.searchReducer.emotions,
+        languages: state.searchReducer.languages,
         isSearching: state.searchReducer.isSearching,
         isAuthenticated: state.authReducer.isAuthenticated,
         likedPlaylists: state.authReducer.likedPlaylists,

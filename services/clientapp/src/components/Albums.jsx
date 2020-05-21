@@ -100,9 +100,9 @@ class Albums extends Component {
 				<div className="home-section">
 					<div className="home-section-header">
 						<div className="left-section cursor-pointer" onClick={() => this.props.push("/albums/popular")}>
-							<i className="fad fa-album-collection"></i>
+							<i className="master-color fad fa-album-collection"></i>
 							<span className="">Popular Albums</span>
-							<i className="fas fa-angle-double-right"></i>
+							<i className="master-color fas fa-angle-double-right"></i>
 						</div>
 					</div>
 					<div className="home-section-body">
@@ -119,9 +119,9 @@ class Albums extends Component {
 				<div className="home-section">
 					<div className="home-section-header">
 						<div className="left-section cursor-pointer" onClick={() => this.props.push("/albums/latest")}>
-							<i className="fad fa-star"></i>
+							<i className="master-color fad fa-star"></i>
 							<span className="">Latest Albums</span>
-							<i className="fas fa-angle-double-right"></i>
+							<i className="master-color fas fa-angle-double-right"></i>
 						</div>
 					</div>
 					<div className="home-section-body">
@@ -137,7 +137,7 @@ class Albums extends Component {
 		return <div className="home-section">
 			<div className="home-section-header">
 				<div className="left-section cursor-pointer">
-					<i className="fad fa-star"></i>
+					<i className="master-color fad fa-star"></i>
 					<span className="">{this.state.type === "latest" ? "Latest" : "Popular"} Albums</span>
 				</div>
 			</div>
