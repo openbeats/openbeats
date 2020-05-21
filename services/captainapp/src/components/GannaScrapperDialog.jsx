@@ -44,11 +44,15 @@ class GannaScrapperDialog extends Component {
   }
 
   initFetchHandler = async () => {
-    const reqBody = {
-      playlistURL: this.state.gannaUrl,
-      htmlContent: this.state.htmlContent
-    };
-    axios.post(`${variables.baseUrl}/scrapper/gaana`, reqBody)
+    const formData = new FormData();
+    formData.append("playlistURL", this.state.gannaUrl);
+    formData.append("htmlContent", this.state.htmlContent);
+    axios.post({
+      method: 'post',
+      url: `${variables.baseUrl}/scrapper/fetchsongs`,
+      data: formData,
+      headers: { 'Content-Type': 'multipart/form-data' }
+    }, reqBody)
       .then((response) => {
         const initFetch = response.data;
         if (initFetch.status) {
