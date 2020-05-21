@@ -21,8 +21,8 @@ let globalRes;
 const logConsole = (message, isErrorLog) => {
   if (isErrorLog)
     console.error(message);
-  else
-    console.log(message);
+  // else
+  //   console.log(message);
 };
 
 // used to send responses to the client
@@ -355,7 +355,7 @@ exports.fetchSongs = async (req, res) => {
           // getting content from the uploaded file
           const htmlContent = fs.readFileSync(req.file.path);
           // deleting file
-          fs.unlink(req.file.path, err => {
+          fs.unlinkSync(req.file.path, err => {
             logConsole("File deleted - " + req.file.filename, false);
           });
 
