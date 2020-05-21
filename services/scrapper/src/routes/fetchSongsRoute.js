@@ -10,6 +10,7 @@ const storage = multer.diskStorage({
         cb(null, file.originalname);
     }
 });
+
 // upload function to fetch and store the files sent locally
 const upload = multer({
     storage: storage
