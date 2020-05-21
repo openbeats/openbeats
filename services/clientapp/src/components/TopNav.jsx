@@ -3,7 +3,7 @@ import "../assets/css/topnav.css";
 import { push } from "connected-react-router";
 import { connect } from "react-redux";
 import { toastActions, searchActions, authActions } from "../actions";
-import { angleright, mainsearch } from "../assets/images";
+import { angleright } from "../assets/images";
 
 class TopNav extends Component {
 	constructor(props) {
@@ -81,9 +81,9 @@ class TopNav extends Component {
 							className="search-input"
 							placeholder="Search Artists, Albums, Films, Songs...."
 						/>
-						<button className="search-icon" type="submit">
-							<img src={mainsearch} alt="" srcSet="" />
-						</button>
+						<div className="search-icon" type="submit">
+							<i className="fad fa-search"></i>
+						</div>
 					</form>
 					<div className="suggestion-keyword-holder">
 						{this.props.keywordSuggestions.map((item, key) => (

@@ -17,7 +17,8 @@ nav {
 
 .nav-content {
     width: 100%;
-    height: 100%;
+    height: calc(100% - 60px);
+    margin-top: 60px;
     overflow-y: hidden;
     overflow-x: hidden;
 }
@@ -67,10 +68,8 @@ nav {
     margin-left: -25px;
 }
 
-.main-nav-menus {
-    margin-top: 65px;
-    margin-bottom: 10px;
-}
+/* .main-nav-menus {
+} */
 
 .nav-menu {
     text-decoration: none;
@@ -82,11 +81,11 @@ nav {
 }
 
 .nav-menu:hover {
-    background: var(--nav-menu-hover-color);
+    background-image: linear-gradient(to right, rgb(48, 48, 48), transparent);
 }
 
 .nav-menu-highlight {
-    background: var(--nav-menu-hover-color);
+    background-image: linear-gradient(to right, rgb(48, 48, 48), transparent);
 }
 
 .nav-menu-icon-holder {

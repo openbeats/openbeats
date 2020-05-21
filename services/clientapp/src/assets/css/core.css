@@ -1,22 +1,22 @@
 @import url("https://fonts.googleapis.com/css?family=Roboto&display=swap");
 
 :root {
-  --main-bg-color: #242020;
-  --main-nav-bg-color: #242424;
+  --main-bg-color: #000000;
+  --main-nav-bg-color: #000000;
   --main-master-color: #F32C2C;
-  --scroll-track-bg-color: rgb(56, 45, 45);
-  --scroll-track-thumb-color: #644747;
-  --scroll-track-thumb-color-hover: rgba(75, 72, 72, 0.8);
-  --nav-menu-hover-color: rgba(94, 66, 66, 0.2);
+  --scroll-track-bg-color: rgb(0, 0, 0);
+  --scroll-track-thumb-color: #2b2b2b;
+  --scroll-track-thumb-color-hover: #F32C2C;
+  --nav-menu-hover-color: rgba(82, 82, 82, 0.4);
   --text-color-main: #C1CCCC;
   --text-color-sub-1: #999992;
   --text-color-sub-2: #707070;
-  --horizontal-rule-color: #707070;
+  --horizontal-rule-color: #252525;
   --brigth-hover: #cccccc;
-  --search-input-bg-color: rgba(112, 106, 106, 0.1);
+  --search-input-bg-color: #252525;
   --progress-bar-bg-color: #363333;
   --progress-bar-slider-thumb: #cccccc;
-  --search-icon-background: #2B2828;
+  --search-icon-background: #252525;
 }
 
 * {

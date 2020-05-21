@@ -95,7 +95,7 @@ export const fetchLanguages = async () => {
     try {
         const {
             data
-        } = await axios.get(`${variables.baseUrl}/playlist/emotion/all?type=popular&page=1&limit=10`);
+        } = await axios.get(`${variables.baseUrl}/playlist/language/all?type=popular&page=1&limit=10`);
         if (data.status)
             return data.data.result;
         else
@@ -109,7 +109,7 @@ export const fetchEmotions = async () => {
     try {
         const {
             data
-        } = await axios.get(`${variables.baseUrl}/playlist/language/all?type=popular&page=1&limit=10`);
+        } = await axios.get(`${variables.baseUrl}/playlist/emotion/all?type=popular&page=1&limit=10`);
         if (data.status)
             return data.data.result;
         else
