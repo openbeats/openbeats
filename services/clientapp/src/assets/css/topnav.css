@@ -33,43 +33,48 @@
   border: 0;
   border-radius: 50px;
   width: 100%;
-  background: var(--search-input-bg-color);
-  font-size: 17px;
+  background: transparent;
+  font-size: 15px;
   caret-color: rgba(221, 221, 221, 0.4);
   padding: 10px 10px 10px 15px;
   color: var(--text-color-main);
+  background: var(--main-bg-color);
+  border: 1px solid #f32c2c6b;
 }
 
 .search-input:focus {
   outline: none;
   border: 0;
-  box-shadow: 0 0 10px 0 black;
+  box-shadow: 0 0 10px 0 var(--main-master-color);
 }
 
 .search-input::placeholder {
   color: var(--text-color-sub-2);
-  font-size: 17px;
+  font-size: 15px;
 }
 
 .search-icon {
+  background: var(--main-master-color);
   position: absolute;
-  right: 8px;
+  right: 0;
+  height: 100%;
+  width: 45px;
   top: 0px;
   cursor: pointer;
-  width: 35px;
-  height: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
   text-decoration: none;
   border: none;
   cursor: pointer;
-  background: var(--search-icon-background);
-  border-radius: 50%;
-}
-
-.search-icon>img {
-  width: 18px;
+  border-width: 1px;
+  border-top-right-radius: 50px;
+  border-bottom-right-radius: 50px;
+  border-color: var(--main-master-color);
+  color: var(--main-bg-color);
+  padding-right: 5px;
+  font-size: 17px;
+  font-weight: bold;
 }
 
 .search-icon:focus {
@@ -95,13 +100,13 @@
 .suggestion-keyword-holder {
   position: absolute;
   top: 45px;
-  left: 10px;
-  width: 95%;
+  left: 5px;
+  width: calc(100% - 50px);
   height: auto;
-  background: rgba(36, 36, 36, 0.9);
-  box-shadow: 0 0 10px 0px rgba(0, 0, 0, 0.6);
+  background: rgba(26, 25, 25, 0.9);
+  box-shadow: 0 0 10px 0px rgba(49, 49, 49, 0.6);
   border-radius: 5px;
-  font-size: 18px;
+  font-size: 15px;
   font-weight: normal !important;
   color: var(--text-color-sub-1);
   z-index: 10;
@@ -110,10 +115,7 @@
 .suggested-keyword {
   opacity: 0.8;
   border-bottom: 1px solid rgba(37, 37, 37, 0.1);
-  padding-top: 5px;
-  padding-left: 10px;
-  padding-right: 10px;
-  padding-bottom: 5px;
+  padding: 10px 10px;
 }
 
 .suggested-keyword:hover {
@@ -122,7 +124,7 @@
 }
 
 .highlight-current {
-  background: rgb(112, 112, 112, 0.2);
+  background: rgba(141, 141, 141, 0.2);
 }
 
 .auth-login-register-holder {
@@ -202,11 +204,8 @@
   }
 
   .search-icon {
-    width: 25px;
-  }
-
-  .search-icon>img {
-    width: 18px;
+    width: 40px;
+    font-size: 15px;
   }
 
   .main-user-profile-holder>img {

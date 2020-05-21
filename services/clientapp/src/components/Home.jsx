@@ -33,14 +33,14 @@ class Home extends Component {
 
     // Data Fetch Part
     prepareHomeData = async () => {
-        this.fetchTopCharts();
-        this.fetchLatestAlbums();
-        if (this.props.isAuthenticated) this.fetchMyCollections();
-        this.fetchPopularAlbums();
-        this.fetchEmotions();
-        this.fetchLanguages();
-        this.fetchPopularArtists();
-        this._isMounted && this.setState({ isLoading: false })
+        await this.fetchTopCharts();
+        await this.fetchLatestAlbums();
+        if (this.props.isAuthenticated) await this.fetchMyCollections();
+        await this.fetchPopularAlbums();
+        await this.fetchEmotions();
+        await this.fetchLanguages();
+        await this.fetchPopularArtists();
+        this._isMounted && await this.setState({ isLoading: false })
     }
 
     fetchTopCharts = async () => {
