@@ -7,6 +7,8 @@ const initialState = {
     songs: [],
     albums: [],
     artists: [],
+    emotions: [],
+    languages: [],
     listener: null,
     isSearching: false,
     isTyping: false,
