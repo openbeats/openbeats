@@ -50,6 +50,8 @@ export async function fetchResults() {
                     songs: res.data.songs ? res.data.songs : [],
                     albums: res.data.albums ? res.data.albums : [],
                     artists: res.data.artists ? res.data.artists : [],
+                    languages: res.data.languages ? res.data.languages : [],
+                    emotions: res.data.emotions ? res.data.emotions : [],
                     isSearching: false,
                     keywordSuggestions: []
                 }
@@ -65,6 +67,8 @@ export async function fetchResults() {
                 songs: [],
                 albums: [],
                 artists: [],
+                languages: [],
+                emotions: [],
                 isSearching: false,
                 keywordSuggestions: []
             }
