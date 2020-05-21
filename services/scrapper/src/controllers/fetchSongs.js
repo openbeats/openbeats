@@ -2,6 +2,7 @@
 import cheerio from "cheerio";
 import axios from "axios";
 import crypto from "crypto";
+import fs from "fs";
 import {
   config
 } from "../config";
@@ -19,8 +20,8 @@ let globalRes;
 const logConsole = (message, isErrorLog) => {
   if (isErrorLog)
     console.error(message);
-  else
-    console.log(message);
+  // else
+  //   console.log(message);
 };
 
 // used to send responses to the client
@@ -68,6 +69,10 @@ const initiateScrappingSequence = async (htmlContent, playlistUrlType, hashedPla
     logConsole("Initiated scrapping gaana playlist structure", false);
     // scraps playlist content in gaana structure
     playlistInformation = await scrapGaanaPlaylist(htmlContent);
+  } else if (playlistUrlType === "wynk") {
+    logConsole("Initiated scrapping wynk playlist structure", false);
+    // scraps playlist content in wynk structure
+    playlistInformation = await scrapWynkPlaylist(htmlContent);
   }
 
   logConsole("Fetched gaana playlist song information", false);
@@ -105,6 +110,32 @@ const initiateScrappingSequence = async (htmlContent, playlistUrlType, hashedPla
     logConsole("It already Exists in database", false);
   }
 
+};
+
+// scrap playlist content in wynk structure
+const scrapWynkPlaylist = async (htmlContent) => {
+  // fs.write('sample.html', htmlContent);
+  // loading html content into cheerio
+  const $ = cheerio.load(htmlContent);
+  // fetching album title
+  let albumTitle = $("body").find(".songInfo").find("h1").text();
+  // fetching the song list
+  const songLst = [];
+  let songListItems = $(".albumList").find("li").toArray();
+  for (const songIndex in songListItems) {
+    // getting attributes of songs
+    let songTitle = $($(songListItems[songIndex]).find("a").toArray()[0]).text().trim();
+    let songArtist = $($(songListItems[songIndex]).find("a").toArray()[1]).text().split("-")[0].split(",")[0].trim();
+    // adding attributes to the songLst
+    songLst.push({
+      title: songTitle,
+      artist: songArtist
+    });
+  }
+  return {
+    albumTitle: albumTitle,
+    songList: songLst
+  };
 };
 
 // scraps playlist content in gaana structure
