@@ -3,6 +3,7 @@ import cheerio from "cheerio";
 import axios from "axios";
 import crypto from "crypto";
 import fs from "fs";
+import path from "path";
 import {
   config
 } from "../config";
@@ -73,6 +74,7 @@ const initiateScrappingSequence = async (htmlContent, playlistUrlType, hashedPla
     logConsole("Initiated scrapping wynk playlist structure", false);
     // scraps playlist content in wynk structure
     playlistInformation = await scrapWynkPlaylist(htmlContent);
+    logConsole(playlistInformation, false);
   }
 
   logConsole("Fetched gaana playlist song information", false);
@@ -118,14 +120,14 @@ const scrapWynkPlaylist = async (htmlContent) => {
   // loading html content into cheerio
   const $ = cheerio.load(htmlContent);
   // fetching album title
-  let albumTitle = $("body").find(".songInfo").find("h1").text();
+  let albumTitle = $("body").find(".defaultBg").find("img").attr("title");
   // fetching the song list
   const songLst = [];
   let songListItems = $(".albumList").find("li").toArray();
   for (const songIndex in songListItems) {
     // getting attributes of songs
-    let songTitle = $($(songListItems[songIndex]).find("a").toArray()[0]).text().trim();
-    let songArtist = $($(songListItems[songIndex]).find("a").toArray()[1]).text().split("-")[0].split(",")[0].trim();
+    let songTitle = $($(songListItems[songIndex]).find("a").toArray()[0]).attr('title');
+    let songArtist = $($(songListItems[songIndex]).find("a").toArray()[1]).attr('title').split("-")[0].split(",")[0].trim();
     // adding attributes to the songLst
     songLst.push({
       title: songTitle,
@@ -350,9 +352,15 @@ exports.fetchSongs = async (req, res) => {
         if (playlistDBDocument === null) {
           logConsole("Playlist does not exist in database", false);
 
-          const htmlContent = req.body.htmlContent;
+          // getting content from the uploaded file
+          const htmlContent = fs.readFileSync(req.file.path);
+          // deleting file
+          fs.unlinkSync(req.file.path, err => {
+            logConsole("File deleted - " + req.file.filename, false);
+          });
 
           if (htmlContent != undefined) {
+
             // create document for the playlist in database
             const newPlaylistDocument = RipperCollection({
               ripId: hashedPlaylistUrl,
@@ -382,7 +390,7 @@ exports.fetchSongs = async (req, res) => {
       throw "Please send playlist url";
 
   } catch (error) {
-    logConsole("Error: " + error, true);
+    logConsole("Error fetchsongs: " + error, true);
     sendResponse("Error Occurred: " + error, 0);
     await updateDatabaseForError(hashedPlaylistUrl);
   }
