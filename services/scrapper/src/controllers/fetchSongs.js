@@ -2,6 +2,8 @@
 import cheerio from "cheerio";
 import axios from "axios";
 import crypto from "crypto";
+import fs from "fs";
+import path from "path";
 import {
   config
 } from "../config";
@@ -19,8 +21,8 @@ let globalRes;
 const logConsole = (message, isErrorLog) => {
   if (isErrorLog)
     console.error(message);
-  else
-    console.log(message);
+  // else
+  //   console.log(message);
 };
 
 // used to send responses to the client
@@ -68,6 +70,11 @@ const initiateScrappingSequence = async (htmlContent, playlistUrlType, hashedPla
     logConsole("Initiated scrapping gaana playlist structure", false);
     // scraps playlist content in gaana structure
     playlistInformation = await scrapGaanaPlaylist(htmlContent);
+  } else if (playlistUrlType === "wynk") {
+    logConsole("Initiated scrapping wynk playlist structure", false);
+    // scraps playlist content in wynk structure
+    playlistInformation = await scrapWynkPlaylist(htmlContent);
+    logConsole(playlistInformation, false);
   }
 
   logConsole("Fetched gaana playlist song information", false);
@@ -105,6 +112,32 @@ const initiateScrappingSequence = async (htmlContent, playlistUrlType, hashedPla
     logConsole("It already Exists in database", false);
   }
 
+};
+
+// scrap playlist content in wynk structure
+const scrapWynkPlaylist = async (htmlContent) => {
+  // fs.write('sample.html', htmlContent);
+  // loading html content into cheerio
+  const $ = cheerio.load(htmlContent);
+  // fetching album title
+  let albumTitle = $("body").find(".defaultBg").find("img").attr("title");
+  // fetching the song list
+  const songLst = [];
+  let songListItems = $(".albumList").find("li").toArray();
+  for (const songIndex in songListItems) {
+    // getting attributes of songs
+    let songTitle = $($(songListItems[songIndex]).find("a").toArray()[0]).attr('title');
+    let songArtist = $($(songListItems[songIndex]).find("a").toArray()[1]).attr('title').split("-")[0].split(",")[0].trim();
+    // adding attributes to the songLst
+    songLst.push({
+      title: songTitle,
+      artist: songArtist
+    });
+  }
+  return {
+    albumTitle: albumTitle,
+    songList: songLst
+  };
 };
 
 // scraps playlist content in gaana structure
@@ -319,9 +352,15 @@ exports.fetchSongs = async (req, res) => {
         if (playlistDBDocument === null) {
           logConsole("Playlist does not exist in database", false);
 
-          const htmlContent = req.body.htmlContent;
+          // getting content from the uploaded file
+          const htmlContent = fs.readFileSync(req.file.path);
+          // deleting file
+          fs.unlinkSync(req.file.path, err => {
+            logConsole("File deleted - " + req.file.filename, false);
+          });
 
           if (htmlContent != undefined) {
+
             // create document for the playlist in database
             const newPlaylistDocument = RipperCollection({
               ripId: hashedPlaylistUrl,
@@ -351,7 +390,7 @@ exports.fetchSongs = async (req, res) => {
       throw "Please send playlist url";
 
   } catch (error) {
-    logConsole("Error: " + error, true);
+    logConsole("Error fetchsongs: " + error, true);
     sendResponse("Error Occurred: " + error, 0);
     await updateDatabaseForError(hashedPlaylistUrl);
   }
