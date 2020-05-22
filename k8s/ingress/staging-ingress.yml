@@ -5,16 +5,15 @@ metadata:
   annotations:
     nginx.ingress.kubernetes.io/ingress.class: "nginx"
     nginx.ingress.kubernetes.io/proxy-body-size: 50m
-    # cert-manager.io/issuer: letsencrypt-openbeats-dns
-    # nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
     nginx.ingress.kubernetes.io/rewrite-target: /
 spec:
-  # tls:
-  #   - hosts:
-  #       - staging.openbeats.live
-  #       - staging-captain.openbeats.live
-  #       - staging-api.openbeats.live
-  #     secretName: obs-ingress-tls
+  tls:
+    - hosts:
+        - staging.openbeats.live
+        - staging-captain.openbeats.live
+        - staging-api.openbeats.live
+      secretName: obs-ingress-tls
   rules:
     - host: staging.openbeats.live
       http:
@@ -47,14 +46,13 @@ metadata:
   annotations:
     nginx.ingress.kubernetes.io/ingress.class: "nginx"
     nginx.ingress.kubernetes.io/proxy-body-size: 50m
-    # cert-manager.io/issuer: letsencrypt-openbeats-dns
-    # nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
     nginx.ingress.kubernetes.io/rewrite-target: /$2
 spec:
-  # tls:
-  #   - hosts:
-  #       - staging-api.openbeats.live
-  #     secretName: obs-backend-tls
+  tls:
+    - hosts:
+        - staging-api.openbeats.live
+      secretName: obs-backend-tls
   rules:
     - host: staging-api.openbeats.live
       http:
