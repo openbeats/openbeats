@@ -13,6 +13,9 @@ import {
 } from "connected-react-router";
 import thunk from "redux-thunk";
 // import logger from "redux-logger";
+import {
+	composeWithDevTools
+} from "redux-devtools-extension";
 import reducers from "./reducers";
 import GoogleAnalytics from 'react-ga';
 import {
@@ -42,12 +45,12 @@ const store = createStore(
 		router: connectRouter(history),
 		...reducers,
 	}), {},
-	applyMiddleware(
+	composeWithDevTools(applyMiddleware(
 		googleAnalyticsTrackingMiddleware,
 		routerMiddleware(history),
 		thunk,
 		// logger,
-	),
+	)),
 );
 
 export {
