@@ -3,8 +3,8 @@ import { master } from "../assets/images";
 import Loader from 'react-loader-spinner';
 import "../assets/css/result.css";
 import { connect } from "react-redux";
-import { toastActions, coreActions, nowPlayingActions, playerActions, playlistManipulatorActions } from '../actions';
-import { Song, HorizontalView, ArtistHolder, AlbumHolder } from '.';
+import { coreActions, nowPlayingActions, playlistManipulatorActions } from '../actions';
+import { Song, HorizontalView, ArtistHolder, AlbumHolder, Language, Emotion } from '.';
 class Result extends Component {
     componentDidMount() {
         this.props.setCurrentAction("Search Result");
@@ -38,6 +38,26 @@ class Result extends Component {
             />
         )) : <></>
     }
+    getLanguagesList() {
+        return this.props.languages.length > 0 ? this.props.languages.map((item, key) => (
+            <Language
+                key={key}
+                name={item.name}
+                thumbnail={item.thumbnail}
+                id={item._id}
+            />
+        )) : <></>
+    }
+    geEmotionsList() {
+        return this.props.emotions.length > 0 ? this.props.emotions.map((item, key) => (
+            <Emotion
+                key={key}
+                name={item.name}
+                thumbnail={item.thumbnail}
+                id={item._id}
+            />
+        )) : <></>
+    }
 
 
     Songs = () => {
@@ -52,17 +72,9 @@ class Result extends Component {
                 {this.props.songs.map((item, key) => (
                     <Song
                         key={key}
+                        index={key}
                         item={item}
-                        isPlaylist={this.props.isPlaylist}
-                        currentPlaying={this.props.currentPlaying}
-                        isAudioBuffering={this.props.isAudioBuffering}
-                        isMusicPlaying={this.props.isMusicPlaying}
-                        playPauseToggle={this.props.playPauseToggle}
                         updateCurrentPlaying={this.props.updateCurrentPlaying}
-                        downloadSong={this.downloadSong}
-                        isAuthenticated={this.props.isAuthenticated}
-                        addSongsToQueue={this.props.addSongsToQueue}
-                        showAddPlaylistDialog={this.props.showAddPlaylistDialog}
                     />
                 ))}
             </div>
@@ -80,6 +92,38 @@ class Result extends Component {
             <div className="home-section-body">
                 <HorizontalView
                     elementList={this.getArtistsList()}
+                />
+            </div>
+        </div> : <></>
+    }
+
+    Languages = () => {
+        return this.props.languages.length > 0 ? <div className="home-section">
+            <div className="home-section-header">
+                <div className="left-section" >
+                    <i className="fad fa-language"></i>
+                    <span className="">Languages</span>
+                </div>
+            </div>
+            <div className="home-section-body">
+                <HorizontalView
+                    elementList={this.getLanguagesList()}
+                />
+            </div>
+        </div> : <></>
+    }
+
+    Emotions = () => {
+        return this.props.emotions.length > 0 ? <div className="home-section">
+            <div className="home-section-header">
+                <div className="left-section" >
+                    <i className="fad fa-dove"></i>
+                    <span className="">Emotions</span>
+                </div>
+            </div>
+            <div className="home-section-body">
+                <HorizontalView
+                    elementList={this.geEmotionsList()}
                 />
             </div>
         </div> : <></>
@@ -108,6 +152,8 @@ class Result extends Component {
                     <div className="search-result-container">
                         <this.Albums />
                         <this.Artists />
+                        <this.Emotions />
+                        <this.Languages />
                         <this.Songs />
                     </div>
                     :
@@ -133,11 +179,9 @@ const mapStateToProps = (state) => {
         songs: state.searchReducer.songs,
         artists: state.searchReducer.artists,
         albums: state.searchReducer.albums,
+        emotions: state.searchReducer.emotions,
+        languages: state.searchReducer.languages,
         isSearching: state.searchReducer.isSearching,
-        currentPlaying: state.nowPlayingReducer.currentPlaying,
-        isPlaylist: state.nowPlayingReducer.isPlaylist,
-        isMusicPlaying: state.playerReducer.isMusicPlaying,
-        isAudioBuffering: state.playerReducer.isAudioBuffering,
         isAuthenticated: state.authReducer.isAuthenticated,
         likedPlaylists: state.authReducer.likedPlaylists,
     }
@@ -146,26 +190,11 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
     return {
-        featureNotify: () => {
-            toastActions.featureNotify();
-        },
-        updateCurrentPlaying: (audioData) => {
+        updateCurrentPlaying: (audioData, key = null) => {
             nowPlayingActions.updateCurrentPlaying(audioData)
-        },
-        notify: (message) => {
-            toastActions.showMessage(message)
         },
         setCurrentAction: (action) => {
             dispatch(coreActions.setCurrentAction(action))
-        },
-        playPauseToggle: () => {
-            dispatch(playerActions.playPauseToggle())
-        },
-        showAddPlaylistDialog: (song) => {
-            playlistManipulatorActions.showAddPlaylistDialog(song)
-        },
-        addSongsToQueue: (song) => {
-            nowPlayingActions.addSongsToQueue([song]);
         },
         addOrRemoveAlbumFromUserCollection: async (isAdd = true, albumId) => {
             return await playlistManipulatorActions.addOrRemoveAlbumFromUserCollection(albumId, isAdd);

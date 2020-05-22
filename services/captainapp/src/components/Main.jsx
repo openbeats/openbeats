@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { LeftNav, Albums, Artists, Emotions, Users, AlbumsDash, ResourceAddDialog, Languages } from ".";
+import { LeftNav, Albums, Artists, Emotions, Users, AlbumsDash, ResourceAddDialog, Languages, GannaScrapperDialog } from ".";
 import { Switch, Route } from "react-router";
 import Home from "./Home";
 import "../assets/styles/main.css";
@@ -21,6 +21,7 @@ class Main extends Component {
 						{[2, 3].includes(this.props.adminDetails.accessLevel) && <Route path="/userbase" component={Users} />}
 					</Switch>
 					{this.props.isAddArtistOpended && <ResourceAddDialog />}
+					{this.props.isGannaScrapperOpened && <GannaScrapperDialog />}
 				</div>
 			</div>
 		);
@@ -29,6 +30,7 @@ class Main extends Component {
 
 const mapStateToProps = state => {
 	return {
+		isGannaScrapperOpened: state.gannaScrapper.isOpened,
 		isAddArtistOpended: state.addResource.isOpened,
 		adminDetails: state.auth.adminDetails,
 	};
