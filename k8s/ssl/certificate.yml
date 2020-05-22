@@ -1,0 +1,12 @@
+apiVersion: cert-manager.io/v1alpha2
+kind: Certificate
+metadata:
+  name: openbeats-live-certificate
+spec:
+  secretName: openbeats-live-tls
+  issuerRef:
+    name: letsencrypt-openbeats-dns
+  commonName: openbeats.live
+  dnsNames:
+  - openbeats.live
+  - "*.openbeats.live"
