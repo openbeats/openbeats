@@ -1,0 +1,17 @@
+.emotions-wrapper {
+    width: 100%;
+    height: auto;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    padding: 20px;
+}
+
+
+
+@media only screen and (max-width: 800px) {
+    .emotions-wrapper {
+        align-items: center;
+        justify-content: center;
+    }
+}

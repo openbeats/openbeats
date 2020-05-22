@@ -91,3 +91,31 @@ export const fetchPopularArtists = async () => {
         return [];
     }
 }
+export const fetchLanguages = async () => {
+    try {
+        const {
+            data
+        } = await axios.get(`${variables.baseUrl}/playlist/language/all?type=popular&page=1&limit=10`);
+        if (data.status)
+            return data.data.result;
+        else
+            throw new Error(data.data.toString());
+    } catch (error) {
+        toastActions.showMessage(error.toString());
+        return [];
+    }
+}
+export const fetchEmotions = async () => {
+    try {
+        const {
+            data
+        } = await axios.get(`${variables.baseUrl}/playlist/emotion/all?type=popular&page=1&limit=10`);
+        if (data.status)
+            return data.data.result;
+        else
+            throw new Error(data.data.toString());
+    } catch (error) {
+        toastActions.showMessage(error.toString());
+        return [];
+    }
+}

@@ -11,6 +11,10 @@ import isAdmin from "../permissions/admin"
 import paginationMiddleware from "../config/paginationMiddleware";
 import setFindQuery from "../config/setFindQuery";
 import Album from "../models/Album"
+import {
+  saveAsserts,
+  deleteAssert
+} from "../core/digitalOceanSpaces";
 
 const router = Router();
 
@@ -27,6 +31,7 @@ router.post("/create", isAdmin, async (req, res) => {
       createdBy: req.user.id
     });
     await emotion.save();
+    saveAsserts("emotions", emotion._id, thumbnail, Emotion, "thumbnail");
     return res.send({
       status: true,
       data: emotion,
@@ -52,13 +57,14 @@ router.put("/:id", isAdmin, async (req, res) => {
       name,
       thumbnail
     } = req.body;
-    if ([2, 3].includes(req.user.admin.accessLevel)) {
-      const emotion = await Emotion.findById(req.params.id);
+    const emotion = await Emotion.findById(req.params.id);
+    if ([2, 3].includes(req.user.admin.accessLevel) || emotion.createdBy.toString() === req.user.id) {
       if (!emotion) throw new Error("No emotion exist with that Id.");
       emotion.name = name;
       emotion.thumbnail = thumbnail;
       emotion.updatedBy = req.user.id;
       await emotion.save();
+      saveAsserts("emotions", emotion._id, thumbnail, Emotion, "thumbnail");
       return res.send({
         status: true,
         data: emotion,
@@ -185,7 +191,11 @@ router.get("/:emotionId/albums", setFindQuery("emotion", "emotionId", "$in"), pa
 router.delete("/:id", isAdmin, async (req, res) => {
   try {
     if ([2, 3].includes(req.user.admin.accessLevel)) {
-      await Emotion.findByIdAndDelete(req.params.id);
+      const emotion = await Emotion.findById(req.params.id).lean();
+      deleteAssert(emotion.thumbnail);
+      await Emotion.deleteOne({
+        _id: emotion._id
+      });
       return res.send({
         status: true,
         data: "Deleted Successfully..",

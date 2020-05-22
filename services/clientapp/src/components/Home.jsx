@@ -3,7 +3,7 @@ import { toastActions, coreActions, homeActions, playlistManipulatorActions } fr
 import "../assets/css/home.css";
 import { connect } from "react-redux";
 import { push } from "connected-react-router";
-import { HorizontalView, AlbumHolder, ArtistHolder } from '.';
+import { HorizontalView, AlbumHolder, ArtistHolder, Language, Emotion } from '.';
 import Loader from 'react-loader-spinner';
 
 class Home extends Component {
@@ -18,6 +18,8 @@ class Home extends Component {
             latestAlbums: [],
             popularAlbums: [],
             surpriseAlbums: [],
+            emotions: [],
+            languages: [],
             isLoading: true
         };
         this.state = { ...this.initialState };
@@ -35,8 +37,10 @@ class Home extends Component {
         await this.fetchLatestAlbums();
         if (this.props.isAuthenticated) await this.fetchMyCollections();
         await this.fetchPopularAlbums();
+        await this.fetchEmotions();
+        await this.fetchLanguages();
         await this.fetchPopularArtists();
-        this._isMounted && this.setState({ isLoading: false })
+        this._isMounted && await this.setState({ isLoading: false })
     }
 
     fetchTopCharts = async () => {
@@ -62,6 +66,16 @@ class Home extends Component {
     fetchPopularArtists = async () => {
         const data = await this.props.fetchPopularArtists();
         this._isMounted && this.setState({ popularArtists: data, isLoading: false });
+    }
+
+    fetchEmotions = async () => {
+        const data = await this.props.fetchEmotions();
+        this._isMounted && this.setState({ emotions: data, isLoading: false });
+    }
+
+    fetchLanguages = async () => {
+        const data = await this.props.fetchLanguages();
+        this._isMounted && this.setState({ languages: data, isLoading: false });
     }
 
     // List Preparing Part
@@ -108,6 +122,26 @@ class Home extends Component {
             />
         ))
     }
+    getLanguagesList(arrayList) {
+        return arrayList.map((item, key) => (
+            <Language
+                key={key}
+                name={item.name}
+                thumbnail={item.thumbnail}
+                id={item._id}
+            />
+        ))
+    }
+    getEmotionsList(arrayList) {
+        return arrayList.map((item, key) => (
+            <Emotion
+                key={key}
+                name={item.name}
+                thumbnail={item.thumbnail}
+                id={item._id}
+            />
+        ))
+    }
 
     // Utils Part
     addOrRemoveAlbumFromCollectionHandler = async (isAdd = true, albumId) => {
@@ -121,9 +155,9 @@ class Home extends Component {
         return this.state.topChartsCollection.length > 0 && <div className="home-section">
             <div className="home-section-header">
                 <div className="left-section cursor-pointer" onClick={() => this.props.push("/topcharts")}>
-                    <i className="fad fa-bolt"></i>
+                    <i className="master-color fad fa-bolt"></i>
                     <span className="">Weekly Top Charts</span>
-                    <i className="fas fa-angle-double-right"></i>
+                    <i className="master-color fas fa-angle-double-right"></i>
                 </div>
             </div>
             <div className="home-section-body">
@@ -138,9 +172,9 @@ class Home extends Component {
         return this.state.myCollections.length > 0 && <div className="home-section">
             <div className="home-section-header">
                 <div className="left-section cursor-pointer" onClick={() => this.props.push("/mycollections")}>
-                    <i className="fad fa-heart-square"></i>
+                    <i className="master-color fad fa-heart-square"></i>
                     <span className="">Albums in your Collection</span>
-                    <i className="fas fa-angle-double-right"></i>
+                    <i className="master-color fas fa-angle-double-right"></i>
                 </div>
             </div>
             <div className="home-section-body">
@@ -155,9 +189,9 @@ class Home extends Component {
         return this.state.popularAlbums.length > 0 && <div className="home-section">
             <div className="home-section-header">
                 <div className="left-section cursor-pointer" onClick={() => this.props.push("/albums/popular")}>
-                    <i className="fad fa-album-collection"></i>
+                    <i className="master-color fad fa-album-collection"></i>
                     <span className="">Popular Albums</span>
-                    <i className="fas fa-angle-double-right"></i>
+                    <i className="master-color fas fa-angle-double-right"></i>
                 </div>
             </div >
             <div className="home-section-body">
@@ -172,9 +206,9 @@ class Home extends Component {
         return this.state.latestAlbums.length > 0 && <div className="home-section">
             <div className="home-section-header">
                 <div className="left-section cursor-pointer" onClick={() => this.props.push("/albums/latest")}>
-                    <i className="fad fa-star"></i>
+                    <i className="master-color fad fa-star"></i>
                     <span className="">Latest Albums</span>
-                    <i className="fas fa-angle-double-right"></i>
+                    <i className="master-color fas fa-angle-double-right"></i>
                 </div>
             </div>
             <div className="home-section-body">
@@ -189,14 +223,47 @@ class Home extends Component {
         return this.state.popularArtists.length > 0 && <div className="home-section">
             <div className="home-section-header">
                 <div className="left-section cursor-pointer" onClick={() => this.props.push("/artists")}>
-                    <i className="fad fa-user-music"></i>
+                    <i className="master-color fad fa-user-music"></i>
                     <span className="">Popular Artists</span>
-                    <i className="fas fa-angle-double-right"></i>
+                    <i className="master-color fas fa-angle-double-right"></i>
                 </div>
             </div>
             <div className="home-section-body">
                 <HorizontalView
                     elementList={this.getArtistsList(this.state.popularArtists)}
+                />
+            </div>
+        </div>
+    }
+    Lanugages = () => {
+        return this.state.languages.length > 0 && <div className="home-section">
+            <div className="home-section-header">
+                <div className="left-section cursor-pointer" onClick={() => this.props.push("/languages")}>
+                    <i className="master-color fad fa-language"></i>
+                    <span className="">Languages</span>
+                    <i className="master-color fas fa-angle-double-right"></i>
+                </div>
+            </div>
+            <div className="home-section-body">
+                <HorizontalView
+                    elementList={this.getLanguagesList(this.state.languages)}
+                />
+            </div>
+        </div>
+    }
+
+    Emotions = () => {
+        return this.state.emotions.length > 0 && <div className="home-section">
+            <div className="home-section-header">
+                <div className="left-section cursor-pointer" onClick={() => this.props.push("/emotions")}>
+                    <i className="master-color fad fa-dove"></i>
+                    <span className="">Emotions</span>
+                    <i className="master-color fas fa-angle-double-right"></i>
+                </div>
+            </div>
+            <div className="home-section-body">
+                <HorizontalView
+                    elementList={this.getEmotionsList(this.state.emotions)}
                 />
             </div>
         </div>
@@ -214,7 +281,9 @@ class Home extends Component {
             <div className="home-wrapper">
                 <this.LatestAlbums />
                 <this.TopCharts />
+                <this.Emotions />
                 <this.PopularArtists />
+                <this.Lanugages />
                 <this.PopularAlbums />
                 <this.MyCollections />
             </div>
@@ -257,6 +326,12 @@ const mapDispatchToProps = (dispatch) => {
         },
         fetchLatestAlbums: async () => {
             return await homeActions.fetchLatestAlbums();
+        },
+        fetchLanguages: async () => {
+            return await homeActions.fetchLanguages();
+        },
+        fetchEmotions: async () => {
+            return await homeActions.fetchEmotions();
         },
         addOrRemoveAlbumFromUserCollection: async (albumId, isAdd = true) => {
             return await playlistManipulatorActions.addOrRemoveAlbumFromUserCollection(albumId, isAdd);

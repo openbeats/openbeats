@@ -21,6 +21,13 @@ import Albums from "./Albums";
 import NoPage from "./NoPage";
 import Song from "./Song";
 import ArtistAlbums from "./ArtistAlbums";
+import Language from "./Language";
+import Languages from "./Languages";
+import Emotion from "./Emotion";
+import Emotions from "./Emotions";
+import EmotionAlbums from "./EmotionAlbums";
+import LanguageAlbums from "./LanguageAlbums";
+
 
 export {
 	Main,
@@ -46,4 +53,10 @@ export {
 	Albums,
 	NoPage,
 	Song,
+	Language,
+	Languages,
+	Emotion,
+	Emotions,
+	EmotionAlbums,
+	LanguageAlbums
 };

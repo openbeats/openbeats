@@ -17,6 +17,10 @@ import {
 	MyCollections,
 	Albums,
 	NoPage,
+	Languages,
+	Emotions,
+	LanguageAlbums,
+	EmotionAlbums
 } from ".";
 import { toastActions, coreActions, playlistManipulatorActions } from "../actions";
 import { connect } from "react-redux";
@@ -66,6 +70,10 @@ class Main extends Component {
 							<Route exact path="/topcharts" component={TopCharts} />
 							<Route exact path="/artists" component={Artists} />
 							<Route exact path="/artist/:id/:type" component={ArtistAlbums} />
+							<Route exact path="/languages" component={Languages} />
+							<Route exact path="/languages/:id" component={LanguageAlbums} />
+							<Route exact path="/emotions" component={Emotions} />
+							<Route exact path="/emotions/:id" component={EmotionAlbums} />
 							<Route
 								exact
 								path="/artist"
