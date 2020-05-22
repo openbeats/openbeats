@@ -1,5 +1,5 @@
 {
-  "name": "downcc",
+  "name": "obs-downcc",
   "version": "1.0.0",
   "description": "openbeats downcc service",
   "main": "index.js",
