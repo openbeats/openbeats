@@ -58,9 +58,9 @@ class MyPlaylists extends Component {
                                 <div className="p-options-icon-holder">
                                     <i className="fas fa-play cursor-pointer" onClick={() => this.props.push(`/playlist/user/${item._id}?autoplay=true`)} title="Play"></i>
                                 </div>
-                                <div className="p-options-icon-holder">
+                                {/* <div className="p-options-icon-holder">
                                     <i className="fas fa-random cursor-pointer" onClick={() => this.props.featureNotify()} title="Shuffle Play"></i>
-                                </div>
+                                </div> */}
                                 <div className="p-options-icon-holder">
                                     <img className="cursor-pointer action-image-size" title="Add to Queue" onClick={() => this.props.addSongsToQueue(item._id)} src={pQueueWhite} alt="" srcSet="" />
                                 </div>
@@ -113,7 +113,7 @@ const mapDispatchToProps = dispatch => {
             return playlistManipulatorActions.changeUserPlaylistName(_id, playlistName);
         },
         addSongsToQueue: async (pId) => {
-            const data = await playlistManipulatorActions.fetchUserPlaylist(pId);
+            const data = await playlistManipulatorActions.fetchAlbumPlaylist(pId, 'user');
             if (data && data.status && data.data.songs.length) {
                 nowPlayingActions.addSongsToQueue(data.data.songs);
             } else {

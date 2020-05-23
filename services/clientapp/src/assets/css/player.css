@@ -14,7 +14,10 @@
 .progress-bar-holder {
     position: absolute;
     top: 0;
-    width: 100%;
+    width: calc(100% - 20px);
+    left: 10px;
+    box-sizing: border-box;
+    background: transparent;
 }
 
 .progress-bar {
@@ -22,8 +25,9 @@
     height: 5px;
     overflow-y: hidden;
     cursor: pointer;
-    border-radius: 5px;
+    border-radius: 10px;
     -webkit-appearance: none;
+    background: transparent;
 }
 
 .progress-bar::-webkit-slider-runnable-track {
@@ -41,6 +45,7 @@
     border-radius: 50%;
     background: var(--progress-bar-slider-thumb);
     box-shadow: -100vw 0 0 100vw var(--main-master-color);
+    position: relative;
 }
 
 .progress-bar::-webkit-slider-thumb:hover {
