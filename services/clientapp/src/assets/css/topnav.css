@@ -40,6 +40,7 @@
   color: var(--text-color-main);
   background: var(--main-bg-color);
   border: 1px solid #f32c2c6b;
+  padding-right: 45px;
 }
 
 .search-input:focus {
@@ -54,7 +55,6 @@
 }
 
 .search-icon {
-  background: var(--main-master-color);
   position: absolute;
   right: 0;
   height: 100%;
@@ -65,13 +65,12 @@
   align-items: center;
   justify-content: center;
   text-decoration: none;
-  border: none;
   cursor: pointer;
   border-width: 1px;
   border-top-right-radius: 50px;
   border-bottom-right-radius: 50px;
   border-color: var(--main-master-color);
-  color: var(--main-bg-color);
+  color: var(--main-master-color);
   padding-right: 5px;
   font-size: 17px;
   font-weight: bold;
@@ -193,6 +192,7 @@
 
   .search-input {
     font-size: 14px;
+    padding-right: 40px;
   }
 
   .suggestion-keyword-holder {
@@ -226,8 +226,12 @@
     padding-right: 5px;
   }
 
+  .search-input {
+    padding-right: 30px;
+  }
+
   .search-icon {
-    width: 20px;
+    width: 30px;
   }
 
   .search-icon>img {
