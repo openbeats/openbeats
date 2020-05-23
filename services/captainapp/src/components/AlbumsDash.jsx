@@ -29,6 +29,7 @@ class AlbumsDash extends Component {
 			isUpdate: false,
 			isCustom: false,
 			updateAlbumId: null,
+			customThumbnail: '',
 		};
 	}
 
@@ -51,6 +52,7 @@ class AlbumsDash extends Component {
 					languageChips: albumData.data.languageArr.map(item => item._id),
 					emotionChips: albumData.data.emotion.map(item => item._id),
 					isCustom: albumData.data.isCustom,
+					customThumbnail: albumData.data.thumbnail !== albumData.data.songs[0].thumbnail ? albumData.data.thumbnail : ''
 				};
 				if (albumData.data.albumBy !== null) {
 					prepareData.artistChipsCollection = [...prepareData.artistChipsCollection, albumData.data.albumBy];
@@ -82,6 +84,7 @@ class AlbumsDash extends Component {
 				albumBy: this.state.artistChips.length === 1 ? this.state.artistChips[0] : this.state.albumBy,
 				songs: this.state.songsCollection,
 				isCustom: this.state.isCustom,
+				thumbnail: this.state.customThumbnail.length > 0 ? this.state.customThumbnail : null
 			};
 			if (!this.state.isUpdate) {
 				const resultData = (await axios.post(`${variables.baseUrl}/playlist/album/create`, preparedData)).data;
@@ -301,6 +304,22 @@ class AlbumsDash extends Component {
 										onChange={this.isCustomHandler} />
 									<span className="slider round"></span>
 								</label>
+							</div>
+							<div className="albumdash-name-holder mt-2">
+								<div className="font-weight-bold">
+									Custom Album Thumbnail
+								</div>
+								<div className="mb-1">(Valid Image url)</div>
+								<input
+									className="rounded w-100 font-weight-normal"
+									value={this.state.customThumbnail}
+									onChange={e => this.setState({ customThumbnail: e.target.value })}
+									placeholder="https://img.com/ilayaraja.jpg"
+									type="text"
+								/>
+								{this.state.customThumbnail.length > 0 && <div className="custom-thumbnail-preview-holder">
+									<div className="jumbotron" style={{ backgroundImage: `url(${this.state.customThumbnail}), url(https://via.placeholder.com/500/F3F3F3/000000/?text=Invalid-Image)`, }}></div>
+								</div>}
 							</div>
 						</div>
 					</div>
