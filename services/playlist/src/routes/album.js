@@ -176,13 +176,12 @@ router.put(
 			req.album.languageArr = language;
 			req.album.emotion = emotion;
 			req.album.isCustom = isCustom;
-
 			const addSongsCoreUrl = `${baseUrl}/addsongs`;
 			axios.post(addSongsCoreUrl, {
 				songs,
 			});
 			await req.album.save();
-			saveAsserts("albums", album._id, thumbnail, Album, "thumbnail");
+			saveAsserts("albums", req.album._id, thumbnail, Album, "thumbnail");
 			res.send({
 				status: true,
 				data: req.album,
