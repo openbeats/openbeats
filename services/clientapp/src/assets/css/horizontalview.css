@@ -50,3 +50,11 @@
     top: 0;
     right: 0
 }
+
+@media only screen and (max-width: 850px) {
+
+    .scroll-button {
+        width: 30px;
+    }
+
+}
