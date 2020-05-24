@@ -40,13 +40,13 @@
 }
 
 .left-scroll-button {
-    background-image: linear-gradient(to left, transparent, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.85), rgba(0, 0, 0, 0.90), rgba(0, 0, 0, 0.95), rgb(36, 32, 32));
+    background-image: linear-gradient(to left, transparent, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.85), rgba(0, 0, 0, 0.90), rgba(0, 0, 0, 0.95), rgb(0, 0, 0));
     top: 0;
     left: 0
 }
 
 .right-scroll-button {
-    background-image: linear-gradient(to right, transparent, rgba(0, 0, 0, 0.70), rgba(0, 0, 0, 0.85), rgba(0, 0, 0, 0.90), rgba(0, 0, 0, 0.95), rgb(36, 32, 32));
+    background-image: linear-gradient(to right, transparent, rgba(0, 0, 0, 0.70), rgba(0, 0, 0, 0.85), rgba(0, 0, 0, 0.90), rgba(0, 0, 0, 0.95), rgb(0, 0, 0));
     top: 0;
     right: 0
 }
