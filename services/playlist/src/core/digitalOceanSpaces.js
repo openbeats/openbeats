@@ -38,6 +38,9 @@ const convertToJpg = async (input) => {
 export const saveAsserts = async (assert, assertId, url, assertModel, property) => {
 	try {
 
+		//Init album update object
+		const update = {};
+
 		//Fetches Image as Image Buffer
 		const response = await axios.get(`${url}`, {
 			responseType: "arraybuffer",
@@ -87,9 +90,13 @@ export const saveAsserts = async (assert, assertId, url, assertModel, property) 
 			const update = {};
 			update[property] = endpoint;
 			await assertModel.findByIdAndUpdate(assertId, update);
+		} else {
+			throw new Error("Couldn't get endpoint..")
 		}
-
 	} catch (error) {
+		const errUpdate = {};
+		errUpdate[property] = config.dummyMusicHolder;
+		await assertModel.findByIdAndUpdate(assertId, errUpdate);
 		console.error(error);
 	}
 };
