@@ -19,6 +19,11 @@ class EmotionAlbums extends Component {
             emotionThumbnail: "",
             emotionId: "",
             emotionAlbums: [],
+            next: true,
+            previous: false,
+            page: 1,
+            limit: 3,
+            isScrollFetchInProcess: false,
         };
         this.state = { ...this.initialState };
     }
@@ -28,7 +33,21 @@ class EmotionAlbums extends Component {
         await this.emotionInitialFetch();
         this.props.setCurrentAction(this.state.emotionName + " Albums");
         this.fetchEmotionAlbumsHandler();
+        this.initiateScrollFetcher();
     }
+
+    initiateScrollFetcher() {
+        const mainBodyRef = document.getElementById("main-body");
+        mainBodyRef.addEventListener('scroll', this.scrollFetch);
+    }
+
+    scrollFetch = (e) => {
+        const totalHeight = e.target.scrollHeight - e.target.offsetHeight;
+        if (e.target.scrollTop === totalHeight) {
+            this.fetchEmotionAlbumsHandler();
+        }
+    }
+
 
     emotionInitialFetch = async () => {
         try {
@@ -48,12 +67,22 @@ class EmotionAlbums extends Component {
 
     fetchEmotionAlbumsHandler = async () => {
         try {
-            const emotionAlbumsFetchUrl = `${variables.baseUrl}/playlist/emotion/${this.state.emotionId}/albums?page=1&limit=1000`;
-            const emotionAlbums = (await axios.get(emotionAlbumsFetchUrl)).data;
-            if (emotionAlbums.status) {
-                this.setState({ emotionAlbums: emotionAlbums.data.result, isLoading: false });
-            } else {
-                throw new Error(emotionAlbums.data);
+            if (this.state.next && !this.state.isScrollFetchInProcess) {
+                this.setState({ isScrollFetchInProcess: true });
+                const emotionAlbumsFetchUrl = `${variables.baseUrl}/playlist/emotion/${this.state.emotionId}/albums?page=${this.state.page}&limit=${this.state.limit}`;
+                const data = (await axios.get(emotionAlbumsFetchUrl)).data;
+                if (data.status) {
+                    this.setState({
+                        isLoading: false,
+                        emotionAlbums: [...this.state.emotionAlbums, ...data.data.result],
+                        page: data.data.next ? this.state.page + 1 : this.state.page,
+                        next: data.data.next ? true : false,
+                        previous: data.data.previous ? true : false,
+                        isScrollFetchInProcess: false
+                    });
+                } else {
+                    throw new Error(data.data);
+                }
             }
         } catch (error) {
             this.props.notify(error.message.toString());
@@ -104,6 +133,8 @@ class EmotionAlbums extends Component {
     componentWillUnmount() {
         this.setState({ ...this.initialState });
         this._isMounted = false;
+        const mainBodyRef = document.getElementById("main-body");
+        mainBodyRef.removeEventListener("scroll", this.scrollFetch);
     }
 
     render() {
