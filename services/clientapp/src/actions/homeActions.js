@@ -65,6 +65,25 @@ export const fetchLatestAlbums = async (page = 1, limit = 10, advanced = false) 
     }
 }
 
+export const fetchLanguageAlbums = async (languageId, page = 1, limit = 10, advanced = false) => {
+    try {
+        const languageAlbumsFetchUrl = `${variables.baseUrl}/playlist/language/${languageId}/albums?page=1&limit=1000`;
+        const data = (await axios.get(languageAlbumsFetchUrl)).data;
+        console.log(data, languageId)
+        if (data.status) {
+            if (!advanced)
+                return data.data.result;
+            else
+                return data.data
+        } else {
+            throw new Error(data.data);
+        }
+    } catch (error) {
+        this.props.notify(error.message.toString());
+        this.props.push("/");
+    }
+}
+
 export const fetchPopularAlbums = async (page = 1, limit = 10, advanced = false) => {
     try {
         const {

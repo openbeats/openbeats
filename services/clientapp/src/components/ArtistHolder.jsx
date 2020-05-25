@@ -10,14 +10,30 @@ class ArtistHolder extends Component {
 		this.props.push(`/artist/${id}/all`);
 	};
 
-	render() {
-		return (
-			<div className="artist-display-holder cursor-pointer" onClick={() => this.aritstClickHandler(this.props.id)}>
-				<div className="artist-rounded-circle-holder" style={{ backgroundImage: `url('${this.props.thumbnail}'), url(${musicDummy})` }}></div>
-				<div className="artist-name">{this.props.name}</div>
-				<div className="artist-description">Artist</div>
+	Main = () => {
+		return <div className="artist-display-holder cursor-pointer" onClick={() => this.aritstClickHandler(this.props.id)}>
+			<div className="artist-rounded-circle-holder" style={{ backgroundImage: `url('${this.props.thumbnail}'), url(${musicDummy})` }}></div>
+			<div className="artist-name">{this.props.name}</div>
+			<div className="artist-description">Artist</div>
+		</div>
+
+	}
+
+
+	ExploreMore = () => {
+		return <div className="artist-display-holder album-explore-more cursor-pointer" onClick={() => this.props.push(this.props.exploreMoreUrl)}>
+			<div className="explore-more-icon-holer">
+				<i class="fas fa-compass"></i>
 			</div>
-		);
+			<div className="explore-more-text-holer">
+				Explore More
+            </div>
+		</div>
+	}
+
+
+	render() {
+		return !this.props.exploreMore ? <this.Main /> : <this.ExploreMore />;
 	}
 }
 

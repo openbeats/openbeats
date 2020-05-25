@@ -106,3 +106,24 @@
 .album-add-to-collection-icon:hover {
     opacity: 0.7;
 }
+
+.album-explore-more {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    position: relative;
+}
+
+.explore-more-icon-holer {
+    color: var(--main-master-color);
+    font-size: 40px;
+    z-index: 10;
+    margin-bottom: 20px;
+}
+
+.explore-more-text-holer {
+    color: var(--text-color-main);
+    font-size: 16px;
+    z-index: 10;
+}
