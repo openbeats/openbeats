@@ -15,6 +15,11 @@ class Albums extends Component {
 			latestAlbums: [],
 			type: "all",
 			isLoading: true,
+			next: true,
+			previous: false,
+			page: 1,
+			limit: 3,
+			isScrollFetchInProcess: false,
 		};
 		this.state = { ...this.initialState };
 	}
@@ -22,6 +27,24 @@ class Albums extends Component {
 	componentDidMount() {
 		this._isMounted = true;
 		this.albumsMainHandler();
+		const type = this.props.match.params.type
+		if (type !== 'all')
+			this.initiateScrollFetcher();
+	}
+
+	initiateScrollFetcher() {
+		const mainBodyRef = document.getElementById("main-body");
+		mainBodyRef.addEventListener('scroll', this.scrollFetch);
+	}
+
+	scrollFetch = (e) => {
+		const totalHeight = e.target.scrollHeight - e.target.offsetHeight;
+		if (e.target.scrollTop === totalHeight) {
+			if (this.state.type === "popular")
+				this.fetchPopularAlbumsHandler(true);
+			if (this.state.type === "latest")
+				this.fetchLatestAlbumsHandler(true);
+		}
 	}
 
 	albumsMainHandler = () => {
@@ -54,21 +77,39 @@ class Albums extends Component {
 	};
 
 	fetchPopularAlbumsHandler = async (fetchFull = false) => {
-		let data = [];
-
-		if (fetchFull) data = await this.props.fetchPopularAlbums(1, 10000);
-		else data = await this.props.fetchPopularAlbums(1, 10);
-
-		if (this._isMounted) this.setState({ isLoading: false, popularAlbums: data });
+		if (fetchFull && this.state.next && !this.state.isScrollFetchInProcess) {
+			this.setState({ isScrollFetchInProcess: true })
+			const getData = await this.props.fetchPopularAlbums(this.state.page, this.state.limit, true);
+			if (this._isMounted) this.setState({
+				isLoading: false,
+				popularAlbums: [...this.state.popularAlbums, ...getData.result],
+				page: getData.next ? this.state.page + 1 : this.state.page,
+				next: getData.next ? true : false,
+				previous: getData.previous ? true : false,
+				isScrollFetchInProcess: false
+			});
+		} else {
+			const data = await this.props.fetchPopularAlbums(1, 10);
+			if (this._isMounted) this.setState({ isLoading: false, popularAlbums: data });
+		}
 	};
 
 	fetchLatestAlbumsHandler = async (fetchFull = false) => {
-		let data = [];
-
-		if (fetchFull) data = await this.props.fetchLatestAlbums(1, 10000);
-		else data = await this.props.fetchLatestAlbums(1, 10);
-
-		if (this._isMounted) this.setState({ isLoading: false, latestAlbums: data });
+		if (fetchFull && this.state.next && !this.state.isScrollFetchInProcess) {
+			this.setState({ isScrollFetchInProcess: true })
+			const getData = await this.props.fetchLatestAlbums(this.state.page, this.state.limit, true);
+			if (this._isMounted) this.setState({
+				isLoading: false,
+				latestAlbums: [...this.state.latestAlbums, ...getData.result],
+				page: getData.next ? this.state.page + 1 : this.state.page,
+				next: getData.next ? true : false,
+				previous: getData.previous ? true : false,
+				isScrollFetchInProcess: false
+			});
+		} else {
+			const data = await this.props.fetchLatestAlbums(1, 10);
+			if (this._isMounted) this.setState({ isLoading: false, latestAlbums: data });
+		}
 	};
 
 	addOrRemoveAlbumFromCollectionHandler = (isAdd = true, albumId) => {
@@ -154,6 +195,8 @@ class Albums extends Component {
 	componentWillUnmount() {
 		this.setState({ ...this.initialState });
 		this._isMounted = false;
+		const mainBodyRef = document.getElementById("main-body");
+		mainBodyRef.removeEventListener("scroll", this.scrollFetch);
 	}
 
 	render() {
@@ -161,18 +204,21 @@ class Albums extends Component {
 			<div className="width-100 height-100 d-flex align-items-center justify-content-center">
 				<Loader type="ThreeDots" color="#F32C2C" height={80} width={80} />
 			</div>
-		) : (
-				<div className="albums-wrapper">
-					{this.state.type === "all" ? (
-						<Fragment>
-							<this.LatestAlbums />
-							<this.PopularAlbums />
-						</Fragment>
-					) : (
-							<this.AllAlbums />
-						)}
-				</div>
-			);
+		) : (<>
+			<div className="albums-wrapper">
+				{this.state.type === "all" ? (
+					<Fragment>
+						<this.LatestAlbums />
+						<this.PopularAlbums />
+					</Fragment>
+				) : (
+						<this.AllAlbums />
+					)}
+			</div>
+			{this.state.isScrollFetchInProcess && <div className="mt-2 width-100 d-flex align-items-center justify-content-center">
+				<Loader color="#F32C2C" type="TailSpin" height={30} width={30} />
+			</div>}
+		</>);
 	}
 }
 
@@ -200,11 +246,11 @@ const mapDispatchToProps = dispatch => {
 		addOrRemoveAlbumFromUserCollection: async (albumId, isAdd = true) => {
 			return await playlistManipulatorActions.addOrRemoveAlbumFromUserCollection(albumId, isAdd);
 		},
-		fetchPopularAlbums: async (page, limit) => {
-			return await homeActions.fetchPopularAlbums(page, limit);
+		fetchPopularAlbums: async (page, limit, advanced = false) => {
+			return await homeActions.fetchPopularAlbums(page, limit, advanced);
 		},
-		fetchLatestAlbums: async (page, limit) => {
-			return await homeActions.fetchLatestAlbums(page, limit);
+		fetchLatestAlbums: async (page, limit, advanced = false) => {
+			return await homeActions.fetchLatestAlbums(page, limit, advanced);
 		},
 	};
 };
