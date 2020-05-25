@@ -5,6 +5,7 @@ import { connect } from "react-redux";
 import { push } from "connected-react-router";
 import { HorizontalView, AlbumHolder, ArtistHolder, Language, Emotion } from '.';
 import Loader from 'react-loader-spinner';
+import { deploymentType } from '../config';
 
 class Home extends Component {
     _isMounted = false;
@@ -20,7 +21,19 @@ class Home extends Component {
             surpriseAlbums: [],
             emotions: [],
             languages: [],
-            isLoading: true
+            languageAlbums: [
+                {
+                    languageID: deploymentType === "production" ? '5ec8a093228af439111afa10' : '5ebc250ded9e0a3d78610453',
+                    albums: [],
+                    name: 'Tamil'
+                },
+                {
+                    languageID: deploymentType === "production" ? '5ec8a049228af416c11afa0f' : '5ec22077fac6c3093c11e7d6',
+                    albums: [],
+                    name: 'English'
+                },
+            ],
+            isLoading: true,
         };
         this.state = { ...this.initialState };
     }
@@ -37,10 +50,20 @@ class Home extends Component {
         await this.fetchLatestAlbums();
         if (this.props.isAuthenticated) await this.fetchMyCollections();
         await this.fetchPopularAlbums();
+        await this.fetchLanguageAlbums();
         await this.fetchEmotions();
         await this.fetchLanguages();
         await this.fetchPopularArtists();
         this._isMounted && await this.setState({ isLoading: false })
+    }
+
+    fetchLanguageAlbums = async () => {
+        let languages = [...this.state.languageAlbums];
+        this.state.languageAlbums.forEach(async (language, key) => {
+            const data = await this.props.fetchLanguageAlbums(language.languageID);
+            languages[key]['albums'] = [...data];
+        })
+        this._isMounted && this.setState({ languageAlbums: languages, isLoading: false });
     }
 
     fetchTopCharts = async () => {
@@ -79,68 +102,102 @@ class Home extends Component {
     }
 
     // List Preparing Part
-    getAlbumsList(arrayList) {
-        return arrayList.map((item, key) => (
-            <AlbumHolder
-                key={key}
-                albumName={item.name}
-                albumThumbnail={item.thumbnail}
-                albumTotalSongs={item.totalSongs}
-                albumId={item._id}
-                albumCreationDate={new Date().toDateString()}
-                albumCreatedBy={"OpenBeats"}
-                type={'album'}
-                addOrRemoveAlbumFromCollectionHandler={this.addOrRemoveAlbumFromCollectionHandler}
-                isAuthenticated={this.props.isAuthenticated}
-                isAlbumIsInCollection={this.props.likedPlaylists.indexOf(item._id) === -1 ? false : true}
-            />
-        ))
+    getAlbumsList(arrayList, exploreMore = { enabled: false, url: '' }) {
+        return (<>
+            {arrayList.map((item, key) => (
+                <AlbumHolder
+                    key={key}
+                    albumName={item.name}
+                    albumThumbnail={item.thumbnail}
+                    albumTotalSongs={item.totalSongs}
+                    albumId={item._id}
+                    albumCreationDate={new Date().toDateString()}
+                    albumCreatedBy={"OpenBeats"}
+                    type={'album'}
+                    addOrRemoveAlbumFromCollectionHandler={this.addOrRemoveAlbumFromCollectionHandler}
+                    isAuthenticated={this.props.isAuthenticated}
+                    isAlbumIsInCollection={this.props.likedPlaylists.indexOf(item._id) === -1 ? false : true}
+                />))}
+            {exploreMore.enabled &&
+                <AlbumHolder
+                    exploreMore={true}
+                    exploreMoreUrl={exploreMore.url}
+                />}
+        </>)
     }
 
-    getTopChartsList(arrayList) {
-        return arrayList.map((item, key) => (
-            <AlbumHolder
-                key={key}
-                albumName={item.name}
-                albumThumbnail={item.thumbnail}
-                albumTotalSongs={item.totalSongs}
-                albumId={item._id}
-                albumCreationDate={new Date(item.createdAt).toDateString()}
-                albumCreatedBy={item.createdBy}
-                type={'topchart'}
-            />
-        ))
+    getTopChartsList(arrayList, exploreMore = { enabled: false, url: '' }) {
+        return <>
+            {arrayList.map((item, key) => (
+                <AlbumHolder
+                    key={key}
+                    albumName={item.name}
+                    albumThumbnail={item.thumbnail}
+                    albumTotalSongs={item.totalSongs}
+                    albumId={item._id}
+                    albumCreationDate={new Date(item.createdAt).toDateString()}
+                    albumCreatedBy={item.createdBy}
+                    type={'topchart'}
+                />
+            ))}
+            {exploreMore.enabled &&
+                <AlbumHolder
+                    exploreMore={true}
+                    exploreMoreUrl={exploreMore.url}
+                />}
+        </>
     }
 
-    getArtistsList(arrayList) {
-        return arrayList.map((item, key) => (
-            <ArtistHolder
-                key={key}
-                name={item.name}
-                thumbnail={item.thumbnail}
-                id={item._id}
-            />
-        ))
+    getArtistsList(arrayList, exploreMore = { enabled: false, url: '' }) {
+        return <>
+            {arrayList.map((item, key) => (
+                <ArtistHolder
+                    key={key}
+                    name={item.name}
+                    thumbnail={item.thumbnail}
+                    id={item._id}
+                />
+            ))}
+            {exploreMore.enabled &&
+                <ArtistHolder
+                    exploreMore={true}
+                    exploreMoreUrl={exploreMore.url}
+                />}
+        </>
     }
-    getLanguagesList(arrayList) {
-        return arrayList.map((item, key) => (
-            <Language
-                key={key}
-                name={item.name}
-                thumbnail={item.thumbnail}
-                id={item._id}
-            />
-        ))
+    getLanguagesList(arrayList, exploreMore = { enabled: false, url: '' }) {
+        return <>
+            {arrayList.map((item, key) => (
+                <Language
+                    key={key}
+                    name={item.name}
+                    thumbnail={item.thumbnail}
+                    id={item._id}
+                />
+            ))}
+            {exploreMore.enabled &&
+                <Language
+                    exploreMore={true}
+                    exploreMoreUrl={exploreMore.url}
+                />}
+        </>
     }
-    getEmotionsList(arrayList) {
-        return arrayList.map((item, key) => (
-            <Emotion
-                key={key}
-                name={item.name}
-                thumbnail={item.thumbnail}
-                id={item._id}
-            />
-        ))
+    getEmotionsList(arrayList, exploreMore = { enabled: false, url: '' }) {
+        return <>
+            {arrayList.map((item, key) => (
+                <Emotion
+                    key={key}
+                    name={item.name}
+                    thumbnail={item.thumbnail}
+                    id={item._id}
+                />
+            ))}
+            {exploreMore.enabled &&
+                <Emotion
+                    exploreMore={true}
+                    exploreMoreUrl={exploreMore.url}
+                />}
+        </>
     }
 
     // Utils Part
@@ -162,7 +219,7 @@ class Home extends Component {
             </div>
             <div className="home-section-body">
                 <HorizontalView
-                    elementList={this.getTopChartsList(this.state.topChartsCollection)}
+                    elementList={this.getTopChartsList(this.state.topChartsCollection, { enabled: true, url: "/topcharts" })}
                 />
             </div>
         </div>
@@ -179,7 +236,7 @@ class Home extends Component {
             </div>
             <div className="home-section-body">
                 <HorizontalView
-                    elementList={this.getAlbumsList(this.state.myCollections)}
+                    elementList={this.getAlbumsList(this.state.myCollections, { enabled: true, url: "/mycollections" })}
                 />
             </div>
         </div>
@@ -196,7 +253,7 @@ class Home extends Component {
             </div >
             <div className="home-section-body">
                 <HorizontalView
-                    elementList={this.getAlbumsList(this.state.popularAlbums)}
+                    elementList={this.getAlbumsList(this.state.popularAlbums, { enabled: true, url: "/albums/popular" })}
                 />
             </div>
         </div >
@@ -213,7 +270,7 @@ class Home extends Component {
             </div>
             <div className="home-section-body">
                 <HorizontalView
-                    elementList={this.getAlbumsList(this.state.latestAlbums)}
+                    elementList={this.getAlbumsList(this.state.latestAlbums, { enabled: true, url: "/albums/latest" })}
                 />
             </div>
         </div>
@@ -230,7 +287,7 @@ class Home extends Component {
             </div>
             <div className="home-section-body">
                 <HorizontalView
-                    elementList={this.getArtistsList(this.state.popularArtists)}
+                    elementList={this.getArtistsList(this.state.popularArtists, { enabled: true, url: "/artists" })}
                 />
             </div>
         </div>
@@ -246,7 +303,7 @@ class Home extends Component {
             </div>
             <div className="home-section-body">
                 <HorizontalView
-                    elementList={this.getLanguagesList(this.state.languages)}
+                    elementList={this.getLanguagesList(this.state.languages, { enabled: true, url: "/languages" })}
                 />
             </div>
         </div>
@@ -263,10 +320,29 @@ class Home extends Component {
             </div>
             <div className="home-section-body">
                 <HorizontalView
-                    elementList={this.getEmotionsList(this.state.emotions)}
+                    elementList={this.getEmotionsList(this.state.emotions, { enabled: true, url: "/emotions" })}
                 />
             </div>
         </div>
+    }
+
+    LanguageAlbums = () => {
+        return this.state.languageAlbums.length > 0 && this.state.languageAlbums.map((language, key) =>
+            language.albums.length > 0 &&
+            <div className="home-section" key={key}>
+                <div className="home-section-header">
+                    <div className="left-section cursor-pointer" onClick={() => this.props.push(`/languages/${language.languageID}`)}>
+                        <i className="master-color fad fa-star"></i>
+                        <span className="">Albums in {language.name}</span>
+                        <i className="master-color fas fa-angle-double-right"></i>
+                    </div>
+                </div>
+                <div className="home-section-body">
+                    <HorizontalView
+                        elementList={this.getAlbumsList(language.albums, { enabled: true, url: `/languages/${language.languageID}` })}
+                    />
+                </div>
+            </div>)
     }
 
     componentWillUnmount() {
@@ -280,6 +356,7 @@ class Home extends Component {
             </div> :
             <div className="home-wrapper">
                 <this.LatestAlbums />
+                <this.LanguageAlbums />
                 <this.TopCharts />
                 <this.Emotions />
                 <this.PopularArtists />
@@ -323,6 +400,9 @@ const mapDispatchToProps = (dispatch) => {
         },
         fetchPopularAlbums: async () => {
             return await homeActions.fetchPopularAlbums();
+        },
+        fetchLanguageAlbums: async (languageId) => {
+            return await homeActions.fetchLanguageAlbums(languageId);
         },
         fetchLatestAlbums: async () => {
             return await homeActions.fetchLatestAlbums();

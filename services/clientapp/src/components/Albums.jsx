@@ -117,23 +117,30 @@ class Albums extends Component {
 	};
 
 	// List Preparing Part
-	getAlbumsList(arrayList) {
-		return arrayList.map((item, key) => (
-			<AlbumHolder
-				key={key}
-				albumName={item.name}
-				albumThumbnail={item.thumbnail}
-				albumTotalSongs={item.totalSongs}
-				albumId={item._id}
-				albumCreationDate={new Date(item.createdAt).toDateString()}
-				albumCreatedBy={"OpenBeats"}
-				type={"album"}
-				addOrRemoveAlbumFromCollectionHandler={this.addOrRemoveAlbumFromCollectionHandler}
-				isAuthenticated={this.props.isAuthenticated}
-				isAlbumIsInCollection={this.props.likedPlaylists.indexOf(item._id) === -1 ? false : true}
-			/>
-		));
+	getAlbumsList(arrayList, exploreMore = { enabled: false, url: '' }) {
+		return (<>
+			{arrayList.map((item, key) => (
+				<AlbumHolder
+					key={key}
+					albumName={item.name}
+					albumThumbnail={item.thumbnail}
+					albumTotalSongs={item.totalSongs}
+					albumId={item._id}
+					albumCreationDate={new Date().toDateString()}
+					albumCreatedBy={"OpenBeats"}
+					type={'album'}
+					addOrRemoveAlbumFromCollectionHandler={this.addOrRemoveAlbumFromCollectionHandler}
+					isAuthenticated={this.props.isAuthenticated}
+					isAlbumIsInCollection={this.props.likedPlaylists.indexOf(item._id) === -1 ? false : true}
+				/>))}
+			{exploreMore.enabled &&
+				<AlbumHolder
+					exploreMore={true}
+					exploreMoreUrl={exploreMore.url}
+				/>}
+		</>)
 	}
+
 
 	PopularAlbums = () => {
 		return (
@@ -147,7 +154,7 @@ class Albums extends Component {
 						</div>
 					</div>
 					<div className="home-section-body">
-						<HorizontalView elementList={this.getAlbumsList(this.state.popularAlbums)} />
+						<HorizontalView elementList={this.getAlbumsList(this.state.popularAlbums, { enabled: true, url: "/albums/popular" })} />
 					</div>
 				</div>
 			)
@@ -166,7 +173,7 @@ class Albums extends Component {
 						</div>
 					</div>
 					<div className="home-section-body">
-						<HorizontalView elementList={this.getAlbumsList(this.state.latestAlbums)} />
+						<HorizontalView elementList={this.getAlbumsList(this.state.latestAlbums, { enabled: true, url: "/albums/latest" })} />
 					</div>
 				</div>
 			)
