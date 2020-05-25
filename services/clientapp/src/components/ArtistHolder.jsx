@@ -23,7 +23,7 @@ class ArtistHolder extends Component {
 	ExploreMore = () => {
 		return <div className="artist-display-holder album-explore-more cursor-pointer" onClick={() => this.props.push(this.props.exploreMoreUrl)}>
 			<div className="explore-more-icon-holer">
-				<i class="fas fa-compass"></i>
+				<i className="fas fa-compass"></i>
 			</div>
 			<div className="explore-more-text-holer">
 				Explore More
