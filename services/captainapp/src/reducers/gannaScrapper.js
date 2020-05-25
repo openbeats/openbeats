@@ -5,6 +5,7 @@ import {
 const initialState = {
   isOpened: false,
   songsBucketCallback: null,
+  setFetchedArtistCallback: null
 };
 
 export const gannaScrapper = (state = initialState, action) => {
@@ -14,6 +15,7 @@ export const gannaScrapper = (state = initialState, action) => {
         ...state,
         ...action.payload,
         songsBucketCallback: action.payload.songsBucketCallback ? action.payload.songsBucketCallback : null,
+        setFetchedArtistCallback: action.payload.setFetchedArtistCallback ? action.payload.setFetchedArtistCallback : null,
       };
       break;
     default:
