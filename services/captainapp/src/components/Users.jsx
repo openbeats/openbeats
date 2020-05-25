@@ -32,6 +32,7 @@ const Users = ({ adminDetails }) => {
 		try {
 			const delUser = (await axios.delete(`${variables.baseUrl}/auth/admin/${userId}`)).data
 			if (delUser.status) {
+				await fetchUsers();
 				toast.success(delUser.data);
 			} else {
 				throw new Error(delUser.data);
