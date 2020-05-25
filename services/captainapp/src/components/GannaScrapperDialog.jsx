@@ -44,6 +44,7 @@ class GannaScrapperDialog extends Component {
   }
 
   initFetchHandler = async () => {
+    this.setState({ isProcessing: true });
     const formData = new FormData();
     formData.append("playlistUrl", this.state.gannaUrl);
     formData.append("htmlContent", this.state.htmlContentfile);
@@ -54,7 +55,6 @@ class GannaScrapperDialog extends Component {
       headers: { 'Content-Type': 'multipart/form-data' }
     })
       .then((response) => {
-        this.setState({ isProcessing: true });
         const initFetch = response.data;
         if (initFetch.status) {
           if (initFetch.processing) {
@@ -62,9 +62,14 @@ class GannaScrapperDialog extends Component {
           } else {
             this.setState({ isProcessing: false });
             const songs = initFetch.data.data
+            const artists = initFetch.data.artists
             const numOfSongs = initFetch.data.audioObjsFetched
             if (Array.isArray(songs)) {
               this.props.songsBucketCallback(songs);
+            }
+            if (Array.isArray(artists)) {
+              const artistStr = artists.join(", ");
+              this.props.setFetchedArtistCallback(artistStr);
             }
             this.props.toggleScrapperDialog(false);
             toast.success(`${numOfSongs} songs has been added..`);
@@ -92,19 +97,19 @@ class GannaScrapperDialog extends Component {
           {
             this.state.isProcessing ? (
               <div className="ganna-dialog-container">
-                <div class="modal-dialog" role="document">
-                  <div class="modal-content">
-                    <div class="modal-header">
-                      <h5 class="modal-title" id="exampleModalLongTitle">Fetch Initiated</h5>
+                <div className="modal-dialog" role="document">
+                  <div className="modal-content">
+                    <div className="modal-header">
+                      <h5 className="modal-title" id="exampleModalLongTitle">Fetch Initiated</h5>
                     </div>
-                    <div class="modal-body">
+                    <div className="modal-body">
                       <span>{(this.state.totalTitles && this.state.fetchedTitles) ? (`${this.state.fetchedTitles} out ${this.state.totalTitles} songs fetched..`) : ("Fetching songs...")}</span>
                       <Loader
                         type="ThreeDots"
                         color="#F32C2C"
                       />
                     </div>
-                    <div class="modal-footer">
+                    <div className="modal-footer">
                       <strong>Please Wait !!!</strong>
                     </div>
                   </div>
@@ -130,7 +135,7 @@ class GannaScrapperDialog extends Component {
                       <label htmlFor="htmlFile">HTML Content</label>
                       <input type="file" className="form-control-file" id="htmlFile" onChange={this.htmlContentChnageHandler} />
                     </div>
-                    <div className="form-group">
+                    <div className="d-flex justify-content-center">
                       <button type="button" className="btn btn-success" disabled={this.state.isNotValid} onClick={this.submitHandler} >Init Fetch</button>
                     </div>
                   </div>
@@ -145,7 +150,8 @@ class GannaScrapperDialog extends Component {
 
 const mapStateToProps = state => {
   return {
-    songsBucketCallback: state.gannaScrapper.songsBucketCallback
+    songsBucketCallback: state.gannaScrapper.songsBucketCallback,
+    setFetchedArtistCallback: state.gannaScrapper.setFetchedArtistCallback,
   };
 };
 
