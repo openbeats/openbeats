@@ -5,7 +5,7 @@
   --main-nav-bg-color: #000000;
   --main-master-color: #F32C2C;
   --scroll-track-bg-color: rgb(0, 0, 0);
-  --scroll-track-thumb-color: #2b2b2b;
+  --scroll-track-thumb-color: #232323;
   --scroll-track-thumb-color-hover: #F32C2C;
   --nav-menu-hover-color: rgba(82, 82, 82, 0.4);
   --text-color-main: #C1CCCC;
@@ -32,6 +32,7 @@
   user-select: none;
   -webkit-user-drag: none;
   -webkit-touch-callout: none;
+  -webkit-tap-highlight-color: transparent;
 }
 
 body {

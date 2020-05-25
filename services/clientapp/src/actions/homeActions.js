@@ -47,13 +47,16 @@ export const fetchMyCollections = async () => {
     }
 }
 
-export const fetchLatestAlbums = async (page = 1, limit = 10) => {
+export const fetchLatestAlbums = async (page = 1, limit = 10, advanced = false) => {
     try {
         const {
             data
         } = await axios.get(`${variables.baseUrl}/playlist/album/all?type=latest&page=${page}&limit=${limit}`);
         if (data.status)
-            return data.data.result;
+            if (!advanced)
+                return data.data.result;
+            else
+                return data.data;
         else
             throw new Error(data.data.toString());
     } catch (error) {
@@ -62,13 +65,16 @@ export const fetchLatestAlbums = async (page = 1, limit = 10) => {
     }
 }
 
-export const fetchPopularAlbums = async (page = 1, limit = 10) => {
+export const fetchPopularAlbums = async (page = 1, limit = 10, advanced = false) => {
     try {
         const {
             data
         } = await axios.get(`${variables.baseUrl}/playlist/album/all?type=popular&page=${page}&limit=${limit}`);
         if (data.status)
-            return data.data.result;
+            if (!advanced)
+                return data.data.result;
+            else
+                return data.data;
         else
             throw new Error(data.data.toString());
     } catch (error) {

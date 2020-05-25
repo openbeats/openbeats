@@ -39,7 +39,7 @@ class Main extends Component {
 				<LeftNav />
 				<main>
 					<TopNav />
-					<section className="main-body">
+					<section className="main-body" id="main-body">
 						<Switch>
 							<Route exact path="/" component={Home} />
 							<Route path="/nowplaying" component={NowPlaying} />
