@@ -19,6 +19,11 @@ class LanguageAlbums extends Component {
             languageThumbnail: "",
             languageId: "",
             languageAlbums: [],
+            next: true,
+            previous: false,
+            page: 1,
+            limit: 3,
+            isScrollFetchInProcess: false,
         };
         this.state = { ...this.initialState };
     }
@@ -28,7 +33,21 @@ class LanguageAlbums extends Component {
         await this.languageInitialFetch();
         this.props.setCurrentAction(this.state.languageName + " Albums");
         this.fetchLanguageAlbumsHandler();
+        this.initiateScrollFetcher();
     }
+
+    initiateScrollFetcher() {
+        const mainBodyRef = document.getElementById("main-body");
+        mainBodyRef.addEventListener('scroll', this.scrollFetch);
+    }
+
+    scrollFetch = (e) => {
+        const totalHeight = e.target.scrollHeight - e.target.offsetHeight;
+        if (e.target.scrollTop === totalHeight) {
+            this.fetchLanguageAlbumsHandler();
+        }
+    }
+
 
     languageInitialFetch = async () => {
         try {
@@ -48,12 +67,22 @@ class LanguageAlbums extends Component {
 
     fetchLanguageAlbumsHandler = async () => {
         try {
-            const languageAlbumsFetchUrl = `${variables.baseUrl}/playlist/language/${this.state.languageId}/albums?page=1&limit=1000`;
-            const languageAlbums = (await axios.get(languageAlbumsFetchUrl)).data;
-            if (languageAlbums.status) {
-                this.setState({ languageAlbums: languageAlbums.data.result, isLoading: false });
-            } else {
-                throw new Error(languageAlbums.data);
+            if (this.state.next && !this.state.isScrollFetchInProcess) {
+                this.setState({ isScrollFetchInProcess: true })
+                const languageAlbumsFetchUrl = `${variables.baseUrl}/playlist/language/${this.state.languageId}/albums?page=${this.state.page}&limit=${this.state.limit}`;
+                const data = (await axios.get(languageAlbumsFetchUrl)).data;
+                if (data.status) {
+                    this.setState({
+                        isLoading: false,
+                        languageAlbums: [...this.state.languageAlbums, ...data.data.result],
+                        page: data.data.next ? this.state.page + 1 : this.state.page,
+                        next: data.data.next ? true : false,
+                        previous: data.data.previous ? true : false,
+                        isScrollFetchInProcess: false
+                    });
+                } else {
+                    throw new Error(data.data);
+                }
             }
         } catch (error) {
             this.props.notify(error.message.toString());
@@ -104,6 +133,8 @@ class LanguageAlbums extends Component {
     componentWillUnmount() {
         this.setState({ ...this.initialState });
         this._isMounted = false;
+        const mainBodyRef = document.getElementById("main-body");
+        mainBodyRef.removeEventListener("scroll", this.scrollFetch);
     }
 
     render() {
