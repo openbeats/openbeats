@@ -28,6 +28,19 @@ const Users = ({ adminDetails }) => {
 		fetchUsers();
 	}, [fetchUsers]);
 
+	const deleteUserHandler = async (userId) => {
+		try {
+			const delUser = (await axios.delete(`${variables.baseUrl}/auth/admin/${userId}`)).data
+			if (delUser.status) {
+				toast.success(delUser.data);
+			} else {
+				throw new Error(delUser.data);
+			}
+		} catch (error) {
+			toast.error(error.toString());
+		}
+	}
+
 	const onChangeAdmin = async (accessLevel, userId) => {
 		try {
 			const body = {};
@@ -63,31 +76,41 @@ const Users = ({ adminDetails }) => {
 					</div>
 				) : (
 						usersCollection.map((item, index) => (
-							<div className={`user-display-holder cursor-pointer ${adminDetails.accessLevel === 3 ? "access-level-added" : ''}`} key={index}>
-								<div className="user-rounded-circle-holder" style={{ backgroundImage: `url(${item.avatar})` }}></div>
+							<div className={`user-display-holder ${adminDetails.accessLevel === 3 ? "access-level-added" : ''}`} key={index}>
+								{
+									adminDetails.accessLevel === 3 && (
+										<div className="user-btn-rounded user-delete-button cursor-pointer" onClick={e => deleteUserHandler(item._id)}>
+											<i className="far fa-trash-alt"></i>
+										</div>
+									)
+								}
+								<div className="user-rounded-circle-holder" style={{ backgroundImage: `url(${item.avatar})` }}>
+								</div>
 								<div className="user-name">{item.name}</div>
 								<div className="user-description">{`${item.email}`}</div>
 								<div className="user-description">{`Joined At ${new Date(item.date).toDateString()}`}</div>
-								{adminDetails.accessLevel === 3 && (
-									<Fragment>
-										<div className="access-levels">Admin Access</div>
-										<select
-											value={!item.admin.accessLevel ? "None" : item.admin.accessLevel}
-											onChange={e => onChangeAdmin(e.target.value, item._id)}
-											className="access-level"
-										>
-											<option value="None">Non-admin</option>
-											<option value="1">Access Level 1</option>
-											<option value="2">Access Level 2</option>
-											<option value="3">Access Level 3</option>
-										</select>
-									</Fragment>
-								)}
+								{
+									adminDetails.accessLevel === 3 && (
+										<Fragment>
+											<div className="access-levels">Admin Access</div>
+											<select
+												value={!item.admin.accessLevel ? "None" : item.admin.accessLevel}
+												onChange={e => onChangeAdmin(e.target.value, item._id)}
+												className="access-level"
+											>
+												<option value="None">Non-admin</option>
+												<option value="1">Access Level 1</option>
+												<option value="2">Access Level 2</option>
+												<option value="3">Access Level 3</option>
+											</select>
+										</Fragment>
+									)
+								}
 							</div>
 						))
 					)}
 			</div>
-		</div>
+		</div >
 	);
 };
 
