@@ -16,6 +16,7 @@ export const config = {
   lastFmAPIKey: "d2b6c4283a7958e1d107005ac85d59db",
   spacesAPIKey: "OIZSJZBLSONESEJUQLOT",
   spacesAPISecret: "srzc9w3eaFplkd8mkUQrobqOqCxmvr2hcB8RPrpmIMk",
+  dummyMusicHolder: "https://openbeats.nyc3.digitaloceanspaces.com/fallback/dummy_music_holder.jpg",
   isDev: type === "development" ? true : false,
   subFolder: type === "production" ? "production" : "staging",
 };
