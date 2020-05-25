@@ -38,9 +38,6 @@ const convertToJpg = async (input) => {
 export const saveAsserts = async (assert, assertId, url, assertModel, property) => {
 	try {
 
-		//Init album update object
-		const update = {};
-
 		//Fetches Image as Image Buffer
 		const response = await axios.get(`${url}`, {
 			responseType: "arraybuffer",

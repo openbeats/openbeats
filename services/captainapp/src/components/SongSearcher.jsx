@@ -157,7 +157,7 @@ class SongSearcher extends Component {
 							})}
 						</div>
 					</div>
-					<div className="gaana" onClick={e => this.props.toggleScrapperDialog(true, this.props.addSongsCallback)}>
+					<div className="gaana" onClick={() => this.props.toggleScrapperDialog(true, this.props.addSongsCallback, this.props.setFetchedArtist)}>
 						<img className="scrapper-logo" src={gannaLogo} alt="" />
 						<img className="scrapper-logo" src={wynkLogo} alt="" />
 					</div>
@@ -208,8 +208,8 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = dispatch => {
 	return {
-		toggleScrapperDialog: (value, songsBucketCallback) => {
-			const payload = { isOpened: value, songsBucketCallback: songsBucketCallback };
+		toggleScrapperDialog: (isOpened, songsBucketCallback, setFetchedArtistCallback) => {
+			const payload = { isOpened, songsBucketCallback, setFetchedArtistCallback };
 			return gannaScrapper.toggleScrapperDialog(payload);
 		}
 	};
