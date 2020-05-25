@@ -245,6 +245,8 @@ class Albums extends Component {
 	componentWillUnmount() {
 		this.setState({ ...this.initialState });
 		this._isMounted = false;
+		const mainBodyRef = document.getElementById("main-body");
+		mainBodyRef.removeEventListener("scroll", this.scrollFetch);
 	}
 
 	render() {
