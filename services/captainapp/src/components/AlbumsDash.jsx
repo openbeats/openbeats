@@ -30,6 +30,7 @@ class AlbumsDash extends Component {
 			isCustom: false,
 			updateAlbumId: null,
 			customThumbnail: '',
+			fetchedArtistSuggestion: null,
 		};
 	}
 
@@ -120,6 +121,10 @@ class AlbumsDash extends Component {
 		this.setState({ albumBy: artistId });
 	};
 
+	setFetchedArtist = (fetchedArtistStr) => {
+		this.setState({ fetchedArtistSuggestion: fetchedArtistStr });
+	}
+
 	setSearchChips = chips => {
 		const chipsId = chips.map(item => item._id);
 		this.setState({ searchChipsCollection: chips, searchChips: chipsId });
@@ -192,7 +197,7 @@ class AlbumsDash extends Component {
 		await this.props.toggleHangingPlayer(true);
 	};
 
-	isCustomHandler = (e) => {
+	isCustomHandler = () => {
 		const isCustom = !(this.state.isCustom);
 		this.setState({ isCustom });
 	}
@@ -233,8 +238,15 @@ class AlbumsDash extends Component {
 								<div className="artist-tags-title font-weight-bold">
 									Artist Tags<span className="text-danger">*</span>
 								</div>
-								<div className="artist-tags-title-desc">(Tap on the crown badge, if you want this album to comes under specific artist's releases,
-								by default if only one artist tag is selected, album will be in that artist's releases)</div>
+								<div className="artist-tags-title-desc">
+									<strong>Fetched Artist(s)</strong><br />
+									<span>{this.state.fetchedArtistSuggestion ? this.state.fetchedArtistSuggestion : "Suggestions not available..."}</span>
+								</div>
+								<div className="artist-tags-title-desc">
+									<strong>Hint</strong><br />
+									(Tap on the crown badge, if you want this album to comes under specific artist's releases,
+									by default if only one artist tag is selected, album will be in that artist's releases)
+								</div>
 								<ChipsInput
 									chipTitle={"Artist"}
 									albumBy={this.state.albumBy}
@@ -331,6 +343,7 @@ class AlbumsDash extends Component {
 								addSongsToTheBucketCallBack={this.addSongsToTheBucketCallBack}
 								songTrialTrigger={this.songTrialTrigger}
 								addSongsCallback={this.arrangeSongsCallBack}
+								setFetchedArtist={this.setFetchedArtist}
 							/>
 						</div>
 						<div className="albumdash-song-bucket-holder">
