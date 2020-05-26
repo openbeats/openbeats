@@ -5,7 +5,7 @@
     color: white;
     top: 0;
     left: 0;
-    position: absolute;
+    position: fixed;
     z-index: 10000;
     transition: 1s all ease-in;
     visibility: hidden;
