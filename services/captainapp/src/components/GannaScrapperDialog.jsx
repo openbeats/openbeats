@@ -22,6 +22,20 @@ class GannaScrapperDialog extends Component {
     };
   }
 
+  componentWillUnmount() {
+    const initState = {
+      gannaUrl: "",
+      htmlContentfile: {},
+      htmlContentfileName: "",
+      isNotValid: true,
+      isProcessing: false,
+      totalTitles: null,
+      fetchedTitles: null,
+      scrapperReqCounter: 0,
+    };
+    this.setState(initState);
+  }
+
   closeHandler = () => {
     this.props.toggleScrapperDialog(false)
   }
@@ -71,23 +85,35 @@ class GannaScrapperDialog extends Component {
               const artistStr = artists.join(", ");
               this.props.setFetchedArtistCallback(artistStr);
             }
+            this.deleteGannaScrapper();
             this.props.toggleScrapperDialog(false);
             toast.success(`${numOfSongs} songs has been added..`);
           }
           (initFetch.data.audioTitlesInGaana) && (this.setState({ totalTitles: initFetch.data.audioTitlesInGaana }));
           (initFetch.data.audioObjsFetched) && (this.setState({ fetchedTitles: initFetch.data.audioObjsFetched }));
         } else {
+          this.deleteGannaScrapper();
           this.setState({ isProcessing: false });
           this.props.toggleScrapperDialog(false);
           toast.error("Something went wrong...");
         }
       })
       .catch((err) => {
+        this.deleteGannaScrapper();
         this.setState({ isProcessing: false });
         console.error(err);
         this.props.toggleScrapperDialog(false);
         toast.error("Something went wrong...");
       })
+  }
+
+  deleteGannaScrapper = () => {
+    axios.delete(`${variables.baseUrl}/scrapper/fetchsongs`, {
+      headers: { 'Content-Type': 'application/json' },
+      data: {
+        "playlistURL": this.state.gannaUrl
+      }
+    }).catch(e => console.error(e));
   }
 
   render() {

@@ -26,7 +26,7 @@ class Albums extends Component {
 
 	async fetchAlbums() {
 		try {
-			const albumsFetchUrl = `${variables.baseUrl}/playlist/album/all?page=1&limit=1000`;
+			const albumsFetchUrl = `${variables.baseUrl}/playlist/album/all?page=1&limit=1000&type=latest`;
 			const resultData = (await axios.get(albumsFetchUrl)).data;
 			if (resultData.status) {
 				this.setState({ albumsCollection: resultData.data.result });
