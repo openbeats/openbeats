@@ -1,0 +1,47 @@
+.offline-wrapper {
+    width: 100vw;
+    height: 100vh;
+    background: black;
+    color: white;
+    top: 0;
+    left: 0;
+    position: absolute;
+    z-index: 10000;
+    transition: 1s all ease-in;
+    visibility: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+
+}
+
+.show-offline-wrapper {
+    visibility: visible;
+}
+
+.show-offline-wrapper>img {
+    width: 100px;
+}
+
+.offline-title {
+    font-size: 20px;
+    font-weight: bold;
+    margin-top: 10px;
+}
+
+.offline-description {
+    font-size: 14px;
+    margin-top: 10px;
+    text-align: center;
+}
+
+.offline-fallback-block {
+    font-size: 13px;
+    margin-top: 5px;
+}
+
+.offline-fallback-block>a {
+    color: rgb(0, 140, 255);
+    text-decoration: none;
+}

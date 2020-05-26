@@ -128,3 +128,9 @@
     font-size: 16px;
     z-index: 10;
 }
+
+@media only screen and (max-width: 800px) {
+    .album-holder-wrapper {
+        width: 100%;
+    }
+}

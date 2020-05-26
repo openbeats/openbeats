@@ -389,6 +389,7 @@ export const initMediaSession = async () => {
 		/* eslint-disable-next-line */
 		navigator.mediaSession.metadata = new MediaMetadata({
 			title: state.playerReducer.songTitle,
+			album: 'OpenBeats Music',
 			artwork: [{
 				src: `https://i.ytimg.com/vi/${state.playerReducer.id}/maxresdefault.jpg`,
 				sizes: '1280x720',

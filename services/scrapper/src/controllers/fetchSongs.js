@@ -4,7 +4,9 @@ import axios from "axios";
 import crypto from "crypto";
 import fs from "fs";
 import path from "path";
-import { config } from "../config";
+import {
+  config
+} from "../config";
 
 // holds the ytCat url
 const obsHost = config.isDev ? config.baseurl.dev : config.baseurl.prod;
@@ -120,10 +122,12 @@ const initiateScrappingSequence = async (
     }
   } else {
     // deleting the currently created databse object
-    await RipperCollection.updateOne(
-      { ripId: hashedPlaylistUrl },
-      { ripProgress: "Completed", ripData: "Already exists with another url" }
-    );
+    await RipperCollection.updateOne({
+      ripId: hashedPlaylistUrl
+    }, {
+      ripProgress: "Completed",
+      ripData: "Already exists with another url"
+    });
     sendResponse(
       "The playlist already exists in database. Please contact database admin to resolve issue.",
       0
@@ -315,8 +319,7 @@ const updateDatabaseDocument = async (
       },
     };
     // updating database
-    await RipperCollection.updateOne(
-      {
+    await RipperCollection.updateOne({
         ripId: hashedPlaylistUrl,
       },
       updateData
@@ -326,10 +329,11 @@ const updateDatabaseDocument = async (
 
 // updates the database value of the current playlist as error
 const updateDatabaseForError = async (hashedPlaylistUrl) => {
-  await RipperCollection.updateOne(
-    { ripId: hashedPlaylistUrl },
-    { ripProgress: "Error" }
-  );
+  await RipperCollection.updateOne({
+    ripId: hashedPlaylistUrl
+  }, {
+    ripProgress: "Error"
+  });
 };
 
 // sends back the current status of the playlist database values to the user
@@ -339,8 +343,7 @@ const sendCurrentDatabaseValues = async (hashedPlaylistUrl) => {
   });
 
   if (currentDoc.ripProgress !== "Error")
-    sendResponse(
-      {
+    sendResponse({
         status: true,
         streamingService: currentDoc.ripService,
         processing: currentDoc.ripProgress === "Completed" ? false : true,
@@ -350,13 +353,27 @@ const sendCurrentDatabaseValues = async (hashedPlaylistUrl) => {
     );
   else {
     // deleting the error document
-    await RipperCollection.deleteOne({ ripId: hashedPlaylistUrl });
+    await RipperCollection.deleteOne({
+      ripId: hashedPlaylistUrl
+    });
     sendResponse(
       "An Error has occurred. Please try again or refer to the logs",
       0
     );
   }
 };
+
+// check if the html content is same as the type of playlist url passed
+const checkIfRightHTML = async (htmlContent, playlistUrlType) => {
+  // loading html content into cheerio
+  const $ = cheerio.load(htmlContent);
+  // getting the title of the html content
+  const playlistTitle = $('head').find('title').text();
+  logConsole("Title of playlist: " + playlistTitle, false);
+  if (playlistTitle.toString().toLowerCase().includes(playlistUrlType.toString().toLowerCase()))
+    return true;
+  return false;
+}
 
 // function to get url and fetch songs
 exports.fetchSongs = async (req, res) => {
@@ -398,32 +415,40 @@ exports.fetchSongs = async (req, res) => {
           });
 
           if (htmlContent != undefined) {
-            // create document for the playlist in database
-            const newPlaylistDocument = RipperCollection({
-              ripId: hashedPlaylistUrl,
-              ripService: playlistUrlType,
-              ripProgress: "InProgress",
-              ripData: {},
-            });
-            await newPlaylistDocument.save();
-            logConsole("Document created for playlist in database", false);
 
-            // initiate the scrapping sequence
-            initiateScrappingSequence(
-              htmlContent,
-              playlistUrlType,
-              hashedPlaylistUrl
-            );
+            // check if the html content is same as the type of playlist url passed
+            const isItRightHTMLFile = await checkIfRightHTML(htmlContent, playlistUrlType);
 
-            sendResponse(
-              {
-                status: true,
-                streamingService: playlistUrlType,
-                processing: true,
-                data: {},
-              },
-              1
-            );
+            if (isItRightHTMLFile) {
+              // create document for the playlist in database
+              const newPlaylistDocument = RipperCollection({
+                ripId: hashedPlaylistUrl,
+                ripService: playlistUrlType,
+                ripProgress: "InProgress",
+                ripData: {},
+              });
+              await newPlaylistDocument.save();
+              logConsole("Document created for playlist in database", false);
+
+              // initiate the scrapping sequence
+              initiateScrappingSequence(
+                htmlContent,
+                playlistUrlType,
+                hashedPlaylistUrl
+              );
+
+              sendResponse({
+                  status: true,
+                  streamingService: playlistUrlType,
+                  processing: true,
+                  data: {},
+                },
+                1
+              );
+            } else {
+              logConsole("Error: HTML data recieved mismatch with playlist url", true);
+              sendResponse("HTML data recieved mismatch with playlist url", 0);
+            }
           } else {
             logConsole("Error: No HTML data received", true);
             sendResponse("Error Occurred: No HTML data recieved", 0);
