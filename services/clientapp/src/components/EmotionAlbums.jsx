@@ -22,7 +22,7 @@ class EmotionAlbums extends Component {
             next: true,
             previous: false,
             page: 1,
-            limit: 3,
+            limit: 20,
             isScrollFetchInProcess: false,
         };
         this.state = { ...this.initialState };
@@ -144,7 +144,7 @@ class EmotionAlbums extends Component {
             </div>
         ) : (
                 <div className="artist-albums-wrapper">
-                    <div className="artist-albums-header-image-holder" style={{ backgroundImage: `url(${this.state.emotionThumbnail}), url(${spaceImage})` }}>
+                    <div className="artist-albums-header-image-holder" style={{ backgroundImage: `url(${spaceImage})` }}>
                         <div
                             className="artist-albums-header-artist-display-holder"
                             style={{ backgroundImage: `url(${this.state.emotionThumbnail}), url(${musicDummy})` }}></div>
