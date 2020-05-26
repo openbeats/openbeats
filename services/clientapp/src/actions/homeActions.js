@@ -8,6 +8,7 @@ import {
 import {
     toastActions
 } from ".";
+import { push } from "connected-react-router";
 
 export const fetchTopCharts = async () => {
     try {
@@ -63,6 +64,25 @@ export const fetchLatestAlbums = async (page = 1, limit = 10, advanced = false) 
         toastActions.showMessage(error.toString());
         return [];
     }
+}
+
+export const fetchLanguageAlbums = async (languageId, type = "latest", page = 1, limit = 10, advanced = false) => {
+    try {
+        const languageAlbumsFetchUrl = `${variables.baseUrl}/playlist/language/${languageId}/albums?page=${page}&limit=${limit}`;
+        const data = (await axios.get(languageAlbumsFetchUrl)).data;
+        if (data.status) {
+            if (!advanced)
+                return data.data.result;
+            else
+                return data.data
+        } else {
+            throw new Error(data.data);
+        }
+    } catch (error) {
+        toastActions.showMessage(error.message.toString());
+        store.dispatch(push("/"))
+    }
+    return []
 }
 
 export const fetchPopularAlbums = async (page = 1, limit = 10, advanced = false) => {
