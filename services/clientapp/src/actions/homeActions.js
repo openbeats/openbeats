@@ -69,7 +69,6 @@ export const fetchLanguageAlbums = async (languageId, page = 1, limit = 10, adva
     try {
         const languageAlbumsFetchUrl = `${variables.baseUrl}/playlist/language/${languageId}/albums?page=1&limit=1000`;
         const data = (await axios.get(languageAlbumsFetchUrl)).data;
-        console.log(data, languageId)
         if (data.status) {
             if (!advanced)
                 return data.data.result;

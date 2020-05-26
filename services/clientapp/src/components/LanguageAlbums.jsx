@@ -144,7 +144,7 @@ class LanguageAlbums extends Component {
             </div>
         ) : (
                 <div className="artist-albums-wrapper">
-                    <div className="artist-albums-header-image-holder" style={{ backgroundImage: `url(${this.state.languageThumbnail}), url(${spaceImage})` }}>
+                    <div className="artist-albums-header-image-holder" style={{ backgroundImage: `url(${spaceImage})` }}>
                         <div
                             className="artist-albums-header-artist-display-holder"
                             style={{ backgroundImage: `url(${this.state.languageThumbnail}), url(${musicDummy})` }}></div>

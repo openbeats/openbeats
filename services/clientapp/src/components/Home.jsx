@@ -32,6 +32,11 @@ class Home extends Component {
                     albums: [],
                     name: 'English'
                 },
+                {
+                    languageID: deploymentType === "production" ? '5ec8a0d1228af496b51afa11' : '5ebc2c971827de15bc6800fd',
+                    albums: [],
+                    name: 'Malayalam'
+                },
             ],
             isLoading: true,
         };
