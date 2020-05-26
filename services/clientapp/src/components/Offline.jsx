@@ -15,7 +15,7 @@ class Offline extends Component {
                     Seems like you are offline!
                </div>
                 <div className="offline-description">
-                    OpenBeats will be resumed shortly from where you left,<br /> once you become online, Happy Music!
+                    OpenBeats will be automatically resumed,<br /> Once you become online, Happy Music!
                 </div>
                 <div className="offline-fallback-block">if not <a href="/">click here</a> to reload</div>
             </div>
