@@ -5,6 +5,9 @@
   display: grid;
   grid-template-columns: 50% 50%;
   background: var(--main-bg-color);
+  font-family: Arial;
+  /* iphone text visiblity issue fix */
+  /* or Helvetica, or whatever */
 }
 
 .toggle-slider {

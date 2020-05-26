@@ -6,7 +6,7 @@ import { push } from "connected-react-router";
 import { musicDummy } from '../assets/images';
 
 class Emotion extends Component {
-    render() {
+    Main = () => {
         return (
             <div className="emotion-holder-wrapper cursor-pointer" onClick={() => this.props.push(`/emotions/${this.props.id}`)}>
                 <div className="emotion-thumbnail-holder" style={{ backgroundImage: `url('${this.props.thumbnail}'), url(${musicDummy})` }}></div>
@@ -18,6 +18,23 @@ class Emotion extends Component {
             </div>
         );
     }
+
+    ExploreMore = () => {
+        return <div className="emotion-holder-wrapper album-explore-more cursor-pointer" onClick={() => this.props.push(this.props.exploreMoreUrl)}>
+            <div className="explore-more-icon-holer">
+                <i className="fas fa-compass"></i>
+            </div>
+            <div className="explore-more-text-holer">
+                Explore More
+            </div>
+        </div>
+    }
+
+
+    render() {
+        return !this.props.exploreMore ? <this.Main /> : <this.ExploreMore />;
+    }
+
 }
 
 const mapStateToProps = (state) => {
