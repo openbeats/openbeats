@@ -64,10 +64,10 @@ class Home extends Component {
 
     fetchLanguageAlbums = async () => {
         let languages = [...this.state.languageAlbums];
-        this.state.languageAlbums.forEach(async (language, key) => {
-            const data = await this.props.fetchLanguageAlbums(language.languageID, 'latest');
-            languages[key]['albums'] = [...data];
-        })
+        for (let index = 0; index < languages.length; index++) {
+            const data = await this.props.fetchLanguageAlbums(languages[index].languageID, 'latest');
+            languages[index]['albums'] = [...data];
+        }
         this._isMounted && this.setState({ languageAlbums: languages, isLoading: false });
     }
 

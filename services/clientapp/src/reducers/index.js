@@ -4,6 +4,7 @@ import coreReducer from "./coreReducer";
 import nowPlayingReducer from "./nowPlayingReducer";
 import authReducer from "./authReducer";
 import playlistManipulatorReducer from "./playlistManipulatorReducer";
+import offlineReducer from "./offlineReducer";
 
 const reducers = {
   playerReducer,
@@ -11,7 +12,8 @@ const reducers = {
   coreReducer,
   nowPlayingReducer,
   authReducer,
-  playlistManipulatorReducer
+  playlistManipulatorReducer,
+  offlineReducer
 };
 
 export default reducers;

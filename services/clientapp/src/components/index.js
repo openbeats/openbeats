@@ -27,6 +27,7 @@ import Emotion from "./Emotion";
 import Emotions from "./Emotions";
 import EmotionAlbums from "./EmotionAlbums";
 import LanguageAlbums from "./LanguageAlbums";
+import Offline from "./Offline";
 
 
 export {
@@ -58,5 +59,6 @@ export {
 	Emotion,
 	Emotions,
 	EmotionAlbums,
-	LanguageAlbums
+	LanguageAlbums,
+	Offline
 };
