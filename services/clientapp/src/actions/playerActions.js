@@ -394,10 +394,16 @@ export const initMediaSession = async () => {
 				sizes: '1280x720',
 				type: 'image/jpg'
 			}, {
-				src: state.playerReducer.thumbnail.split("?")[0],
-				sizes: '480x360',
+				src: `https://i.ytimg.com/vi/${state.playerReducer.id}/mqdefault.jpg`,
+				sizes: '320x180',
 				type: 'image/jpg'
-			}]
+			},
+				//  {
+				// 	src: state.playerReducer.thumbnail.split("?")[0],
+				// 	sizes: '480x360',
+				// 	type: 'image/jpg'
+				// }
+			]
 		});
 
 		navigator.mediaSession.setActionHandler('play', () => {
@@ -454,9 +460,9 @@ export async function playerDownloadHandler(e) {
 		});
 	} else {
 		if (await playlistManipulatorActions.downloadSongHandler({
-				videoId: state.id,
-				title: state.songTitle
-			})) {
+			videoId: state.id,
+			title: state.songTitle
+		})) {
 			store.dispatch({
 				type: "PLAYER_DOWNLOAD_HANDLE",
 				payload: {

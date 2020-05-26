@@ -32,6 +32,11 @@ class Home extends Component {
                     albums: [],
                     name: 'English'
                 },
+                {
+                    languageID: deploymentType === "production" ? '5ec8a0d1228af496b51afa11' : '5ebc2c971827de15bc6800fd',
+                    albums: [],
+                    name: 'Malayalam'
+                },
             ],
             isLoading: true,
         };
@@ -60,7 +65,7 @@ class Home extends Component {
     fetchLanguageAlbums = async () => {
         let languages = [...this.state.languageAlbums];
         this.state.languageAlbums.forEach(async (language, key) => {
-            const data = await this.props.fetchLanguageAlbums(language.languageID);
+            const data = await this.props.fetchLanguageAlbums(language.languageID, 'latest');
             languages[key]['albums'] = [...data];
         })
         this._isMounted && this.setState({ languageAlbums: languages, isLoading: false });
@@ -401,8 +406,8 @@ const mapDispatchToProps = (dispatch) => {
         fetchPopularAlbums: async () => {
             return await homeActions.fetchPopularAlbums();
         },
-        fetchLanguageAlbums: async (languageId) => {
-            return await homeActions.fetchLanguageAlbums(languageId);
+        fetchLanguageAlbums: async (languageId, type = "latest") => {
+            return await homeActions.fetchLanguageAlbums(languageId, type);
         },
         fetchLatestAlbums: async () => {
             return await homeActions.fetchLatestAlbums();

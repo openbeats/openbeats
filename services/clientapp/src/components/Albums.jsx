@@ -18,7 +18,7 @@ class Albums extends Component {
 			next: true,
 			previous: false,
 			page: 1,
-			limit: 3,
+			limit: 20,
 			isScrollFetchInProcess: false,
 		};
 		this.state = { ...this.initialState };
