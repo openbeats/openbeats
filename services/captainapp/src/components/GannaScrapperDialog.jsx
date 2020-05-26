@@ -107,6 +107,7 @@ class GannaScrapperDialog extends Component {
                       <Loader
                         type="ThreeDots"
                         color="#F32C2C"
+                        className="d-flex justify-content-center"
                       />
                     </div>
                     <div className="modal-footer">
