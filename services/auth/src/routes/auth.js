@@ -196,7 +196,7 @@ router.post("/forgotpassword", [check("email", "Please include a valid email").i
 			expiresIn: 60 * 60,
 		});
 
-		const url = `https://openbeats.live/auth/reset/${token}`;
+		const url = config.isDev ? `https://staging.openbeats.live/auth/reset/${token}` : `https://openbeats.live/auth/reset/${token}`;
 
 		const data = {
 			to: user.email,
