@@ -25,6 +25,8 @@ class LanguageAlbums extends Component {
             limit: 20,
             isScrollFetchInProcess: false,
         };
+        this.observer = null;
+        this.intersectElement = null;
         this.state = { ...this.initialState };
     }
 
@@ -37,17 +39,26 @@ class LanguageAlbums extends Component {
     }
 
     initiateScrollFetcher() {
-        const mainBodyRef = document.getElementById("main-body");
-        mainBodyRef.addEventListener('scroll', this.scrollFetch);
-    }
-
-    scrollFetch = (e) => {
-        const totalHeight = e.target.scrollHeight - e.target.offsetHeight;
-        if (e.target.scrollTop === totalHeight) {
-            this.fetchLanguageAlbumsHandler();
+        let options = {
+            root: document.getElementById("main-body"),
+            rootMargin: '0px',
+            threshold: 1
         }
-    }
 
+        this.observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    if (entry.intersectionRatio >= 0.95) {
+                        this.fetchLanguageAlbumsHandler();
+                    }
+                }
+            });
+        }, options);
+
+        if (this.intersectElement)
+            this.observer.observe(this.intersectElement);
+
+    }
 
     languageInitialFetch = async () => {
         try {
@@ -98,23 +109,21 @@ class LanguageAlbums extends Component {
     // List Preparing Part
     getAlbumsList(arrayList) {
         return (
-            <div className="albums-wrapper">
-                {arrayList.map((item, key) => (
-                    <AlbumHolder
-                        key={key}
-                        albumName={item.name}
-                        albumThumbnail={item.thumbnail}
-                        albumTotalSongs={item.totalSongs}
-                        albumId={item._id}
-                        albumCreationDate={new Date(item.createdAt).toDateString()}
-                        albumCreatedBy={"OpenBeats"}
-                        type={"album"}
-                        addOrRemoveAlbumFromCollectionHandler={this.addOrRemoveAlbumFromCollectionHandler}
-                        isAuthenticated={this.props.isAuthenticated}
-                        isAlbumIsInCollection={this.props.likedPlaylists.indexOf(item._id) === -1 ? false : true}
-                    />
-                ))}
-            </div>
+            arrayList.map((item, key) => (
+                <AlbumHolder
+                    key={key}
+                    albumName={item.name}
+                    albumThumbnail={item.thumbnail}
+                    albumTotalSongs={item.totalSongs}
+                    albumId={item._id}
+                    albumCreationDate={new Date(item.createdAt).toDateString()}
+                    albumCreatedBy={"OpenBeats"}
+                    type={"album"}
+                    addOrRemoveAlbumFromCollectionHandler={this.addOrRemoveAlbumFromCollectionHandler}
+                    isAuthenticated={this.props.isAuthenticated}
+                    isAlbumIsInCollection={this.props.likedPlaylists.indexOf(item._id) === -1 ? false : true}
+                />
+            ))
         );
     }
 
@@ -122,6 +131,7 @@ class LanguageAlbums extends Component {
         return <div className="home-section">
             <div className="albums-wrapper">
                 {this.getAlbumsList(this.state.languageAlbums)}
+                <div ref={d => this.intersectElement = d} className="intersection-holder"></div>
             </div>
         </div>
     };
@@ -133,8 +143,7 @@ class LanguageAlbums extends Component {
     componentWillUnmount() {
         this.setState({ ...this.initialState });
         this._isMounted = false;
-        const mainBodyRef = document.getElementById("main-body");
-        mainBodyRef.removeEventListener("scroll", this.scrollFetch);
+        if (this.observer) this.observer.disconnect();
     }
 
     render() {
