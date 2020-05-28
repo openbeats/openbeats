@@ -1,5 +1,4 @@
 import { store } from "../store"
-import { push } from "connected-react-router";
 
 export const setOnlinestatus = (status = true) => {
     store.dispatch({
@@ -9,7 +8,6 @@ export const setOnlinestatus = (status = true) => {
 }
 
 export const offlineCheckerInitiator = () => {
-    advancedOfflineChecker();
     window.addEventListener("load", () => {
         window.addEventListener("online", advancedOfflineChecker);
         window.addEventListener("offline", advancedOfflineChecker);
@@ -37,10 +35,8 @@ export const advancedOfflineChecker = () => {
             if (online) {
                 // online
                 setOnlinestatus(true);
-                store.dispatch(push("/404"));
-                store.dispatch(push("/"));
+                window.location.reload();
             } else {
-                console.log('no connectivity');
                 // offline
                 setOnlinestatus(false);
             }

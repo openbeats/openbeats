@@ -20,25 +20,37 @@ class Artists extends Component {
             limit: 20,
             isScrollFetchInProcess: false,
         }
+        this.observer = null;
+        this.intersectElement = null;
         this.state = { ...this.initialState };
     }
 
-    componentDidMount() {
+    async componentDidMount() {
         this.props.setCurrentAction("Artists");
-        this.fetchArtistHandler();
+        await this.fetchArtistHandler();
         this.initiateScrollFetcher();
     }
 
     initiateScrollFetcher() {
-        const mainBodyRef = document.getElementById("main-body");
-        mainBodyRef.addEventListener('scroll', this.scrollFetch);
-    }
-
-    scrollFetch = (e) => {
-        const totalHeight = e.target.scrollHeight - e.target.offsetHeight;
-        if (e.target.scrollTop === totalHeight) {
-            this.fetchArtistHandler();
+        let options = {
+            root: document.getElementById("main-body"),
+            rootMargin: '0px',
+            threshold: 1
         }
+
+        this.observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    if (entry.intersectionRatio >= 0.95) {
+                        this.fetchArtistHandler();
+                    }
+                }
+            });
+        }, options);
+
+        if (this.intersectElement)
+            this.observer.observe(this.intersectElement);
+
     }
 
     fetchArtistHandler = async () => {
@@ -61,12 +73,9 @@ class Artists extends Component {
         }
     }
 
-
-
     componentWillUnmount() {
         this.setState({ ...this.initialState });
-        const mainBodyRef = document.getElementById("main-body");
-        mainBodyRef.removeEventListener("scroll", this.scrollFetch);
+        if (this.observer) this.observer.disconnect();
     }
 
     render() {
@@ -84,6 +93,7 @@ class Artists extends Component {
                                 thumbnail={item.thumbnail}
                             />
                         ))}
+                        <div ref={d => this.intersectElement = d} className="intersection-holder"></div>
                     </div>
                     {this.state.isScrollFetchInProcess && <div className="mt-2 width-100 d-flex align-items-center justify-content-center">
                         <Loader color="#F32C2C" type="TailSpin" height={30} width={30} />

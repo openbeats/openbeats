@@ -21,6 +21,8 @@ class Albums extends Component {
 			limit: 20,
 			isScrollFetchInProcess: false,
 		};
+		this.observer = null;
+		this.intersectElement = null;
 		this.state = { ...this.initialState };
 	}
 
@@ -33,18 +35,28 @@ class Albums extends Component {
 	}
 
 	initiateScrollFetcher() {
-		const mainBodyRef = document.getElementById("main-body");
-		mainBodyRef.addEventListener('scroll', this.scrollFetch);
-	}
-
-	scrollFetch = (e) => {
-		const totalHeight = e.target.scrollHeight - e.target.offsetHeight;
-		if (e.target.scrollTop === totalHeight) {
-			if (this.state.type === "popular")
-				this.fetchPopularAlbumsHandler(true);
-			if (this.state.type === "latest")
-				this.fetchLatestAlbumsHandler(true);
+		let options = {
+			root: document.getElementById("main-body"),
+			rootMargin: '0px',
+			threshold: 1
 		}
+
+		this.observer = new IntersectionObserver((entries) => {
+			entries.forEach(entry => {
+				if (entry.isIntersecting) {
+					if (entry.intersectionRatio >= 0.95) {
+						if (this.state.type === "popular")
+							this.fetchPopularAlbumsHandler(true);
+						if (this.state.type === "latest")
+							this.fetchLatestAlbumsHandler(true);
+					}
+				}
+			});
+		}, options);
+
+		if (this.intersectElement)
+			this.observer.observe(this.intersectElement);
+
 	}
 
 	albumsMainHandler = () => {
@@ -191,6 +203,7 @@ class Albums extends Component {
 			</div>
 			<div className="albums-wrapper">
 				{this.getAlbumsList(currentAlbums)}
+				<div ref={d => this.intersectElement = d} className="intersection-holder"></div>
 			</div>
 		</div>
 	};
@@ -202,8 +215,7 @@ class Albums extends Component {
 	componentWillUnmount() {
 		this.setState({ ...this.initialState });
 		this._isMounted = false;
-		const mainBodyRef = document.getElementById("main-body");
-		mainBodyRef.removeEventListener("scroll", this.scrollFetch);
+		if (this.observer) this.observer.disconnect();
 	}
 
 	render() {

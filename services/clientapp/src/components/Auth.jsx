@@ -8,6 +8,7 @@ import { store } from "../store";
 import { musicIllustration, masterLogo } from "../assets/images";
 
 class Auth extends Component {
+  _isMounted = false;
   constructor(props) {
     super(props);
     this.state = {
@@ -19,9 +20,14 @@ class Auth extends Component {
   }
 
   componentDidMount() {
+    this._isMounted = false;
     if (this.props.isAuthenticated) {
       store.dispatch(push("/"))
     }
+  }
+
+  componentWillUnmount() {
+    this._isMounted = false;
   }
 
   Login() {
@@ -130,7 +136,7 @@ class Auth extends Component {
         </div>
         <div
           onClick={() =>
-            this.setState({
+            this._isMounted && this.setState({
               displayRegister: !this.state.displayRegister
             })
           }
@@ -168,7 +174,7 @@ class Auth extends Component {
             </div>
             <button
               onClick={() =>
-                this.setState({
+                this._isMounted && this.setState({
                   displayRegister: !this.state.displayRegister
                 })
               }
@@ -196,7 +202,7 @@ class Auth extends Component {
             </div>
               <button
                 onClick={() =>
-                  this.setState({
+                  this._isMounted && this.setState({
                     displayRegister: !this.state.displayRegister
                   })
                 }
