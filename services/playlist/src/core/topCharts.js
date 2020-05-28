@@ -95,6 +95,7 @@ export const englishTopCharts = async () => {
 						let response = await (await fetchRetry(urlObj.url, 2)).json();
 						if (response.data.length && response.data.length !== 0) {
 							let song = response.data[0];
+							song.thumbnail = song.thumbnail.substr(0, song.thumbnail.indexOf("?"));
 							if (Object.is(urlObj.rank, 1)) {
 								engChart.thumbnail = song.thumbnail;
 							}
