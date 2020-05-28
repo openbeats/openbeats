@@ -56,6 +56,7 @@ export const updateTopCharts = async (chartName, chartId) => {
 						if (Object.is(urlObj.rank, 1)) {
 							chart.thumbnail = song.thumbnail;
 						}
+						song.thumbnail = song.thumbnail.substr(0, song.thumbnail.indexOf("?"));
 						return {
 							rank: urlObj.rank,
 							...song,
