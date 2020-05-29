@@ -151,7 +151,7 @@ export const fetchMissedSongs = async (forcerun = false) => {
 						rank: missedSong.rank,
 					};
 					if (Object.is(missedSong.rank, 1)) {
-						topChart.thumbnail = response.data[0].thumbnail;
+						topChart.thumbnail = response.data[0].thumbnail.substr(0, response.data[0].thumbnail.indexOf("?"));
 					}
 					await topChart.save();
 					if (forcerun) {
