@@ -1,6 +1,7 @@
 const ytdl = require("ytdl-core");
 
 exports.handler = async (event) => {
+    // TODO implement
     const vid = event.queryStringParameters && event.queryStringParameters.vid ? event.queryStringParameters.vid : null;
     if (!vid) {
         const response = {
@@ -10,6 +11,7 @@ exports.handler = async (event) => {
         return response;
     }
 
+    console.log(vid)
     const info = await ytdl.getInfo(vid)
     const response = {
         statusCode: 200,
