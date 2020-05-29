@@ -1,8 +1,12 @@
-import { updateTopCharts } from "./updateTopCharts";
+import {
+	updateTopCharts
+} from "./updateTopCharts";
 import TopChart from "../models/TopChart";
 import MissedFetch from "../models/MissedFetch";
 import fetchRetry from "./refetch";
-import { config } from "../config";
+import {
+	config
+} from "../config";
 
 export const fetchTopCharts = async () => {
 	try {
@@ -86,34 +90,35 @@ export const englishTopCharts = async () => {
 			rank = rank + 1;
 		}
 		Promise.all(
-			fetchList.map(async urlObj => {
-				try {
-					let response = await (await fetchRetry(urlObj.url, 2)).json();
-					if (response.data.length && response.data.length !== 0) {
-						let song = response.data[0];
-						if (Object.is(urlObj.rank, 1)) {
-							engChart.thumbnail = song.thumbnail;
+				fetchList.map(async urlObj => {
+					try {
+						let response = await (await fetchRetry(urlObj.url, 2)).json();
+						if (response.data.length && response.data.length !== 0) {
+							let song = response.data[0];
+							song.thumbnail = song.thumbnail.substr(0, song.thumbnail.indexOf("?"));
+							if (Object.is(urlObj.rank, 1)) {
+								engChart.thumbnail = song.thumbnail;
+							}
+							return {
+								rank: urlObj.rank,
+								...song,
+								title: urlObj.title,
+							};
 						}
-						return {
-							rank: urlObj.rank,
-							...song,
-							title: urlObj.title,
-						};
+						const missedsong = new MissedFetch({
+							...urlObj,
+							topchartid: engChart._id,
+						});
+						await missedsong.save();
+					} catch (error) {
+						console.log(error);
 					}
-					const missedsong = new MissedFetch({
-						...urlObj,
-						topchartid: engChart._id,
-					});
-					await missedsong.save();
-				} catch (error) {
-					console.log(error);
-				}
-				return {
-					rank: urlObj.rank,
-					title: urlObj.title,
-				};
-			})
-		)
+					return {
+						rank: urlObj.rank,
+						title: urlObj.title,
+					};
+				})
+			)
 			.then(async data => {
 				engChart.songs = data;
 				await engChart.save();
@@ -141,6 +146,7 @@ export const fetchMissedSongs = async (forcerun = false) => {
 				if (response.data && response.data.length !== 0) {
 					topChart.songs[missedSong.rank - 1] = {
 						...response.data[0],
+						thumbnail: response.data[0].thumbnail.substr(0, response.data[0].thumbnail.indexOf("?")),
 						title: missedSong.title,
 						rank: missedSong.rank,
 					};
