@@ -40,11 +40,11 @@ app.get("/opencc/:id", addtorecentlyplayed, async (req, res) => {
 		});
 		let sourceUrl = await isAvail;
 		if (!sourceUrl) {
-			let info = await (await fetch(`${config.lambda}${videoID}`)).json();
+			let info = await (await fetch(`${config.lambda1}${videoID}`)).json();
 
 			//checks if there is url property in info object if not calls azure function
 			if (!(isSafe(() => info.formats[0].url))) {
-				info = await (await fetch(`${config.azureFunction}${videoID}`)).json();
+				info = await (await fetch(`${config.lambda2}${videoID}`)).json();
 				if (!(isSafe(() => info.formats[0].url))) {
 					throw new Error("Cannot fetch the requested song...");
 				}

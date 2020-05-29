@@ -21,8 +21,8 @@ export const config = {
 		dev: "localhost",
 		prod: "obs-redis",
 	},
-	lambda: "https://orvpax9d6b.execute-api.ap-south-1.amazonaws.com/default/obs-core?vid=",
-	azureFunction: "https://obs-ytdl.azurewebsites.net/api/ytdl?vid=",
+	lambda1: "https://orvpax9d6b.execute-api.ap-south-1.amazonaws.com/default/obs-core?vid=",
+	lambda2: "https://ujlelgsre1.execute-api.ap-south-1.amazonaws.com/default/obs-ytdl?vid=",
 	port: {
 		dev: 2004,
 		prod: 2000,

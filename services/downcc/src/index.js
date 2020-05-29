@@ -32,10 +32,10 @@ app.get("/:id", async (req, res) => {
 						downloadTitle
 					})
 				} else {
-					let info = await (await fetch(`${config.lambda}${videoID}`)).json();
+					let info = await (await fetch(`${config.lambda1}${videoID}`)).json();
 					//checks if there is url property in info object if not calls azure function
 					if (!(isSafe(() => info.formats[0].url))) {
-						info = await (await fetch(`${config.azureFunction}${videoID}`)).json();
+						info = await (await fetch(`${config.lambda2}${videoID}`)).json();
 						if (!(isSafe(() => info.formats[0].url))) {
 							return reject("Cannot fetch the requested song...");
 						}
