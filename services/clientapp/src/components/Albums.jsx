@@ -73,12 +73,12 @@ class Albums extends Component {
 			case "popular":
 				albumType = "Popular " + albumType;
 				if (this._isMounted) this.setState({ type: "popular" });
-				this.fetchPopularAlbumsHandler(true);
+				this.fetchPopularAlbumsHandler();
 				break;
 			case "latest":
 				albumType = "Latest " + albumType;
 				if (this._isMounted) this.setState({ type: "latest" });
-				this.fetchLatestAlbumsHandler(true);
+				this.fetchLatestAlbumsHandler();
 				break;
 
 			default:

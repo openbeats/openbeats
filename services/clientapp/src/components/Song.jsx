@@ -16,7 +16,15 @@ class Song extends Component {
 
     render() {
         return (
-            <div className={`result-node ${this.props.currentPlaying && this.props.currentPlaying.videoId === this.props.item.videoId ? "highlight-active-result" : ""}`}>
+            <div
+                className={`result-node cursor-pointer ${this.props.currentPlaying && this.props.currentPlaying.videoId === this.props.item.videoId ? "highlight-active-result" : ""}`}
+                onClick={async (e) => {
+                    e.stopPropagation();
+                    if (!(this.props.currentPlaying && this.props.currentPlaying.videoId === this.props.item.videoId)) {
+                        await this.props.updateCurrentPlaying(this.props.item, this.props.index)
+                    }
+                }}
+            >
                 <div className="result-node-thumb" style={{ backgroundImage: `url('${this.props.item.thumbnail}'), url(${musicDummy})` }}></div>
                 <div className="result-node-title">
                     {this.props.item.title}
@@ -29,10 +37,12 @@ class Song extends Component {
                         !this.props.isAudioBuffering ?
                             this.props.isMusicPlaying ?
                                 <img onClick={async (e) => {
+                                    e.stopPropagation();
                                     await this.props.playPauseToggle()
                                 }} className="action-image-size play-icon-result cursor-pointer" src={playerpause} alt="" />
                                 :
                                 <img onClick={async (e) => {
+                                    e.stopPropagation();
                                     await this.props.playPauseToggle()
                                 }} className="action-image-size play-icon-result cursor-pointer" src={playerplay} alt="" />
                             :
@@ -44,6 +54,7 @@ class Song extends Component {
                             />
                         :
                         <img onClick={async (e) => {
+                            e.stopPropagation();
                             await this.props.updateCurrentPlaying(this.props.item, this.props.index)
                         }} className="action-image-size play-icon-result cursor-pointer" src={playerplay} alt="" />
                     }
@@ -52,6 +63,7 @@ class Song extends Component {
                     <div download
                         onClick={async (e) => {
                             e.preventDefault();
+                            e.stopPropagation();
                             await this.setState({ videoId: this.props.item.videoId });
                             if (await this.props.downloadSongHandler(this.props.item)) {
                                 this.setState({ videoId: null })
@@ -70,12 +82,14 @@ class Song extends Component {
                         }
                     </div>
                     <img onClick={
-                        () => {
+                        (e) => {
+                            e.stopPropagation();
                             this.props.addSongsToQueue(this.props.item);
                         }
                     } className="action-image-size cursor-pointer queue-icon-result" title="Add to Queue" src={pQueueRed} alt="" />
                     <img onClick={
-                        () => {
+                        (e) => {
+                            e.stopPropagation();
                             this.props.showAddPlaylistDialog(this.props.item)
                         }
                     } className="action-image-size cursor-pointer" title="Add to playlist" src={playlistadd} alt="" />
@@ -83,7 +97,10 @@ class Song extends Component {
                         <i
                             title="Delete this song from this playlist!"
                             className="action-image-size cursor-pointer fas fa-trash-alt playlist-display-songs-icon"
-                            onClick={() => this.props.deleteSongFromUserPlaylist(this.props.item)}></i>
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                this.props.deleteSongFromUserPlaylist(this.props.item);
+                            }}></i>
                     }
                 </div>
             </div>
