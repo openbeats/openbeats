@@ -44,7 +44,7 @@ class Albums extends Component {
 		this.observer = new IntersectionObserver((entries) => {
 			entries.forEach(entry => {
 				if (entry.isIntersecting) {
-					if (entry.intersectionRatio >= 0.95) {
+					if (entry.intersectionRatio >= 0.50) {
 						if (this.state.type === "popular")
 							this.fetchPopularAlbumsHandler(true);
 						if (this.state.type === "latest")
