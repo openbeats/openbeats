@@ -54,7 +54,8 @@
 @media only screen and (max-width: 850px) {
 
     .scroll-button {
-        width: 30px;
+        width: 25px;
+        font-size: 25px;
     }
 
 }
