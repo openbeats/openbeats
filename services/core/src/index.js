@@ -40,16 +40,10 @@ app.get("/opencc/:id", addtorecentlyplayed, async (req, res) => {
 		});
 		let sourceUrl = await isAvail;
 		if (!sourceUrl) {
-			let info = await (await fetch(`${config.lambda1}${videoID}`)).json();
-
-			//checks if there is url property in info object if not calls azure function
+			let info = await (await fetch(`${config.ytdlLambda+videoID}`)).json();
 			if (!(isSafe(() => info.formats[0].url))) {
-				info = await (await fetch(`${config.lambda2}${videoID}`)).json();
-				if (!(isSafe(() => info.formats[0].url))) {
-					throw new Error("Cannot fetch the requested song...");
-				}
+				throw new Error("Cannot fetch the requested song...");
 			}
-
 			let audioFormats = ytdl.filterFormats(info.formats, "audioonly");
 			if (!audioFormats[0].contentLength) {
 				audioFormats = ytdl.filterFormats(info.formats, "audioandvideo");
@@ -76,7 +70,7 @@ app.get("/opencc/:id", addtorecentlyplayed, async (req, res) => {
 			link: sourceUrl,
 		});
 	} catch (error) {
-		console.log(error);
+		console.log(error.message);
 		return res.send({
 			status: false,
 			link: null,

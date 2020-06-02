@@ -23,13 +23,9 @@ app.get("/:id", async (req, res) => {
 		const getStreamUrl = new Promise((resolve, reject) => {
 			redis.get(videoID, async (err, sourceUrl) => {
 				if (!sourceUrl) {
-					let info = await (await fetch(`${config.lambda1}${videoID}`)).json();
-					//checks if there is url property in info object if not calls azure function
+					let info = await (await fetch(`${config.ytdlLambda+videoID}`)).json();
 					if (!(isSafe(() => info.formats[0].url))) {
-						info = await (await fetch(`${config.lambda2}${videoID}`)).json();
-						if (!(isSafe(() => info.formats[0].url))) {
-							throw new Error("Cannot fetch the requested song...");
-						}
+						return reject("Cannot fetch the requested song...");
 					}
 					let audioFormats = ytdl.filterFormats(info.formats, "audioonly");
 					if (!audioFormats[0].contentLength) {

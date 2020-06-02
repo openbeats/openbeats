@@ -1,0 +1,54 @@
+name: Zip and Upload to AWS
+
+on:
+  push:
+    branches: 
+      - production
+      - staging
+    paths:
+      - serverless/ytdl-lambda/**
+  pull_request:
+    types: [closed]
+    branches: 
+      - production
+      - staging
+    paths:
+      - serverless/ytdl-lambda/**
+      
+env: 
+  SERVICE_PATH: serverless/ytdl-lambda
+
+jobs:
+  production:
+    if: github.ref == 'refs/heads/production'
+      runs-on: ubuntu-latest
+      steps:
+        - name: checkout source code
+          uses: actions/checkout@v2
+        - name: Build binary
+          run: cd ${{ env.SERVICE_PATH }} && zip -r deployment.zip .
+        - name: default deploy
+          uses: appleboy/lambda-action@master
+          with:
+            aws_access_key_id: ${{ secrets.PRODUCTION_AWS_ACCESS_KEY_ID }}
+            aws_secret_access_key: ${{ secrets.PRODUCTION_AWS_SECRET_ACCESS_KEY }}
+            aws_region: ${{ secrets.PRODUCTION_AWS_REGION }}
+            function_name: obsytdl
+            zip_file: ${{ env.SERVICE_PATH }}/deployment.zip
+        
+  staging:
+    if: github.ref == 'refs/heads/staging'
+      runs-on: ubuntu-latest
+      steps:
+        - name: checkout source code
+          uses: actions/checkout@v2
+        - name: Build binary
+          run: cd ${{ env.SERVICE_PATH }} && zip -r deployment.zip .
+        - name: default deploy
+          uses: appleboy/lambda-action@master
+          with:
+            aws_access_key_id: ${{ secrets.STAGING_AWS_ACCESS_KEY_ID }}
+            aws_secret_access_key: ${{ secrets.STAGING_AWS_SECRET_ACCESS_KEY }}
+            aws_region: ${{ secrets.STAGING_AWS_REGION }}
+            function_name: obs-ytdl
+            zip_file: ${{ env.SERVICE_PATH }}/deployment.zip
