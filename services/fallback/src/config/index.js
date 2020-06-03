@@ -4,13 +4,16 @@ let mongoURI = "mongodb+srv://obs-db:openbeats%40123@obs-db-prijj.mongodb.net/ob
 if (type === 'production') {
     mongoURI = "mongodb+srv://obs-db:openbeats%40123@obs-db-prijj.mongodb.net/obs-db"; // production url
 }
+let ytdlLambdaURL = "https://ujlelgsre1.execute-api.ap-south-1.amazonaws.com/default/obs-ytdl?vid="
+if (type === 'production') {
+    ytdlLambdaURL = "https://7axob3orc3.execute-api.ap-south-1.amazonaws.com/default/obsytdl?vid="
+}
 
 export const config = {
     mongoURI_DEV: mongoURI,
     jwtSecret: "WeAreAwesome",
     saltRound: 10,
-    lambda1: "https://7axob3orc3.execute-api.ap-south-1.amazonaws.com/default/obsytdl?vid=",
-    lambda2: "https://ujlelgsre1.execute-api.ap-south-1.amazonaws.com/default/obs-ytdl?vid=",
+    ytdlLambda: ytdlLambdaURL,
     redis: {
         dev: "localhost",
         prod: "obs-redis"
