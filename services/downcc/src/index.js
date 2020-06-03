@@ -32,13 +32,9 @@ app.get("/:id", async (req, res) => {
 						downloadTitle
 					})
 				} else {
-					let info = await (await fetch(`${config.lambda1}${videoID}`)).json();
-					//checks if there is url property in info object if not calls azure function
+					let info = await (await fetch(`${config.ytdlLambda+videoID}`)).json();
 					if (!(isSafe(() => info.formats[0].url))) {
-						info = await (await fetch(`${config.lambda2}${videoID}`)).json();
-						if (!(isSafe(() => info.formats[0].url))) {
-							return reject("Cannot fetch the requested song...");
-						}
+						return reject("Cannot fetch the requested song...");
 					}
 					let audioFormats = ytdl.filterFormats(info.formats, "audioonly");
 					if (!audioFormats[0].contentLength) {
