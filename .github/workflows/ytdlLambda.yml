@@ -3,14 +3,14 @@ name: lambda
 on:
   push:
     branches:
-      - production
+      # - production
       - staging
     paths:
       - serverless/ytdl-lambda/**
   pull_request:
     types: [closed]
     branches:
-      - production
+      # - production
       - staging
     paths:
       - serverless/ytdl-lambda/**
