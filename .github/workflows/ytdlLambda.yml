@@ -1,4 +1,4 @@
-name: Zip and Upload to AWS
+name: lambda
 
 on:
   push:
