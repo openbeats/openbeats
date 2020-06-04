@@ -1,7 +1,6 @@
 const ytdl = require("ytdl-core");
 
 exports.handler = async (event) => {
-    // TODO implement
     const vid = event.queryStringParameters && event.queryStringParameters.vid ? event.queryStringParameters.vid : null;
     if (!vid) {
         const response = {
@@ -18,5 +17,4 @@ exports.handler = async (event) => {
         body: JSON.stringify(info),
     };
     return response;
-
 };
