@@ -1,0 +1,12 @@
+{
+  "STAGINGAWS": {
+    "AWS_ACCESS_KEY_ID": "AKIAW5MNV6HMN5QU6EWR",
+    "AWS_SECRET_ACCESS_KEY": "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",
+    "AWS_REGION": "ap-south-1"
+  },
+  "PRODUCTIONAWS": {
+    "AWS_ACCESS_KEY_ID": "",
+    "AWS_SECRET_ACCESS_KEY": "",
+    "AWS_REGION": "ap-south-1"
+  }
+}
