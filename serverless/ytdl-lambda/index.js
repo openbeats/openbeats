@@ -9,8 +9,6 @@ exports.handler = async (event) => {
         };
         return response;
     }
-
-    console.log(vid)
     const info = await ytdl.getInfo(vid)
     const response = {
         statusCode: 200,
