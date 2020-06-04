@@ -30,9 +30,9 @@ jobs:
         - name: default deploy
           uses: appleboy/lambda-action@master
           with:
-            aws_access_key_id: ${{ secrets.PRODUCTIONAWS.AWS_ACCESS_KEY_ID }}
-            aws_secret_access_key: ${{ secrets.PRODUCTIONAWS.AWS_SECRET_ACCESS_KEY }}
-            aws_region: ${{ secrets.PRODUCTIONAWS.AWS_REGION }}
+            aws_access_key_id: ${{ secrets.PRODUCTIONAWS_AWS_ACCESS_KEY_ID }}
+            aws_secret_access_key: ${{ secrets.PRODUCTIONAWS_AWS_SECRET_ACCESS_KEY }}
+            aws_region: ${{ secrets.PRODUCTIONAWS_AWS_REGION }}
             function_name: obsytdl
             zip_file: ${{ env.SERVICE_PATH }}/deployment.zip
         
@@ -47,8 +47,8 @@ jobs:
         - name: default deploy
           uses: appleboy/lambda-action@master
           with:
-            aws_access_key_id: ${{ secrets.STAGINGAWS.AWS_ACCESS_KEY_ID }}
-            aws_secret_access_key: ${{ secrets.STAGINGAWS.AWS_SECRET_ACCESS_KEY }}
-            aws_region: ${{ secrets.STAGINGAWS.AWS_REGION }}
+            aws_access_key_id: ${{ secrets.STAGINGAWS_AWS_ACCESS_KEY_ID }}
+            aws_secret_access_key: ${{ secrets.STAGINGAWS_AWS_SECRET_ACCESS_KEY }}
+            aws_region: ${{ secrets.STAGINGAWS_AWS_REGION }}
             function_name: obs-ytdl
             zip_file: ${{ env.SERVICE_PATH }}/deployment.zip
