@@ -23,7 +23,7 @@ app.get("/:id", async (req, res) => {
 		const getStreamUrl = new Promise((resolve, reject) => {
 			redis.get(videoID, async (err, sourceUrl) => {
 				if (!sourceUrl) {
-					let info = await (await fetch(`${config.ytdlLambda+videoID}`)).json();
+					let info = await (await fetch(`${config.ytdlLambda + videoID}`)).json();
 					if (!(isSafe(() => info.formats[0].url))) {
 						return reject("Cannot fetch the requested song...");
 					}
@@ -61,7 +61,7 @@ app.get("/:id", async (req, res) => {
 					Range: range,
 				},
 			})
-			res.writeHead(206, response.headers);
+			res.writeHead(200, response.headers);
 			response.data.pipe(res);
 		} else {
 			response = await axios({
