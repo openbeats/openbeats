@@ -11,7 +11,7 @@ import {
   playerplay,
   playerpause,
   playernext,
-  playerdownload,
+  // playerdownload,
   playerqueue,
   musicDummy
 } from "../assets/images";
@@ -246,7 +246,7 @@ class Player extends Component {
                   id="volume-progress-bar"
                 />
               </div>
-              <div>
+              {/* <div>
                 <div
                   onClick={e => {
                     this.props.playerDownloadHandler(e);
@@ -266,7 +266,7 @@ class Player extends Component {
                       <img src={playerdownload} alt="" srcSet="" />
                     )}
                 </div>
-              </div>
+              </div> */}
               <div>
                 <Link to="/nowplaying">
                   <img
