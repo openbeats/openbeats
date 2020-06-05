@@ -154,7 +154,7 @@
     padding-right: 15px;
     width: 250px;
     display: flex;
-    justify-content: space-between;
+    justify-content: space-around;
 }
 
 .player-rightmost-control-holder>div>img {
