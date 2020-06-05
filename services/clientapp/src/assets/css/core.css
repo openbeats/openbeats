@@ -86,3 +86,7 @@ main {
 .master-color {
   color: var(--main-master-color) !important;
 }
+
+.main-text-color {
+  color: var(--text-color-main) !important;
+}
