@@ -1,6 +1,13 @@
 import React, { Component } from 'react';
 import "../assets/css/song.css";
-import { playerpause, playerplay, playerdownload, pQueueRed, playlistadd, musicDummy } from '../assets/images';
+import {
+    playerpause,
+    playerplay,
+    // playerdownload,
+    pQueueRed,
+    playlistadd,
+    musicDummy
+} from '../assets/images';
 import Loader from 'react-loader-spinner';
 import { toastActions, playlistManipulatorActions, nowPlayingActions, playerActions } from '../actions';
 import { connect } from 'react-redux';
@@ -60,7 +67,7 @@ class Song extends Component {
                     }
 
 
-                    <div download
+                    {/* <div download
                         onClick={async (e) => {
                             e.preventDefault();
                             e.stopPropagation();
@@ -80,7 +87,7 @@ class Song extends Component {
                             :
                             <img className="action-image-size " src={playerdownload} alt="" />
                         }
-                    </div>
+                    </div> */}
                     <img onClick={
                         (e) => {
                             e.stopPropagation();

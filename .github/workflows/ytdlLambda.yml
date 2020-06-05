@@ -28,7 +28,7 @@ jobs:
       - name: Build binary
         run: |
           cd ${{ env.SERVICE_PATH }}
-          npm install --silent
+          npm install ytdl-core@latest
           zip -r deployment.zip .
       - name: default deploy
         uses: appleboy/lambda-action@master
@@ -48,7 +48,7 @@ jobs:
       - name: Build binary
         run: |
           cd ${{ env.SERVICE_PATH }}
-          npm install --silent
+          npm install ytdl-core@latest
           zip -r deployment.zip .
       - name: default deploy
         uses: appleboy/lambda-action@master

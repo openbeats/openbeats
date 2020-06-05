@@ -26,6 +26,7 @@ import { toastActions, coreActions, playlistManipulatorActions } from "../action
 import { connect } from "react-redux";
 import { push } from "connected-react-router";
 import { Switch, Route, Redirect } from "react-router";
+import Disclaimer from "./Disclaimer";
 
 class Main extends Component {
 	componentDidMount() {
@@ -73,6 +74,7 @@ class Main extends Component {
 							<Route exact path="/languages" component={Languages} />
 							<Route exact path="/languages/:id" component={LanguageAlbums} />
 							<Route exact path="/emotions" component={Emotions} />
+							<Route exact path="/disclaimer" component={Disclaimer} />
 							<Route exact path="/emotions/:id" component={EmotionAlbums} />
 							<Route
 								exact
