@@ -61,7 +61,7 @@ app.get("/:id", async (req, res) => {
 					Range: range,
 				},
 			})
-			res.writeHead(200, response.headers);
+			res.writeHead(206, response.headers);
 			response.data.pipe(res);
 		} else {
 			response = await axios({
