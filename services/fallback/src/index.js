@@ -69,7 +69,7 @@ app.get("/:id", async (req, res) => {
 				url: sourceUrl,
 				responseType: "stream",
 			})
-			res.writeHead(206, response.headers);
+			res.writeHead(200, response.headers);
 			response.data.pipe(res);
 		}
 	} catch (error) {
