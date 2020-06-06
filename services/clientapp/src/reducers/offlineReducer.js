@@ -1,5 +1,6 @@
 const initialState = {
     isOnline: true,
+    isSafari: false,
 }
 
 const coreReducer = (state = initialState, action) => {
@@ -8,6 +9,12 @@ const coreReducer = (state = initialState, action) => {
             state = {
                 ...state,
                 isOnline: action.payload
+            }
+            break;
+        case "SET_SAFARI_STATUS":
+            state = {
+                ...state,
+                isSafari: action.payload
             }
             break;
         case "RESET_CORE":
