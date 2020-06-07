@@ -41,3 +41,30 @@
     margin-top: 2px;
     font-size: 11px;
 }
+
+@media only screen and (max-width: 850px) {
+    .home-section-header {
+        display: flex;
+        width: 100%;
+        align-items: center;
+        justify-content: space-between;
+        padding-left: 20px;
+        padding-right: 20px;
+        margin-bottom: 10px;
+    }
+
+    .left-section {
+        height: auto;
+        width: auto;
+        display: flex;
+        font-weight: bold;
+        font-size: 13px;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .left-section>i:nth-child(1) {
+        font-size: 18px;
+        margin-right: 5px;
+    }
+}

@@ -21,7 +21,14 @@ class Albums extends Component {
 			releases: [],
 			featuring: [],
 			type: "all",
+			next: true,
+			previous: false,
+			page: 1,
+			limit: 20,
+			isScrollFetchInProcess: false,
 		};
+		this.observer = null;
+		this.intersectElement = null;
 		this.state = { ...this.initialState };
 	}
 
@@ -29,6 +36,33 @@ class Albums extends Component {
 		this.props.setCurrentAction("Artists");
 		this._isMounted = true;
 		this.albumsMainHandler();
+		const type = this.props.match.params.type
+		if (type !== 'all')
+			this.initiateScrollFetcher();
+	}
+	initiateScrollFetcher() {
+		let options = {
+			root: document.getElementById("main-body"),
+			rootMargin: '0px',
+			threshold: 1
+		}
+
+		this.observer = new IntersectionObserver((entries) => {
+			entries.forEach(entry => {
+				if (entry.isIntersecting) {
+					if (entry.intersectionRatio >= 0.95) {
+						if (this.state.type === "featuring")
+							this.fetchFeaturingHandler(true);
+						if (this.state.type === "releases")
+							this.fetchReleasesHandler(true);
+					}
+				}
+			});
+		}, options);
+
+		if (this.intersectElement)
+			this.observer.observe(this.intersectElement);
+
 	}
 
 	albumsMainHandler = async () => {
@@ -49,12 +83,12 @@ class Albums extends Component {
 				this.fetchFeaturingHandler();
 				break;
 			case "featuring":
-				if (this._isMounted) this.setState({ type: "featuring" });
-				this.fetchFeaturingHandler();
+				if (this._isMounted) this.setState({ type: "featuring", featuring: [] });
+				this.fetchFeaturingHandler(true);
 				break;
 			case "releases":
-				if (this._isMounted) this.setState({ type: "releases" });
-				this.fetchReleasesHandler();
+				if (this._isMounted) this.setState({ type: "releases", releases: [] });
+				this.fetchReleasesHandler(true);
 				break;
 			default:
 				this.props.push("/404");
@@ -63,30 +97,68 @@ class Albums extends Component {
 		this.setState({ isLoading: false });
 	};
 
-	fetchFeaturingHandler = async () => {
+	fetchFeaturingHandler = async (fetchFull = false) => {
 		try {
-			const artistFeaturingFetchUrl = `${variables.baseUrl}/playlist/artist/${this.state.artistId}/featuring?page=1&limit=1000`;
-			const artistFeaturing = (await axios.get(artistFeaturingFetchUrl)).data;
-			if (artistFeaturing.status) {
-				this.setState({ featuring: artistFeaturing.data.result });
+			if (fetchFull && this.state.next && !this.state.isScrollFetchInProcess) {
+				this.setState({ isScrollFetchInProcess: true })
+				const artistFeaturingFetchUrl = `${variables.baseUrl}/playlist/artist/${this.state.artistId}/featuring?page=${this.state.page}&limit=${this.state.limit}`;
+				const artistFeaturing = (await axios.get(artistFeaturingFetchUrl)).data;
+				if (artistFeaturing.status) {
+					if (this._isMounted) this.setState({
+						isLoading: false,
+						featuring: [...this.state.featuring, ...artistFeaturing.data.result],
+						page: artistFeaturing.data.next ? this.state.page + 1 : this.state.page,
+						next: artistFeaturing.data.next ? true : false,
+						previous: artistFeaturing.data.previous ? true : false,
+						isScrollFetchInProcess: false
+					});
+				} else {
+					throw new Error(artistFeaturing.data);
+				}
 			} else {
-				throw new Error(artistFeaturing.data);
+				const artistFeaturingFetchUrl = `${variables.baseUrl}/playlist/artist/${this.state.artistId}/featuring?page=1&limit=10`;
+				const artistFeaturing = (await axios.get(artistFeaturingFetchUrl)).data;
+				if (artistFeaturing.status) {
+					this.setState({ featuring: artistFeaturing.data.result });
+				} else {
+					throw new Error(artistFeaturing.data);
+				}
 			}
+
 		} catch (error) {
 			this.props.notify(error.message.toString());
 			this.props.push("/");
 		}
 	};
 
-	fetchReleasesHandler = async () => {
+	fetchReleasesHandler = async (fetchFull = false) => {
 		try {
-			const artistReleasesFetchUrl = `${variables.baseUrl}/playlist/artist/${this.state.artistId}/releases?page=1&limit=1000`;
-			const artistReleases = (await axios.get(artistReleasesFetchUrl)).data;
-			if (artistReleases.status) {
-				this.setState({ releases: artistReleases.data.result });
+			if (fetchFull && this.state.next && !this.state.isScrollFetchInProcess) {
+				this.setState({ isScrollFetchInProcess: true })
+				const artistReleasesFetchUrl = `${variables.baseUrl}/playlist/artist/${this.state.artistId}/releases?page=${this.state.page}&limit=${this.state.limit}`;
+				const artistReleases = (await axios.get(artistReleasesFetchUrl)).data;
+				if (artistReleases.status) {
+					if (this._isMounted) this.setState({
+						isLoading: false,
+						releases: [...this.state.releases, ...artistReleases.data.result],
+						page: artistReleases.data.next ? this.state.page + 1 : this.state.page,
+						next: artistReleases.data.next ? true : false,
+						previous: artistReleases.data.previous ? true : false,
+						isScrollFetchInProcess: false
+					});
+				} else {
+					throw new Error(artistReleases.data);
+				}
 			} else {
-				throw new Error(artistReleases.data);
+				const artistReleasesFetchUrl = `${variables.baseUrl}/playlist/artist/${this.state.artistId}/releases?page=1&limit=10`;
+				const artistReleases = (await axios.get(artistReleasesFetchUrl)).data;
+				if (artistReleases.status) {
+					this.setState({ releases: artistReleases.data.result });
+				} else {
+					throw new Error(artistReleases.data);
+				}
 			}
+
 		} catch (error) {
 			this.props.notify(error.message.toString());
 			this.props.push("/");
@@ -99,22 +171,28 @@ class Albums extends Component {
 	};
 
 	// List Preparing Part
-	getAlbumsList(arrayList) {
-		return arrayList.map((item, key) => (
-			<AlbumHolder
-				key={key}
-				albumName={item.name}
-				albumThumbnail={item.thumbnail}
-				albumTotalSongs={item.totalSongs}
-				albumId={item._id}
-				albumCreationDate={new Date(item.createdAt).toDateString()}
-				albumCreatedBy={"OpenBeats"}
-				type={"album"}
-				addOrRemoveAlbumFromCollectionHandler={this.addOrRemoveAlbumFromCollectionHandler}
-				isAuthenticated={this.props.isAuthenticated}
-				isAlbumIsInCollection={this.props.likedPlaylists.indexOf(item._id) === -1 ? false : true}
-			/>
-		));
+	getAlbumsList(arrayList, exploreMore = { enabled: false, url: '' }) {
+		return (<>
+			{arrayList.map((item, key) => (
+				<AlbumHolder
+					key={key}
+					albumName={item.name}
+					albumThumbnail={item.thumbnail}
+					albumTotalSongs={item.totalSongs}
+					albumId={item._id}
+					albumCreationDate={new Date().toDateString()}
+					albumCreatedBy={"OpenBeats"}
+					type={'album'}
+					addOrRemoveAlbumFromCollectionHandler={this.addOrRemoveAlbumFromCollectionHandler}
+					isAuthenticated={this.props.isAuthenticated}
+					isAlbumIsInCollection={this.props.likedPlaylists.indexOf(item._id) === -1 ? false : true}
+				/>))}
+			{exploreMore.enabled &&
+				<AlbumHolder
+					exploreMore={true}
+					exploreMoreUrl={exploreMore.url}
+				/>}
+		</>)
 	}
 
 	ReleasedAlbums = () => {
@@ -129,7 +207,7 @@ class Albums extends Component {
 						</div>
 					</div>
 					<div className="home-section-body">
-						<HorizontalView elementList={this.getAlbumsList(this.state.releases)} />
+						<HorizontalView elementList={this.getAlbumsList(this.state.releases, { enabled: true, url: `/artist/${this.state.artistId}/releases` })} />
 					</div>
 				</div>
 			)
@@ -148,7 +226,7 @@ class Albums extends Component {
 						</div>
 					</div>
 					<div className="home-section-body">
-						<HorizontalView elementList={this.getAlbumsList(this.state.featuring)} />
+						<HorizontalView elementList={this.getAlbumsList(this.state.featuring, { enabled: true, url: `/artist/${this.state.artistId}/featuring` })} />
 					</div>
 				</div>
 			)
@@ -166,6 +244,7 @@ class Albums extends Component {
 			</div>
 			<div className="albums-wrapper">
 				{this.getAlbumsList(currentAlbums)}
+				<div ref={d => this.intersectElement = d} className="intersection-holder"></div>
 			</div>
 		</div>
 	};
@@ -177,6 +256,7 @@ class Albums extends Component {
 	componentWillUnmount() {
 		this.setState({ ...this.initialState });
 		this._isMounted = false;
+		if (this.observer) this.observer.disconnect();
 	}
 
 	render() {

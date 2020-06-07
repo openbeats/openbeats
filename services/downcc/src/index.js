@@ -32,16 +32,10 @@ app.get("/:id", async (req, res) => {
 						downloadTitle
 					})
 				} else {
-					let info = await (await fetch(`${config.lambda}${videoID}`)).json();
-
-					//checks if there is url property in info object if not calls azure function
+					let info = await (await fetch(`${config.ytdlLambda+videoID}`)).json();
 					if (!(isSafe(() => info.formats[0].url))) {
-						info = await (await fetch(`${config.azureFunction}${videoID}`)).json();
-						if (!(isSafe(() => info.formats[0].url))) {
-							throw new Error("Cannot fetch the requested song...");
-						}
+						return reject("Cannot fetch the requested song...");
 					}
-
 					let audioFormats = ytdl.filterFormats(info.formats, "audioonly");
 					if (!audioFormats[0].contentLength) {
 						audioFormats = ytdl.filterFormats(info.formats, "audioandvideo");
@@ -76,12 +70,13 @@ app.get("/:id", async (req, res) => {
 			.setFfmpegPath(path)
 			.withAudioCodec("libmp3lame")
 			.toFormat("mp3")
-			.on("error", err => console.log(err.message))
+			.on("error", err => {
+				throw new Error(err.message);
+			})
 			.pipe(res, {
 				end: true,
 			});
 	} catch (error) {
-		console.error(error.message);
 		return res.status(408).send({
 			status: false,
 			link: null,

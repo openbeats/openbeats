@@ -1,6 +1,8 @@
 .language-holder-wrapper {
     width: 200px;
     height: 220px;
+    min-width: 200px;
+    min-height: 220px;
     position: relative;
     border-radius: 5px;
     box-shadow: 0 0 10px 0 black;
@@ -50,4 +52,20 @@
 
 .language-sub-title {
     font-size: 12px;
+}
+
+@media only screen and (max-width: 850px) {
+    .language-holder-wrapper {
+        min-width: 150px;
+        min-height: 150px;
+        width: 150px;
+        height: 150px;
+    }
+
+    .language-title {
+        letter-spacing: 3px;
+        font-size: 14px;
+    }
+
+
 }

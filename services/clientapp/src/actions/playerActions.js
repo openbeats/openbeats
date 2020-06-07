@@ -389,15 +389,22 @@ export const initMediaSession = async () => {
 		/* eslint-disable-next-line */
 		navigator.mediaSession.metadata = new MediaMetadata({
 			title: state.playerReducer.songTitle,
+			album: 'OpenBeats Music',
 			artwork: [{
 				src: `https://i.ytimg.com/vi/${state.playerReducer.id}/maxresdefault.jpg`,
 				sizes: '1280x720',
 				type: 'image/jpg'
 			}, {
-				src: state.playerReducer.thumbnail.split("?")[0],
-				sizes: '480x360',
+				src: `https://i.ytimg.com/vi/${state.playerReducer.id}/mqdefault.jpg`,
+				sizes: '320x180',
 				type: 'image/jpg'
-			}]
+			},
+				//  {
+				// 	src: state.playerReducer.thumbnail.split("?")[0],
+				// 	sizes: '480x360',
+				// 	type: 'image/jpg'
+				// }
+			]
 		});
 
 		navigator.mediaSession.setActionHandler('play', () => {

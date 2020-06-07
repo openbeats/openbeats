@@ -9,7 +9,7 @@
 }
 
 .toast-bg-color {
-  background: #242424;
+  background: var(--main-bg-color);
   width: 100%;
   height: 100%;
 }

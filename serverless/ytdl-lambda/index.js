@@ -9,12 +9,10 @@ exports.handler = async (event) => {
         };
         return response;
     }
-
     const info = await ytdl.getInfo(vid)
     const response = {
         statusCode: 200,
         body: JSON.stringify(info),
     };
     return response;
-
 };

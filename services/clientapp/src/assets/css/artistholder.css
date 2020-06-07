@@ -1,6 +1,4 @@
 .artist-display-holder {
-    width: 200px;
-    height: 250px;
     min-width: 200px;
     min-height: 250px;
     background: var(--main-bg-color);
@@ -35,4 +33,28 @@
 .artist-description {
     margin-top: 5px;
     font-size: 13px;
+}
+
+
+@media only screen and (max-width: 850px) {
+    .artist-display-holder {
+        min-width: 170px;
+        min-height: 170px;
+    }
+
+    .artist-rounded-circle-holder {
+        height: 100px;
+        width: 100px;
+    }
+
+    .artist-name {
+        margin-top: 10px;
+        font-size: 13px;
+        font-weight: bold;
+    }
+
+    .artist-description {
+        margin-top: 5px;
+        font-size: 11px;
+    }
 }

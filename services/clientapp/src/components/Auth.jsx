@@ -8,6 +8,7 @@ import { store } from "../store";
 import { musicIllustration, masterLogo } from "../assets/images";
 
 class Auth extends Component {
+  _isMounted = false;
   constructor(props) {
     super(props);
     this.state = {
@@ -19,9 +20,14 @@ class Auth extends Component {
   }
 
   componentDidMount() {
+    this._isMounted = true;
     if (this.props.isAuthenticated) {
       store.dispatch(push("/"))
     }
+  }
+
+  componentWillUnmount() {
+    this._isMounted = false;
   }
 
   Login() {
@@ -41,7 +47,7 @@ class Auth extends Component {
         <div className="native-login-input">
           <input required placeholder="Email" name="email" type="email" />
         </div>
-        <div className="native-login-input">
+        <div className="native-login-input mt-4 mb-2">
           <input
             required
             placeholder="Password"
@@ -49,18 +55,14 @@ class Auth extends Component {
             type="password"
           />
         </div>
-        <div className="remaind-me">
-          <input type="checkbox" name="rememberme" />
-          Remember Me
-        </div>
-        <button type="submit" className="native-login-button cursor-pointer">
+        <button type="submit" className="native-login-button cursor-pointer mt-4">
           Login
         </button>
         <div onClick={() => this.props.push("/auth/forgot")} className="forgot-password-holder cursor-pointer">
           Forgot password?
         </div>
         <div className="responsive-link-creator">
-          Don't have a OpenBeats Account yet?{" "}
+          Don't have a OpenBeats Account yet?
         </div>
         <div
           onClick={() =>
@@ -71,6 +73,9 @@ class Auth extends Component {
           className="responsive-custom-link cursor-pointer"
         >
           Create One
+        </div>
+        <div className="mt-2">
+          <div onClick={() => this.props.push("/")} className="responsive-custom-link display-block mt-4 cursor-pointer" >Go Back to Home</div>
         </div>
       </form>
     );
@@ -103,10 +108,10 @@ class Auth extends Component {
         <div className="native-login-input">
           <input required placeholder="Username" type="text" name="name" />
         </div>
-        <div className="native-login-input">
+        <div className="native-login-input mt-4">
           <input required placeholder="Email" type="email" name="email" />
         </div>
-        <div className="native-login-input">
+        <div className="native-login-input mt-4">
           <input
             required
             placeholder="Password"
@@ -114,7 +119,7 @@ class Auth extends Component {
             name="password"
           />
         </div>
-        <div className="native-login-input">
+        <div className="native-login-input mt-4 mb-2">
           <input
             required
             placeholder="Confirm Password"
@@ -122,7 +127,7 @@ class Auth extends Component {
             name="confirmpassword"
           />
         </div>
-        <button type="submit" className="native-login-button cursor-pointer">
+        <button type="submit" className="native-login-button cursor-pointer mt-4">
           Register
         </button>
         <div className="responsive-link-creator">
@@ -130,13 +135,16 @@ class Auth extends Component {
         </div>
         <div
           onClick={() =>
-            this.setState({
+            this._isMounted && this.setState({
               displayRegister: !this.state.displayRegister
             })
           }
           className="responsive-custom-link cursor-pointer"
         >
           Login
+        </div>
+        <div className="mt-2">
+          <div onClick={() => this.props.push("/")} className="responsive-custom-link display-block mt-4 cursor-pointer" >Go Back to Home</div>
         </div>
       </form>
     );
@@ -168,7 +176,7 @@ class Auth extends Component {
             </div>
             <button
               onClick={() =>
-                this.setState({
+                this._isMounted && this.setState({
                   displayRegister: !this.state.displayRegister
                 })
               }
@@ -196,7 +204,7 @@ class Auth extends Component {
             </div>
               <button
                 onClick={() =>
-                  this.setState({
+                  this._isMounted && this.setState({
                     displayRegister: !this.state.displayRegister
                   })
                 }

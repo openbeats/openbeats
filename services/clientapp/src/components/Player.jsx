@@ -11,8 +11,9 @@ import {
   playerplay,
   playerpause,
   playernext,
-  playerdownload,
-  playerqueue
+  // playerdownload,
+  playerqueue,
+  musicDummy
 } from "../assets/images";
 import { store } from "../store";
 
@@ -115,6 +116,7 @@ class Player extends Component {
     return (
       <Fragment>
         <div className={`player-wrapper ${this.state.isMobilePlayerOpened ? "show-player" : ''}`} id="player-wrapper" ref={d => this.playerWrapperRef = d}>
+          <div className="player-mobile-thumbnail-background" style={{ backgroundImage: `url('${this.props.thumbnail}'), url(${musicDummy})` }}></div>
           <audio
             id="music-player"
             onLoadedMetadata={() => this.props.setTotalDuration()}
@@ -244,7 +246,7 @@ class Player extends Component {
                   id="volume-progress-bar"
                 />
               </div>
-              <div>
+              {/* <div>
                 <div
                   onClick={e => {
                     this.props.playerDownloadHandler(e);
@@ -264,7 +266,7 @@ class Player extends Component {
                       <img src={playerdownload} alt="" srcSet="" />
                     )}
                 </div>
-              </div>
+              </div> */}
               <div>
                 <Link to="/nowplaying">
                   <img

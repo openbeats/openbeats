@@ -82,7 +82,7 @@ class TopNav extends Component {
 							placeholder="Search Artists, Albums, Films, Songs...."
 						/>
 						<div className="search-icon" type="submit">
-							<i className="fad fa-search"></i>
+							<i className="far fa-search"></i>
 						</div>
 					</form>
 					<div className="suggestion-keyword-holder">

@@ -147,7 +147,7 @@ class PlaylistDisplay extends Component {
                                             await this.playlistFetchHandler();
                                         }
                                     }} className="edit-playlist-name playlist-display-title-holder">
-                                        <input type="text" value={this.state.editedName} onChange={(e) => this.setState({ editedName: e.target.value })} />
+                                        <input autoFocus type="text" value={this.state.editedName} onChange={(e) => this.setState({ editedName: e.target.value })} />
                                         <div className="edit-playlist-button-holder">
                                             <button className="cursor-pointer" type="submit">save</button>
                                             <button className="cursor-pointer" onClick={() => {

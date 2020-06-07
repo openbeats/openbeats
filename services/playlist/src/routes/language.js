@@ -154,11 +154,7 @@ router.get("/fetch", oneOf([check("tagId").exists(), check("startsWith").exists(
         data: language,
       });
     }
-
-    return res.send({
-      status: false,
-      data: [],
-    });
+    throw new Error("Please give a valid tag...");
   } catch (error) {
     console.error(error.message);
     res.send({

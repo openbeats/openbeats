@@ -29,6 +29,8 @@ class AlbumsDash extends Component {
 			isUpdate: false,
 			isCustom: false,
 			updateAlbumId: null,
+			customThumbnail: '',
+			fetchedArtistSuggestion: null,
 		};
 	}
 
@@ -51,6 +53,7 @@ class AlbumsDash extends Component {
 					languageChips: albumData.data.languageArr.map(item => item._id),
 					emotionChips: albumData.data.emotion.map(item => item._id),
 					isCustom: albumData.data.isCustom,
+					customThumbnail: albumData.data.thumbnail !== albumData.data.songs[0].thumbnail ? albumData.data.thumbnail : ''
 				};
 				if (albumData.data.albumBy !== null) {
 					prepareData.artistChipsCollection = [...prepareData.artistChipsCollection, albumData.data.albumBy];
@@ -82,6 +85,7 @@ class AlbumsDash extends Component {
 				albumBy: this.state.artistChips.length === 1 ? this.state.artistChips[0] : this.state.albumBy,
 				songs: this.state.songsCollection,
 				isCustom: this.state.isCustom,
+				thumbnail: this.state.customThumbnail.length > 0 ? this.state.customThumbnail : null
 			};
 			if (!this.state.isUpdate) {
 				const resultData = (await axios.post(`${variables.baseUrl}/playlist/album/create`, preparedData)).data;
@@ -116,6 +120,10 @@ class AlbumsDash extends Component {
 	setAlbumBy = artistId => {
 		this.setState({ albumBy: artistId });
 	};
+
+	setFetchedArtist = (fetchedArtistStr) => {
+		this.setState({ fetchedArtistSuggestion: fetchedArtistStr });
+	}
 
 	setSearchChips = chips => {
 		const chipsId = chips.map(item => item._id);
@@ -189,7 +197,7 @@ class AlbumsDash extends Component {
 		await this.props.toggleHangingPlayer(true);
 	};
 
-	isCustomHandler = (e) => {
+	isCustomHandler = () => {
 		const isCustom = !(this.state.isCustom);
 		this.setState({ isCustom });
 	}
@@ -230,8 +238,15 @@ class AlbumsDash extends Component {
 								<div className="artist-tags-title font-weight-bold">
 									Artist Tags<span className="text-danger">*</span>
 								</div>
-								<div className="artist-tags-title-desc">(Tap on the crown badge, if you want this album to comes under specific artist's releases,
-								by default if only one artist tag is selected, album will be in that artist's releases)</div>
+								<div className="artist-tags-title-desc">
+									<strong>Fetched Artist(s)</strong><br />
+									<span>{this.state.fetchedArtistSuggestion ? this.state.fetchedArtistSuggestion : "Suggestions not available..."}</span>
+								</div>
+								<div className="artist-tags-title-desc">
+									<strong>Hint</strong><br />
+									(Tap on the crown badge, if you want this album to comes under specific artist's releases,
+									by default if only one artist tag is selected, album will be in that artist's releases)
+								</div>
 								<ChipsInput
 									chipTitle={"Artist"}
 									albumBy={this.state.albumBy}
@@ -302,6 +317,22 @@ class AlbumsDash extends Component {
 									<span className="slider round"></span>
 								</label>
 							</div>
+							<div className="albumdash-name-holder mt-2">
+								<div className="font-weight-bold">
+									Custom Album Thumbnail
+								</div>
+								<div className="mb-1">(Valid Image url)</div>
+								<input
+									className="rounded w-100 font-weight-normal"
+									value={this.state.customThumbnail}
+									onChange={e => this.setState({ customThumbnail: e.target.value })}
+									placeholder="https://img.com/ilayaraja.jpg"
+									type="text"
+								/>
+								{this.state.customThumbnail.length > 0 && <div className="custom-thumbnail-preview-holder">
+									<div className="jumbotron" style={{ backgroundImage: `url(${this.state.customThumbnail}), url(https://via.placeholder.com/500/F3F3F3/000000/?text=Invalid-Image)`, }}></div>
+								</div>}
+							</div>
 						</div>
 					</div>
 					<div className="albumdash-container-right-pan">
@@ -312,6 +343,7 @@ class AlbumsDash extends Component {
 								addSongsToTheBucketCallBack={this.addSongsToTheBucketCallBack}
 								songTrialTrigger={this.songTrialTrigger}
 								addSongsCallback={this.arrangeSongsCallBack}
+								setFetchedArtist={this.setFetchedArtist}
 							/>
 						</div>
 						<div className="albumdash-song-bucket-holder">

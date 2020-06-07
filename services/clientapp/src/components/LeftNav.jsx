@@ -1,6 +1,6 @@
 import React, { Component, Fragment } from "react";
 import "../assets/css/leftnav.css";
-import { toastActions, playlistManipulatorActions, searchActions } from "../actions";
+import { toastActions, playlistManipulatorActions, searchActions, coreActions } from "../actions";
 import { connect } from "react-redux";
 import { push } from "connected-react-router";
 import { store } from "../store";
@@ -246,13 +246,17 @@ class LeftNav extends Component {
             </section>
             <section className="nav-footer-container">
               <div className="footer-text-holder">
-                <span>About</span> <span>Copyright</span> <br />
-                <span>Contact us</span> <span>Advertise</span> <br />
-                <span>Developers</span> <br />
-                <span>Terms Privacy Policy</span> <br />
-                <span>Request New features</span> <br />
+                Reach out to us <br />
+                <a className="footer-email-link cursor-pointer" href="mailto:openbeatsyag@gmail.com">
+                  openbeatsyag@gmail.com
+                </a>
                 <br />
-                © 2020 OpenBeats, LLC <br />
+                <br />
+                Created For <br /> Educational Purposes Only !
+                <div className="master-color cursor-pointer mt-1 mb-4" onClick={() => {
+                  this.props.setCurrentAction("Disclaimer");
+                  this.props.push("/disclaimer");
+                }}>Disclaimer</div>
               </div>
             </section>
           </section>
@@ -291,7 +295,10 @@ const mapDispatchToProps = dispatch => {
     },
     updateTyping: (isTyping) => {
       dispatch(searchActions.updateTyping(isTyping));
-    }
+    },
+    setCurrentAction: action => {
+      dispatch(coreActions.setCurrentAction(action));
+    },
   };
 };
 

@@ -5,9 +5,10 @@ import {
 import {
     store
 } from "../store";
-import {
-    toastActions
-} from ".";
+// import {
+//     toastActions
+// } from ".";
+import { push } from "connected-react-router";
 
 export const fetchTopCharts = async () => {
     try {
@@ -42,37 +43,66 @@ export const fetchMyCollections = async () => {
         else
             throw new Error(data.data.toString());
     } catch (error) {
-        toastActions.showMessage(error.toString());
+        // toastActions.showMessage(error.toString());
+        console.error(error.toString());
         return [];
     }
 }
 
-export const fetchLatestAlbums = async (page = 1, limit = 10) => {
+export const fetchLatestAlbums = async (page = 1, limit = 10, advanced = false) => {
     try {
         const {
             data
         } = await axios.get(`${variables.baseUrl}/playlist/album/all?type=latest&page=${page}&limit=${limit}`);
         if (data.status)
-            return data.data.result;
+            if (!advanced)
+                return data.data.result;
+            else
+                return data.data;
         else
             throw new Error(data.data.toString());
     } catch (error) {
-        toastActions.showMessage(error.toString());
+        // toastActions.showMessage(error.toString());
+        console.error(error.toString());
         return [];
     }
 }
 
-export const fetchPopularAlbums = async (page = 1, limit = 10) => {
+export const fetchLanguageAlbums = async (languageId, type = "latest", page = 1, limit = 10, advanced = false) => {
+    try {
+        const languageAlbumsFetchUrl = `${variables.baseUrl}/playlist/language/${languageId}/albums?page=${page}&limit=${limit}&type=${type}`;
+        const data = await (await axios.get(languageAlbumsFetchUrl)).data;
+        if (data.status) {
+            if (!advanced)
+                return data.data.result;
+            else
+                return data.data
+        } else {
+            throw new Error(data.data);
+        }
+    } catch (error) {
+        // toastActions.showMessage(error.message.toString());
+        console.error(error.message.toString());
+        store.dispatch(push("/"))
+    }
+    return []
+}
+
+export const fetchPopularAlbums = async (page = 1, limit = 10, advanced = false) => {
     try {
         const {
             data
         } = await axios.get(`${variables.baseUrl}/playlist/album/all?type=popular&page=${page}&limit=${limit}`);
         if (data.status)
-            return data.data.result;
+            if (!advanced)
+                return data.data.result;
+            else
+                return data.data;
         else
             throw new Error(data.data.toString());
     } catch (error) {
-        toastActions.showMessage(error.toString());
+        // toastActions.showMessage(error.toString());
+        console.error(error.toString());
         return [];
     }
 }
@@ -87,7 +117,8 @@ export const fetchPopularArtists = async () => {
         else
             throw new Error(data.data.toString());
     } catch (error) {
-        toastActions.showMessage(error.toString());
+        // toastActions.showMessage(error.toString());
+        console.error(error.toString());
         return [];
     }
 }
@@ -101,7 +132,8 @@ export const fetchLanguages = async () => {
         else
             throw new Error(data.data.toString());
     } catch (error) {
-        toastActions.showMessage(error.toString());
+        // toastActions.showMessage(error.toString());
+        console.error(error.toString());
         return [];
     }
 }
@@ -115,7 +147,8 @@ export const fetchEmotions = async () => {
         else
             throw new Error(data.data.toString());
     } catch (error) {
-        toastActions.showMessage(error.toString());
+        // toastActions.showMessage(error.toString());
+        console.error(error.toString());
         return [];
     }
 }

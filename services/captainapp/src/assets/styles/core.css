@@ -12,6 +12,18 @@
     --bg-main: #f3f3f3;
 }
 
+input {
+    -webkit-user-select: text !important;
+    /* Chrome, Opera, Safari */
+    -moz-user-select: text !important;
+    /* Firefox 2+ */
+    -ms-user-select: text !important;
+    /* IE 10+ */
+    user-select: text !important;
+    /* Standard syntax */
+}
+
+
 .base-color {
     color: var(--base-color);
 }

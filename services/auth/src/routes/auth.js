@@ -196,7 +196,7 @@ router.post("/forgotpassword", [check("email", "Please include a valid email").i
 			expiresIn: 60 * 60,
 		});
 
-		const url = `https://openbeats.live/auth/reset/${token}`;
+		const url = config.isDev ? `https://staging.openbeats.live/auth/reset/${token}` : `https://openbeats.live/auth/reset/${token}`;
 
 		const data = {
 			to: user.email,
@@ -303,16 +303,21 @@ router.post("/verifytoken", async (req, res) => {
 		const xtoken = req.body.token;
 		const decoded = jwt.verify(xtoken, config.jwtSecret);
 		if (decoded.user && decoded.user.id && decoded.user.admin) {
-			res.send({
-				status: true,
-				data: "valid token"
-			});
+			const user = await User.findById(decoded.user.id);
+			if (!user) {
+				throw new Error("Invalid token");
+			} else {
+				res.send({
+					status: true,
+					data: "valid token"
+				});
+			}
 		} else
 			throw new Error("Invalid token");
 	} catch (error) {
 		res.send({
 			status: false,
-			data: "invalid token"
+			data: "Invalid token"
 		})
 	}
 })

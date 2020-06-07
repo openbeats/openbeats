@@ -13,24 +13,65 @@ class Languages extends Component {
         super(props);
         this.initialState = {
             languages: [],
-            isLoading: true
+            isLoading: true,
+            next: true,
+            previous: false,
+            page: 1,
+            limit: 20,
+            isScrollFetchInProcess: false,
         }
+        this.observer = null;
+        this.intersectElement = null;
         this.state = { ...this.initialState };
     }
 
     componentDidMount() {
         this.props.setCurrentAction("Languages");
         this.fetchLanguagesHandler();
+        this.initiateScrollFetcher();
 
     }
 
+    initiateScrollFetcher() {
+        let options = {
+            root: document.getElementById("main-body"),
+            rootMargin: '0px',
+            threshold: 1
+        }
+
+        this.observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    if (entry.intersectionRatio >= 0.95) {
+                        this.fetchLanguagesHandler();
+                    }
+                }
+            });
+        }, options);
+
+        if (this.intersectElement)
+            this.observer.observe(this.intersectElement);
+
+    }
+
+
     fetchLanguagesHandler = async () => {
-        const languagesFetchUrl = `${variables.baseUrl}/playlist/language/all?page=1&limit=10000`; // need to change
-        const data = (await axios.get(languagesFetchUrl)).data;
-        if (data.status) {
-            this.setState({ isLoading: false, languages: data.data.result });
-        } else {
-            this.props.notify(data.data.toString());
+        if (this.state.next && !this.state.isScrollFetchInProcess) {
+            this.setState({ isScrollFetchInProcess: true })
+            const languagesFetchUrl = `${variables.baseUrl}/playlist/language/all?page=${this.state.page}&limit=${this.state.limit}`;
+            const data = (await axios.get(languagesFetchUrl)).data;
+            if (data.status) {
+                this.setState({
+                    isLoading: false,
+                    languages: [...this.state.languages, ...data.data.result],
+                    page: data.data.next ? this.state.page + 1 : this.state.page,
+                    next: data.data.next ? true : false,
+                    previous: data.data.previous ? true : false,
+                    isScrollFetchInProcess: false
+                });
+            } else {
+                this.props.notify(data.data.toString());
+            }
         }
     }
 
@@ -38,6 +79,7 @@ class Languages extends Component {
 
     componentWillUnmount() {
         this.setState({ ...this.initialState });
+        if (this.observer) this.observer.disconnect();
     }
 
     render() {
@@ -45,7 +87,7 @@ class Languages extends Component {
             <div className="width-100 height-100 d-flex align-items-center justify-content-center">
                 <Loader type="ThreeDots" color="#F32C2C" height={80} width={80} />
             </div> :
-            <div className="languages-wrapper">
+            (<><div className="languages-wrapper">
                 {this.state.languages.map((item, key) => (
                     <Language
                         key={key}
@@ -54,7 +96,12 @@ class Languages extends Component {
                         thumbnail={item.thumbnail}
                     />
                 ))}
+                <div ref={d => this.intersectElement = d} className="intersection-holder"></div>
             </div>
+                {this.state.isScrollFetchInProcess && <div className="mt-2 width-100 d-flex align-items-center justify-content-center">
+                    <Loader color="#F32C2C" type="TailSpin" height={30} width={30} />
+                </div>}
+            </>)
     }
 }
 

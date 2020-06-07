@@ -5,6 +5,11 @@ if (type === "production") {
 	mongoURI = "mongodb+srv://obs-db:openbeats%40123@obs-db-prijj.mongodb.net/obs-db"; // production url
 }
 
+let ytdlLambdaURL = "https://ujlelgsre1.execute-api.ap-south-1.amazonaws.com/default/obs-ytdl?vid="
+if (type === 'production') {
+	ytdlLambdaURL = "https://7axob3orc3.execute-api.ap-south-1.amazonaws.com/default/obsytdl?vid="
+}
+
 export const config = {
 	mongoURI_DEV: mongoURI,
 	authBaseUrl: {
@@ -21,8 +26,7 @@ export const config = {
 		dev: "localhost",
 		prod: "obs-redis",
 	},
-	lambda: "https://orvpax9d6b.execute-api.ap-south-1.amazonaws.com/default/obs-core?vid=",
-	azureFunction: "https://obs-ytdl.azurewebsites.net/api/ytdl?vid=",
+	ytdlLambda: ytdlLambdaURL,
 	port: {
 		dev: 2004,
 		prod: 2000,
