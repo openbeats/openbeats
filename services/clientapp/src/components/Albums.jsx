@@ -15,13 +15,48 @@ class Albums extends Component {
 			latestAlbums: [],
 			type: "all",
 			isLoading: true,
+			next: true,
+			previous: false,
+			page: 1,
+			limit: 20,
+			isScrollFetchInProcess: false,
 		};
+		this.observer = null;
+		this.intersectElement = null;
 		this.state = { ...this.initialState };
 	}
 
 	componentDidMount() {
 		this._isMounted = true;
 		this.albumsMainHandler();
+		const type = this.props.match.params.type
+		if (type !== 'all')
+			this.initiateScrollFetcher();
+	}
+
+	initiateScrollFetcher() {
+		let options = {
+			root: document.getElementById("main-body"),
+			rootMargin: '0px',
+			threshold: 1
+		}
+
+		this.observer = new IntersectionObserver((entries) => {
+			entries.forEach(entry => {
+				if (entry.isIntersecting) {
+					if (entry.intersectionRatio >= 0.50) {
+						if (this.state.type === "popular")
+							this.fetchPopularAlbumsHandler(true);
+						if (this.state.type === "latest")
+							this.fetchLatestAlbumsHandler(true);
+					}
+				}
+			});
+		}, options);
+
+		if (this.intersectElement)
+			this.observer.observe(this.intersectElement);
+
 	}
 
 	albumsMainHandler = () => {
@@ -38,12 +73,12 @@ class Albums extends Component {
 			case "popular":
 				albumType = "Popular " + albumType;
 				if (this._isMounted) this.setState({ type: "popular" });
-				this.fetchPopularAlbumsHandler(true);
+				this.fetchPopularAlbumsHandler();
 				break;
 			case "latest":
 				albumType = "Latest " + albumType;
 				if (this._isMounted) this.setState({ type: "latest" });
-				this.fetchLatestAlbumsHandler(true);
+				this.fetchLatestAlbumsHandler();
 				break;
 
 			default:
@@ -54,21 +89,39 @@ class Albums extends Component {
 	};
 
 	fetchPopularAlbumsHandler = async (fetchFull = false) => {
-		let data = [];
-
-		if (fetchFull) data = await this.props.fetchPopularAlbums(1, 10000);
-		else data = await this.props.fetchPopularAlbums(1, 10);
-
-		if (this._isMounted) this.setState({ isLoading: false, popularAlbums: data });
+		if (fetchFull && this.state.next && !this.state.isScrollFetchInProcess) {
+			this.setState({ isScrollFetchInProcess: true })
+			const getData = await this.props.fetchPopularAlbums(this.state.page, this.state.limit, true);
+			if (this._isMounted) this.setState({
+				isLoading: false,
+				popularAlbums: [...this.state.popularAlbums, ...getData.result],
+				page: getData.next ? this.state.page + 1 : this.state.page,
+				next: getData.next ? true : false,
+				previous: getData.previous ? true : false,
+				isScrollFetchInProcess: false
+			});
+		} else {
+			const data = await this.props.fetchPopularAlbums(1, 10);
+			if (this._isMounted) this.setState({ isLoading: false, popularAlbums: data });
+		}
 	};
 
 	fetchLatestAlbumsHandler = async (fetchFull = false) => {
-		let data = [];
-
-		if (fetchFull) data = await this.props.fetchLatestAlbums(1, 10000);
-		else data = await this.props.fetchLatestAlbums(1, 10);
-
-		if (this._isMounted) this.setState({ isLoading: false, latestAlbums: data });
+		if (fetchFull && this.state.next && !this.state.isScrollFetchInProcess) {
+			this.setState({ isScrollFetchInProcess: true })
+			const getData = await this.props.fetchLatestAlbums(this.state.page, this.state.limit, true);
+			if (this._isMounted) this.setState({
+				isLoading: false,
+				latestAlbums: [...this.state.latestAlbums, ...getData.result],
+				page: getData.next ? this.state.page + 1 : this.state.page,
+				next: getData.next ? true : false,
+				previous: getData.previous ? true : false,
+				isScrollFetchInProcess: false
+			});
+		} else {
+			const data = await this.props.fetchLatestAlbums(1, 10);
+			if (this._isMounted) this.setState({ isLoading: false, latestAlbums: data });
+		}
 	};
 
 	addOrRemoveAlbumFromCollectionHandler = (isAdd = true, albumId) => {
@@ -76,23 +129,30 @@ class Albums extends Component {
 	};
 
 	// List Preparing Part
-	getAlbumsList(arrayList) {
-		return arrayList.map((item, key) => (
-			<AlbumHolder
-				key={key}
-				albumName={item.name}
-				albumThumbnail={item.thumbnail}
-				albumTotalSongs={item.totalSongs}
-				albumId={item._id}
-				albumCreationDate={new Date(item.createdAt).toDateString()}
-				albumCreatedBy={"OpenBeats"}
-				type={"album"}
-				addOrRemoveAlbumFromCollectionHandler={this.addOrRemoveAlbumFromCollectionHandler}
-				isAuthenticated={this.props.isAuthenticated}
-				isAlbumIsInCollection={this.props.likedPlaylists.indexOf(item._id) === -1 ? false : true}
-			/>
-		));
+	getAlbumsList(arrayList, exploreMore = { enabled: false, url: '' }) {
+		return (<>
+			{arrayList.map((item, key) => (
+				<AlbumHolder
+					key={key}
+					albumName={item.name}
+					albumThumbnail={item.thumbnail}
+					albumTotalSongs={item.totalSongs}
+					albumId={item._id}
+					albumCreationDate={new Date().toDateString()}
+					albumCreatedBy={"OpenBeats"}
+					type={'album'}
+					addOrRemoveAlbumFromCollectionHandler={this.addOrRemoveAlbumFromCollectionHandler}
+					isAuthenticated={this.props.isAuthenticated}
+					isAlbumIsInCollection={this.props.likedPlaylists.indexOf(item._id) === -1 ? false : true}
+				/>))}
+			{exploreMore.enabled &&
+				<AlbumHolder
+					exploreMore={true}
+					exploreMoreUrl={exploreMore.url}
+				/>}
+		</>)
 	}
+
 
 	PopularAlbums = () => {
 		return (
@@ -106,7 +166,7 @@ class Albums extends Component {
 						</div>
 					</div>
 					<div className="home-section-body">
-						<HorizontalView elementList={this.getAlbumsList(this.state.popularAlbums)} />
+						<HorizontalView elementList={this.getAlbumsList(this.state.popularAlbums, { enabled: true, url: "/albums/popular" })} />
 					</div>
 				</div>
 			)
@@ -125,7 +185,7 @@ class Albums extends Component {
 						</div>
 					</div>
 					<div className="home-section-body">
-						<HorizontalView elementList={this.getAlbumsList(this.state.latestAlbums)} />
+						<HorizontalView elementList={this.getAlbumsList(this.state.latestAlbums, { enabled: true, url: "/albums/latest" })} />
 					</div>
 				</div>
 			)
@@ -143,6 +203,7 @@ class Albums extends Component {
 			</div>
 			<div className="albums-wrapper">
 				{this.getAlbumsList(currentAlbums)}
+				<div ref={d => this.intersectElement = d} className="intersection-holder"></div>
 			</div>
 		</div>
 	};
@@ -154,6 +215,7 @@ class Albums extends Component {
 	componentWillUnmount() {
 		this.setState({ ...this.initialState });
 		this._isMounted = false;
+		if (this.observer) this.observer.disconnect();
 	}
 
 	render() {
@@ -161,18 +223,21 @@ class Albums extends Component {
 			<div className="width-100 height-100 d-flex align-items-center justify-content-center">
 				<Loader type="ThreeDots" color="#F32C2C" height={80} width={80} />
 			</div>
-		) : (
-				<div className="albums-wrapper">
-					{this.state.type === "all" ? (
-						<Fragment>
-							<this.LatestAlbums />
-							<this.PopularAlbums />
-						</Fragment>
-					) : (
-							<this.AllAlbums />
-						)}
-				</div>
-			);
+		) : (<>
+			<div className="albums-wrapper">
+				{this.state.type === "all" ? (
+					<Fragment>
+						<this.LatestAlbums />
+						<this.PopularAlbums />
+					</Fragment>
+				) : (
+						<this.AllAlbums />
+					)}
+			</div>
+			{this.state.isScrollFetchInProcess && <div className="mt-2 width-100 d-flex align-items-center justify-content-center">
+				<Loader color="#F32C2C" type="TailSpin" height={30} width={30} />
+			</div>}
+		</>);
 	}
 }
 
@@ -200,11 +265,11 @@ const mapDispatchToProps = dispatch => {
 		addOrRemoveAlbumFromUserCollection: async (albumId, isAdd = true) => {
 			return await playlistManipulatorActions.addOrRemoveAlbumFromUserCollection(albumId, isAdd);
 		},
-		fetchPopularAlbums: async (page, limit) => {
-			return await homeActions.fetchPopularAlbums(page, limit);
+		fetchPopularAlbums: async (page, limit, advanced = false) => {
+			return await homeActions.fetchPopularAlbums(page, limit, advanced);
 		},
-		fetchLatestAlbums: async (page, limit) => {
-			return await homeActions.fetchLatestAlbums(page, limit);
+		fetchLatestAlbums: async (page, limit, advanced = false) => {
+			return await homeActions.fetchLatestAlbums(page, limit, advanced);
 		},
 	};
 };

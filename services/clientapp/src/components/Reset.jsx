@@ -10,6 +10,7 @@ import { master } from '../assets/images';
 
 
 class Reset extends Component {
+    _isMounted = false;
     constructor(props) {
         super(props);
         this.state = {
@@ -23,6 +24,7 @@ class Reset extends Component {
 
 
     async componentDidMount() {
+        this._isMounted = true;
         const token = this.props.match.params.token;
         if (!token) {
             toastActions.showMessage("You tried to access invalid link!..");
@@ -44,13 +46,14 @@ class Reset extends Component {
     }
 
     componentWillUnmount() {
-        this.setState({
+        this._isMounted && this.setState({
             isLoading: true,
             token: null,
             password: "",
             rePassword: "",
             isResetDone: false
         })
+        this._isMounted = false;
     }
 
 
@@ -66,20 +69,20 @@ class Reset extends Component {
                         <div className="reset-title mt-4 f-s-19 ml-4 font-weight-bold">Reset Password</div>
                         <form className="native-login-input reset-form" onSubmit={async (e) => {
                             e.preventDefault();
-                            this.setState({ isLoading: true })
+                            this._isMounted && this.setState({ isLoading: true })
                             if (this.state.password < 3 || this.state.password !== this.state.rePassword) {
                                 toastActions.showMessage("password doesn't match!")
-                                this.setState({ isLoading: false })
+                                this._isMounted && this.setState({ isLoading: false })
                                 return;
                             }
                             if (await this.props.resetPassword(this.state.password, this.state.token))
-                                this.setState({
+                                this._isMounted && this.setState({
                                     isLoading: false,
                                     isResetDone: true
                                 })
                         }}>
-                            <input required className="mb-2 mt-2" value={this.state.password} onChange={(e) => this.setState({ password: e.target.value })} placeholder="Enter Password" type="password" />
-                            <input required className="mt-2 mb-4" value={this.state.rePassword} onChange={(e) => this.setState({ rePassword: e.target.value })} placeholder="Re-Enter Password" type="password" />
+                            <input required className="mb-2 mt-2" value={this.state.password} onChange={(e) => this._isMounted && this.setState({ password: e.target.value })} placeholder="Enter Password" type="password" />
+                            <input required className="mt-2 mb-4" value={this.state.rePassword} onChange={(e) => this._isMounted && this.setState({ rePassword: e.target.value })} placeholder="Re-Enter Password" type="password" />
                             <button className="native-login-button mt-4 cursor-pointer" type="submit">Reset</button>
                         </form>
                     </div >

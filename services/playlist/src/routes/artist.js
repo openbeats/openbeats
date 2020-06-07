@@ -111,16 +111,20 @@ router.get("/suggest", async (req, res) => {
 		const {
 			query
 		} = req.query;
-		const artists = await Artist.find({
-			name: {
-				$regex: `${query}`,
-				$options: `i`
-			}
-		}).limit(5).lean();
-		return res.send({
-			status: true,
-			data: artists,
-		});
+		if (query) {
+			const artists = await Artist.find({
+				name: {
+					$regex: `${query}`,
+					$options: `i`
+				}
+			}).limit(5).lean();
+			return res.send({
+				status: true,
+				data: artists,
+			});
+		} else {
+			throw new Error("Please give a valid tag...");
+		}
 	} catch (error) {
 		console.error(error.message);
 		res.send({

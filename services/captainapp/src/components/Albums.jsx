@@ -26,7 +26,7 @@ class Albums extends Component {
 
 	async fetchAlbums() {
 		try {
-			const albumsFetchUrl = `${variables.baseUrl}/playlist/album/all?page=1&limit=1000`;
+			const albumsFetchUrl = `${variables.baseUrl}/playlist/album/all?page=1&limit=1000&type=latest`;
 			const resultData = (await axios.get(albumsFetchUrl)).data;
 			if (resultData.status) {
 				this.setState({ albumsCollection: resultData.data.result });
@@ -82,7 +82,7 @@ class Albums extends Component {
 							<div className="albums-container">
 								{this.state.albumsCollection.map((item, key) => (
 									<div className="album-holder" style={{ backgroundImage: `url(${item.thumbnail})` }} key={key}>
-										{this.editDeletePermission(item.createdBy._id) ? (
+										{this.editDeletePermission(item.createdBy?._id) ? (
 											<Fragment>
 												<div className="album-btn-rounded album-edit-button cursor-pointer" onClick={e => this.editAlbum(key)}>
 													<i className="fas fa-pencil-alt"></i>
@@ -105,7 +105,7 @@ class Albums extends Component {
 										<div className="album-description">
 											<div className="album-title">{item.name}</div>
 											<div className="album-creation-date">{new Date(item.createdAt).toDateString()}</div>
-											<div className="album-created-by">by {item.createdBy.name}</div>
+											<div className="album-created-by">by {item.createdBy?.name}</div>
 										</div>
 									</div>
 								))}

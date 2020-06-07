@@ -60,6 +60,12 @@ class Forgot extends Component {
                             <input required className="mb-2 mt-2" value={this.state.email} onChange={(e) => this.setState({ email: e.target.value })} placeholder="Enter Your email id" type="email" />
                             <button className="native-login-button mt-4 cursor-pointer" type="submit">Submit</button>
                         </form>
+                        <div className="">
+                            <div onClick={() => this.props.push("/auth")} className="responsive-custom-link display-block mt-4 cursor-pointer" >Go Back to Login</div>
+                        </div>
+                        <div className="mt-2 mb-4">
+                            <div onClick={() => this.props.push("/")} className="responsive-custom-link display-block mt-4 cursor-pointer" >Go Back to Home</div>
+                        </div>
                     </div>
                     :
                     <div className="reset-wrapper">

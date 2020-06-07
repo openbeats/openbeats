@@ -1,12 +1,13 @@
 import React, { Component } from "react";
 import { Route, Switch } from "react-router";
-import { Auth, Main, Reset, Forgot } from "./components";
+import { Auth, Main, Reset, Forgot, Offline } from "./components";
 import { Provider, connect } from "react-redux";
 import { store } from "./store";
-import { authActions } from "./actions";
+import { authActions, offlineActions } from "./actions";
 
 class App extends Component {
   componentDidMount() {
+    this.props.offlineCheckerInitiator();
     if (this.props.isAuthenticated) {
       this.props.verifyUserToken();
     }
@@ -21,6 +22,7 @@ class App extends Component {
           <Route path="/auth/reset/:token" component={Reset} />
           <Route path="/" component={Main} />
         </Switch>
+        <Offline />
       </Provider>
     );
   }
@@ -36,6 +38,9 @@ const mapDispatchToProps = dispatch => {
   return {
     verifyUserToken: () => {
       authActions.verifyUserToken();
+    },
+    offlineCheckerInitiator: () => {
+      offlineActions.offlineCheckerInitiator();
     }
   };
 };

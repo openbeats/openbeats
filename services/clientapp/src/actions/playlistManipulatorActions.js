@@ -63,7 +63,8 @@ export async function fetchAlbumPlaylist(playlistId, type = "album") {
         } = await axios.get(url)
         return data;
     } catch (error) {
-        toastActions.showMessage(error.toString());
+        // toastActions.showMessage(error.toString());
+        console.error(error.toString());
         return null;
     }
 }
@@ -223,7 +224,8 @@ export async function fetchAllAlbumsInTheCollection() {
         } = await axios.get(`${variables.baseUrl}/auth/metadata/mycollections`);
         return data;
     } catch (error) {
-        toastActions.showMessage(error.toString());
+        // toastActions.showMessage(error.toString());
+        console.error(error.toString());
         return null;
     }
 }
@@ -260,7 +262,7 @@ export async function downloadSongHandler(item) {
             throw new Error("!");
         return true;
     } catch (error) {
-        toastActions.showMessage("Server load is high!, try again after sometime!");
+        toastActions.showMessage("Server load is high!, Please try again after sometime or Donate!");
         return true;
     }
 }

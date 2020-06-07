@@ -19,6 +19,10 @@ import {
 	canUpdateOrDeleteAlbum,
 	scopedAlbums
 } from "../permissions";
+import {
+	saveAsserts,
+	deleteAssert
+} from "../core/digitalOceanSpaces";
 
 const router = express.Router();
 
@@ -63,9 +67,14 @@ router.post(
 				isCustom
 			} = req.body;
 
+			let thumbnail = req.body.thumbnail;
+
 			if (!name || !songs) {
 				throw new Error("Pass name, userId and songs in request body.");
 			}
+
+			if (!thumbnail)
+				thumbnail = songs[0].thumbnail;
 
 			const songIds = songs.map(song => song.videoId);
 			const newAlbum = {};
@@ -74,7 +83,7 @@ router.post(
 			newAlbum.updatedBy = req.user.id;
 			newAlbum.songs = songIds;
 			newAlbum.totalSongs = songIds.length;
-			newAlbum.thumbnail = songs[0].thumbnail;
+			newAlbum.thumbnail = thumbnail;
 			newAlbum.albumBy = albumBy;
 			newAlbum.featuringArtists = featuringArtists;
 			newAlbum.searchTags = searchTags;
@@ -90,6 +99,7 @@ router.post(
 				.catch(err => console.log(err.message));
 			const album = new Album(newAlbum);
 			await album.save();
+			saveAsserts("albums", album._id, thumbnail, Album, "thumbnail");
 			res.send({
 				status: true,
 				data: album,
@@ -143,15 +153,22 @@ router.put(
 				emotion,
 				isCustom
 			} = req.body;
+
+			let thumbnail = req.body.thumbnail;
+
 			if (!name || !songs) {
 				throw new Error("Pass name, userId and songs in request body.");
 			}
+
+			if (!thumbnail)
+				thumbnail = songs[0].thumbnail;
+
 			const songIds = songs.map(song => song.videoId);
 			req.album.name = name;
 			req.album.updatedBy = req.user.id;
 			req.album.songs = songIds;
 			req.album.totalSongs = songIds.length;
-			req.album.thumbnail = songs[0].thumbnail;
+			req.album.thumbnail = thumbnail;
 			req.album.albumBy = albumBy;
 			req.album.featuringArtists = featuringArtists;
 			req.album.searchTags = searchTags;
@@ -164,6 +181,7 @@ router.put(
 				songs,
 			});
 			await req.album.save();
+			saveAsserts("albums", req.album._id, thumbnail, Album, "thumbnail");
 			res.send({
 				status: true,
 				data: req.album,
@@ -338,7 +356,11 @@ router.get("/:id", async (req, res) => {
 //delete album
 router.delete("/:id", isAdmin, canUpdateOrDeleteAlbum, async (req, res) => {
 	try {
-		await Album.findByIdAndDelete(req.params.id);
+		const album = await Album.findById(req.params.id).lean();
+		deleteAssert(album.thumbnail);
+		await Album.deleteOne({
+			_id: album._id
+		});
 		res.send({
 			status: true,
 			data: "Album got deleted successfully.",

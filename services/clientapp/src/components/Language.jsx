@@ -6,7 +6,7 @@ import { push } from "connected-react-router";
 import { musicDummy } from '../assets/images';
 
 class Language extends Component {
-    render() {
+    Main = () => {
         return (
             <div className="language-holder-wrapper cursor-pointer" onClick={() => this.props.push(`/languages/${this.props.id}`)}>
                 <div className="language-thumbnail-holder" style={{ backgroundImage: `url('${this.props.thumbnail}'), url(${musicDummy})` }}></div>
@@ -17,6 +17,22 @@ class Language extends Component {
                 </div>
             </div>
         );
+    }
+
+    ExploreMore = () => {
+        return <div className="language-holder-wrapper album-explore-more cursor-pointer" onClick={() => this.props.push(this.props.exploreMoreUrl)}>
+            <div className="explore-more-icon-holer">
+                <i className="fas fa-compass"></i>
+            </div>
+            <div className="explore-more-text-holer">
+                Explore More
+            </div>
+        </div>
+    }
+
+
+    render() {
+        return !this.props.exploreMore ? <this.Main /> : <this.ExploreMore />;
     }
 }
 

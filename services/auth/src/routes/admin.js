@@ -5,6 +5,7 @@ import rootUser from "../permissions/root";
 import adminUser from "../permissions/admin";
 import paginationMiddleware from "../config/paginationMiddleware";
 import User from "../models/User";
+import UserPlaylist from "../models/reference/UserPlaylist"
 
 const router = Router();
 
@@ -54,6 +55,25 @@ router.put("/", adminUser, rootUser, async (req, res) => {
 		return res.json({
 			status: true,
 			data: "Successfully made changes",
+		});
+	} catch (error) {
+		console.error(error.message);
+		return res.json({
+			status: false,
+			data: error.message,
+		});
+	}
+});
+
+router.delete("/:userId", adminUser, rootUser, async (req, res) => {
+	try {
+		await User.findByIdAndDelete(req.params.userId);
+		await UserPlaylist.deleteMany({
+			createdBy: req.params.userId
+		});
+		return res.json({
+			status: true,
+			data: "Successfully deleted User and User Playlist..",
 		});
 	} catch (error) {
 		console.error(error.message);

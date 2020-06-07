@@ -62,10 +62,15 @@
     color: var(--text-color-main);
     font-size: 16px;
     border: none;
-    border-bottom: 1px solid gray;
-    padding: 3px;
+    border-bottom: 1px solid var(--text-color-sub-2);
+    padding: 10px;
     margin-bottom: 10px;
     outline: none;
+    text-align: center;
+}
+
+.playlist-display-title-holder>input:focus {
+    border-bottom: 1px solid var(--main-master-color);
 }
 
 .edit-playlist-button-holder>button {
@@ -74,8 +79,12 @@
     background: none;
     color: var(--text-color-sub-1);
     font-size: 15px;
-    padding: 3px 5px 3px 5px;
-    border-radius: 5px;
+    border-radius: 10px;
+    width: 80px;
+    height: 30px;
+    align-items: center;
+    justify-content: center;
+    display: inline-flex;
 }
 
 .edit-playlist-button-holder>button:nth-child(1) {
@@ -130,7 +139,6 @@
     width: 100%;
     padding: 10px;
     height: auto;
-    padding-bottom: 200px;
     display: flex;
     flex-wrap: wrap;
     align-items: center;

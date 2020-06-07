@@ -19,8 +19,7 @@ let globalRes;
 
 // used to console log messages
 const logConsole = (message, isErrorLog) => {
-  if (isErrorLog)
-    console.error(message);
+  if (isErrorLog) console.error(message);
   // else
   //   console.log(message);
 };
@@ -32,39 +31,38 @@ const sendResponse = (responseBody, responseType) => {
       case 0:
         globalRes.send({
           status: false,
-          message: responseBody
+          message: responseBody,
         });
         break;
       case 1:
-        globalRes.send(
-          responseBody
-        );
+        globalRes.send(responseBody);
         break;
       default:
         break;
     }
     logConsole("Response sent to client", false);
-  }
-  else
-    logConsole("Response already sent", true);
+  } else logConsole("Response already sent", true);
 };
 
 // filters the playlist url to find the service hosting the playlist
 const filterPlaylistUrl = (playlistUrl) => {
-  if (playlistUrl.includes("gaana.com"))
-    return "gaana";
-  else if (playlistUrl.includes("wynk.in"))
-    return "wynk";
-  else
-    return null;
+  if (playlistUrl.includes("gaana.com")) return "gaana";
+  else if (playlistUrl.includes("wynk.in")) return "wynk";
+  else return null;
 };
 
 // initiates scrapping sequence based on streaming service
-const initiateScrappingSequence = async (htmlContent, playlistUrlType, hashedPlaylistUrl) => {
+const initiateScrappingSequence = async (
+  htmlContent,
+  playlistUrlType,
+  hashedPlaylistUrl
+) => {
   // holds the playlist information post-scrapping
   let playlistInformation;
   // holds the YTCat objects, artists and titles for the songs
-  const ytCatObjs = [], artitsts = [], titles = [];
+  const ytCatObjs = [],
+    artitsts = [],
+    titles = [];
 
   if (playlistUrlType === "gaana") {
     logConsole("Initiated scrapping gaana playlist structure", false);
@@ -80,13 +78,14 @@ const initiateScrappingSequence = async (htmlContent, playlistUrlType, hashedPla
   logConsole("Fetched gaana playlist song information", false);
 
   // check if the playlist already exsists in database using album title
-  const playlistCheckDocUsingTitle = await RipperCollection.findOne({ "ripData.albumTitle": playlistInformation.albumTitle, ripService: playlistUrlType });
+  const playlistCheckDocUsingTitle = await RipperCollection.findOne({
+    "ripData.albumTitle": playlistInformation.albumTitle,
+    ripService: playlistUrlType,
+  });
 
   if (playlistCheckDocUsingTitle === null) {
-
     // iterating through each song to fetch its ytcat object
     for (const songItem of playlistInformation.songList) {
-
       logConsole("Fetching ytcat object for " + songItem["title"], false);
 
       // fetching ytCatObject for the current songItem
@@ -97,21 +96,44 @@ const initiateScrappingSequence = async (htmlContent, playlistUrlType, hashedPla
         artitsts.push(songItem.artist);
         titles.push(songItem.title);
         // checking if this is the last object to be fetched
-        if (songItem === playlistInformation.songList[playlistInformation.songList.length - 1])
+        if (
+          songItem ===
+          playlistInformation.songList[playlistInformation.songList.length - 1]
+        )
           // sending ytCat object to be inserted into the database
-          await updateDatabaseDocument(hashedPlaylistUrl, ytCatObjs, playlistInformation, artitsts, titles, true);
+          await updateDatabaseDocument(
+            hashedPlaylistUrl,
+            ytCatObjs,
+            playlistInformation,
+            artitsts,
+            titles,
+            true
+          );
         else
-          await updateDatabaseDocument(hashedPlaylistUrl, ytCatObjs, playlistInformation, artitsts, titles, false);
+          await updateDatabaseDocument(
+            hashedPlaylistUrl,
+            ytCatObjs,
+            playlistInformation,
+            artitsts,
+            titles,
+            false
+          );
       }
     }
-  }
-  else {
+  } else {
     // deleting the currently created databse object
-    await RipperCollection.updateOne({ ripId: hashedPlaylistUrl }, { ripProgress: "Completed", ripData: "Already exists with another url" });
-    sendResponse("The playlist already exists in database. Please contact database admin to resolve issue.", 0);
+    await RipperCollection.updateOne({
+      ripId: hashedPlaylistUrl
+    }, {
+      ripProgress: "Completed",
+      ripData: "Already exists with another url"
+    });
+    sendResponse(
+      "The playlist already exists in database. Please contact database admin to resolve issue.",
+      0
+    );
     logConsole("It already Exists in database", false);
   }
-
 };
 
 // scrap playlist content in wynk structure
@@ -126,17 +148,23 @@ const scrapWynkPlaylist = async (htmlContent) => {
   let songListItems = $(".albumList").find("li").toArray();
   for (const songIndex in songListItems) {
     // getting attributes of songs
-    let songTitle = $($(songListItems[songIndex]).find("a").toArray()[0]).attr('title');
-    let songArtist = $($(songListItems[songIndex]).find("a").toArray()[1]).attr('title').split("-")[0].split(",")[0].trim();
+    let songTitle = $($(songListItems[songIndex]).find("a").toArray()[0]).attr(
+      "title"
+    );
+    let songArtist = $($(songListItems[songIndex]).find("a").toArray()[1])
+      .attr("title")
+      .split("-")[0]
+      .split(",")[0]
+      .trim();
     // adding attributes to the songLst
     songLst.push({
       title: songTitle,
-      artist: songArtist
+      artist: songArtist,
     });
   }
   return {
     albumTitle: albumTitle,
-    songList: songLst
+    songList: songLst,
   };
 };
 
@@ -161,14 +189,13 @@ const scrapGaanaPlaylist = async (htmlContent) => {
   // creating album object
   const albumObj = {
     albumTitle: albumTitle,
-    songList: songsLst
+    songList: songsLst,
   };
   return albumObj;
 };
 
 // get song list through non-film album method
 const getGaanaSongListInNonFilmStructure = async ($) => {
-
   // holds the list of song titles
   const songsLst = [];
   // fetching all Divs containing all songs
@@ -194,7 +221,6 @@ const getGaanaSongListInNonFilmStructure = async ($) => {
 
 // get song list through film album method
 const getGaanaSongListInFilmStructure = async ($) => {
-
   // holds the list of song titles
   const songsLst = [];
   // getting to the unordered list containing all songs
@@ -229,7 +255,6 @@ const getGaanaSongListInFilmStructure = async ($) => {
 
   // returning the song lst
   return songsLst;
-
 };
 
 // function to fetch ytcat objects for the songs scrapped
@@ -256,22 +281,25 @@ const fetchYTCatObjs = async (songItem) => {
 
     // cheking for response status
     if (ytCatResponse.status === 200) {
-
       // checking if data is returned
       if (ytCatResponse.data["data"].length > 0)
         return ytCatResponse.data["data"][0];
-      else
-        logConsole("Returned NULL. Retrying", false);
-    } else
-      break;
+      else logConsole("Returned NULL. Retrying", false);
+    } else break;
   }
   // default return
   return null;
 };
 
 // updates the database on fetching the ytcat values
-const updateDatabaseDocument = async (hashedPlaylistUrl, ytCatObjs, playlistInformation, artitsts, titles, finalSong) => {
-
+const updateDatabaseDocument = async (
+  hashedPlaylistUrl,
+  ytCatObjs,
+  playlistInformation,
+  artitsts,
+  titles,
+  finalSong
+) => {
   // fetching the document for the current job from database (to check for error update)
   const currentDoc = await RipperCollection.findOne({
     ripId: hashedPlaylistUrl,
@@ -279,53 +307,77 @@ const updateDatabaseDocument = async (hashedPlaylistUrl, ytCatObjs, playlistInfo
 
   if (currentDoc.ripProgress !== "Error") {
     const updateData = {
-      ripProgress: (finalSong) ? "Completed" : "InProgress",
+      ripProgress: finalSong ? "Completed" : "InProgress",
       ripData: {
         albumTitle: playlistInformation.albumTitle,
         audioTitlesInGaana: playlistInformation.songList.length,
         audioObjsFetched: ytCatObjs.length,
-        artists: artitsts,
+        artists: [...new Set(artitsts)],
+        allArtists: artitsts,
         titles: titles,
         data: ytCatObjs,
       },
     };
     // updating database
     await RipperCollection.updateOne({
-      ripId: hashedPlaylistUrl,
-    }, updateData);
+        ripId: hashedPlaylistUrl,
+      },
+      updateData
+    );
   }
 };
 
 // updates the database value of the current playlist as error
 const updateDatabaseForError = async (hashedPlaylistUrl) => {
-  await RipperCollection.updateOne({ ripId: hashedPlaylistUrl }, { ripProgress: "Error" });
+  await RipperCollection.updateOne({
+    ripId: hashedPlaylistUrl
+  }, {
+    ripProgress: "Error"
+  });
 };
 
 // sends back the current status of the playlist database values to the user
 const sendCurrentDatabaseValues = async (hashedPlaylistUrl) => {
-
-  const currentDoc = await RipperCollection.findOne({ ripId: hashedPlaylistUrl });
+  const currentDoc = await RipperCollection.findOne({
+    ripId: hashedPlaylistUrl,
+  });
 
   if (currentDoc.ripProgress !== "Error")
     sendResponse({
-      status: true,
-      streamingService: currentDoc.ripService,
-      processing: (currentDoc.ripProgress === "Completed") ? false : true,
-      data: currentDoc.ripData,
-    }, 1);
+        status: true,
+        streamingService: currentDoc.ripService,
+        processing: currentDoc.ripProgress === "Completed" ? false : true,
+        data: currentDoc.ripData,
+      },
+      1
+    );
   else {
     // deleting the error document
-    await RipperCollection.deleteOne({ ripId: hashedPlaylistUrl });
-    sendResponse("An Error has occurred. Please try again or refer to the logs", 0);
+    await RipperCollection.deleteOne({
+      ripId: hashedPlaylistUrl
+    });
+    sendResponse(
+      "An Error has occurred. Please try again or refer to the logs",
+      0
+    );
   }
-
 };
+
+// check if the html content is same as the type of playlist url passed
+const checkIfRightHTML = async (htmlContent, playlistUrlType) => {
+  // loading html content into cheerio
+  const $ = cheerio.load(htmlContent);
+  // getting the title of the html content
+  const playlistTitle = $('head').find('title').text();
+  logConsole("Title of playlist: " + playlistTitle, false);
+  if (playlistTitle.toString().toLowerCase().includes(playlistUrlType.toString().toLowerCase()))
+    return true;
+  return false;
+}
 
 // function to get url and fetch songs
 exports.fetchSongs = async (req, res) => {
-
   try {
-
     // setting global res variable
     globalRes = res;
 
@@ -333,21 +385,24 @@ exports.fetchSongs = async (req, res) => {
     logConsole("Playlist url recieved: " + playlistUrl, false);
 
     if (playlistUrl !== undefined) {
-
       // filtering the playlist url to find the service hosting the playlist
       const playlistUrlType = filterPlaylistUrl(playlistUrl);
       logConsole("Playlist hosting service: " + playlistUrlType, false);
 
       if (playlistUrlType !== null) {
-
         const hashedPlaylistUrl = crypto
           .createHash("md5")
           .update(playlistUrl)
           .digest("hex");
-        logConsole("Generated hash for playlistUrl: " + hashedPlaylistUrl, false);
+        logConsole(
+          "Generated hash for playlistUrl: " + hashedPlaylistUrl,
+          false
+        );
 
         // checks if playlist already exists in database
-        const playlistDBDocument = await RipperCollection.findOne({ ripId: hashedPlaylistUrl });
+        const playlistDBDocument = await RipperCollection.findOne({
+          ripId: hashedPlaylistUrl,
+        });
 
         if (playlistDBDocument === null) {
           logConsole("Playlist does not exist in database", false);
@@ -355,49 +410,63 @@ exports.fetchSongs = async (req, res) => {
           // getting content from the uploaded file
           const htmlContent = fs.readFileSync(req.file.path);
           // deleting file
-          fs.unlinkSync(req.file.path, err => {
+          fs.unlinkSync(req.file.path, (err) => {
             logConsole("File deleted - " + req.file.filename, false);
           });
 
           if (htmlContent != undefined) {
 
-            // create document for the playlist in database
-            const newPlaylistDocument = RipperCollection({
-              ripId: hashedPlaylistUrl,
-              ripService: playlistUrlType,
-              ripProgress: "InProgress",
-              ripData: {},
-            });
-            await newPlaylistDocument.save();
-            logConsole("Document created for playlist in database", false);
+            // check if the html content is same as the type of playlist url passed
+            const isItRightHTMLFile = await checkIfRightHTML(htmlContent, playlistUrlType);
 
-            // initiate the scrapping sequence
-            initiateScrappingSequence(htmlContent, playlistUrlType, hashedPlaylistUrl);
+            if (isItRightHTMLFile) {
+              // create document for the playlist in database
+              const newPlaylistDocument = RipperCollection({
+                ripId: hashedPlaylistUrl,
+                ripService: playlistUrlType,
+                ripProgress: "InProgress",
+                ripData: {},
+              });
+              await newPlaylistDocument.save();
+              logConsole("Document created for playlist in database", false);
 
-            sendResponse({ status: true, streamingService: playlistUrlType, processing: true, data: {} }, 1);
+              // initiate the scrapping sequence
+              initiateScrappingSequence(
+                htmlContent,
+                playlistUrlType,
+                hashedPlaylistUrl
+              );
+
+              sendResponse({
+                  status: true,
+                  streamingService: playlistUrlType,
+                  processing: true,
+                  data: {},
+                },
+                1
+              );
+            } else {
+              logConsole("Error: HTML data recieved mismatch with playlist url", true);
+              sendResponse("HTML data recieved mismatch with playlist url", 0);
+            }
           } else {
             logConsole("Error: No HTML data received", true);
             sendResponse("Error Occurred: No HTML data recieved", 0);
           }
-
         } else {
           logConsole("Playlist exist in database", false);
           await sendCurrentDatabaseValues(hashedPlaylistUrl);
         }
-      } else
-        throw "Unsupported playlist url";
-    } else
-      throw "Please send playlist url";
-
+      } else throw "Unsupported playlist url";
+    } else throw "Please send playlist url";
   } catch (error) {
     logConsole("Error fetchsongs: " + error, true);
     sendResponse("Error Occurred: " + error, 0);
     await updateDatabaseForError(hashedPlaylistUrl);
   }
-
 };
 
 // handling promise rejection errors
-process.on("unhandledRejection", error => {
+process.on("unhandledRejection", (error) => {
   logConsole("Error: " + error, true);
 });

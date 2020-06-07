@@ -14,8 +14,8 @@ exports.deleteSongsDoc = async (req, res) => {
 
   // deleting the required document
   await RipperCollection.findOneAndRemove({
-    ripId: hashedAlbumURL
-  },
+      ripId: hashedAlbumURL
+    },
     (err, doc) => {
       if (err) {
         console.log("Error in deleting document " + err);

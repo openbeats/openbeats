@@ -19,7 +19,14 @@ class LanguageAlbums extends Component {
             languageThumbnail: "",
             languageId: "",
             languageAlbums: [],
+            next: true,
+            previous: false,
+            page: 1,
+            limit: 20,
+            isScrollFetchInProcess: false,
         };
+        this.observer = null;
+        this.intersectElement = null;
         this.state = { ...this.initialState };
     }
 
@@ -28,6 +35,29 @@ class LanguageAlbums extends Component {
         await this.languageInitialFetch();
         this.props.setCurrentAction(this.state.languageName + " Albums");
         this.fetchLanguageAlbumsHandler();
+        this.initiateScrollFetcher();
+    }
+
+    initiateScrollFetcher() {
+        let options = {
+            root: document.getElementById("main-body"),
+            rootMargin: '0px',
+            threshold: 1
+        }
+
+        this.observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    if (entry.intersectionRatio >= 0.95) {
+                        this.fetchLanguageAlbumsHandler();
+                    }
+                }
+            });
+        }, options);
+
+        if (this.intersectElement)
+            this.observer.observe(this.intersectElement);
+
     }
 
     languageInitialFetch = async () => {
@@ -48,12 +78,22 @@ class LanguageAlbums extends Component {
 
     fetchLanguageAlbumsHandler = async () => {
         try {
-            const languageAlbumsFetchUrl = `${variables.baseUrl}/playlist/language/${this.state.languageId}/albums?page=1&limit=1000`;
-            const languageAlbums = (await axios.get(languageAlbumsFetchUrl)).data;
-            if (languageAlbums.status) {
-                this.setState({ languageAlbums: languageAlbums.data.result, isLoading: false });
-            } else {
-                throw new Error(languageAlbums.data);
+            if (this.state.next && !this.state.isScrollFetchInProcess) {
+                this.setState({ isScrollFetchInProcess: true })
+                const languageAlbumsFetchUrl = `${variables.baseUrl}/playlist/language/${this.state.languageId}/albums?page=${this.state.page}&limit=${this.state.limit}`;
+                const data = (await axios.get(languageAlbumsFetchUrl)).data;
+                if (data.status) {
+                    this.setState({
+                        isLoading: false,
+                        languageAlbums: [...this.state.languageAlbums, ...data.data.result],
+                        page: data.data.next ? this.state.page + 1 : this.state.page,
+                        next: data.data.next ? true : false,
+                        previous: data.data.previous ? true : false,
+                        isScrollFetchInProcess: false
+                    });
+                } else {
+                    throw new Error(data.data);
+                }
             }
         } catch (error) {
             this.props.notify(error.message.toString());
@@ -69,23 +109,21 @@ class LanguageAlbums extends Component {
     // List Preparing Part
     getAlbumsList(arrayList) {
         return (
-            <div className="albums-wrapper">
-                {arrayList.map((item, key) => (
-                    <AlbumHolder
-                        key={key}
-                        albumName={item.name}
-                        albumThumbnail={item.thumbnail}
-                        albumTotalSongs={item.totalSongs}
-                        albumId={item._id}
-                        albumCreationDate={new Date(item.createdAt).toDateString()}
-                        albumCreatedBy={"OpenBeats"}
-                        type={"album"}
-                        addOrRemoveAlbumFromCollectionHandler={this.addOrRemoveAlbumFromCollectionHandler}
-                        isAuthenticated={this.props.isAuthenticated}
-                        isAlbumIsInCollection={this.props.likedPlaylists.indexOf(item._id) === -1 ? false : true}
-                    />
-                ))}
-            </div>
+            arrayList.map((item, key) => (
+                <AlbumHolder
+                    key={key}
+                    albumName={item.name}
+                    albumThumbnail={item.thumbnail}
+                    albumTotalSongs={item.totalSongs}
+                    albumId={item._id}
+                    albumCreationDate={new Date(item.createdAt).toDateString()}
+                    albumCreatedBy={"OpenBeats"}
+                    type={"album"}
+                    addOrRemoveAlbumFromCollectionHandler={this.addOrRemoveAlbumFromCollectionHandler}
+                    isAuthenticated={this.props.isAuthenticated}
+                    isAlbumIsInCollection={this.props.likedPlaylists.indexOf(item._id) === -1 ? false : true}
+                />
+            ))
         );
     }
 
@@ -93,6 +131,7 @@ class LanguageAlbums extends Component {
         return <div className="home-section">
             <div className="albums-wrapper">
                 {this.getAlbumsList(this.state.languageAlbums)}
+                <div ref={d => this.intersectElement = d} className="intersection-holder"></div>
             </div>
         </div>
     };
@@ -104,6 +143,7 @@ class LanguageAlbums extends Component {
     componentWillUnmount() {
         this.setState({ ...this.initialState });
         this._isMounted = false;
+        if (this.observer) this.observer.disconnect();
     }
 
     render() {
@@ -113,7 +153,7 @@ class LanguageAlbums extends Component {
             </div>
         ) : (
                 <div className="artist-albums-wrapper">
-                    <div className="artist-albums-header-image-holder" style={{ backgroundImage: `url(${this.state.languageThumbnail}), url(${spaceImage})` }}>
+                    <div className="artist-albums-header-image-holder" style={{ backgroundImage: `url(${spaceImage})` }}>
                         <div
                             className="artist-albums-header-artist-display-holder"
                             style={{ backgroundImage: `url(${this.state.languageThumbnail}), url(${musicDummy})` }}></div>

@@ -6,6 +6,7 @@ import * as nowPlayingActions from "./nowPlayingActions";
 import * as authActions from "./authActions";
 import * as playlistManipulatorActions from "./playlistManipulatorActions";
 import * as homeActions from "./homeActions";
+import * as offlineActions from "./offlineActions";
 
 export {
   playerActions,
@@ -15,5 +16,6 @@ export {
   nowPlayingActions,
   authActions,
   playlistManipulatorActions,
-  homeActions
+  homeActions,
+  offlineActions
 };

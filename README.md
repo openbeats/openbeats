@@ -460,6 +460,7 @@ _delete searchtag_
 method: DELETE
 Route params: <ARTIST-ID>
 ```
+
 **Mycollections Endpoints**
 
 _Add an Album to the user collection_
@@ -485,6 +486,7 @@ method: GET
 header: "x-auth-token: user-auth-token" (mandatory)
 queryParams: ?meatadata=true => for only getting albums Ids without population
 ```
+
 _Remove an Album from the Collections_
 
 > https://api.openbeats.live/auth/metadata/mycollections

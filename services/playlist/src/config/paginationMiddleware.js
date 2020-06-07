@@ -14,6 +14,12 @@ export default (model, query = {}, options = {}, populateQuery = []) => {
 			const endIndex = page * limit;
 			const data = {};
 
+			if (req.findQuery) {
+				query = req.findQuery;
+			} else if (req.scopedAlbums) {
+				query = req.scopedAlbums
+			}
+
 			endIndex < (await model.countDocuments()) ?
 				(data.next = {
 					page: page + 1,
@@ -39,11 +45,6 @@ export default (model, query = {}, options = {}, populateQuery = []) => {
 				};
 				data.result = await model.find(query, options).sort(sortOrder).populate(populateQuery).limit(limit).skip(startIndex).lean();
 			} else {
-				if (req.findQuery) {
-					query = req.findQuery;
-				} else if (req.scopedAlbums) {
-					query = req.scopedAlbums
-				}
 				data.result = await model.find(query, options).populate(populateQuery).limit(limit).skip(startIndex).lean();
 			}
 			if (!(data.result.length > 0)) data.result = [];
