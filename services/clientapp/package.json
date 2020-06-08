@@ -32,7 +32,8 @@
     "predeploy": "npm run build && echo openbeats.live > build/CNAME",
     "deploy": "gh-pages -d build ",
     "eject": "react-scripts eject",
-    "server": "nodemon server.js"
+    "server-dev": "nodemon server.js",
+    "server": "node server.js"
   },
   "eslintConfig": {
     "extends": "react-app"
