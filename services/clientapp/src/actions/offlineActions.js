@@ -9,7 +9,6 @@ export const setOnlinestatus = (status = true) => {
     })
 }
 export const setSafaristatus = (status = false) => {
-    console.log(status);
     store.dispatch({
         type: "SET_SAFARI_STATUS",
         payload: status
@@ -30,9 +29,9 @@ export const offlineCheckerInitiator = () => {
 export const advancedOfflineChecker = () => {
     const isReachable = (url) => {
         return fetch(url, {
-                method: 'HEAD',
-                mode: 'no-cors'
-            })
+            method: 'HEAD',
+            mode: 'no-cors'
+        })
             .then(function (resp) {
                 return resp && (resp.ok || resp.type === 'opaque');
             })
