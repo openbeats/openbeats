@@ -10,21 +10,18 @@ app.use(morgan("dev"));
 
 app.use(express.static(path.resolve(__dirname, './build')));
 
-app.get('*', (request, response) => {
-    const filePath = path.resolve(__dirname, './build', 'index.html');
-    // read in the index.html file
-    fs.readFile(filePath, 'utf8', function (err, data) {
-        if (err) {
-            return console.log(err);
-        }
-        console.log("hits heree................")
-        // replace the special strings with server generated strings
-        data = data.replace(/\$OG_TITLE/g, 'Home Page');
-        data = data.replace(/\$OG_DESCRIPTION/g, "Home page description");
-        result = data.replace(/\$OG_IMAGE/g, 'https://i.imgur.com/V7irMl8.png');
+app.get('*', async (request, response) => {
+    try {
+        const filePath = path.resolve(__dirname, './build', 'index.html');
+        const data = fs.readFileSync(filePath, { encoding: "utf8" });
+        console.log("hits heree................", data)
+        let result = await data.replace(/\$OG_TITLE/g, 'Home Page');
+        result = await result.replace(/\$OG_DESCRIPTION/g, "Home page description");
+        result = await result.replace(/\$OG_IMAGE/g, 'https://i.imgur.com/V7irMl8.png');
         response.send(result);
-    });
-
+    } catch (error) {
+        response.send(error.message);
+    }
 });
 
 app.listen(PORT, (err) => {
