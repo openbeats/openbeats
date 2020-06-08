@@ -1,6 +1,10 @@
 import express from "express";
 import TopChart from "../models/TopChart";
-import { fetchTopCharts, englishTopCharts, fetchMissedSongs } from "../core/topCharts";
+import {
+	fetchTopCharts,
+	englishTopCharts,
+	fetchMissedSongs
+} from "../core/topCharts";
 import MissedFetch from "../models/MissedFetch";
 
 const router = express.Router();
@@ -50,7 +54,16 @@ router.get("/inittopcharts/missedsongs", async (req, res) => {
 router.get("/:toplistId", async (req, res) => {
 	try {
 		const toplistId = req.params.toplistId;
-		const { name, thumbnail, language, songs, createdAt, updatedAt, createdBy, totalSongs } = await TopChart.findById(toplistId);
+		const {
+			name,
+			thumbnail,
+			language,
+			songs,
+			createdAt,
+			updatedAt,
+			createdBy,
+			totalSongs
+		} = await TopChart.findById(toplistId);
 		if (!name) throw new Error("Not found..");
 		res.status(200).send({
 			status: true,
