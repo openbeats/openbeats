@@ -8,7 +8,7 @@ const variables = {
 }
 const deploymentType = type;
 
-export {
+module.exports = {
   variables,
   deploymentType
 }
