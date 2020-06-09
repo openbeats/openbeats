@@ -1,5 +1,5 @@
 const { deploymentType } = require("./src/config");
-const baseUrl = deploymentType === "development" ? "https://staging-api.openbeats.live" : "http://obs-playlist:2000";
+const baseUrl = deploymentType === "development" ? "http://obs-playlist:2000" : "http://obs-playlist:2000";
 
 module.exports = {
     baseUrl: baseUrl,
