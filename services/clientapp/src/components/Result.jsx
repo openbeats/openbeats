@@ -3,11 +3,14 @@ import { master } from "../assets/images";
 import Loader from 'react-loader-spinner';
 import "../assets/css/result.css";
 import { connect } from "react-redux";
-import { coreActions, nowPlayingActions, playlistManipulatorActions } from '../actions';
+import { coreActions, nowPlayingActions, playlistManipulatorActions, helmetActions } from '../actions';
 import { Song, HorizontalView, ArtistHolder, AlbumHolder, Language, Emotion } from '.';
 class Result extends Component {
     componentDidMount() {
         this.props.setCurrentAction("Search Result");
+        helmetActions.updateHelment({
+            title: "Search Music - OpenBeats"
+        })
     }
 
     getAlbumsList() {

@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import "../assets/css/auth.css";
-import { toastActions, authActions } from "../actions";
+import { toastActions, authActions, helmetActions } from "../actions";
 import Loader from "react-loader-spinner";
 import { connect } from "react-redux";
 import { push } from "connected-react-router";
@@ -21,6 +21,9 @@ class Auth extends Component {
 
   componentDidMount() {
     this._isMounted = true;
+    helmetActions.updateHelment({
+      title: (this.state.displayRegister ? "Register" : "Login") + " - OpenBeats"
+    })
     if (this.props.isAuthenticated) {
       store.dispatch(push("/"))
     }
@@ -28,6 +31,12 @@ class Auth extends Component {
 
   componentWillUnmount() {
     this._isMounted = false;
+  }
+
+  componentDidUpdate() {
+    helmetActions.updateHelment({
+      title: (this.state.displayRegister ? "Register" : "Login") + " - OpenBeats"
+    })
   }
 
   Login() {

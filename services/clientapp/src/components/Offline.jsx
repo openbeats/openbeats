@@ -2,10 +2,23 @@ import React, { Component, Fragment } from 'react';
 import "../assets/css/offline.css";
 import { logoicon } from '../assets/images';
 import { push } from 'connected-react-router';
-import { toastActions } from '../actions';
+import { toastActions, helmetActions } from '../actions';
 import { connect } from 'react-redux';
 
 class Offline extends Component {
+    componentDidMount() {
+        if (!this.props.isOnline)
+            helmetActions.updateHelment({
+                title: "Offline :-( - OpenBeats"
+            })
+    }
+
+    componentDidUpdate() {
+        if (!this.props.isOnline)
+            helmetActions.updateHelment({
+                title: "OpenBeats Offline :-("
+            })
+    }
 
     render() {
         return (

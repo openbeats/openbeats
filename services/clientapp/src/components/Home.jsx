@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { toastActions, coreActions, homeActions, playlistManipulatorActions } from "../actions";
+import { toastActions, coreActions, homeActions, playlistManipulatorActions, helmetActions } from "../actions";
 import "../assets/css/home.css";
 import { connect } from "react-redux";
 import { push } from "connected-react-router";
@@ -45,6 +45,9 @@ class Home extends Component {
 
     componentDidMount() {
         this._isMounted = true;
+        helmetActions.updateHelment({
+            title: "Home - OpenBeats"
+        })
         this.props.setCurrentAction("Home");
         this.prepareHomeData();
     }

@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import Loader from 'react-loader-spinner';
 import { push } from 'connected-react-router';
-import { toastActions, coreActions, playlistManipulatorActions, nowPlayingActions } from '../actions';
+import { toastActions, coreActions, playlistManipulatorActions, nowPlayingActions, helmetActions } from '../actions';
 import { connect } from 'react-redux';
 import { AlbumHolder } from '.';
 
@@ -19,6 +19,9 @@ class MyCollections extends Component {
     componentDidMount() {
         this._isMounted = true;
         this.props.setCurrentAction("My Collections");
+        helmetActions.updateHelment({
+            title: "My Collections - OpenBeats"
+        })
         this.props.updateAlbumsInTheCollectionMetaData();
         this.fetchMyCollections();
 

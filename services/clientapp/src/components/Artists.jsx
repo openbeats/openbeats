@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { toastActions, coreActions } from "../actions";
+import { toastActions, coreActions, helmetActions } from "../actions";
 import "../assets/css/artists.css";
 import { connect } from "react-redux";
 import { push } from "connected-react-router";
@@ -27,6 +27,9 @@ class Artists extends Component {
 
     async componentDidMount() {
         this.props.setCurrentAction("Artists");
+        helmetActions.updateHelment({
+            title: "Artists - OpenBeats"
+        })
         await this.fetchArtistHandler();
         this.initiateScrollFetcher();
     }

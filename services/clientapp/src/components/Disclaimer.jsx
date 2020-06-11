@@ -1,7 +1,15 @@
 import React, { Component } from 'react';
 import "../assets/css/disclaimer.css";
+import { helmetActions } from '../actions';
 
 export default class Disclaimer extends Component {
+    componentDidMount() {
+        helmetActions.updateHelment({
+            title: "Disclaimer - OpenBeats"
+        })
+    }
+
+
     render() {
         return (
             <div className="disclaimer-wrapper">

@@ -1,5 +1,5 @@
 import React, { Component, Fragment } from "react";
-import { toastActions, coreActions, playlistManipulatorActions, homeActions } from "../actions";
+import { toastActions, coreActions, playlistManipulatorActions, homeActions, helmetActions } from "../actions";
 import "../assets/css/albums.css";
 import { connect } from "react-redux";
 import { push } from "connected-react-router";
@@ -28,6 +28,10 @@ class Albums extends Component {
 
 	componentDidMount() {
 		this._isMounted = true;
+		const headString = this.props.match.params.type === "popular" ? "Popular Albums" : this.props.match.params.type === "latest" ? "Latest Albums" : "Albums";
+		helmetActions.updateHelment({
+			title: headString + " - OpenBeats"
+		})
 		this.albumsMainHandler();
 		const type = this.props.match.params.type
 		if (type !== 'all')
@@ -208,8 +212,14 @@ class Albums extends Component {
 		</div>
 	};
 
-	componentDidUpdate(nProps) {
-		if (nProps.match.params.type !== this.props.match.params.type) this.albumsMainHandler();
+	componentDidUpdate(prevProps) {
+		if (prevProps.match.params.type !== this.props.match.params.type) {
+			const headString = this.props.match.params.type === "popular" ? "Popular Albums" : this.props.match.params.type === "latest" ? "Latest Albums" : "Albums";
+			helmetActions.updateHelment({
+				title: headString + " - OpenBeats"
+			})
+			this.albumsMainHandler();
+		}
 	}
 
 	componentWillUnmount() {

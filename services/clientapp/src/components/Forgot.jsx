@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import "../assets/css/reset.css";
 import { push } from 'connected-react-router';
-import { authActions } from '../actions';
+import { authActions, helmetActions } from '../actions';
 import Loader from 'react-loader-spinner';
 import { connect } from 'react-redux';
 import { master } from '../assets/images';
@@ -19,7 +19,9 @@ class Forgot extends Component {
 
 
     componentDidMount() {
-
+        helmetActions.updateHelment({
+            title: "Forgot Password - OpenBeats"
+        })
         this.setState({
             isLoading: false
         })

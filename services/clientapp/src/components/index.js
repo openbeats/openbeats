@@ -29,6 +29,7 @@ import EmotionAlbums from "./EmotionAlbums";
 import LanguageAlbums from "./LanguageAlbums";
 import Offline from "./Offline";
 import Disclaimer from "./Disclaimer";
+import ReactHelmet from "./ReactHelmet";
 
 
 export {
@@ -62,5 +63,6 @@ export {
 	EmotionAlbums,
 	LanguageAlbums,
 	Offline,
-	Disclaimer
+	Disclaimer,
+	ReactHelmet
 };

@@ -1,6 +1,6 @@
 import React, { Component, Fragment } from 'react'
 import "../assets/css/playlistdisplay.css";
-import { toastActions, coreActions, nowPlayingActions, playerActions, playlistManipulatorActions, searchActions } from "../actions";
+import { toastActions, coreActions, nowPlayingActions, playerActions, playlistManipulatorActions, searchActions, helmetActions } from "../actions";
 import { connect } from "react-redux";
 import { push } from "connected-react-router";
 import { musicDummy, pQueueWhite } from '../assets/images';
@@ -33,6 +33,10 @@ class PlaylistDisplay extends Component {
     async componentDidMount() {
         await this.props.setCurrentAction("Playlist");
         await this.playlistFetchHandler();
+        helmetActions.updateHelment({
+            title: this.state.playlistName + " - OpenBeats",
+            thumbnail: this.state.playlistThumbnail
+        })
         const queryValues = await queryString.parse(this.props.location.search)
         if (queryValues.autoplay && queryValues.autoplay === "true")
             this.initQueue()
@@ -105,10 +109,14 @@ class PlaylistDisplay extends Component {
         }
     }
 
-    componentDidUpdate(prevProps) {
+    async componentDidUpdate(prevProps) {
         if (prevProps.match.params.id !== this.props.match.params.id) {
-            this.playlistFetchHandler()
+            await this.playlistFetchHandler()
         }
+        helmetActions.updateHelment({
+            title: this.state.playlistName + " - OpenBeats",
+            thumbnail: this.state.playlistThumbnail
+        })
     }
 
     componentWillUnmount() {

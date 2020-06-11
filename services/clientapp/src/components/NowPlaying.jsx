@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import "../assets/css/nowplaying.css";
-import { toastActions, coreActions, nowPlayingActions, playerActions } from "../actions";
+import { toastActions, coreActions, nowPlayingActions, playerActions, helmetActions } from "../actions";
 import { connect } from "react-redux";
 import { push } from "connected-react-router";
 import Loader from 'react-loader-spinner';
@@ -9,6 +9,9 @@ class NowPlaying extends Component {
 
     componentDidMount() {
         this.props.setCurrentAction("Now Playing");
+        helmetActions.updateHelment({
+            title: "Now Playing - OpenBeats"
+        })
     }
 
 
