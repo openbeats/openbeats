@@ -4,9 +4,40 @@ import Artist from "../models/Artist";
 import Emotion from "../models/Emotion";
 import Language from "../models/Language";
 import TopChart from "../models/TopChart";
+import axios from "axios";
 
 
 const router = express.Router();
+
+router.get("/song/:videoId",async(req,res)=>{
+try {
+  const videoId = req.params.videoId;
+
+  const {thumbnail_url,thumbnail_width,thumbnail_height,title} =  (await axios.get(`https://www.youtube.com/oembed?format=json&url=${encodeURIComponent(`https://www.youtube.com/watch?v=${videoId}`)}`)).data;
+
+  if( !thumbnail_url || !thumbnail_width || !thumbnail_height || !title){
+    throw new Error("Cannot find details for requested song.");
+  }
+
+  return res.json({
+    status: true,
+    data:{
+      title ,
+      thumbnail :thumbnail_url,
+      height:thumbnail_height,
+      width:thumbnail_width
+    }
+  });
+
+} catch (error) {
+  console.error("Error occured - ", error.message);
+    return res.json({
+      status: false,
+      data: error.message
+    });
+}
+});
+
 
 router.get("/:type/:id", async (req, res) => {
   try {
@@ -53,4 +84,7 @@ router.get("/:type/:id", async (req, res) => {
 
   }
 });
+
+
+
 export default router;
