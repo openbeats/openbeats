@@ -2,6 +2,7 @@ import {
 	toastActions,
 	nowPlayingActions,
 	playlistManipulatorActions,
+	helmetActions,
 	// playerActions
 } from ".";
 import {
@@ -34,6 +35,10 @@ export function playPauseToggle() {
 		} else {
 			playerRef.play();
 			payload = true;
+			helmetActions.updateHelment({
+				title: state.songTitle,
+				thumbnail: `https://i.ytimg.com/vi/${state.id}/mqdefault.jpg`
+			}, true)
 		}
 		return {
 			type: "PLAY_PAUSE_TOGGLE",
@@ -385,6 +390,11 @@ export async function startPlayer(shallIPlay = true) {
 
 export const initMediaSession = async () => {
 	let state = await store.getState();
+	// helmet integration
+	helmetActions.updateHelment({
+		title: state.playerReducer.songTitle,
+		thumbnail: `https://i.ytimg.com/vi/${state.playerReducer.id}/mqdefault.jpg`
+	}, true)
 	if ('mediaSession' in navigator) {
 		/* eslint-disable-next-line */
 		navigator.mediaSession.metadata = new MediaMetadata({
