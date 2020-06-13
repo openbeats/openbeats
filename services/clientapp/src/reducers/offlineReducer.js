@@ -3,7 +3,7 @@ const initialState = {
     isSafari: false,
 }
 
-const coreReducer = (state = initialState, action) => {
+const offlineReducer = (state = initialState, action) => {
     switch (action.type) {
         case "SET_ONLINE_STATUS":
             state = {
@@ -27,4 +27,4 @@ const coreReducer = (state = initialState, action) => {
     return state
 }
 
-export default coreReducer;
+export default offlineReducer;

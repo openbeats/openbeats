@@ -322,7 +322,8 @@ export async function initPlayer(audioData, playMusic = true) {
 		}
 	} catch (error) {
 		toastActions.showMessage("Requested audio is not availabe right now! ");
-		musicEndHandler(); // fix (switch to next song on false link)
+		if (store.getState().offlineReducer.isOnline)
+			musicEndHandler(); // fix (switch to next song on false link)
 		// await store.dispatch(await resetPlayer());
 		// nowPlayingActions.clearQueue();
 	}
@@ -517,7 +518,7 @@ export const checkAndAddSongToTheQueue = async (urlLocation) => {
 				throw new Error("error!");
 			const { data } = await axios.get(`${variables.baseUrl}/opencc/songData/${queryValues.sharesong}`);
 			if (data.status && data.data) {
-				initPlayer(data.data, true);
+				nowPlayingActions.updateCurrentPlaying(data.data);
 			} else {
 				throw new Error("error!");
 			}
