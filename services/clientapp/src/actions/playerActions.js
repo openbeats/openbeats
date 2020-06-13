@@ -512,15 +512,15 @@ export const checkAndAddSongToTheQueue = async (urlLocation) => {
 	try {
 		store.dispatch(push("/"));
 		const queryValues = await queryString.parse(urlLocation);
-		if (!(queryValues.sharesong !== undefined && queryValues.sharesong.length > 0))
-			throw new Error("error!");
-
-		const { data } = await axios.get(`${variables.baseUrl}/opencc/songData/${queryValues.sharesong}`);
-		if (data.status && data.data) {
-			const audioData = data.data;
-			initPlayer(audioData, true);
-		} else {
-			throw new Error("error!");
+		if (queryValues.sharesong !== undefined) {
+			if (!(queryValues.sharesong.length > 0))
+				throw new Error("error!");
+			const { data } = await axios.get(`${variables.baseUrl}/opencc/songData/${queryValues.sharesong}`);
+			if (data.status && data.data) {
+				initPlayer(data.data, true);
+			} else {
+				throw new Error("error!");
+			}
 		}
 	} catch (error) {
 		toastActions.showMessage("Invalid Link - You can explore Popular Albums, Artists and more for free only at OpenBeats!")

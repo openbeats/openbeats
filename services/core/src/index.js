@@ -156,25 +156,24 @@ app.get("/suggester", async (req, res) => {
 // add song to collection in deattached mod
 const addSongInDeAttachedMode = async (videoId, song, sync = false) => {
 	try {
-		const findSong = await Song.findOne({
+		let findSong = await Song.findOne({
 			_id: videoId,
 		});
 		if (!findSong) {
-			let item = null;
 			if (!song) {
-				item = (await ytcat(videoId, true))[0];
+				findSong = (await ytcat(videoId, true))[0];
 			} else {
-				item = {
+				findSong = {
 					...song,
 				};
 			}
-			item["_id"] = item.videoId;
-			await Song.insertMany([item], {
+			findSong["_id"] = findSong.videoId;
+			await Song.insertMany([findSong], {
 				ordered: false,
 			});
-			if (sync) {
-				return item;
-			}
+		}
+		if (sync) {
+			return findSong;
 		}
 	} catch (error) {
 		console.log(error);
