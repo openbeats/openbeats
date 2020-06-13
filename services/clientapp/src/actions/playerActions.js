@@ -3,7 +3,6 @@ import {
 	nowPlayingActions,
 	playlistManipulatorActions,
 	helmetActions,
-	// playerActions
 } from ".";
 import {
 	store
@@ -14,15 +13,13 @@ import {
 import {
 	musicDummy
 } from "../assets/images";
-// import {
-//     push
-// } from "connected-react-router";
 import {
 	Base64
 } from "js-base64";
 import axios from "axios";
 import GoogleAnalytics from "react-ga";
-
+import queryString from 'query-string';
+import { push } from "connected-react-router";
 
 export function playPauseToggle() {
 	const playerRef = document.getElementById("music-player");
@@ -509,4 +506,24 @@ export async function setRepeatMode() {
 		type: "SET_REPEAT_MODE",
 		payload: nextLoopId
 	});
+}
+
+export const checkAndAddSongToTheQueue = async (urlLocation) => {
+	try {
+		store.dispatch(push("/"));
+		const queryValues = await queryString.parse(urlLocation);
+		if (!(queryValues.sharesong !== undefined && queryValues.sharesong.length > 0))
+			throw new Error("error!");
+
+		const { data } = await axios.get(`${variables.baseUrl}/opencc/songData/${queryValues.sharesong}`);
+		if (data.status && data.data) {
+			const audioData = data.data;
+			initPlayer(audioData, true);
+		} else {
+			throw new Error("error!");
+		}
+	} catch (error) {
+		toastActions.showMessage("Invalid Link - You can explore Popular Albums, Artists and more for free only at OpenBeats!")
+	}
+
 }

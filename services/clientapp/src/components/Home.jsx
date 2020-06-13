@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { toastActions, coreActions, homeActions, playlistManipulatorActions, helmetActions } from "../actions";
+import { toastActions, coreActions, homeActions, playlistManipulatorActions, helmetActions, playerActions } from "../actions";
 import "../assets/css/home.css";
 import { connect } from "react-redux";
 import { push } from "connected-react-router";
@@ -43,11 +43,12 @@ class Home extends Component {
         this.state = { ...this.initialState };
     }
 
-    componentDidMount() {
+    async componentDidMount() {
         this._isMounted = true;
         helmetActions.updateHelment({
             title: "Home - OpenBeats"
         })
+        this.props.checkAndAddSongToTheQueue(this.props.location.search)
         this.props.setCurrentAction("Home");
         this.prepareHomeData();
     }
@@ -424,6 +425,9 @@ const mapDispatchToProps = (dispatch) => {
         addOrRemoveAlbumFromUserCollection: async (albumId, isAdd = true) => {
             return await playlistManipulatorActions.addOrRemoveAlbumFromUserCollection(albumId, isAdd);
         },
+        checkAndAddSongToTheQueue: async (urlLocation) => {
+            playerActions.checkAndAddSongToTheQueue(urlLocation);
+        }
     }
 }
 
