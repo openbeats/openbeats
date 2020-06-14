@@ -3,7 +3,7 @@ const path = require("path");
 const fs = require("fs");
 const morgan = require("morgan");
 const axios = require("axios").default;
-const { infoFetchUrls, logoUrl } = require("./serverConfig");
+const { infoFetchUrls, logoUrl, realBaseUrl } = require("./serverConfig");
 const PORT = process.env.PORT || 3000;
 const app = express();
 app.use(morgan("dev"));
@@ -229,7 +229,8 @@ app.get('/sharesong', async (request, response) => {
         result = await result.replace(/Unlimited Music for Free!/g, description);
         result = await result.replace(/https:\/\/openbeats.nyc3.digitaloceanspaces.com\/fallback\/logoicon.png/g, thumbnail);
         if (audioSrc) {
-            result = await result.replace(/\$OG_VIDEO/g, audioSrc);
+            let mainUrl = `${realBaseUrl}/sharesong?songid=${songId}`;
+            result = await result.replace(/\$OG_VIDEO/g, mainUrl);
             // result = await result.replace(/\$OG_AUD_TYPE/g, "audio/webm");
         }
         response.send(result);
