@@ -353,7 +353,7 @@ const getTopChartInfo = async (id) => {
 const getSongInfo = async (id) => {
     let title = 'Openbeats', description = "Unlimited Music For Free!", thumbnail = logoUrl, audioSrc = '';
     try {
-        const { data } = await axios.get(`${infoFetchUrls.song}/${id}?audiosrc=true`);
+        const { data } = await axios.get(`${infoFetchUrls.song}/${id}`);
         if (data.status) {
             title = data.data.title + " - " + title;
             thumbnail = data.data.thumbnail;
