@@ -31,9 +31,9 @@ class Song extends Component {
                 setTimeout(() => {
                     if (this.shareRef) this.shareRef.classList.remove("copied-to-clipboard");
                 }, 3000)
-                this.props.notify("Language's Link copied to your clipboard!");
+                this.props.notify("Song's Link copied to your clipboard!");
             } else {
-                this.props.notify("Cannot Copy Language's Link to your clipboard Automatically, you can manually copy the link from the url!");
+                this.props.notify("Cannot Copy Song's Link to your clipboard Automatically, you can manually copy the link from the url!");
             }
         }
     }
