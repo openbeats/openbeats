@@ -128,8 +128,8 @@
 
 .playlist-display-miscellanious-holder {
     margin-top: 20px;
-    font-size: 18px;
-    width: auto;
+    font-size: 20px;
+    width: 120px;
     display: flex;
     align-items: center;
     justify-content: space-between;

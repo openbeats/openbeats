@@ -23,7 +23,8 @@ class PlaylistDisplay extends Component {
             isLoading: true,
             editedName: "",
             editPlaylistName: false,
-            videoId: []
+            videoId: [],
+            isAlbumIsInCollection: false
         }
         this.state = { ...this.initialState };
         this.updateCurrentPlaying = this.updateCurrentPlaying.bind(this);
@@ -40,6 +41,17 @@ class PlaylistDisplay extends Component {
         const queryValues = await queryString.parse(this.props.location.search)
         if (queryValues.autoplay && queryValues.autoplay === "true")
             this.initQueue()
+
+        this.checkAlbumIsInCollection();
+    }
+
+    shareCollection = () => {
+        const url = `${window.location.origin}/playlist/${this.state.type}/${this.state.playlistId}?autoplay=true`
+        if (coreActions.copyToClipboard(url)) {
+            this.props.notify("Album's Link copied to your clipboard!");
+        } else {
+            this.props.notify("Cannot Copy Album's Link to your clipboard Automatically, you can manually copy the link from the url!");
+        }
     }
 
     async playlistFetchHandler() {
@@ -128,6 +140,17 @@ class PlaylistDisplay extends Component {
         await this.playlistFetchHandler()
     }
 
+    checkAlbumIsInCollection = () => {
+        this.setState({
+            isAlbumIsInCollection: this.props.likedPlaylists.indexOf(this.state.playlistId) === -1 ? false : true
+        })
+    }
+
+    addOrRemoveAlbumFromCollectionHandler = async () => {
+        if (this.state.isAlbumIsInCollection) await this.props.addOrRemoveAlbumFromUserCollection(false, this.state.playlistId);
+        else await this.props.addOrRemoveAlbumFromUserCollection(true, this.state.playlistId);
+        this.checkAlbumIsInCollection();
+    }
 
     render() {
         return (
@@ -195,18 +218,26 @@ class PlaylistDisplay extends Component {
                                 <div className="playlist-display-miscellanious-holder">
                                     {this.state.type === 'user' ?
                                         <Fragment>
-                                            {/* <i className="fas fa-unlock cursor-pointer"></i> */}
-                                            {/* <i className="fas fa-globe-americas cursor-pointer" title="Make Playlist Public"></i> */}
                                             <img onClick={() => this.props.addSongsToQueue(this.state.playlistItems)} className="cursor-pointer" title="Add to Queue" src={pQueueWhite} alt="" srcSet="" />
                                             <i className="fas fa-lock cursor-pointer pl-3 pr-3" title="Make Playlist Private" onClick={this.props.featureNotify}></i>
                                             <i className="fas fa-trash-alt cursor-pointer" title="Delete Playlist" onClick={() => this.props.deleteUserPlaylist(this.state.playlistId)}></i>
                                         </Fragment> :
                                         <Fragment>
-                                            <div onClick={() => this.props.addSongsToQueue(this.state.playlistItems)} className="d-flex align-items-center justify-content-center cursor-pointer">
+                                            <div onClick={() => this.props.addSongsToQueue(this.state.playlistItems)} className="cursor-pointer">
                                                 <img title="Add to Queue" src={pQueueWhite} alt="" srcSet="" />
-                                                <span className="pl-2 f-s-16">Add to Queue!</span>
                                             </div>
-                                            {/* <i className="fas fa-heart cursor-pointer"></i> */}
+                                            {this.props.isAuthenticated &&
+                                                <i className={`fas fa-heart cursor-pointer ${this.state.isAlbumIsInCollection ? "master-color" : ''}`}
+                                                    title={this.state.isAlbumIsInCollection ? "Remove from My Collection" : "Add to My Collection"}
+                                                    onClick={this.addOrRemoveAlbumFromCollectionHandler}
+                                                ></i>
+                                            }
+                                            {
+                                                !['recentlyplayed', 'user'].includes(this.state.type) &&
+                                                <div onClick={this.shareCollection}>
+                                                    <i className="fas fa-share-alt cursor-pointer"></i>
+                                                </div>
+                                            }
                                         </Fragment>
                                     }
                                 </div>
@@ -255,7 +286,8 @@ const mapStateToProps = (state) => {
         playlistId: state.nowPlayingReducer.playlistId,
         currentPlaying: state.nowPlayingReducer.currentPlaying,
         isPlaylist: state.nowPlayingReducer.isPlaylist,
-        isAuthenticated: state.authReducer.isAuthenticated
+        isAuthenticated: state.authReducer.isAuthenticated,
+        likedPlaylists: state.authReducer.likedPlaylists,
     }
 }
 
@@ -317,7 +349,10 @@ const mapDispatchToProps = (dispatch) => {
         },
         downloadSongHandler: async (item) => {
             return await playlistManipulatorActions.downloadSongHandler(item);
-        }
+        },
+        addOrRemoveAlbumFromUserCollection: async (isAdd = true, albumId) => {
+            return await playlistManipulatorActions.addOrRemoveAlbumFromUserCollection(albumId, isAdd);
+        },
     }
 }
 

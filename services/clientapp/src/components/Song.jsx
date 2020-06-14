@@ -9,7 +9,7 @@ import {
     musicDummy
 } from '../assets/images';
 import Loader from 'react-loader-spinner';
-import { toastActions, playlistManipulatorActions, nowPlayingActions, playerActions } from '../actions';
+import { toastActions, playlistManipulatorActions, nowPlayingActions, playerActions, coreActions } from '../actions';
 import { connect } from 'react-redux';
 
 class Song extends Component {
@@ -19,21 +19,37 @@ class Song extends Component {
         this.state = {
             videoId: null
         }
+        this.shareRef = null;
+    }
+
+
+    shareSong = () => {
+        if (this.shareRef) {
+            const url = `${window.location.origin}/?sharesong=${this.props.item.videoId}`
+            if (coreActions.copyToClipboard(url)) {
+                this.shareRef.classList.add("copied-to-clipboard");
+                setTimeout(() => {
+                    if (this.shareRef) this.shareRef.classList.remove("copied-to-clipboard");
+                }, 3000)
+                this.props.notify("Language's Link copied to your clipboard!");
+            } else {
+                this.props.notify("Cannot Copy Language's Link to your clipboard Automatically, you can manually copy the link from the url!");
+            }
+        }
     }
 
     render() {
         return (
             <div
-                className={`result-node cursor-pointer ${this.props.currentPlaying && this.props.currentPlaying.videoId === this.props.item.videoId ? "highlight-active-result" : ""}`}
+                className={`result-node ${this.props.currentPlaying && this.props.currentPlaying.videoId === this.props.item.videoId ? "highlight-active-result" : ""}`}
                 onClick={async (e) => {
-                    e.stopPropagation();
                     if (!(this.props.currentPlaying && this.props.currentPlaying.videoId === this.props.item.videoId)) {
                         await this.props.updateCurrentPlaying(this.props.item, this.props.index)
                     }
                 }}
             >
                 <div className="result-node-thumb" style={{ backgroundImage: `url('${this.props.item.thumbnail}'), url(${musicDummy})` }}></div>
-                <div className="result-node-title">
+                <div className="result-node-title cursor-pointer">
                     {this.props.item.title}
                 </div>
                 <div className="result-node-duration">
@@ -109,6 +125,14 @@ class Song extends Component {
                                 this.props.deleteSongFromUserPlaylist(this.props.item);
                             }}></i>
                     }
+                    <i className="fas fa-share-alt master-color action-image-size cursor-pointer playlist-display-songs-icon"
+                        ref={d => this.shareRef = d}
+                        title="Click to copy this Song's link to your clipboard!"
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            this.shareSong();
+                        }}
+                    ></i>
                 </div>
             </div>
         )
