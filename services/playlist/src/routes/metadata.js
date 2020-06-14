@@ -30,7 +30,7 @@ router.get("/song/:songId", async (req, res) => {
     output.thumbnail = thumbnail_url;
 
     if (isAudioSrc) {
-      const { data } = await (`${config.baseUrlLink}/opencc/${songId}`);
+      const { data } = await axios.get(`${config.baseUrlLink}/opencc/${songId}`);
       if (data.status)
         output.audioSrc = data.link;
     }
