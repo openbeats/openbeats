@@ -214,7 +214,7 @@ app.get('/playlist/topchart/:id', async (request, response) => {
 
 app.get('/sharesong', async (request, response) => {
     try {
-        let title = 'Openbeats', description = "Unlimited Music For Free!", thumbnail = logoUrl;
+        let title = 'Openbeats', description = "Unlimited Music For Free!", thumbnail = logoUrl, audioSrc = '';
         const filePath = path.resolve(__dirname, './build', 'index.html');
         const data = fs.readFileSync(filePath, { encoding: "utf8" });
         const songId = request.query.songid;
@@ -223,10 +223,15 @@ app.get('/sharesong', async (request, response) => {
             title = songData.title;
             thumbnail = songData.thumbnail;
             description = songData.description;
+            audioSrc = songData.audioSrc;
         }
         let result = await data.replace(/OpenBeats/g, title);
         result = await result.replace(/Unlimited Music for Free!/g, description);
         result = await result.replace(/https:\/\/openbeats.nyc3.digitaloceanspaces.com\/fallback\/logoicon.png/g, thumbnail);
+        if (audioSrc) {
+            result = await result.replace(/\$OG_AUDIO/g, audioSrc);
+            result = await result.replace(/\$OG_VIDEO/g, audioSrc);
+        }
         response.send(result);
     } catch (error) {
         response.send(error.message);
@@ -239,12 +244,6 @@ app.get('*', async (request, response) => {
         let title = 'Openbeats', description = "Unlimited Music For Free!", thumbnail = logoUrl;
         const filePath = path.resolve(__dirname, './build', 'index.html');
         const data = fs.readFileSync(filePath, { encoding: "utf8" });
-        if (songId) {
-            const songData = await getSongInfo(songId);
-            title = songData.title;
-            thumbnail = songData.thumbnail;
-            description = songData.description;
-        }
         let result = await data.replace(/OpenBeats/g, title);
         result = await result.replace(/Unlimited Music for Free!/g, description);
         result = await result.replace(/https:\/\/openbeats.nyc3.digitaloceanspaces.com\/fallback\/logoicon.png/g, logoUrl);
@@ -352,12 +351,13 @@ const getTopChartInfo = async (id) => {
 }
 
 const getSongInfo = async (id) => {
-    let title = 'Openbeats', description = "Unlimited Music For Free!", thumbnail = logoUrl;
+    let title = 'Openbeats', description = "Unlimited Music For Free!", thumbnail = logoUrl, audioSrc = '';
     try {
-        const { data } = await axios.get(`${infoFetchUrls.song}/${id}`);
+        const { data } = await axios.get(`${infoFetchUrls.song}/${id}?audiosrc=true`);
         if (data.status) {
             title = data.data.title + " - " + title;
             thumbnail = data.data.thumbnail;
+            audioSrc = data.data.audioSrc;
         }
     } catch (error) {
         console.error(error.message)
@@ -365,6 +365,7 @@ const getSongInfo = async (id) => {
     return {
         title: title,
         description: description,
-        thumbnail: thumbnail
+        thumbnail: thumbnail,
+        audioSrc: audioSrc
     }
 }
