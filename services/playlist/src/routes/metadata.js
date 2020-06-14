@@ -5,37 +5,48 @@ import Emotion from "../models/Emotion";
 import Language from "../models/Language";
 import TopChart from "../models/TopChart";
 import axios from "axios";
+import { config } from "../config";
 
 
 const router = express.Router();
 
-router.get("/song/:videoId",async(req,res)=>{
-try {
-  const videoId = req.params.videoId;
+router.get("/song/:songId", async (req, res) => {
+  try {
+    let output = {
+      title: "OpenBeats",
+      thumbnail: thumbnail_url,
+      audioSrc: ''
+    };
+    const songId = req.params.songId;
+    const isAudioSrc = req.query.audiosrc;
 
-  const {thumbnail_url,thumbnail_width,thumbnail_height,title} =  (await axios.get(`https://www.youtube.com/oembed?format=json&url=${encodeURIComponent(`https://www.youtube.com/watch?v=${videoId}`)}`)).data;
+    const { thumbnail_url, title } = (await axios.get(`https://www.youtube.com/oembed?format=json&url=${encodeURIComponent(`https://www.youtube.com/watch?v=${songId}`)}`)).data;
 
-  if( !thumbnail_url || !thumbnail_width || !thumbnail_height || !title){
-    throw new Error("Cannot find details for requested song.");
-  }
-
-  return res.json({
-    status: true,
-    data:{
-      title ,
-      thumbnail :thumbnail_url,
-      height:thumbnail_height,
-      width:thumbnail_width
+    if (!thumbnail_url || !title) {
+      throw new Error("Cannot find details for requested song.");
     }
-  });
 
-} catch (error) {
-  console.error("Error occured - ", error.message);
+    output.title = title;
+    output.thumbnail = thumbnail_url;
+
+    if (isAudioSrc) {
+      const { data } = await (`${config.baseUrlLink}/opencc/${songId}`);
+      if (data.status)
+        output.audioSrc = data.link;
+    }
+
+    return res.json({
+      status: true,
+      data: output
+    });
+
+  } catch (error) {
+    console.error("Error occured - ", error.message);
     return res.json({
       status: false,
       data: error.message
     });
-}
+  }
 });
 
 

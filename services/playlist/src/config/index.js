@@ -11,6 +11,7 @@ export const config = {
     dev: "http://localhost:2004",
     prod: "http://obs-core:2000",
   },
+  baseUrlLink: type === "development" ? "http://localhost:2004" : "http://obs-core:2000",
   mongoURI_DEV: mongoURI,
   jwtSecret: "WeAreAwesome",
   lastFmAPIKey: "d2b6c4283a7958e1d107005ac85d59db",

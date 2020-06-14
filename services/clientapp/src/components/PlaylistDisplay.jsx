@@ -218,19 +218,27 @@ class PlaylistDisplay extends Component {
                                 <div className="playlist-display-miscellanious-holder">
                                     {this.state.type === 'user' ?
                                         <Fragment>
-                                            <img onClick={() => this.props.addSongsToQueue(this.state.playlistItems)} className="cursor-pointer" title="Add to Queue" src={pQueueWhite} alt="" srcSet="" />
-                                            <i className="fas fa-lock cursor-pointer pl-3 pr-3" title="Make Playlist Private" onClick={this.props.featureNotify}></i>
-                                            <i className="fas fa-trash-alt cursor-pointer" title="Delete Playlist" onClick={() => this.props.deleteUserPlaylist(this.state.playlistId)}></i>
+                                            <div>
+                                                <img onClick={() => this.props.addSongsToQueue(this.state.playlistItems)} className="cursor-pointer" title="Add to Queue" src={pQueueWhite} alt="" srcSet="" />
+                                            </div>
+                                            <div>
+                                                <i className="fas fa-lock cursor-pointer pl-3 pr-3" title="Make Playlist Private" onClick={this.props.featureNotify}></i>
+                                            </div>
+                                            <div>
+                                                <i className="fas fa-trash-alt cursor-pointer" title="Delete Playlist" onClick={() => this.props.deleteUserPlaylist(this.state.playlistId)}></i>
+                                            </div>
                                         </Fragment> :
                                         <Fragment>
                                             <div onClick={() => this.props.addSongsToQueue(this.state.playlistItems)} className="cursor-pointer">
                                                 <img title="Add to Queue" src={pQueueWhite} alt="" srcSet="" />
                                             </div>
-                                            {this.props.isAuthenticated &&
-                                                <i className={`fas fa-heart cursor-pointer ${this.state.isAlbumIsInCollection ? "master-color" : ''}`}
-                                                    title={this.state.isAlbumIsInCollection ? "Remove from My Collection" : "Add to My Collection"}
-                                                    onClick={this.addOrRemoveAlbumFromCollectionHandler}
-                                                ></i>
+                                            {this.props.isAuthenticated && !['recentlyplayed', 'topchart', 'user'].includes(this.state.type) &&
+                                                <div>
+                                                    <i className={`fas fa-heart cursor-pointer ${this.state.isAlbumIsInCollection ? "master-color" : ''}`}
+                                                        title={this.state.isAlbumIsInCollection ? "Remove from My Collection" : "Add to My Collection"}
+                                                        onClick={this.addOrRemoveAlbumFromCollectionHandler}
+                                                    ></i>
+                                                </div>
                                             }
                                             {
                                                 !['recentlyplayed', 'user'].includes(this.state.type) &&
