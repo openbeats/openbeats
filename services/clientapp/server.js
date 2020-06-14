@@ -226,7 +226,7 @@ app.get('/sharesong', async (request, response) => {
         }
         let result = await data.replace(/OpenBeats/g, title);
         result = await result.replace(/Unlimited Music for Free!/g, description);
-        result = await result.replace(/https:\/\/openbeats.nyc3.digitaloceanspaces.com\/fallback\/logoicon.png/g, logoUrl);
+        result = await result.replace(/https:\/\/openbeats.nyc3.digitaloceanspaces.com\/fallback\/logoicon.png/g, thumbnail);
         response.send(result);
     } catch (error) {
         response.send(error.message);
