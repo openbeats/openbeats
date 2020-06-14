@@ -511,20 +511,21 @@ export async function setRepeatMode() {
 
 export const checkAndAddSongToTheQueue = async (urlLocation) => {
 	try {
-		store.dispatch(push("/"));
 		const queryValues = await queryString.parse(urlLocation);
-		if (queryValues.sharesong !== undefined) {
-			if (!(queryValues.sharesong.length > 0))
+		if (queryValues.songid !== undefined) {
+			if (!(queryValues.songid.length > 0))
 				throw new Error("error!");
-			const { data } = await axios.get(`${variables.baseUrl}/opencc/songData/${queryValues.sharesong}`);
+			const { data } = await axios.get(`${variables.baseUrl}/opencc/songData/${queryValues.songid}`);
 			if (data.status && data.data) {
 				nowPlayingActions.updateCurrentPlaying(data.data);
 			} else {
 				throw new Error("error!");
 			}
 		}
+		store.dispatch(push("/"));
 	} catch (error) {
 		toastActions.showMessage("Invalid Link - You can explore Popular Albums, Artists and more for free only at OpenBeats!")
+		store.dispatch(push("/"));
 	}
 
 }

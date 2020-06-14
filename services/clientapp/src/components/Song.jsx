@@ -25,7 +25,7 @@ class Song extends Component {
 
     shareSong = () => {
         if (this.shareRef) {
-            const url = `${window.location.origin}/?sharesong=${this.props.item.videoId}`
+            const url = `${window.location.origin}/sharesong?songid=${this.props.item.videoId}`
             if (coreActions.copyToClipboard(url)) {
                 this.shareRef.classList.add("copied-to-clipboard");
                 setTimeout(() => {
