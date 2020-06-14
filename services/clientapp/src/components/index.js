@@ -30,6 +30,7 @@ import LanguageAlbums from "./LanguageAlbums";
 import Offline from "./Offline";
 import Disclaimer from "./Disclaimer";
 import ReactHelmet from "./ReactHelmet";
+import Embed from "./Embed";
 
 
 export {
@@ -64,5 +65,6 @@ export {
 	LanguageAlbums,
 	Offline,
 	Disclaimer,
-	ReactHelmet
+	ReactHelmet,
+	Embed
 };

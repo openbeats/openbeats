@@ -229,7 +229,7 @@ app.get('/sharesong', async (request, response) => {
         result = await result.replace(/Unlimited Music for Free!/g, description);
         result = await result.replace(/https:\/\/openbeats.nyc3.digitaloceanspaces.com\/fallback\/logoicon.png/g, thumbnail);
         if (audioSrc) {
-            let mainUrl = `https://www.youtube.com/embed/${songId}`;
+            let mainUrl = `${realBaseUrl}/embed/${songId}`;
             result = await result.replace(/\$OG_VIDEO/g, mainUrl);
         }
         response.send(result);
