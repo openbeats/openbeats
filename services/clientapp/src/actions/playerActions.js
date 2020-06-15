@@ -321,7 +321,7 @@ export async function initPlayer(audioData, playMusic = true) {
 				throw new Error("Not Available")
 		}
 	} catch (error) {
-		toastActions.showMessage("Requested audio is not availabe right now! ");
+		// toastActions.showMessage("Requested audio is not availabe right now! ");
 		if (store.getState().offlineReducer.isOnline)
 			musicEndHandler(); // fix (switch to next song on false link)
 		// await store.dispatch(await resetPlayer());
