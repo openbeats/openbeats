@@ -56,6 +56,8 @@ class AlbumHolder extends Component {
                 return;
             if (this.shareRef && this.shareRef.contains(e.target))
                 return
+            if (this.playRef && this.playRef.contains(e.target))
+                return
             this.albumViewCallBack(this.props.albumId);
         }} style={{ backgroundImage: `url(${this.props.albumThumbnail}), url(${musicDummy})` }}>
             {/* share icon placement */}
@@ -76,7 +78,11 @@ class AlbumHolder extends Component {
             }
             <div className="album-holder-play-icon-visible-on-hover">
                 <i className="far fa-eye" title="View this Album" onClick={() => this.albumViewCallBack(this.props.albumId)}></i>
-                <i className="fas fa-play" title="Reset Current Queue and Play this Album" ref={d => this.playRef = d} onClick={() => this.albumPlayCallBack(this.props.albumId)}></i>
+                <i className="fas fa-play" title="Reset Current Queue and Play this Album" ref={d => this.playRef = d} onClick={(e) => {
+                    e.stopPropagation();
+                    e.preventDefault();
+                    this.albumPlayCallBack(this.props.albumId);
+                }}></i>
                 <i className="fas fa-plus-square" title="Add to The current Queue" onClick={() => this.albumAddToCurrentQueueCallBack(this.props.albumId)}></i>
             </div>
             <div className="album-holder-songs-total-holder">{this.props.albumTotalSongs}</div>
