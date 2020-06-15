@@ -66,3 +66,5 @@ localdb.json
 # ignoring the gaana and wynk folders in Rohit's computer
 Wynk/
 Gaana/
+
+.credentials
