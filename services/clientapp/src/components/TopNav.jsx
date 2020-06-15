@@ -4,6 +4,7 @@ import { push } from "connected-react-router";
 import { connect } from "react-redux";
 import { toastActions, searchActions, authActions } from "../actions";
 import { angleright } from "../assets/images";
+import { store } from "../store";
 
 class TopNav extends Component {
 	constructor(props) {
@@ -128,13 +129,18 @@ class TopNav extends Component {
 							</div>
 						</div>
 					) : (
-							<div className="auth-login-register-holder cursor-pointer" onClick={() => this.props.push("/auth")}>
+							<div className="auth-login-register-holder cursor-pointer" onClick={async (e) => {
+								const state = await store.getState();
+								const currentPath = `${state.router.location.pathname}${state.router.location.search}`;
+								/* eslint-disable-next-line */
+								this.props.push(`/auth?queue=${Base64.encodeURI(currentPath)}`);
+							}}>
 								<i className="fas fa-power-off red-color auth-power-on"></i>
 								<span className="hide-me">&nbsp;&nbsp;Login/Register</span>
 							</div>
 						)}
 				</div>
-			</section>
+			</section >
 		);
 	}
 }

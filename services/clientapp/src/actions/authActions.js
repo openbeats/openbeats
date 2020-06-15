@@ -14,7 +14,7 @@ import {
 import axios from "axios";
 import setAuthToken from "../utils/setAuthToken";
 
-export async function loginHandler(email, password) {
+export async function loginHandler(email, password, queuePath) {
   try {
     setAuthLoader(true);
     const res = await axios.post(`${variables.baseUrl}/auth/login`, {
@@ -45,7 +45,8 @@ export async function loginHandler(email, password) {
         }
       });
       setAuthLoader(false);
-      store.dispatch(push("/"));
+      const path = queuePath ? queuePath : "/";
+      store.dispatch(push(path));
     } else {
       toastActions.showMessage(data.toString());
       setAuthLoader(false);
@@ -59,7 +60,7 @@ export async function loginHandler(email, password) {
   }
 }
 
-export async function registerHandler(name, email, password) {
+export async function registerHandler(name, email, password, queuePath) {
   try {
     setAuthLoader(true);
     const res = await axios.post(`${variables.baseUrl}/auth/register`, {
@@ -90,7 +91,8 @@ export async function registerHandler(name, email, password) {
         }
       });
       setAuthLoader(false);
-      store.dispatch(push("/"));
+      const path = queuePath ? queuePath : "/";
+      store.dispatch(push(path));
     } else {
       toastActions.showMessage(data.toString());
       setAuthLoader(false);
