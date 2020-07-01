@@ -1,4 +1,4 @@
-const axios = require('axios');
+import fetch from "node-fetch";
 
 // function to perform null check on the parameters
 const jsonNullCheckResponse = (parameterName, currentSongObj) => {
@@ -25,6 +25,8 @@ const jsonNullCheckResponse = (parameterName, currentSongObj) => {
 				return currentSongObj["viewCountText"]["simpleText"];
 			case "shortViews":
 				return currentSongObj["shortViewCountText"]["simpleText"];
+			case "description":
+				return currentSongObj["descriptionSnippet"]["runs"][0]["text"];
 		}
 	} catch (error) {
 		return null;
@@ -34,9 +36,9 @@ const jsonNullCheckResponse = (parameterName, currentSongObj) => {
 export default async (queryString, first = false) => {
 	try {
 		// get html response for the query
-		const htmlContent = (
-			await axios.get("https://www.youtube.com/results?search_query=" + queryString)
-		).data;
+		const htmlContent = await (
+			await fetch("https://www.youtube.com/results?search_query=" + encodeURIComponent(queryString))
+		).text();
 
 		// compute indexes of the required json string in html document
 		const index1 =
@@ -57,7 +59,7 @@ export default async (queryString, first = false) => {
 		let ytCatResponse = [];
 
 		// iterating through each song object to compile the ytCatResponse object
-		for (i = 0; i < arrayOfResponsesLen; i++) {
+		for (let i = 0; i < arrayOfResponsesLen; i++) {
 
 			// getting current song object
 			let currentSongObj = arrayOfResponses[i]["videoRenderer"];
@@ -75,10 +77,7 @@ export default async (queryString, first = false) => {
 					channelId: jsonNullCheckResponse("channelId", currentSongObj),
 					uploadedOn: jsonNullCheckResponse("uploadedOn", currentSongObj),
 					views: jsonNullCheckResponse("views", currentSongObj),
-					extras: {
-						allThumbnails: jsonNullCheckResponse("allSongThumbnails", currentSongObj),
-						shortViews: jsonNullCheckResponse("shortViews", currentSongObj),
-					}
+					description: jsonNullCheckResponse("description", currentSongObj)
 				});
 				// breaking loop if first is true
 				if (first)
@@ -87,6 +86,8 @@ export default async (queryString, first = false) => {
 		}
 		return ytCatResponse;
 	} catch (error) {
+		console.log(error);
+
 		return [];
 	}
 };
