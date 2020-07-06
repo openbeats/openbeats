@@ -67,6 +67,16 @@ export default async (queryString, first = false) => {
 			// filtering for valid video responses
 			if (currentSongObj != null) {
 
+				// skipping LIVE songs
+				if (currentSongObj["badges"] != null) {
+					var str = JSON.stringify(currentSongObj["badges"]);
+					// check if it is a live video
+					if (str.includes("LIVE")) {
+						// skipping this song
+						continue;
+					}
+				}
+
 				// getting song parameters and pushing to array
 				ytCatResponse.push({
 					title: jsonNullCheckResponse("title", currentSongObj),
