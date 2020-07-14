@@ -4,7 +4,7 @@ const fs = require("fs");
 const morgan = require("morgan");
 const axios = require("axios").default;
 const { infoFetchUrls, logoUrl, realBaseUrl } = require("./serverConfig");
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 7000;
 const app = express();
 app.use(morgan("dev"));
 app.use(express.static(path.resolve(__dirname, './build')));

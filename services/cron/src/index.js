@@ -6,7 +6,7 @@ import {
   config
 } from "./config";
 
-const PORT = 2000 || process.env.PORT;
+const PORT = 3000 || process.env.PORT;
 
 const app = express();
 middleware(app);

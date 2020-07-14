@@ -2,20 +2,20 @@ name: playlist
 
 on:
   push:
-    branches: 
-      - production
-      - staging
+    branches:
+    # - production
+    # - staging
     paths:
       - services/playlist/**
   pull_request:
     types: [closed]
-    branches: 
-      - production
-      - staging
+    branches:
+      # - production
+      # - staging
     paths:
       - services/playlist/**
-      
-env: 
+
+env:
   SERVICE_PATH: services/playlist
   DOCKER_REPO_NAME: thayalangr/obs-playlist
   CONFIG_PATH: services/playlist/src/config/index.js
@@ -31,98 +31,98 @@ jobs:
     if: github.ref == 'refs/heads/production'
     runs-on: ubuntu-latest
     steps:
-    - name: Checkout Repo
-      uses: actions/checkout@v2
+      - name: Checkout Repo
+        uses: actions/checkout@v2
 
-    - name: k8s Check and Apply New Redis
-      if: env.SERVICE_PATH == 'services/core'
-      uses: actions-hub/kubectl@master
-      env:
-        KUBE_CONFIG: ${{ secrets.KUBE_CONFIG_DATA }}
-      with:
-        args: apply -f ${{ env.K8S_REDIS_DEPLOYMENT_PATH }} -n production
-    
-    - name: Change Variables for Production
-      run: |
-        sed '1d' $CONFIG_PATH > temp.js ; mv temp.js $CONFIG_PATH ; sed -i '1iconst type = "production";' $CONFIG_PATH
+      - name: k8s Check and Apply New Redis
+        if: env.SERVICE_PATH == 'services/core'
+        uses: actions-hub/kubectl@master
+        env:
+          KUBE_CONFIG: ${{ secrets.KUBE_CONFIG_DATA }}
+        with:
+          args: apply -f ${{ env.K8S_REDIS_DEPLOYMENT_PATH }} -n production
 
-    - name: Build and push Docker Image
-      uses: docker/build-push-action@v1.1.0
-      with:
-        username: ${{ secrets.DOCKER_USERNAME }}
-        password: ${{ secrets.DOCKER_PASSWORD }}
-        repository: ${{ env.DOCKER_REPO_NAME }}
-        tags: production
-        path: ${{ env.SERVICE_PATH }}
+      - name: Change Variables for Production
+        run: |
+          sed '1d' $CONFIG_PATH > temp.js ; mv temp.js $CONFIG_PATH ; sed -i '1iconst type = "production";' $CONFIG_PATH
 
-    - name: k8s Check and Apply New Deployment
-      uses: actions-hub/kubectl@master
-      env:
-        KUBE_CONFIG: ${{ secrets.KUBE_CONFIG_DATA }}
-      with:
-        args: apply -f ${{ env.K8S_PRODUCTION_DEPLOYMENT_PATH }} -n production
+      - name: Build and push Docker Image
+        uses: docker/build-push-action@v1.1.0
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+          repository: ${{ env.DOCKER_REPO_NAME }}
+          tags: production
+          path: ${{ env.SERVICE_PATH }}
 
-    - name: k8s Update Deployment
-      uses: actions-hub/kubectl@master
-      env:
-        KUBE_CONFIG: ${{ secrets.KUBE_CONFIG_DATA }}
-      with:
-        args: rollout restart deploy ${{ env.K8S_DEPLOYMENT_NAME }} -n production
+      - name: k8s Check and Apply New Deployment
+        uses: actions-hub/kubectl@master
+        env:
+          KUBE_CONFIG: ${{ secrets.KUBE_CONFIG_DATA }}
+        with:
+          args: apply -f ${{ env.K8S_PRODUCTION_DEPLOYMENT_PATH }} -n production
 
-    - name: k8s Check and Apply New Ingress
-      if: env.SERVICE_PATH == 'services/core'
-      uses: actions-hub/kubectl@master
-      env:
-        KUBE_CONFIG: ${{ secrets.KUBE_CONFIG_DATA }}
-      with:
-        args: apply -f ${{ env.k8s_PRODUCTION_ING_PATH }} -n production
-        
+      - name: k8s Update Deployment
+        uses: actions-hub/kubectl@master
+        env:
+          KUBE_CONFIG: ${{ secrets.KUBE_CONFIG_DATA }}
+        with:
+          args: rollout restart deploy ${{ env.K8S_DEPLOYMENT_NAME }} -n production
+
+      - name: k8s Check and Apply New Ingress
+        if: env.SERVICE_PATH == 'services/core'
+        uses: actions-hub/kubectl@master
+        env:
+          KUBE_CONFIG: ${{ secrets.KUBE_CONFIG_DATA }}
+        with:
+          args: apply -f ${{ env.k8s_PRODUCTION_ING_PATH }} -n production
+
   staging:
     if: github.ref == 'refs/heads/staging'
     runs-on: ubuntu-latest
     steps:
-    - name: Checkout Repo
-      uses: actions/checkout@v2
+      - name: Checkout Repo
+        uses: actions/checkout@v2
 
-    - name: k8s Check and Apply New Redis
-      if: env.SERVICE_PATH == 'services/core'
-      uses: actions-hub/kubectl@master
-      env:
-        KUBE_CONFIG: ${{ secrets.KUBE_CONFIG_DATA }}
-      with:
-        args: apply -f ${{ env.K8S_REDIS_DEPLOYMENT_PATH }} -n staging
+      - name: k8s Check and Apply New Redis
+        if: env.SERVICE_PATH == 'services/core'
+        uses: actions-hub/kubectl@master
+        env:
+          KUBE_CONFIG: ${{ secrets.KUBE_CONFIG_DATA }}
+        with:
+          args: apply -f ${{ env.K8S_REDIS_DEPLOYMENT_PATH }} -n staging
 
-    - name: Change Variables for Staging
-      run: |
-        sed '1d' $CONFIG_PATH > temp.js ; mv temp.js $CONFIG_PATH ; sed -i '1iconst type = "staging";' $CONFIG_PATH
+      - name: Change Variables for Staging
+        run: |
+          sed '1d' $CONFIG_PATH > temp.js ; mv temp.js $CONFIG_PATH ; sed -i '1iconst type = "staging";' $CONFIG_PATH
 
-    - name: Build and push Docker Image
-      uses: docker/build-push-action@v1.1.0
-      with:
-        username: ${{ secrets.DOCKER_USERNAME }}
-        password: ${{ secrets.DOCKER_PASSWORD }}
-        repository: ${{ env.DOCKER_REPO_NAME }}
-        tags: staging
-        path: ${{ env.SERVICE_PATH }}
+      - name: Build and push Docker Image
+        uses: docker/build-push-action@v1.1.0
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+          repository: ${{ env.DOCKER_REPO_NAME }}
+          tags: staging
+          path: ${{ env.SERVICE_PATH }}
 
-    - name: k8s Check and Apply New Deployment
-      uses: actions-hub/kubectl@master
-      env:
-        KUBE_CONFIG: ${{ secrets.KUBE_CONFIG_DATA }}
-      with:
-        args: apply -f ${{ env.K8S_STAGING_DEPLOYMENT_PATH }} -n staging
+      - name: k8s Check and Apply New Deployment
+        uses: actions-hub/kubectl@master
+        env:
+          KUBE_CONFIG: ${{ secrets.KUBE_CONFIG_DATA }}
+        with:
+          args: apply -f ${{ env.K8S_STAGING_DEPLOYMENT_PATH }} -n staging
 
-    - name: k8s Update Deployment
-      uses: actions-hub/kubectl@master
-      env:
-        KUBE_CONFIG: ${{ secrets.KUBE_CONFIG_DATA }}
-      with:
-        args: rollout restart deploy ${{ env.K8S_DEPLOYMENT_NAME }} -n staging
+      - name: k8s Update Deployment
+        uses: actions-hub/kubectl@master
+        env:
+          KUBE_CONFIG: ${{ secrets.KUBE_CONFIG_DATA }}
+        with:
+          args: rollout restart deploy ${{ env.K8S_DEPLOYMENT_NAME }} -n staging
 
-    - name: k8s Check and Apply New Ingress
-      if: env.SERVICE_PATH == 'services/core'
-      uses: actions-hub/kubectl@master
-      env:
-        KUBE_CONFIG: ${{ secrets.KUBE_CONFIG_DATA }}
-      with:
-        args: apply -f ${{ env.k8s_STAGING_ING_PATH }} -n staging
+      - name: k8s Check and Apply New Ingress
+        if: env.SERVICE_PATH == 'services/core'
+        uses: actions-hub/kubectl@master
+        env:
+          KUBE_CONFIG: ${{ secrets.KUBE_CONFIG_DATA }}
+        with:
+          args: apply -f ${{ env.k8s_STAGING_ING_PATH }} -n staging

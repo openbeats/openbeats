@@ -1,4 +1,4 @@
-const type = "development";
+const type = "production";
 // production or development or staging
 let clientURL = "https://staging.openbeats.live";
 let baseURL = "https://staging-api.openbeats.live";

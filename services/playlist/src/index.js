@@ -12,7 +12,7 @@ import metadata from "./routes/metadata";
 
 dbconfig();
 
-const PORT = process.env.PORT || 2000;
+const PORT = process.env.PORT || 5000;
 
 const app = express();
 

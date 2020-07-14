@@ -13,7 +13,7 @@ import {
 import isSafe from "./utils/isSafe";
 // import dbconfig from "./config/db";
 // dbconfig();
-const PORT = process.env.PORT || 2000;
+const PORT = process.env.PORT || 4000;
 
 const app = express();
 middleware(app);
@@ -32,7 +32,7 @@ app.get("/:id", async (req, res) => {
 						downloadTitle
 					})
 				} else {
-					let info = await (await fetch(`${config.ytdlLambda+videoID}`)).json();
+					let info = await (await fetch(`${config.ytdlLambda + videoID}`)).json();
 					if (!(isSafe(() => info.formats[0].url))) {
 						return reject("Cannot fetch the requested song...");
 					}
@@ -65,8 +65,8 @@ app.get("/:id", async (req, res) => {
 		res.setHeader("Content-disposition", "attachment; filename=" + details.downloadTitle + ".mp3");
 		res.setHeader("Content-Type", "audio/mpeg");
 		ffmpeg({
-				source: details.sourceUrl,
-			})
+			source: details.sourceUrl,
+		})
 			.setFfmpegPath(path)
 			.withAudioCodec("libmp3lame")
 			.toFormat("mp3")

@@ -12,6 +12,6 @@ WORKDIR /app/build
 
 RUN npm i -g serve
 
-EXPOSE 3000
+EXPOSE 8000
 
-CMD [ "serve", "-p", "3000", "-s", "." ]
+CMD [ "serve", "-p", "8000", "-s", "." ]
