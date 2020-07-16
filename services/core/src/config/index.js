@@ -1,4 +1,4 @@
-const type = "development";
+const type = "production";
 // production or development or staging
 let mongoURI = "mongodb+srv://obs-db:openbeats%40123@obs-db-prijj.mongodb.net/obs-db-staging"; //  development & staging url
 if (type === "production") {

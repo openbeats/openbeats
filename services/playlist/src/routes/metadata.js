@@ -4,9 +4,51 @@ import Artist from "../models/Artist";
 import Emotion from "../models/Emotion";
 import Language from "../models/Language";
 import TopChart from "../models/TopChart";
+import axios from "axios";
+import { config } from "../config";
 
 
 const router = express.Router();
+
+router.get("/song/:songId", async (req, res) => {
+  try {
+    let output = {
+      title: "OpenBeats",
+      thumbnail: thumbnail_url,
+      audioSrc: ''
+    };
+    const songId = req.params.songId;
+    const isAudioSrc = req.query.audiosrc;
+
+    const { thumbnail_url, title } = (await axios.get(`https://www.youtube.com/oembed?format=json&url=${encodeURIComponent(`https://www.youtube.com/watch?v=${songId}`)}`)).data;
+
+    if (!thumbnail_url || !title) {
+      throw new Error("Cannot find details for requested song.");
+    }
+
+    output.title = title;
+    output.thumbnail = thumbnail_url;
+
+    if (isAudioSrc) {
+      const { data } = await axios.get(`${config.baseUrlLink}/opencc/${songId}`);
+      if (data.status)
+        output.audioSrc = data.link;
+    }
+
+    return res.json({
+      status: true,
+      data: output
+    });
+
+  } catch (error) {
+    console.error("Error occured - ", error.message);
+    return res.json({
+      status: false,
+      data: error.message
+    });
+  }
+});
+
 
 router.get("/:type/:id", async (req, res) => {
   try {
@@ -53,4 +95,7 @@ router.get("/:type/:id", async (req, res) => {
 
   }
 });
+
+
+
 export default router;

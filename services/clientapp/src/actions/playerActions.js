@@ -2,7 +2,7 @@ import {
 	toastActions,
 	nowPlayingActions,
 	playlistManipulatorActions,
-	// playerActions
+	helmetActions,
 } from ".";
 import {
 	store
@@ -13,15 +13,13 @@ import {
 import {
 	musicDummy
 } from "../assets/images";
-// import {
-//     push
-// } from "connected-react-router";
 import {
 	Base64
 } from "js-base64";
 import axios from "axios";
 import GoogleAnalytics from "react-ga";
-
+import queryString from 'query-string';
+import { push } from "connected-react-router";
 
 export function playPauseToggle() {
 	const playerRef = document.getElementById("music-player");
@@ -34,6 +32,10 @@ export function playPauseToggle() {
 		} else {
 			playerRef.play();
 			payload = true;
+			helmetActions.updateHelment({
+				title: state.songTitle,
+				thumbnail: `https://i.ytimg.com/vi/${state.id}/mqdefault.jpg`
+			}, true)
 		}
 		return {
 			type: "PLAY_PAUSE_TOGGLE",
@@ -319,8 +321,9 @@ export async function initPlayer(audioData, playMusic = true) {
 				throw new Error("Not Available")
 		}
 	} catch (error) {
-		toastActions.showMessage("Requested audio is not availabe right now! ");
-		musicEndHandler(); // fix (switch to next song on false link)
+		// toastActions.showMessage("Requested audio is not availabe right now! ");
+		if (store.getState().offlineReducer.isOnline)
+			musicEndHandler(); // fix (switch to next song on false link)
 		// await store.dispatch(await resetPlayer());
 		// nowPlayingActions.clearQueue();
 	}
@@ -385,6 +388,11 @@ export async function startPlayer(shallIPlay = true) {
 
 export const initMediaSession = async () => {
 	let state = await store.getState();
+	// helmet integration
+	helmetActions.updateHelment({
+		title: state.playerReducer.songTitle,
+		thumbnail: `https://i.ytimg.com/vi/${state.playerReducer.id}/mqdefault.jpg`
+	}, true)
 	if ('mediaSession' in navigator) {
 		/* eslint-disable-next-line */
 		navigator.mediaSession.metadata = new MediaMetadata({
@@ -499,4 +507,25 @@ export async function setRepeatMode() {
 		type: "SET_REPEAT_MODE",
 		payload: nextLoopId
 	});
+}
+
+export const checkAndAddSongToTheQueue = async (urlLocation) => {
+	try {
+		const queryValues = await queryString.parse(urlLocation);
+		if (queryValues.songid !== undefined) {
+			if (!(queryValues.songid.length > 0))
+				throw new Error("error!");
+			const { data } = await axios.get(`${variables.baseUrl}/opencc/songData/${queryValues.songid}`);
+			if (data.status && data.data) {
+				nowPlayingActions.updateCurrentPlaying(data.data);
+			} else {
+				throw new Error("error!");
+			}
+		}
+		store.dispatch(push("/"));
+	} catch (error) {
+		toastActions.showMessage("Invalid Link - You can explore Popular Albums, Artists and more for free only at OpenBeats!")
+		store.dispatch(push("/"));
+	}
+
 }

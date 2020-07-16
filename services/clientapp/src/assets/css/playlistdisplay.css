@@ -128,11 +128,16 @@
 
 .playlist-display-miscellanious-holder {
     margin-top: 20px;
-    font-size: 18px;
+    font-size: 22px;
     width: auto;
     display: flex;
     align-items: center;
     justify-content: space-between;
+}
+
+.playlist-display-miscellanious-holder>div:nth-child(2n) {
+    margin-left: 20px;
+    margin-right: 20px;
 }
 
 .playlist-display-right-section-wrapper {

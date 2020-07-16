@@ -43,6 +43,7 @@ class Main extends Component {
 					<section className="main-body" id="main-body">
 						<Switch>
 							<Route exact path="/" component={Home} />
+							<Route path="/sharesong" component={Home} />
 							<Route path="/nowplaying" component={NowPlaying} />
 							<Route path="/playlist/:type/:id" component={PlaylistDisplay} />
 							<Route

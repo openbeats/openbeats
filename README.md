@@ -2,6 +2,10 @@
 
 OpenBeats is an open source Music streamer.
 
+# change log
+
+- **14th July 2020** - converted from Microservice architecture to Monolithic with docker-compose.
+
 # Deployment Details
 
 - microservices architecture

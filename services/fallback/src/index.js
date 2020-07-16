@@ -11,7 +11,7 @@ import isSafe from "./utils/isSafe";
 // import dbconfig from "./config/db";
 // dbconfig();
 
-const PORT = process.env.PORT || 2000;
+const PORT = process.env.PORT || 4000;
 
 const app = express();
 middleware(app);

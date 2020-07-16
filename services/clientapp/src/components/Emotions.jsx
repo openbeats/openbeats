@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { toastActions, coreActions } from "../actions";
+import { toastActions, coreActions, helmetActions } from "../actions";
 import "../assets/css/emotions.css";
 import { connect } from "react-redux";
 import { push } from "connected-react-router";
@@ -27,6 +27,9 @@ class Emotions extends Component {
 
     componentDidMount() {
         this.props.setCurrentAction("Emotions");
+        helmetActions.updateHelment({
+            title: "Emotions - OpenBeats"
+        })
         this.fetchLanguagesHandler();
         this.initiateScrollFetcher();
     }

@@ -40,7 +40,7 @@ app.get("/opencc/:id", addtorecentlyplayed, async (req, res) => {
 		});
 		let sourceUrl = await isAvail;
 		if (!sourceUrl) {
-			let info = await (await fetch(`${config.ytdlLambda+videoID}`)).json();
+			let info = await (await fetch(`${config.ytdlLambda + videoID}`)).json();
 			if (!(isSafe(() => info.formats[0].url))) {
 				throw new Error("Cannot fetch the requested song...");
 			}
@@ -77,6 +77,23 @@ app.get("/opencc/:id", addtorecentlyplayed, async (req, res) => {
 		});
 	}
 });
+
+
+app.get("/opencc/songdata/:id", async (req, res) => {
+	try {
+		const songId = req.params.id;
+		const songObj = await addSongInDeAttachedMode(songId, undefined, true);
+		return res.json({
+			status: true,
+			data: songObj
+		});
+	} catch (error) {
+		return res.json({
+			status: false,
+			data: error.message
+		});
+	}
+})
 
 app.get("/ytcat", async (req, res) => {
 	try {
@@ -137,24 +154,26 @@ app.get("/suggester", async (req, res) => {
 });
 
 // add song to collection in deattached mod
-const addSongInDeAttachedMode = async (videoId, song) => {
+const addSongInDeAttachedMode = async (videoId, song, sync = false) => {
 	try {
-		const findSong = await Song.findOne({
+		let findSong = await Song.findOne({
 			_id: videoId,
 		});
-		if (!findSong && song) {
-			let item = null;
+		if (!findSong) {
 			if (!song) {
-				item = (await ytcat(videoId, true))[0];
+				findSong = (await ytcat(videoId, true))[0];
 			} else {
-				item = {
+				findSong = {
 					...song,
 				};
 			}
-			item["_id"] = item.videoId;
-			await Song.insertMany([item], {
+			findSong["_id"] = findSong.videoId;
+			await Song.insertMany([findSong], {
 				ordered: false,
 			});
+		}
+		if (sync) {
+			return findSong;
 		}
 	} catch (error) {
 		console.log(error);

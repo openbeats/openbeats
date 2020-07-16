@@ -5,6 +5,7 @@ import nowPlayingReducer from "./nowPlayingReducer";
 import authReducer from "./authReducer";
 import playlistManipulatorReducer from "./playlistManipulatorReducer";
 import offlineReducer from "./offlineReducer";
+import helmetReducer from "./helmetReducer";
 
 const reducers = {
   playerReducer,
@@ -13,7 +14,8 @@ const reducers = {
   nowPlayingReducer,
   authReducer,
   playlistManipulatorReducer,
-  offlineReducer
+  offlineReducer,
+  helmetReducer
 };
 
 export default reducers;

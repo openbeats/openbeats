@@ -1,6 +1,6 @@
 import React, { Component, Fragment } from "react";
 import { musicDummy, spaceImage } from "../assets/images";
-import { toastActions, coreActions, playlistManipulatorActions } from "../actions";
+import { toastActions, coreActions, playlistManipulatorActions, helmetActions } from "../actions";
 import "../assets/css/artistalbums.css";
 import { connect } from "react-redux";
 import { push } from "connected-react-router";
@@ -94,6 +94,10 @@ class Albums extends Component {
 				this.props.push("/404");
 				break;
 		}
+		const headString = this.state.type === "featuring" ? "Featuring Albums" : this.state.type === "releases" ? "Released Albums" : "Albums";
+		helmetActions.updateHelment({
+			title: this.state.artistName + " - " + headString + " - OpenBeats"
+		})
 		this.setState({ isLoading: false });
 	};
 

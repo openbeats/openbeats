@@ -11,6 +11,7 @@
     justify-content: center;
     box-sizing: border-box;
     margin: 10px;
+    position: relative;
 }
 
 .artist-rounded-circle-holder {
@@ -33,6 +34,13 @@
 .artist-description {
     margin-top: 5px;
     font-size: 13px;
+}
+
+.artist-holer-share-icon-wrapper {
+    font-size: 20px;
+    position: absolute;
+    top: 10px;
+    left: 10px;
 }
 
 

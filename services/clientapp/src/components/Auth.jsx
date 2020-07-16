@@ -1,33 +1,50 @@
 import React, { Component } from "react";
 import "../assets/css/auth.css";
-import { toastActions, authActions } from "../actions";
+import { toastActions, authActions, helmetActions } from "../actions";
 import Loader from "react-loader-spinner";
 import { connect } from "react-redux";
 import { push } from "connected-react-router";
 import { store } from "../store";
 import { musicIllustration, masterLogo } from "../assets/images";
+import queryString from 'query-string';
 
 class Auth extends Component {
   _isMounted = false;
   constructor(props) {
     super(props);
     this.state = {
-      displayRegister: false
+      displayRegister: false,
+      queuePath: ''
     };
     this.Toggler = this.Toggler.bind(this);
     this.Login = this.Login.bind(this);
     this.Register = this.Register.bind(this);
   }
 
-  componentDidMount() {
+  async componentDidMount() {
     this._isMounted = true;
+    helmetActions.updateHelment({
+      title: (this.state.displayRegister ? "Register" : "Login") + " - OpenBeats"
+    })
     if (this.props.isAuthenticated) {
       store.dispatch(push("/"))
     }
+    const queryValues = await queryString.parse(this.props.location.search)
+    if (queryValues.queue) {
+      /* eslint-disable-next-line */
+      this.setState({ queuePath: Base64.decode(queryValues.queue) })
+    }
+
   }
 
   componentWillUnmount() {
     this._isMounted = false;
+  }
+
+  componentDidUpdate() {
+    helmetActions.updateHelment({
+      title: (this.state.displayRegister ? "Register" : "Login") + " - OpenBeats"
+    })
   }
 
   Login() {
@@ -39,7 +56,7 @@ class Auth extends Component {
         onSubmit={e => {
           e.preventDefault();
           let element = e.target.elements;
-          this.props.loginHandler(element.email.value, element.password.value);
+          this.props.loginHandler(element.email.value, element.password.value, this.state.queuePath);
         }}
       >
         <img className="responsive-master-logo" src={masterLogo} alt="" />
@@ -97,7 +114,8 @@ class Auth extends Component {
             this.props.registerHandler(
               element.name.value,
               element.email.value,
-              element.password.value
+              element.password.value,
+              this.state.queuePath
             );
           }
         }}
@@ -253,11 +271,11 @@ const mapDispatchToProps = dispatch => {
     featureNotify: () => {
       toastActions.featureNotify();
     },
-    loginHandler: (email, password) => {
-      authActions.loginHandler(email, password);
+    loginHandler: (email, password, queuePath) => {
+      authActions.loginHandler(email, password, queuePath);
     },
-    registerHandler: (userName, email, password) => {
-      authActions.registerHandler(userName, email, password);
+    registerHandler: (userName, email, password, queuePath) => {
+      authActions.registerHandler(userName, email, password, queuePath);
     }
   };
 };

@@ -1,116 +1,103 @@
-import fetchRetry from "./refetch"
-import cheerio from "cheerio";
+import fetch from "node-fetch";
+
+// function to perform null check on the parameters
+const jsonNullCheckResponse = (parameterName, currentSongObj) => {
+	try {
+		switch (parameterName) {
+			case "title":
+				return currentSongObj["title"]["runs"][0]["text"];
+			case "allSongThumbnails":
+				return currentSongObj["thumbnail"]["thumbnails"];
+			case "songThumbnail":
+				let allSongThumbnails = currentSongObj["thumbnail"]["thumbnails"];
+				return currentSongObj["thumbnail"]["thumbnails"][allSongThumbnails.length - 1]["url"];
+			case "songDuration":
+				return currentSongObj["lengthText"]["simpleText"];
+			case "songId":
+				return currentSongObj["videoId"];
+			case "channelName":
+				return currentSongObj["ownerText"]["runs"][0]["text"];
+			case "channelId":
+				return currentSongObj["ownerText"]["runs"][0]["navigationEndpoint"]["commandMetadata"]["webCommandMetadata"]["url"];
+			case "uploadedOn":
+				return currentSongObj["publishedTimeText"]["simpleText"];
+			case "views":
+				return currentSongObj["viewCountText"]["simpleText"];
+			case "shortViews":
+				return currentSongObj["shortViewCountText"]["simpleText"];
+			case "description":
+				return currentSongObj["descriptionSnippet"]["runs"][0]["text"];
+		}
+	} catch (error) {
+		return null;
+	}
+};
 
 export default async (queryString, first = false) => {
-	let searchResults = [];
 	try {
-		const baseQuery = ".yt-lockup-video";
-		const removables = [".yt-lockup-channel", ".feed-item-container"];
-		let query = decodeURIComponent(queryString);
-		const searchLink = `https://www.youtube.com/results?search_query=${query}`;
-		const res = (await (await fetchRetry(searchLink, 10)).text()).trim();
-		let $ = cheerio.load(res);
-		for (let i = 0; i < removables.length; i++) {
-			if ($(removables[i]).length > 0) {
-				$(removables[i]).remove();
+		// get html response for the query
+		const htmlContent = await (
+			await fetch("https://www.youtube.com/results?search_query=" + encodeURIComponent(queryString))
+		).text();
+
+		// compute indexes of the required json string in html document
+		const index1 =
+			htmlContent.indexOf(`window["ytInitialData"]`) +
+			`window["ytInitialData"] = `.length;
+		const index2 = htmlContent.indexOf(`window["ytInitialPlayerResponse"] = null;`) - 6;
+
+		// convert the required string into json
+		const jsonValue = await JSON.parse(htmlContent.substring(index1, index2));
+
+		// parsing to the required array of objects
+		const arrayOfResponses = jsonValue.contents.twoColumnSearchResultsRenderer.primaryContents.sectionListRenderer.contents[0].itemSectionRenderer.contents;
+
+		// computing length of array (ie. number of song objects)
+		const arrayOfResponsesLen = await arrayOfResponses.length;
+
+		// holds the ytCatResponse 
+		let ytCatResponse = [];
+
+		// iterating through each song object to compile the ytCatResponse object
+		for (let i = 0; i < arrayOfResponsesLen; i++) {
+
+			// getting current song object
+			let currentSongObj = arrayOfResponses[i]["videoRenderer"];
+
+			// filtering for valid video responses
+			if (currentSongObj != null) {
+
+				// skipping LIVE songs
+				if (currentSongObj["badges"] != null) {
+					var str = JSON.stringify(currentSongObj["badges"]);
+					// check if it is a live video
+					if (str.includes("LIVE")) {
+						// skipping this song
+						continue;
+					}
+				}
+
+				// getting song parameters and pushing to array
+				ytCatResponse.push({
+					title: jsonNullCheckResponse("title", currentSongObj),
+					thumbnail: jsonNullCheckResponse("songThumbnail", currentSongObj),
+					duration: jsonNullCheckResponse("songDuration", currentSongObj),
+					videoId: jsonNullCheckResponse("songId", currentSongObj),
+					channelName: jsonNullCheckResponse("channelName", currentSongObj),
+					channelId: jsonNullCheckResponse("channelId", currentSongObj),
+					uploadedOn: jsonNullCheckResponse("uploadedOn", currentSongObj),
+					views: jsonNullCheckResponse("views", currentSongObj),
+					description: jsonNullCheckResponse("description", currentSongObj)
+				});
+				// breaking loop if first is true
+				if (first)
+					break;
 			}
 		}
-		$(baseQuery).each((i, el) => {
-			let srcThumb = $(el)
-				.find(".yt-thumb-simple")
-				.find("img")
-				.attr("src");
-			let thumb = $(el)
-				.find(".yt-thumb-simple")
-				.find("img")
-				.attr("data-thumb");
-			let duration = $(el)
-				.find(".yt-thumb-simple")
-				.text()
-				.replace("\\\ng", "")
-				.trim();
-			if (thumb == null) {
-				thumb = srcThumb;
-			}
-			let title = $(el)
-				.find(".yt-uix-tile-link")
-				.text();
-			let videoId = $(el)
-				.find(".yt-uix-tile-link")
-				.attr("href")
-				.replace("/watch?v=", "");
-
-			if (videoId.includes("googleadservices")) return true;
-			let channelName = $(el)
-				.find(".yt-lockup-byline")
-				.find("a")
-				.text();
-			let channelId = $(el)
-				.find(".yt-lockup-byline")
-				.find("a")
-				.attr("href");
-			let uploadedOn = "";
-			let views = "";
-			if (
-				$(el)
-				.find(".yt-lockup-meta-info")
-				.find("li").length == 2
-			) {
-				uploadedOn = $(el)
-					.find(".yt-lockup-meta-info")
-					.find("li")
-					.text()
-					.trim();
-				views = $(el)
-					.find(".yt-lockup-meta-info")
-					.find("li")
-					.eq(1)
-					.text()
-					.trim();
-			} else if (
-				$(el)
-				.find(".yt-lockup-meta-info")
-				.find("li").length == 1
-			) {
-				let temp = $(el)
-					.find(".yt-lockup-meta-info")
-					.find("li")
-					.text()
-					.trim();
-				if (temp.includes("views")) {
-					views = temp;
-				} else {
-					uploadedOn = temp;
-				}
-			}
-
-			if (views.length == 0) return true;
-
-			let description = "";
-			if ($(el).find(".yt-lockup-description").length > 0)
-				description = $(el)
-				.find(".yt-lockup-description")
-				.text()
-				.trim();
-
-			let temp = {
-				title: title,
-				thumbnail: thumb,
-				duration: duration,
-				videoId: videoId,
-				channelName: channelName,
-				channelId: channelId,
-				uploadedOn: uploadedOn,
-				views: views,
-				description: description,
-			};
-			searchResults.push(temp);
-			if (first && searchResults.length > 0) {
-				return false;
-			}
-		});
+		return ytCatResponse;
 	} catch (error) {
-		console.error(error.message);
+		console.log(error);
+
+		return [];
 	}
-	return searchResults;
 };

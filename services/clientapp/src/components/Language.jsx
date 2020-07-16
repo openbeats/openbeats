@@ -6,9 +6,41 @@ import { push } from "connected-react-router";
 import { musicDummy } from '../assets/images';
 
 class Language extends Component {
+
+    constructor(props) {
+        super(props);
+        this.shareRef = null;
+    }
+
+    shareLanguage = () => {
+        if (this.shareRef) {
+            const url = `${window.location.origin}/languages/${this.props.id}`
+            if (coreActions.copyToClipboard(url)) {
+                this.shareRef.classList.add("copied-to-clipboard");
+                setTimeout(() => {
+                    if (this.shareRef) this.shareRef.classList.remove("copied-to-clipboard");
+                }, 3000)
+                this.props.notify("Language's Link copied to your clipboard!");
+            } else {
+                this.props.notify("Cannot Copy Language's Link to your clipboard Automatically, you can manually copy the link from the url!");
+            }
+        }
+    }
+
     Main = () => {
         return (
-            <div className="language-holder-wrapper cursor-pointer" onClick={() => this.props.push(`/languages/${this.props.id}`)}>
+            <div className="language-holder-wrapper cursor-pointer" onClick={(e) => {
+                if (this.shareRef.contains(e.target))
+                    return;
+                this.props.push(`/languages/${this.props.id}`);
+            }}>
+                <div className="language-holer-share-icon-wrapper cursor-pointer">
+                    <i className="fas fa-share-alt master-color"
+                        ref={d => this.shareRef = d}
+                        title="Click to copy this Language's link to your clipboard!"
+                        onClick={this.shareLanguage}
+                    ></i>
+                </div>
                 <div className="language-thumbnail-holder" style={{ backgroundImage: `url('${this.props.thumbnail}'), url(${musicDummy})` }}></div>
                 <div className="language-description-holder">
                     <div className="language-title">

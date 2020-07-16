@@ -10,6 +10,8 @@ module.exports = {
         artist: `${baseUrl}/metadata/artist`,
         emotion: `${baseUrl}/metadata/emotion`,
         language: `${baseUrl}/metadata/language`,
-        topchart: `${baseUrl}/metadata/topchart`
-    }
+        topchart: `${baseUrl}/metadata/topchart`,
+        song: `${baseUrl}/metadata/song`,
+    },
+    realBaseUrl: ["development", "staging"].includes(deploymentType) ? "https://staging.openbeats.live" : "https://openbeats.live"
 }; 

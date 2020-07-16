@@ -1,6 +1,7 @@
 import {
     store
 } from "../store"
+import { nowPlayingActions } from "."
 
 export const setOnlinestatus = (status = true) => {
     store.dispatch({
@@ -45,11 +46,15 @@ export const advancedOfflineChecker = () => {
     }
 
     if (navigator.onLine) {
-        isReachable(getServerUrl()).then(function (online) {
+        isReachable(getServerUrl()).then(async function (online) {
             if (online) {
                 // online
                 setOnlinestatus(true);
-                window.location.reload();
+                const state = await store.getState();
+                console.log(state)
+                if (state.nowPlayingReducer.playerQueue.length)
+                    nowPlayingActions.selectFromPlaylist(state.nowPlayingReducer.currentIndex)
+                // window.location.reload();
             } else {
                 // offline
                 setOnlinestatus(false);

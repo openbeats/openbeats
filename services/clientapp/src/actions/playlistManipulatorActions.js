@@ -209,7 +209,7 @@ export async function addOrRemoveAlbumFromUserCollection(albumId, isAdd = true) 
             else
                 throw new Error(data.data.toString());
         }
-        updateAlbumsInTheCollectionMetaData();
+        await updateAlbumsInTheCollectionMetaData();
         return true;
     } catch (error) {
         toastActions.showMessage(error.toString())

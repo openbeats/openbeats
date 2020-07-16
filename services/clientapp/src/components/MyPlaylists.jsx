@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import "../assets/css/myplaylists.css";
 import { push } from "connected-react-router";
 import { connect } from "react-redux";
-import { toastActions, coreActions, playlistManipulatorActions, nowPlayingActions } from "../actions";
+import { toastActions, coreActions, playlistManipulatorActions, nowPlayingActions, helmetActions } from "../actions";
 import { musicDummy, playlistSvg, pQueueWhite } from "../assets/images";
 
 class MyPlaylists extends Component {
@@ -16,7 +16,10 @@ class MyPlaylists extends Component {
     }
 
     componentDidMount() {
-        this.props.setCurrentAction("My Playlists")
+        this.props.setCurrentAction("My Playlists");
+        helmetActions.updateHelment({
+            title: "My Playlists - OpenBeats"
+        })
         this.props.fetchUserPlaylistMetadata(this.props.userDetails.id);
     }
 

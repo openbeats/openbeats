@@ -3,27 +3,12 @@ const path = require("path");
 const fs = require("fs");
 const morgan = require("morgan");
 const axios = require("axios").default;
-const { infoFetchUrls, logoUrl } = require("./serverConfig");
-const PORT = process.env.PORT || 3000;
+const { infoFetchUrls, logoUrl, realBaseUrl } = require("./serverConfig");
+const PORT = process.env.PORT || 7000;
 const app = express();
 app.use(morgan("dev"));
 app.use(express.static(path.resolve(__dirname, './build')));
 app.disable('etag');
-
-// / - landing page
-app.get('/', async (request, response) => {
-    try {
-        const filePath = path.resolve(__dirname, './build', 'index.html');
-        const data = fs.readFileSync(filePath, { encoding: "utf8" });
-        let result = await data.replace(/OpenBeats/g, 'OpenBeats');
-        result = await result.replace(/Unlimited Music for Free!/g, "Unlimited Music For Free!");
-        result = await result.replace(/https:\/\/openbeats.nyc3.digitaloceanspaces.com\/fallback\/logoicon.png/g, logoUrl);
-        response.send(result);
-    } catch (error) {
-        response.send(error.message);
-    }
-});
-
 
 // /topcharts - all topcharts
 app.get('/topcharts', async (request, response) => {
@@ -227,13 +212,40 @@ app.get('/playlist/topchart/:id', async (request, response) => {
     }
 });
 
+app.get('/sharesong', async (request, response) => {
+    try {
+        let title = 'Openbeats', description = "Unlimited Music For Free!", thumbnail = logoUrl, audioSrc = '';
+        const filePath = path.resolve(__dirname, './build', 'index.html');
+        const data = fs.readFileSync(filePath, { encoding: "utf8" });
+        const songId = request.query.songid;
+        if (songId) {
+            const songData = await getSongInfo(songId);
+            title = songData.title;
+            thumbnail = songData.thumbnail;
+            description = songData.description;
+            audioSrc = songData.audioSrc;
+        }
+        let result = await data.replace(/OpenBeats/g, title);
+        result = await result.replace(/Unlimited Music for Free!/g, description);
+        result = await result.replace(/https:\/\/openbeats.nyc3.digitaloceanspaces.com\/fallback\/logoicon.png/g, thumbnail);
+        if (audioSrc) {
+            let mainUrl = `${realBaseUrl}/embed/${songId}`;
+            result = await result.replace(/\$OG_VIDEO/g, mainUrl);
+        }
+        response.send(result);
+    } catch (error) {
+        response.send(error.message);
+    }
+});
+
 // common route other than above routes
 app.get('*', async (request, response) => {
     try {
+        let title = 'Openbeats', description = "Unlimited Music For Free!", thumbnail = logoUrl;
         const filePath = path.resolve(__dirname, './build', 'index.html');
         const data = fs.readFileSync(filePath, { encoding: "utf8" });
-        let result = await data.replace(/OpenBeats/g, 'OpenBeats');
-        result = await result.replace(/Unlimited Music for Free!/g, "Unlimited Music For Free!");
+        let result = await data.replace(/OpenBeats/g, title);
+        result = await result.replace(/Unlimited Music for Free!/g, description);
         result = await result.replace(/https:\/\/openbeats.nyc3.digitaloceanspaces.com\/fallback\/logoicon.png/g, logoUrl);
         response.send(result);
     } catch (error) {
@@ -335,5 +347,25 @@ const getTopChartInfo = async (id) => {
         title: title,
         description: description,
         thumbnail: thumbnail
+    }
+}
+
+const getSongInfo = async (id) => {
+    let title = 'Openbeats', description = "Unlimited Music For Free!", thumbnail = logoUrl, audioSrc = '';
+    try {
+        const { data } = await axios.get(`${infoFetchUrls.song}/${id}`);
+        if (data.status) {
+            title = data.data.title + " - " + title;
+            thumbnail = data.data.thumbnail;
+            audioSrc = data.data.audioSrc;
+        }
+    } catch (error) {
+        console.error(error.message)
+    }
+    return {
+        title: title,
+        description: description,
+        thumbnail: thumbnail,
+        audioSrc: audioSrc
     }
 }

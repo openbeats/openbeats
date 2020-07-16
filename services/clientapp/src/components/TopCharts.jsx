@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import Loader from 'react-loader-spinner';
 import { push } from 'connected-react-router';
-import { toastActions, coreActions, playlistManipulatorActions } from '../actions';
+import { toastActions, coreActions, playlistManipulatorActions, helmetActions } from '../actions';
 import { connect } from 'react-redux';
 import { AlbumHolder } from ".";
 import "../assets/css/topcharts.css";
@@ -18,6 +18,9 @@ class TopCharts extends Component {
 
     async componentDidMount() {
         this.props.setCurrentAction("Top Charts")
+        helmetActions.updateHelment({
+            title: "TopCharts - OpenBeats"
+        })
         const topChartsData = await this.props.fetchChartsPlaylistMetadata()
         this.setState({
             isLoading: false,

@@ -129,6 +129,19 @@
     z-index: 10;
 }
 
+.album-holer-share-icon-wrapper {
+    position: absolute;
+    top: 7px;
+    left: 10px;
+    z-index: 500;
+    font-size: 25px;
+    color: #c9c3c3;
+}
+
+.copied-to-clipboard {
+    color: rgb(53, 117, 255) !important;
+}
+
 @media only screen and (max-width: 850px) {
     .album-holder-wrapper {
         width: 100%;
@@ -164,6 +177,10 @@
     }
 
     .album-add-to-collection-icon {
+        font-size: 20px;
+    }
+
+    .album-holer-share-icon-wrapper {
         font-size: 20px;
     }
 

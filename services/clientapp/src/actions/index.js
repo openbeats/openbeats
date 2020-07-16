@@ -7,6 +7,7 @@ import * as authActions from "./authActions";
 import * as playlistManipulatorActions from "./playlistManipulatorActions";
 import * as homeActions from "./homeActions";
 import * as offlineActions from "./offlineActions";
+import * as helmetActions from "./helmetActions";
 
 export {
   playerActions,
@@ -17,5 +18,6 @@ export {
   authActions,
   playlistManipulatorActions,
   homeActions,
-  offlineActions
+  offlineActions,
+  helmetActions
 };

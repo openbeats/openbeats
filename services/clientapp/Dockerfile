@@ -8,6 +8,6 @@ RUN npm install --silent
 
 RUN npm run build
 
-EXPOSE 3000
+EXPOSE 7000
 
 CMD [ "npm", "run", "server" ]

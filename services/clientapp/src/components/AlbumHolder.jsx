@@ -2,18 +2,16 @@ import React, { Component } from 'react';
 import "../assets/css/albumholder.css";
 import { musicDummy } from '../assets/images';
 import { push } from 'connected-react-router';
-import { toastActions, playlistManipulatorActions, nowPlayingActions } from '../actions';
+import { toastActions, playlistManipulatorActions, nowPlayingActions, coreActions } from '../actions';
 import { connect } from 'react-redux';
 
 class AlbumHolder extends Component {
 
     constructor(props) {
         super(props);
-        this.state = {
-
-        }
         this.heartRef = null;
         this.playRef = null;
+        this.shareRef = null;
         this.addToQueueRef = null;
     }
 
@@ -21,6 +19,21 @@ class AlbumHolder extends Component {
         if (this.props.addOrRemoveAlbumFromCollectionHandler) {
             if (this.props.isAlbumIsInCollection) this.props.addOrRemoveAlbumFromCollectionHandler(false, this.props.albumId)
             else this.props.addOrRemoveAlbumFromCollectionHandler(true, this.props.albumId)
+        }
+    }
+
+    shareCollection = () => {
+        if (this.shareRef) {
+            const url = `${window.location.origin}/playlist/${this.props.type}/${this.props.albumId}?autoplay=true`
+            if (coreActions.copyToClipboard(url)) {
+                this.shareRef.classList.add("copied-to-clipboard");
+                setTimeout(() => {
+                    if (this.shareRef) this.shareRef.classList.remove("copied-to-clipboard");
+                }, 3000)
+                this.props.notify("Album's Link copied to your clipboard!");
+            } else {
+                this.props.notify("Cannot Copy Album's Link to your clipboard Automatically, you can manually copy the link from the url!");
+            }
         }
     }
 
@@ -41,10 +54,20 @@ class AlbumHolder extends Component {
         return <div className="album-holder-wrapper" onClick={(e) => {
             if (this.heartRef && this.heartRef.contains(e.target))
                 return;
-            else if (this.playRef && this.playRef.contains(e.target))
+            if (this.shareRef && this.shareRef.contains(e.target))
+                return
+            if (this.playRef && this.playRef.contains(e.target))
                 return
             this.albumViewCallBack(this.props.albumId);
         }} style={{ backgroundImage: `url(${this.props.albumThumbnail}), url(${musicDummy})` }}>
+            {/* share icon placement */}
+            <div className="album-holer-share-icon-wrapper cursor-pointer">
+                <i className="fas fa-share-alt master-color"
+                    ref={d => this.shareRef = d}
+                    title="Click to copy this album's link to your clipboard!"
+                    onClick={this.shareCollection}
+                ></i>
+            </div>
             {this.props.addOrRemoveAlbumFromCollectionHandler &&
                 this.props.isAuthenticated &&
                 <i className={`fas fa-heart album-add-to-collection-icon ${this.props.isAlbumIsInCollection ? "master-color" : ''}`}
@@ -55,7 +78,11 @@ class AlbumHolder extends Component {
             }
             <div className="album-holder-play-icon-visible-on-hover">
                 <i className="far fa-eye" title="View this Album" onClick={() => this.albumViewCallBack(this.props.albumId)}></i>
-                <i className="fas fa-play" title="Reset Current Queue and Play this Album" ref={d => this.playRef = d} onClick={() => this.albumPlayCallBack(this.props.albumId)}></i>
+                <i className="fas fa-play" title="Reset Current Queue and Play this Album" ref={d => this.playRef = d} onClick={(e) => {
+                    e.stopPropagation();
+                    e.preventDefault();
+                    this.albumPlayCallBack(this.props.albumId);
+                }}></i>
                 <i className="fas fa-plus-square" title="Add to The current Queue" onClick={() => this.albumAddToCurrentQueueCallBack(this.props.albumId)}></i>
             </div>
             <div className="album-holder-songs-total-holder">{this.props.albumTotalSongs}</div>

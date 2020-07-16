@@ -54,6 +54,14 @@
     font-size: 12px;
 }
 
+.language-holer-share-icon-wrapper {
+    font-size: 20px;
+    position: absolute;
+    top: 8px;
+    left: 10px;
+    z-index: 100;
+}
+
 @media only screen and (max-width: 850px) {
     .language-holder-wrapper {
         min-width: 150px;

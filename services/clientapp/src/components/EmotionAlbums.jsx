@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { musicDummy, spaceImage } from "../assets/images";
-import { toastActions, coreActions, playlistManipulatorActions } from "../actions";
+import { toastActions, coreActions, playlistManipulatorActions, helmetActions } from "../actions";
 import "../assets/css/artistalbums.css";
 import { connect } from "react-redux";
 import { push } from "connected-react-router";
@@ -34,6 +34,9 @@ class EmotionAlbums extends Component {
         this._isMounted = true;
         await this.emotionInitialFetch();
         this.props.setCurrentAction(this.state.emotionName + " Albums");
+        helmetActions.updateHelment({
+            title: this.state.emotionName + " Albums - OpenBeats"
+        })
         this.fetchEmotionAlbumsHandler();
         this.initiateScrollFetcher();
     }
