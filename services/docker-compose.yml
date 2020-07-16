@@ -1,87 +1,116 @@
 version: "3"
 services:
+  obs-nginx:
+    container_name: obs-nginx
+    restart: always
+    build: ../nginx_proxy
+    ports:
+      - 80:80
+      - 8888:8888
+      - 9999:9999
+    networks:
+      - obs-network
+
   obs-redis:
     container_name: obs-redis
     image: redis
-    ports:
-      - 6379:6379
+    expose:
+      - 6379
     networks:
       - obs-network
+    restart: on-failure
+
   obs-auth:
     container_name: obs-auth
     restart: always
     build: ./auth
-    ports:
-      - 1000:1000
+    expose:
+      - 1000
     networks:
       - obs-network
+    restart: on-failure
+
   obs-core:
     container_name: obs-core
     restart: always
     build: ./core
-    ports:
-      - 2000:2000
+    expose:
+      - 2000
     depends_on:
       - obs-redis
       - obs-auth
     networks:
       - obs-network
+    restart: on-failure
+
   obs-cron:
     container_name: obs-cron
     restart: always
     build: ./cron
-    ports:
-      - 3000:3000
+    expose:
+      - 3000
     depends_on:
       - obs-core
     networks:
       - obs-network
+    restart: on-failure
+
   obs-fallback:
     container_name: obs-fallback
     restart: always
     build: ./fallback
-    ports:
-      - 4000:4000
+    expose:
+      - 4000
     depends_on:
       - obs-core
     networks:
       - obs-network
+    restart: on-failure
+
   obs-playlist:
     container_name: obs-playlist
     restart: always
     build: ./playlist
-    ports:
-      - 5000:5000
+    expose:
+      - 5000
     depends_on:
       - obs-core
     networks:
       - obs-network
+    restart: on-failure
+
   obs-scrapper:
     container_name: obs-scrapper
     restart: always
     build: ./scrapper
-    ports:
-      - 6000:6000
+    expose:
+      - 6000
     depends_on:
       - obs-core
     networks:
       - obs-network
+    restart: on-failure
+
   obs-clientapp:
     container_name: obs-clientapp
     restart: always
     build: ./clientapp
-    ports:
-      - 7000:7000
+    expose:
+      - 7000
     networks:
       - obs-network
+    restart: on-failure
+
   obs-captainapp:
     container_name: obs-captainapp
     restart: always
     build: ./captainapp
-    ports:
-      - 8000:8000
+    expose:
+      - 8000
     networks:
       - obs-network
+    restart: on-failure
+
 
 networks:
   obs-network:

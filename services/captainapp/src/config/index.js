@@ -1,7 +1,7 @@
 const type = "production";
 // production or development or staging
-let clientURL = "https://staging.openbeats.live";
-let baseURL = "https://staging-api.openbeats.live";
+let clientURL = "http://localhost";
+let baseURL = "http://localhost";
 if (type === "production") {
 	baseURL = "https://api.openbeats.live";
 	clientURL = "https://openbeats.live";
