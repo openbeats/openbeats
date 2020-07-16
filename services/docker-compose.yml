@@ -6,8 +6,6 @@ services:
     build: ../nginx_proxy
     ports:
       - 80:80
-      - 8888:8888
-      - 9999:9999
     networks:
       - obs-network
 
