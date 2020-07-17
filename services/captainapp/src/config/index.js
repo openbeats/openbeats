@@ -1,5 +1,5 @@
 const type = "production";
-// production or development or staging
+// production or development
 let clientURL = "http://localhost";
 let baseURL = "http://localhost";
 if (type === "production") {

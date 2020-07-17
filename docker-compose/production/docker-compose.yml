@@ -3,7 +3,7 @@ services:
   obs-nginx:
     container_name: obs-nginx
     restart: always
-    build: ../nginx_proxy
+    build: ../../nginx_proxy/production
     ports:
       - 80:80
     networks:
@@ -21,7 +21,7 @@ services:
   obs-auth:
     container_name: obs-auth
     restart: always
-    build: ./auth
+    build: ../../services/auth
     expose:
       - 1000
     networks:
@@ -31,7 +31,7 @@ services:
   obs-core:
     container_name: obs-core
     restart: always
-    build: ./core
+    build: ../../services/core
     expose:
       - 2000
     depends_on:
@@ -44,7 +44,7 @@ services:
   obs-cron:
     container_name: obs-cron
     restart: always
-    build: ./cron
+    build: ../../services/cron
     expose:
       - 3000
     depends_on:
@@ -56,7 +56,7 @@ services:
   obs-fallback:
     container_name: obs-fallback
     restart: always
-    build: ./fallback
+    build: ../../services/fallback
     expose:
       - 4000
     depends_on:
@@ -68,7 +68,7 @@ services:
   obs-playlist:
     container_name: obs-playlist
     restart: always
-    build: ./playlist
+    build: ../../services/playlist
     expose:
       - 5000
     depends_on:
@@ -80,7 +80,7 @@ services:
   obs-scrapper:
     container_name: obs-scrapper
     restart: always
-    build: ./scrapper
+    build: ../../services/scrapper
     expose:
       - 6000
     depends_on:
@@ -92,7 +92,7 @@ services:
   obs-clientapp:
     container_name: obs-clientapp
     restart: always
-    build: ./clientapp
+    build: ../../services/clientapp
     expose:
       - 7000
     networks:
@@ -102,7 +102,7 @@ services:
   obs-captainapp:
     container_name: obs-captainapp
     restart: always
-    build: ./captainapp
+    build: ../../services/captainapp
     expose:
       - 8000
     networks:

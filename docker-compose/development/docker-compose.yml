@@ -1,0 +1,116 @@
+version: "3"
+services:
+  obs-nginx:
+    container_name: obs-nginx
+    restart: always
+    build: ../../nginx_proxy/development
+    ports:
+      - 80:80
+      - 8888:8888
+      - 9999:9999
+    networks:
+      - obs-network
+
+  obs-redis:
+    container_name: obs-redis
+    image: redis
+    expose:
+      - 6379
+    networks:
+      - obs-network
+    restart: on-failure
+
+  obs-auth:
+    container_name: obs-auth
+    restart: always
+    build: ../../services/auth
+    expose:
+      - 1000
+    networks:
+      - obs-network
+    restart: on-failure
+
+  obs-core:
+    container_name: obs-core
+    restart: always
+    build: ../../services/core
+    expose:
+      - 2000
+    depends_on:
+      - obs-redis
+      - obs-auth
+    networks:
+      - obs-network
+    restart: on-failure
+
+  obs-cron:
+    container_name: obs-cron
+    restart: always
+    build: ../../services/cron
+    expose:
+      - 3000
+    depends_on:
+      - obs-core
+    networks:
+      - obs-network
+    restart: on-failure
+
+  obs-fallback:
+    container_name: obs-fallback
+    restart: always
+    build: ../../services/fallback
+    expose:
+      - 4000
+    depends_on:
+      - obs-core
+    networks:
+      - obs-network
+    restart: on-failure
+
+  obs-playlist:
+    container_name: obs-playlist
+    restart: always
+    build: ../../services/playlist
+    expose:
+      - 5000
+    depends_on:
+      - obs-core
+    networks:
+      - obs-network
+    restart: on-failure
+
+  obs-scrapper:
+    container_name: obs-scrapper
+    restart: always
+    build: ../../services/scrapper
+    expose:
+      - 6000
+    depends_on:
+      - obs-core
+    networks:
+      - obs-network
+    restart: on-failure
+
+  obs-clientapp:
+    container_name: obs-clientapp
+    restart: always
+    build: ../../services/clientapp
+    expose:
+      - 7000
+    networks:
+      - obs-network
+    restart: on-failure
+
+  obs-captainapp:
+    container_name: obs-captainapp
+    restart: always
+    build: ../../services/captainapp
+    expose:
+      - 8000
+    networks:
+      - obs-network
+    restart: on-failure
+
+
+networks:
+  obs-network:
