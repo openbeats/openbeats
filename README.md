@@ -4,6 +4,7 @@ OpenBeats is an open source Music streamer.
 
 # change log
 
+- **17th July 2020** - development made easy with the comman **docker-compose up** in the docker-compose/development directory.
 - **17th July 2020** - Now you can completely spin developement of entire service locally using docker-compose/development mode.
 - **17th July 2020** - production and development configuration done using docker-compose - separate nginx-reverse proxies (development made easy).
 - **14th July 2020** - converted from Microservice architecture to Monolithic with docker-compose.

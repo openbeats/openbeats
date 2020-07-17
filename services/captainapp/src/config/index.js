@@ -1,4 +1,4 @@
-const type = "production";
+const type = "development";
 // production or development
 let clientURL = "http://localhost";
 let baseURL = "http://localhost";

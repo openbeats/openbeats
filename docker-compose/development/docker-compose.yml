@@ -94,7 +94,10 @@ services:
   obs-clientapp:
     container_name: obs-clientapp
     restart: always
-    build: ../../services/clientapp
+    build:
+      context: ../../services/clientapp
+      args: 
+        - deploymenttype=development
     expose:
       - 7000
     networks:
@@ -104,7 +107,10 @@ services:
   obs-captainapp:
     container_name: obs-captainapp
     restart: always
-    build: ../../services/captainapp
+    build:
+      context: ../../services/captainapp
+      args: 
+        - deploymenttype=development
     expose:
       - 8000
     networks:

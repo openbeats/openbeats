@@ -1,4 +1,4 @@
-const type = 'production';
+const type = 'development';
 // production or development or staging
 let baseURL = "http://localhost"
 if (type === 'production') baseURL = "https://api.openbeats.live"
