@@ -11,13 +11,15 @@ export const config = {
     dev: "http://localhost:2004",
     prod: "http://obs-core:2000",
   },
-  baseUrlLink: type === "development" ? "http://localhost:2004" : "http://obs-core:2000",
+  baseUrlLink:
+    type === "development" ? "http://localhost:2004" : "http://obs-core:2000",
   mongoURI_DEV: mongoURI,
   jwtSecret: "WeAreAwesome",
   lastFmAPIKey: "d2b6c4283a7958e1d107005ac85d59db",
-  spacesAPIKey: "OIZSJZBLSONESEJUQLOT",
-  spacesAPISecret: "srzc9w3eaFplkd8mkUQrobqOqCxmvr2hcB8RPrpmIMk",
-  dummyMusicHolder: "https://openbeats.nyc3.digitaloceanspaces.com/fallback/dummy_music_holder.jpg",
+  spacesAPIKey: "AKIA55CDGVKVOEPFIWOY",
+  spacesAPISecret: "FHlnVE4Q7e68JamFLcFTYvgHNyMopHOdlB+B8VhT",
+  dummyMusicHolder:
+    "https://openbeats.s3.ap-south-1.amazonaws.com/fallback/dummy_music_holder.jpg",
   isDev: type === "development" ? true : false,
   subFolder: type === "production" ? "production" : "staging",
 };

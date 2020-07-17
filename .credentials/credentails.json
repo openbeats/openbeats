@@ -1,0 +1,40 @@
+{
+  "STAGINGAWS": {
+    "AWS_ACCESS_KEY_ID": "AKIAW5MNV6HMN5QU6EWR",
+    "AWS_SECRET_ACCESS_KEY": "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",
+    "AWS_REGION": "ap-south-1"
+  },
+  "PRODUCTIONAWS": {
+    "AWS_ACCESS_KEY_ID": "AKIA55CDGVKVPHDU66GW",
+    "AWS_SECRET_ACCESS_KEY": "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",
+    "AWS_REGION": "ap-south-1"
+  },
+  "DIGITALOCEAN": {
+    "EMAILID": "noelimmanuel1998@gmail.com",
+    "PASSWORD": "openbeats@123"
+  },
+  "AWSCONSOLEPRIMARY": {
+    "USERNAME": "rij7u7d@gmail.com",
+    "PASSWORD": "Shanthiraj1310"
+  },
+  "AWSCONSOLESECONDARY": {
+    "USERNAME": "rij7u7d3@gmail.com",
+    "PASSWORD": "Shanthiraj1310"
+  },
+  "DIGITALOCEANSPACES": {
+    "spacesAPIKey": "AKIA55CDGVKVOEPFIWOY",
+    "spacesAPISecret": "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"
+  },
+  "OBSEMAIL": {
+    "EMAILADDRESS": "openbeatsyag@gmail.com",
+    "PASSWORD": "9Ve7nQr4sZDd=5mYW9_r"
+  },
+  "OBSCAPTAINAPP": {
+    "EMAILADDRESS": "openbeatsyag@gmail.com",
+    "PASSWORD": "openbeats@123"
+  },
+  "MONGODBDATABASE": {
+    "USERNAME": "noelimmanuel1998@gmail.com",
+    "PASSWORD": "openbeats@123"
+  }
+}
