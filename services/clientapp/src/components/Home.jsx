@@ -5,7 +5,7 @@ import { connect } from "react-redux";
 import { push } from "connected-react-router";
 import { HorizontalView, AlbumHolder, ArtistHolder, Language, Emotion } from '.';
 import Loader from 'react-loader-spinner';
-import { deploymentType } from '../config';
+import { shuffle } from "lodash";
 
 class Home extends Component {
     _isMounted = false;
@@ -16,6 +16,7 @@ class Home extends Component {
             popularArtists: [],
             topChartsCollection: [],
             myCollections: [],
+            yourPlaylists: [],
             latestAlbums: [],
             popularAlbums: [],
             surpriseAlbums: [],
@@ -23,17 +24,17 @@ class Home extends Component {
             languages: [],
             languageAlbums: [
                 {
-                    languageID: deploymentType === "production" ? '5ec8a093228af439111afa10' : '5ebc250ded9e0a3d78610453',
+                    languageID: '5ec8a093228af439111afa10',
                     albums: [],
                     name: 'Tamil'
                 },
                 {
-                    languageID: deploymentType === "production" ? '5ec8a049228af416c11afa0f' : '5ec22077fac6c3093c11e7d6',
+                    languageID: '5ec8a049228af416c11afa0f',
                     albums: [],
                     name: 'English'
                 },
                 {
-                    languageID: deploymentType === "production" ? '5ec8a0d1228af496b51afa11' : '5ebc2c971827de15bc6800fd',
+                    languageID: '5ec8a0d1228af496b51afa11',
                     albums: [],
                     name: 'Malayalam'
                 },
@@ -111,9 +112,10 @@ class Home extends Component {
     }
 
     // List Preparing Part
-    getAlbumsList(arrayList, exploreMore = { enabled: false, url: '' }) {
+    getAlbumsList(arrayList, exploreMore = { enabled: false, url: '' }, isShuffle = false) {
+        let shuffledArrayList = isShuffle ? shuffle(arrayList) : arrayList;
         return (<>
-            {arrayList.map((item, key) => (
+            {shuffledArrayList.map((item, key) => (
                 <AlbumHolder
                     key={key}
                     albumName={item.name}
@@ -251,6 +253,23 @@ class Home extends Component {
         </div>
     }
 
+    YourPlaylists = () => {
+        return this.props.userPlaylistMetaData.length > 0 && <div className="home-section">
+            <div className="home-section-header">
+                <div className="left-section cursor-pointer" onClick={() => this.props.push("/myplaylists")}>
+                    <i className="master-color fad fa-heart-square"></i>
+                    <span className="">Continue Enjoying Your Playlists</span>
+                    <i className="master-color fas fa-angle-double-right"></i>
+                </div>
+            </div>
+            <div className="home-section-body">
+                <HorizontalView
+                    elementList={this.getTopChartsList(this.props.userPlaylistMetaData, { enabled: true, url: "/myplaylists" })}
+                />
+            </div>
+        </div>
+    }
+
     PopularAlbums = () => {
         return this.state.popularAlbums.length > 0 && <div className="home-section">
             <div className="home-section-header">
@@ -348,7 +367,7 @@ class Home extends Component {
                 </div>
                 <div className="home-section-body">
                     <HorizontalView
-                        elementList={this.getAlbumsList(language.albums, { enabled: true, url: `/languages/${language.languageID}` })}
+                        elementList={this.getAlbumsList(language.albums, { enabled: true, url: `/languages/${language.languageID}` }, true)}
                     />
                 </div>
             </div>)
@@ -365,13 +384,14 @@ class Home extends Component {
             </div> :
             <div className="home-wrapper">
                 <this.LatestAlbums />
-                <this.LanguageAlbums />
-                <this.TopCharts />
-                <this.Emotions />
-                <this.PopularArtists />
-                <this.Lanugages />
-                <this.PopularAlbums />
                 <this.MyCollections />
+                <this.TopCharts />
+                <this.PopularArtists />
+                <this.YourPlaylists />
+                <this.LanguageAlbums />
+                <this.PopularAlbums />
+                <this.Emotions />
+                <this.Lanugages />
             </div>
     }
 
@@ -381,6 +401,7 @@ const mapStateToProps = (state) => {
     return {
         isAuthenticated: state.authReducer.isAuthenticated,
         likedPlaylists: state.authReducer.likedPlaylists,
+        userPlaylistMetaData: state.playlistManipulatorReducer.userPlaylistMetaData,
     }
 }
 
@@ -403,6 +424,9 @@ const mapDispatchToProps = (dispatch) => {
         },
         fetchMyCollections: async () => {
             return await homeActions.fetchMyCollections();
+        },
+        fetchMyPlaylists: async () => {
+            return await homeActions.fetchMyPlaylists();
         },
         fetchPopularArtists: async () => {
             return await homeActions.fetchPopularArtists();

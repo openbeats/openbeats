@@ -1,5 +1,5 @@
 const { deploymentType } = require("./src/config");
-const baseUrl = deploymentType === "development" ? "https://staging-api.openbeats.live/playlist" : "http://obs-playlist:2000";
+const baseUrl = deploymentType === "development" ? "http://localhost/playlist" : "http://obs-playlist:2000";
 
 module.exports = {
     baseUrl: baseUrl,
@@ -13,5 +13,5 @@ module.exports = {
         topchart: `${baseUrl}/metadata/topchart`,
         song: `${baseUrl}/metadata/song`,
     },
-    realBaseUrl: ["development", "staging"].includes(deploymentType) ? "https://staging.openbeats.live" : "https://openbeats.live"
+    realBaseUrl: deploymentType === "development" ? "http://localhost:3000" : "https://openbeats.live"
 }; 

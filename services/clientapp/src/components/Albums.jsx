@@ -48,7 +48,7 @@ class Albums extends Component {
 		this.observer = new IntersectionObserver((entries) => {
 			entries.forEach(entry => {
 				if (entry.isIntersecting) {
-					if (entry.intersectionRatio >= 0.50) {
+					if (entry.intersectionRatio >= 0.95) {
 						if (this.state.type === "popular")
 							this.fetchPopularAlbumsHandler(true);
 						if (this.state.type === "latest")
@@ -57,7 +57,6 @@ class Albums extends Component {
 				}
 			});
 		}, options);
-
 		if (this.intersectElement)
 			this.observer.observe(this.intersectElement);
 
@@ -77,12 +76,12 @@ class Albums extends Component {
 			case "popular":
 				albumType = "Popular " + albumType;
 				if (this._isMounted) this.setState({ type: "popular" });
-				this.fetchPopularAlbumsHandler();
+				this.fetchPopularAlbumsHandler(true);
 				break;
 			case "latest":
 				albumType = "Latest " + albumType;
 				if (this._isMounted) this.setState({ type: "latest" });
-				this.fetchLatestAlbumsHandler();
+				this.fetchLatestAlbumsHandler(true);
 				break;
 
 			default:
@@ -104,7 +103,7 @@ class Albums extends Component {
 				previous: getData.previous ? true : false,
 				isScrollFetchInProcess: false
 			});
-		} else {
+		} else if (!fetchFull && this.state.next && !this.state.isScrollFetchInProcess) {
 			const data = await this.props.fetchPopularAlbums(1, 10);
 			if (this._isMounted) this.setState({ isLoading: false, popularAlbums: data });
 		}
@@ -122,7 +121,7 @@ class Albums extends Component {
 				previous: getData.previous ? true : false,
 				isScrollFetchInProcess: false
 			});
-		} else {
+		} else if (!fetchFull && this.state.next && !this.state.isScrollFetchInProcess) {
 			const data = await this.props.fetchLatestAlbums(1, 10);
 			if (this._isMounted) this.setState({ isLoading: false, latestAlbums: data });
 		}
@@ -153,6 +152,7 @@ class Albums extends Component {
 				<AlbumHolder
 					exploreMore={true}
 					exploreMoreUrl={exploreMore.url}
+					isNext={this.state.next}
 				/>}
 		</>)
 	}
@@ -206,8 +206,7 @@ class Albums extends Component {
 				</div>
 			</div>
 			<div className="albums-wrapper">
-				{this.getAlbumsList(currentAlbums)}
-				<div ref={d => this.intersectElement = d} className="intersection-holder"></div>
+				{this.getAlbumsList(currentAlbums, { enabled: true, url: () => this.state.type === "latest" ? this.fetchLatestAlbumsHandler(true) : this.fetchPopularAlbumsHandler(true) })}
 			</div>
 		</div>
 	};
@@ -219,6 +218,7 @@ class Albums extends Component {
 				title: headString + " - OpenBeats"
 			})
 			this.albumsMainHandler();
+			this.initiateScrollFetcher();
 		}
 	}
 
@@ -229,25 +229,32 @@ class Albums extends Component {
 	}
 
 	render() {
-		return this.state.isLoading ? (
-			<div className="width-100 height-100 d-flex align-items-center justify-content-center">
-				<Loader type="ThreeDots" color="#F32C2C" height={80} width={80} />
-			</div>
-		) : (<>
-			<div className="albums-wrapper">
-				{this.state.type === "all" ? (
-					<Fragment>
-						<this.LatestAlbums />
-						<this.PopularAlbums />
-					</Fragment>
+		return (
+			<>
+				{this.state.isLoading ? (
+					<div className="width-100 height-100 d-flex align-items-center justify-content-center">
+						<Loader type="ThreeDots" color="#F32C2C" height={80} width={80} />
+					</div>
 				) : (
-						<this.AllAlbums />
-					)}
-			</div>
-			{this.state.isScrollFetchInProcess && <div className="mt-2 width-100 d-flex align-items-center justify-content-center">
-				<Loader color="#F32C2C" type="TailSpin" height={30} width={30} />
-			</div>}
-		</>);
+						<>
+							<div className="albums-wrapper">
+								{this.state.type === "all" ? (
+									<Fragment>
+										<this.LatestAlbums />
+										<this.PopularAlbums />
+									</Fragment>
+								) : (
+										<this.AllAlbums />
+									)}
+
+							</div>
+							{this.state.isScrollFetchInProcess && <div className="mt-2 width-100 d-flex align-items-center justify-content-center">
+								<Loader color="#F32C2C" type="TailSpin" height={30} width={30} />
+							</div>}
+						</>)}
+				< div ref={d => this.intersectElement = d} className="intersection-holder"></div>
+			</>
+		);
 	}
 }
 

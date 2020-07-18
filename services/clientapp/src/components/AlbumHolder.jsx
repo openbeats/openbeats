@@ -95,7 +95,7 @@ class AlbumHolder extends Component {
     }
 
     ExploreMore = () => {
-        return <div className="album-holder-wrapper album-explore-more cursor-pointer" onClick={() => this.props.push(this.props.exploreMoreUrl)}>
+        return <div className={`album-holder-wrapper album-explore-more cursor-pointer ${typeof this.props.exploreMoreUrl !== "string" ? this.props.isNext === true ? "" : 'make-invisible' : ""}`} onClick={() => typeof this.props.exploreMoreUrl === 'string' ? this.props.push(this.props.exploreMoreUrl) : this.props.exploreMoreUrl()}>
             <div className="explore-more-icon-holer">
                 <i className="fas fa-compass"></i>
             </div>
