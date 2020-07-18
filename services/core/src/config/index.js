@@ -13,12 +13,12 @@ if (type === 'production') {
 export const config = {
 	mongoURI_DEV: mongoURI,
 	authBaseUrl: {
-		dev: "http://localhost:2001",
-		prod: "http://obs-auth:2000",
+		dev: "http://localhost:1000",
+		prod: "http://obs-auth:1000",
 	},
 	playlistBaseUrl: {
-		dev: "http://localhost:2000",
-		prod: "http://obs-playlist:2000",
+		dev: "http://localhost:5000",
+		prod: "http://obs-playlist:5000",
 	},
 	jwtSecret: "WeAreAwesome",
 	saltRound: 10,
@@ -28,7 +28,7 @@ export const config = {
 	},
 	ytdlLambda: ytdlLambdaURL,
 	port: {
-		dev: 2004,
+		dev: 2000,
 		prod: 2000,
 	},
 	isDev: type === "development" ? true : false,
