@@ -60,7 +60,8 @@ export async function fetchResults() {
             throw new Error(res.data);
         }
     } catch (error) {
-        toastActions.showMessage(error.message.toString());
+        // toastActions.showMessage(error.message.toString());
+        console.error(error.message);
         await store.dispatch({
             type: "FETCH_RESULTS",
             payload: {
@@ -133,7 +134,8 @@ export async function getKeywordSuggestion(key) {
             }
         });
     } catch (error) {
-        toastActions.showMessage(error.message.toString());
+        // toastActions.showMessage(error.message.toString());
+        console.error(error.message);
     }
 
     return true;

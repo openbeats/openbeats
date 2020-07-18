@@ -46,43 +46,43 @@ export const updateTopCharts = async (chartName, chartId) => {
 			fetchurls.push(fetchobj);
 		});
 		Promise.all(fetchurls.map(async (urlObj) => {
-				try {
-					let response = await (await fetchRetry(
-						urlObj.url,
-						2,
-					)).json();
-					if (response.data.length && response.data.length !== 0) {
-						let song = response.data[0];
-						song.thumbnail = song.thumbnail.substr(0, song.thumbnail.indexOf("?"));
-						if (Object.is(urlObj.rank, 1)) {
-							chart.thumbnail = song.thumbnail;
-						}
-						return {
-							rank: urlObj.rank,
-							...song,
-							title: urlObj.title
-						};
+			try {
+				let response = await (await fetchRetry(
+					urlObj.url,
+					2,
+				)).json();
+				if (response.data.length && response.data.length !== 0) {
+					let song = response.data[0];
+					song.thumbnail = song.thumbnail.substr(0, song.thumbnail.indexOf("?"));
+					if (Object.is(urlObj.rank, 1)) {
+						chart.thumbnail = song.thumbnail;
 					}
-					const missedsong = new MissedFetch({
-						...urlObj,
-						topchartid: chart._id
-					});
-					await missedsong.save();
-				} catch (error) {
-					console.log(error);
+					return {
+						rank: urlObj.rank,
+						...song,
+						title: urlObj.title
+					};
 				}
-				return {
-					rank: urlObj.rank,
-					title: urlObj.title
-				};
-			})).then(async (data) => {
-				chart.songs = data;
-				await chart.save();
-				chart.totalSongs = chart.songs.length;
-				await chart.save();
-			})
+				const missedsong = new MissedFetch({
+					...urlObj,
+					topchartid: chart._id
+				});
+				await missedsong.save();
+			} catch (error) {
+				console.error(error);
+			}
+			return {
+				rank: urlObj.rank,
+				title: urlObj.title
+			};
+		})).then(async (data) => {
+			chart.songs = data;
+			await chart.save();
+			chart.totalSongs = chart.songs.length;
+			await chart.save();
+		})
 			.catch((err) => {
-				console.log(err);
+				console.error(err.message);
 			});
 	} catch (error) {
 		console.error(error);

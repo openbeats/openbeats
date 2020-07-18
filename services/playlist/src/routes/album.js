@@ -39,8 +39,8 @@ router.post(
 			check("songs", "Please pass array of song objects to add.").isArray().not().isEmpty(),
 			oneOf([check("featuringArtists").exists().notEmpty(), check("albumBy").exists().notEmpty()]),
 			check("searchVals", "Please pass atleast one search tag in array.")
-			.isArray()
-			.custom(value => value.length > 0),
+				.isArray()
+				.custom(value => value.length > 0),
 		],
 	],
 	async (req, res) => {
@@ -96,7 +96,7 @@ router.post(
 				.post(addSongsCoreUrl, {
 					songs,
 				})
-				.catch(err => console.log(err.message));
+				.catch(err => console.error(err.message));
 			const album = new Album(newAlbum);
 			await album.save();
 			saveAsserts("albums", album._id, thumbnail, Album, "thumbnail");
@@ -126,8 +126,8 @@ router.put(
 			check("featuringArtists", "Please pass atleast one artist tag in array.").if(body("featuringArtists").exists()).isArray(),
 			oneOf([check("featuringArtists").exists().notEmpty(), check("albumBy").exists().notEmpty()]),
 			check("searchVals", "Please pass atleast one search tag in array.")
-			.isArray()
-			.custom(value => value.length > 0),
+				.isArray()
+				.custom(value => value.length > 0),
 		],
 	],
 	async (req, res) => {
@@ -203,17 +203,17 @@ router.get(
 	scopedAlbums,
 	paginationMiddleware(
 		Album, {}, {
-			_id: true,
-			name: 1,
-			thumbnail: 2,
-			totalSongs: 3,
-			createdAt: 4,
-			createdBy: 5,
-		},
+		_id: true,
+		name: 1,
+		thumbnail: 2,
+		totalSongs: 3,
+		createdAt: 4,
+		createdBy: 5,
+	},
 		[{
 			path: "createdBy",
 			select: "name",
-		}, ]
+		},]
 	),
 	async (req, res) => {
 		try {
@@ -237,13 +237,13 @@ router.get(
 	"/all",
 	paginationMiddleware(
 		Album, {}, {
-			_id: true,
-			name: 1,
-			thumbnail: 2,
-			totalSongs: 3,
-			createdAt: 4,
-			createdBy: 5,
-		},
+		_id: true,
+		name: 1,
+		thumbnail: 2,
+		totalSongs: 3,
+		createdAt: 4,
+		createdBy: 5,
+	},
 		[{
 			path: "createdBy",
 			select: "name",
@@ -268,7 +268,6 @@ router.get(
 
 //Find album related to searchtag
 router.get("/findbytag", [check("query", "'query' param is required.").not().isEmpty()], async (req, res) => {
-	console.log(req.query.query);
 	try {
 		const errors = validationResult(req);
 		if (!errors.isEmpty()) {

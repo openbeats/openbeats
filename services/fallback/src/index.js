@@ -73,7 +73,10 @@ app.get("/:id", async (req, res) => {
 			response.data.pipe(res);
 		}
 	} catch (error) {
-		redis.del(videoID, (err, result) => console.log(result + err));
+		redis.del(videoID, (err, result) => {
+			if (err) console.error(err);
+			else console.info(result);
+		});
 		console.error(error.message);
 		return res.status(408).send({
 			status: false,
@@ -83,5 +86,5 @@ app.get("/:id", async (req, res) => {
 });
 
 app.listen(PORT, () => {
-	console.log(`openbeats fallback service up and running on ${PORT}!`);
+	console.info(`openbeats fallback service up and running on ${PORT}!`);
 });

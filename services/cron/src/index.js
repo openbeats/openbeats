@@ -21,10 +21,10 @@ app.get("/", (req, res) => {
 // sunday midnight 12
 cron.schedule("0 0 * * 0", () => {
   const topChartsUrl = config.urls.topcharts;
-  fetch(topChartsUrl).then(data => data.json()).then(data => console.log(new Date(Date.now()).toTimeString() + " TopCharts Cron Started!"))
+  fetch(topChartsUrl).then(data => data.json()).then(data => console.info(new Date(Date.now()).toTimeString() + " TopCharts Cron Started!"))
 });
 
 
 app.listen(PORT, () => {
-  console.log(`openbeats cron service up and running on ${PORT}!`);
+  console.info(`openbeats cron service up and running on ${PORT}!`);
 });

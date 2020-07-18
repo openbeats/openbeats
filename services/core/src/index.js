@@ -70,7 +70,7 @@ app.get("/opencc/:id", addtorecentlyplayed, async (req, res) => {
 			link: sourceUrl,
 		});
 	} catch (error) {
-		console.log(error.message);
+		console.error(error.message);
 		return res.send({
 			status: false,
 			link: null,
@@ -176,7 +176,7 @@ const addSongInDeAttachedMode = async (videoId, song, sync = false) => {
 			return findSong;
 		}
 	} catch (error) {
-		console.log(error);
+		console.error(error);
 	}
 };
 
@@ -271,5 +271,5 @@ app.post("/getsongs", async (req, res) => {
 });
 
 app.listen(PORT, () => {
-	console.log(`openbeats core service up and running on ${PORT}!`);
+	console.info(`openbeats core service up and running on ${PORT}!`);
 });

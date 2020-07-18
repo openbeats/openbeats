@@ -23,5 +23,5 @@ app.use("/admin", admin);
 const PORT = process.env.PORT || config.isDev ? config.port.dev : config.port.prod;
 
 app.listen(PORT, () => {
-	console.log(`openbeats auth service up and running on ${PORT}!`);
+	console.info(`openbeats auth service up and running on ${PORT}!`);
 });

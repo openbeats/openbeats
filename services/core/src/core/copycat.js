@@ -9,14 +9,14 @@ export default async (id, quality = "128", force = false) => {
   let formData = new FormData();
   formData.append("url", link);
   await fetch(analyzeLink, {
-      method: "post",
-      body: formData,
-    })
+    method: "post",
+    body: formData,
+  })
     .then(res => res.text())
     .then(async res => {
       let $ = cheerio.load(res.trim());
       outputLink = $(".btn-file").attr("href");
     })
-    .catch(err => console.log(err));
+    .catch(err => console.error(err));
   return outputLink;
 };

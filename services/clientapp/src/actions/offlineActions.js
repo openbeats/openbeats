@@ -51,7 +51,6 @@ export const advancedOfflineChecker = () => {
                 // online
                 setOnlinestatus(true);
                 const state = await store.getState();
-                console.log(state)
                 if (state.nowPlayingReducer.playerQueue.length)
                     nowPlayingActions.selectFromPlaylist(state.nowPlayingReducer.currentIndex)
                 // window.location.reload();

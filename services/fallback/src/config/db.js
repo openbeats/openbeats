@@ -12,7 +12,7 @@ export default async () => {
       useCreateIndex: true
     })
     .then(() => {
-      console.log("Connection Successful!");
+      console.info("Connection Successful!");
     })
     .catch(err => console.error("Mongo db connection failed!", err.message));
 };

@@ -11,7 +11,7 @@ export const scopedAlbums = async (req, res, next) => {
 		}
 		return next();
 	} catch (error) {
-		console.log(error);
+		console.error(error.message);
 		return res.json({
 			status: false,
 			data: error.message,

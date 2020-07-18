@@ -10,7 +10,7 @@ import {
 
 export const fetchTopCharts = async () => {
 	try {
-		console.log("fetch Top Charts Cron started ...");
+		console.info("fetch Top Charts Cron started ...");
 		const fetchlist = [
 			"tamil-top-20",
 			"malayalam-top-20",
@@ -52,7 +52,7 @@ export const fetchTopCharts = async () => {
 };
 
 export const englishTopCharts = async () => {
-	console.log("English topcharts started");
+	console.info("English topcharts started");
 	try {
 		const name = "Top 30 English";
 		const language = "English";
@@ -90,35 +90,35 @@ export const englishTopCharts = async () => {
 			rank = rank + 1;
 		}
 		Promise.all(
-				fetchList.map(async urlObj => {
-					try {
-						let response = await (await fetchRetry(urlObj.url, 2)).json();
-						if (response.data.length && response.data.length !== 0) {
-							let song = response.data[0];
-							song.thumbnail = song.thumbnail.substr(0, song.thumbnail.indexOf("?"));
-							if (Object.is(urlObj.rank, 1)) {
-								engChart.thumbnail = song.thumbnail;
-							}
-							return {
-								rank: urlObj.rank,
-								...song,
-								title: urlObj.title,
-							};
+			fetchList.map(async urlObj => {
+				try {
+					let response = await (await fetchRetry(urlObj.url, 2)).json();
+					if (response.data.length && response.data.length !== 0) {
+						let song = response.data[0];
+						song.thumbnail = song.thumbnail.substr(0, song.thumbnail.indexOf("?"));
+						if (Object.is(urlObj.rank, 1)) {
+							engChart.thumbnail = song.thumbnail;
 						}
-						const missedsong = new MissedFetch({
-							...urlObj,
-							topchartid: engChart._id,
-						});
-						await missedsong.save();
-					} catch (error) {
-						console.log(error);
+						return {
+							rank: urlObj.rank,
+							...song,
+							title: urlObj.title,
+						};
 					}
-					return {
-						rank: urlObj.rank,
-						title: urlObj.title,
-					};
-				})
-			)
+					const missedsong = new MissedFetch({
+						...urlObj,
+						topchartid: engChart._id,
+					});
+					await missedsong.save();
+				} catch (error) {
+					console.error(error);
+				}
+				return {
+					rank: urlObj.rank,
+					title: urlObj.title,
+				};
+			})
+		)
 			.then(async data => {
 				engChart.songs = data;
 				await engChart.save();
@@ -127,15 +127,15 @@ export const englishTopCharts = async () => {
 				fetchMissedSongs();
 			})
 			.catch(err => {
-				console.log(err.message);
+				console.error(err.message);
 			});
 	} catch (error) {
-		console.log(error.message);
+		console.error(error.message);
 	}
 };
 
 export const fetchMissedSongs = async (forcerun = false) => {
-	console.log("Missed songs fetch started.");
+	console.info("Missed songs fetch started.");
 	try {
 		const missedSongs = await MissedFetch.find();
 		if (missedSongs.length > 0) {

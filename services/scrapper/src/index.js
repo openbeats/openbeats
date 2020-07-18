@@ -14,5 +14,5 @@ middleware(app);
 app.use("/fetchsongs", fetchSongs);
 
 app.listen(PORT, () => {
-  console.log(`openbeats scrapping service up and running on ${PORT}!`);
+  console.info(`openbeats scrapping service up and running on ${PORT}!`);
 });

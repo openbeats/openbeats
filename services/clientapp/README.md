@@ -1,1 +1,3 @@
-# OpenBeats Website Frontend
+# Client App
+
+**User Interface for Openbeats**

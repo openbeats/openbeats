@@ -28,5 +28,5 @@ app.use("/language", language);
 app.use("/metadata", metadata);
 
 app.listen(PORT, () => {
-  console.log(`openbeats playlist service up and running on ${PORT}!`);
+  console.info(`openbeats playlist service up and running on ${PORT}!`);
 });

@@ -112,11 +112,11 @@ export const deleteAssert = async (url) => {
       })
     );
     await deleteandNotify
-      .then((msg) => console.log(msg))
+      .then((msg) => console.info(msg))
       .catch((err) => {
         throw err;
       });
   } catch (error) {
-    console.log(error);
+    console.info(error);
   }
 };

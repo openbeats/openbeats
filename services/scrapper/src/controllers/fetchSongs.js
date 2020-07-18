@@ -20,8 +20,6 @@ let globalRes;
 // used to console log messages
 const logConsole = (message, isErrorLog) => {
   if (isErrorLog) console.error(message);
-  // else
-  //   console.log(message);
 };
 
 // used to send responses to the client
@@ -320,8 +318,8 @@ const updateDatabaseDocument = async (
     };
     // updating database
     await RipperCollection.updateOne({
-        ripId: hashedPlaylistUrl,
-      },
+      ripId: hashedPlaylistUrl,
+    },
       updateData
     );
   }
@@ -344,11 +342,11 @@ const sendCurrentDatabaseValues = async (hashedPlaylistUrl) => {
 
   if (currentDoc.ripProgress !== "Error")
     sendResponse({
-        status: true,
-        streamingService: currentDoc.ripService,
-        processing: currentDoc.ripProgress === "Completed" ? false : true,
-        data: currentDoc.ripData,
-      },
+      status: true,
+      streamingService: currentDoc.ripService,
+      processing: currentDoc.ripProgress === "Completed" ? false : true,
+      data: currentDoc.ripData,
+    },
       1
     );
   else {
@@ -438,11 +436,11 @@ exports.fetchSongs = async (req, res) => {
               );
 
               sendResponse({
-                  status: true,
-                  streamingService: playlistUrlType,
-                  processing: true,
-                  data: {},
-                },
+                status: true,
+                streamingService: playlistUrlType,
+                processing: true,
+                data: {},
+              },
                 1
               );
             } else {

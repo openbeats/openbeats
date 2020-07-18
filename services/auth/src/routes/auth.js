@@ -222,7 +222,7 @@ router.post("/forgotpassword", [check("email", "Please include a valid email").i
 		setTimeout(function () {
 			smtpTransport.sendMail(data, function (err, info) {
 				if (err) throw err;
-				console.log(info.response);
+				console.info(info.response);
 			});
 		}, 0);
 
