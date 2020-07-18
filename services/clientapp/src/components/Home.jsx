@@ -137,7 +137,7 @@ class Home extends Component {
         </>)
     }
 
-    getTopChartsList(arrayList, exploreMore = { enabled: false, url: '' }) {
+    getTopChartsList(arrayList, exploreMore = { enabled: false, url: '' }, isUser = false) {
         return <>
             {arrayList.map((item, key) => (
                 <AlbumHolder
@@ -146,9 +146,9 @@ class Home extends Component {
                     albumThumbnail={item.thumbnail}
                     albumTotalSongs={item.totalSongs}
                     albumId={item._id}
-                    albumCreationDate={new Date(item.createdAt).toDateString()}
-                    albumCreatedBy={item.createdBy}
-                    type={'topchart'}
+                    albumCreationDate={new Date(item.createdAt ? item.createdAt : null).toDateString()}
+                    albumCreatedBy={item.createdBy ? item.createdBy : this.props.userName}
+                    type={!isUser ? 'topchart' : 'user'}
                 />
             ))}
             {exploreMore.enabled &&
@@ -264,7 +264,7 @@ class Home extends Component {
             </div>
             <div className="home-section-body">
                 <HorizontalView
-                    elementList={this.getTopChartsList(this.props.userPlaylistMetaData, { enabled: true, url: "/myplaylists" })}
+                    elementList={this.getTopChartsList(this.props.userPlaylistMetaData, { enabled: true, url: "/myplaylists" }, true)}
                 />
             </div>
         </div>
@@ -400,6 +400,7 @@ class Home extends Component {
 const mapStateToProps = (state) => {
     return {
         isAuthenticated: state.authReducer.isAuthenticated,
+        userName: state.authReducer.name,
         likedPlaylists: state.authReducer.likedPlaylists,
         userPlaylistMetaData: state.playlistManipulatorReducer.userPlaylistMetaData,
     }
