@@ -29,7 +29,7 @@
     "imagemin-mozjpeg": "^8.0.0",
     "is-jpg": "^2.0.0",
     "jsonwebtoken": "^8.5.1",
-    "lodash": "^4.17.19",
+    "lodash": "^4.17.21",
     "mongoose": "^5.9.13",
     "morgan": "^1.10.0",
     "node-fetch": "^2.6.0",
