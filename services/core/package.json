@@ -29,7 +29,7 @@
         "mongoose": "^5.9.13",
         "morgan": "^1.10.0",
         "node-cron": "^2.0.3",
-        "node-fetch": "^2.6.0",
+        "node-fetch": "^2.6.7",
         "redis": "^3.0.2",
         "ytdl-core": "^2.1.2"
     }
