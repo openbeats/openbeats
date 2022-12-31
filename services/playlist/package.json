@@ -28,7 +28,7 @@
     "imagemin": "^7.0.1",
     "imagemin-mozjpeg": "^8.0.0",
     "is-jpg": "^2.0.0",
-    "jsonwebtoken": "^8.5.1",
+    "jsonwebtoken": "^9.0.0",
     "lodash": "^4.17.19",
     "mongoose": "^5.9.13",
     "morgan": "^1.10.0",
