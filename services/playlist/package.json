@@ -24,7 +24,7 @@
     "cheerio": "^1.0.0-rc.3",
     "cors": "^2.8.5",
     "express": "^4.17.3",
-    "express-validator": "^6.4.1",
+    "express-validator": "^6.14.2",
     "imagemin": "^7.0.1",
     "imagemin-mozjpeg": "^8.0.0",
     "is-jpg": "^2.0.0",
